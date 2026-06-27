@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auralis — Fréquences</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .freq-page { max-width:1100px; margin:0 auto; padding:30px 24px 60px; }
+  .freq-page h1 { text-align:center; font-size:2rem; letter-spacing:2px; }
+  .freq-page h1::after { content:""; display:block; width:60px; height:2px; background:var(--cyan); margin:14px auto 0; }
+  .freq-intro { text-align:center; color:var(--text-dim); max-width:640px; margin:14px auto 30px; }
+  .controls { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; align-items:center; margin-bottom:26px; }
+  .controls input { background:#080820; border:1px solid var(--line); border-radius:22px; color:#fff; padding:10px 18px; font-size:.95rem; width:260px; }
+  .filt { background:transparent; border:1px solid var(--cyan); color:var(--cyan); border-radius:20px; padding:8px 16px; cursor:pointer; font-size:.85rem; letter-spacing:.5px; }
+  .filt.active { background:var(--cyan); color:#001018; font-weight:600; }
+  .mols { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:18px; }
+  .mol { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 20px; }
+  .mol-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .mol-name { font-size:1.15rem; color:var(--aura); font-weight:600; }
+  .mol-hz { font-family:'Courier New',monospace; color:var(--cyan); font-weight:600; white-space:nowrap; }
+  .mol-cat { display:inline-block; margin:8px 0 10px; font-size:.7rem; text-transform:uppercase; letter-spacing:1px; padding:3px 10px; border-radius:10px; }
+  .mol-cat.phyto { background:#0d1a40; color:var(--cyan); }
+  .mol-cat.he { background:#1c3a1c; color:#9be79b; }
+  .mol-cat.endo { background:#400f60; color:#d8a8f0; }
+  .mol-desc { color:var(--text-dim); font-size:.92rem; line-height:1.55; }
+  .freq-foot { text-align:center; color:var(--text-dim); font-size:.8rem; margin-top:40px; border-top:1px solid var(--line); padding-top:20px; }
+  .nores { text-align:center; color:var(--text-dim); padding:40px; }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="index.html" class="brand"><span class="aura">AURA</span><span class="lis">LIS</span></a>
+  <button id="navToggle" aria-label="Menu">☰</button>
+  <ul id="navLinks">
+    <li><a href="index.html#concept" data-fr="Le concept" data-en="Concept">Le concept</a></li>
+    <li><a href="frequences.html" data-fr="Fréquences" data-en="Frequencies">Fréquences</a></li>
+    <li><a href="protocoles.html" data-fr="Protocoles" data-en="Protocols">Protocoles</a></li>
+    <li><a href="index.html#methode" data-fr="Méthode" data-en="Method">Méthode</a></li>
+    <li><a href="index.html#temoignages" data-fr="Témoignages" data-en="Testimonials">Témoignages</a></li>
+    <li><a href="index.html#communaute" class="nav-cta" data-fr="Communauté" data-en="Community">Communauté</a></li>
+    <li><button class="lang-btn" aria-label="Language">EN</button></li>
+  </ul>
+</nav>
+
+<div class="freq-page">
+  <h1 data-fr="Les Fréquences" data-en="The Frequencies">Les Fréquences</h1>
+  <p class="freq-intro" data-fr="83 fréquences issues de molécules de phytothérapie, d'huiles essentielles et de molécules naturellement présentes dans le corps. Chaque fréquence est dérivée de la masse molaire de la molécule." data-en="83 frequencies derived from phytotherapy molecules, essential oils and molecules naturally present in the body. Each frequency comes from the molecule's molar mass.">83 fréquences issues de molécules de phytothérapie, d'huiles essentielles et de molécules naturellement présentes dans le corps. Chaque fréquence est dérivée de la masse molaire de la molécule.</p>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Rechercher une molécule..." data-fr-ph="Rechercher une molécule..." data-en-ph="Search a molecule...">
+    <button class="filt active" data-f="all" data-fr="Toutes" data-en="All">Toutes</button>
+    <button class="filt" data-f="phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</button>
+    <button class="filt" data-f="he" data-fr="Huiles essentielles" data-en="Essential oils">Huiles essentielles</button>
+    <button class="filt" data-f="endo" data-fr="Endogènes" data-en="Endogenous">Endogènes</button>
+  </div>
+
+  <div class="mols" id="mols">
+    <div class="mol" data-cat="endo" data-name="acetylcholine">
+      <div class="mol-head"><span class="mol-name">Acétylcholine</span><span class="mol-hz">108.9612 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Neurotransmetteur, molécule qui transmet les signaux entre les cellules nerveuses." data-en="A neurotransmitter, a molecule that carries signals between nerve cells.">Neurotransmetteur, molécule qui transmet les signaux entre les cellules nerveuses.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="adenosine">
+      <div class="mol-head"><span class="mol-name">Adénosine</span><span class="mol-hz">199.1573 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Molécule présente dans toutes les cellules ; elle entre dans la composition de l'ATP et de l'ADN." data-en="A molecule present in all cells; part of ATP and DNA.">Molécule présente dans toutes les cellules ; elle entre dans la composition de l'ATP et de l'ADN.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="alpha-gpc">
+      <div class="mol-head"><span class="mol-name">Alpha-GPC</span><span class="mol-hz">191.6900 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Composé naturel de la choline, présent dans l'organisme et certains aliments." data-en="A natural choline compound, present in the body and some foods.">Composé naturel de la choline, présent dans l'organisme et certains aliments.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="atp">
+      <div class="mol-head"><span class="mol-name">ATP</span><span class="mol-hz">188.9848 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="L'adénosine triphosphate est la principale molécule de stockage et de transfert d'énergie des cellules." data-en="Adenosine triphosphate is the main energy-storage and transfer molecule of cells.">L'adénosine triphosphate est la principale molécule de stockage et de transfert d'énergie des cellules.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="citicoline">
+      <div class="mol-head"><span class="mol-name">Citicoline</span><span class="mol-hz">181.9572 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Molécule naturellement présente dans les cellules, précurseur de constituants des membranes cellulaires." data-en="A molecule naturally present in cells, a precursor of cell-membrane components.">Molécule naturellement présente dans les cellules, précurseur de constituants des membranes cellulaires.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="coenzyme q10">
+      <div class="mol-head"><span class="mol-name">Coenzyme Q10</span><span class="mol-hz">160.8483 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Aussi appelée ubiquinone ; impliquée dans la production d'énergie des mitochondries." data-en="Also called ubiquinone; involved in mitochondrial energy production.">Aussi appelée ubiquinone ; impliquée dans la production d'énergie des mitochondries.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="creatine">
+      <div class="mol-head"><span class="mol-name">Créatine</span><span class="mol-hz">195.4460 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Molécule présente naturellement dans les muscles, liée au métabolisme de l'énergie rapide." data-en="A molecule naturally present in muscles, linked to fast-energy metabolism.">Molécule présente naturellement dans les muscles, liée au métabolisme de l'énergie rapide.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="dopamine">
+      <div class="mol-head"><span class="mol-name">Dopamine</span><span class="mol-hz">114.1555 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Neurotransmetteur impliqué dans les circuits de la motivation et de la récompense." data-en="A neurotransmitter involved in the brain's motivation and reward circuits.">Neurotransmetteur impliqué dans les circuits de la motivation et de la récompense.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="gaba">
+      <div class="mol-head"><span class="mol-name">GABA</span><span class="mol-hz">153.6978 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Principal neurotransmetteur dit inhibiteur du système nerveux central." data-en="The main so-called 'inhibitory' neurotransmitter of the central nervous system.">Principal neurotransmetteur dit inhibiteur du système nerveux central.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="glutathion">
+      <div class="mol-head"><span class="mol-name">Glutathion</span><span class="mol-hz">114.5143 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Molécule présente naturellement dans les cellules, connue comme l'un des antioxydants de l'organisme." data-en="A molecule naturally present in cells, known as one of the body's antioxidants.">Molécule présente naturellement dans les cellules, connue comme l'un des antioxydants de l'organisme.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="glycine">
+      <div class="mol-head"><span class="mol-name">Glycine</span><span class="mol-hz">111.8855 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Le plus simple des acides aminés ; entre dans les protéines et agit aussi comme neurotransmetteur." data-en="The simplest amino acid; part of proteins and also acts as a neurotransmitter.">Le plus simple des acides aminés ; entre dans les protéines et agit aussi comme neurotransmetteur.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="histamine">
+      <div class="mol-head"><span class="mol-name">Histamine</span><span class="mol-hz">165.6663 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Molécule produite par le corps, impliquée dans la communication cellulaire et la réponse immunitaire." data-en="A molecule produced by the body, involved in cell communication and the immune response.">Molécule produite par le corps, impliquée dans la communication cellulaire et la réponse immunitaire.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="l-carnitine">
+      <div class="mol-head"><span class="mol-name">L-Carnitine</span><span class="mol-hz">120.1315 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Molécule présente dans l'organisme, impliquée dans le transport des acides gras au sein des cellules." data-en="A molecule present in the body, involved in transporting fatty acids within cells.">Molécule présente dans l'organisme, impliquée dans le transport des acides gras au sein des cellules.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="melatonine">
+      <div class="mol-head"><span class="mol-name">Mélatonine</span><span class="mol-hz">173.1023 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Molécule produite naturellement par le corps, liée au rythme circadien (l'alternance jour/nuit)." data-en="A molecule produced naturally by the body, linked to the circadian rhythm (the day/night cycle).">Molécule produite naturellement par le corps, liée au rythme circadien (l'alternance jour/nuit).</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="nad+">
+      <div class="mol-head"><span class="mol-name">NAD+</span><span class="mol-hz">123.6032 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Coenzyme présente dans toutes les cellules, centrale dans le métabolisme énergétique." data-en="A coenzyme present in all cells, central to energy metabolism.">Coenzyme présente dans toutes les cellules, centrale dans le métabolisme énergétique.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="nadh">
+      <div class="mol-head"><span class="mol-name">NADH</span><span class="mol-hz">123.9777 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Forme réduite du NAD+ ; ensemble, ils participent aux réactions énergétiques cellulaires." data-en="The reduced form of NAD+; together they take part in cellular energy reactions.">Forme réduite du NAD+ ; ensemble, ils participent aux réactions énergétiques cellulaires.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="oxyde nitrique">
+      <div class="mol-head"><span class="mol-name">Oxyde nitrique</span><span class="mol-hz">89.4583 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Petite molécule gazeuse produite par le corps, impliquée dans la dilatation des vaisseaux sanguins." data-en="A small gaseous molecule made by the body, involved in the widening of blood vessels.">Petite molécule gazeuse produite par le corps, impliquée dans la dilatation des vaisseaux sanguins.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="pqq">
+      <div class="mol-head"><span class="mol-name">PQQ</span><span class="mol-hz">123.0424 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="La pyrroloquinoléine quinone, petite molécule de l'alimentation, étudiée pour son rôle dans le métabolisme cellulaire." data-en="Pyrroloquinoline quinone, a small dietary molecule studied for its role in cellular metabolism.">La pyrroloquinoléine quinone, petite molécule de l'alimentation, étudiée pour son rôle dans le métabolisme cellulaire.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="serotonine">
+      <div class="mol-head"><span class="mol-name">Sérotonine</span><span class="mol-hz">131.3220 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Neurotransmetteur présent dans le système nerveux, souvent évoqué en lien avec l'humeur." data-en="A neurotransmitter in the nervous system, often discussed in relation to mood.">Neurotransmetteur présent dans le système nerveux, souvent évoqué en lien avec l'humeur.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="taurine">
+      <div class="mol-head"><span class="mol-name">Taurine</span><span class="mol-hz">186.5329 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Acide aminé présent en abondance dans l'organisme, notamment dans les muscles et le cerveau." data-en="An amino acid abundant in the body, notably in muscles and the brain.">Acide aminé présent en abondance dans l'organisme, notamment dans les muscles et le cerveau.</p>
+    </div>
+    <div class="mol" data-cat="endo" data-name="vitamine d">
+      <div class="mol-head"><span class="mol-name">Vitamine D</span><span class="mol-hz">143.3233 Hz</span></div>
+      <span class="mol-cat endo" data-fr="Endogène" data-en="Endogenous">Endogène</span>
+      <p class="mol-desc" data-fr="Synthétisée par la peau sous l'effet du soleil et apportée par certains aliments ; participe à de nombreux processus." data-en="Made by the skin under sunlight and provided by some foods; takes part in many body processes.">Synthétisée par la peau sous l'effet du soleil et apportée par certains aliments ; participe à de nombreux processus.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="1,8-cineole">
+      <div class="mol-head"><span class="mol-name">1,8-Cinéole</span><span class="mol-hz">114.9529 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Aussi appelé eucalyptol ; présent dans l'eucalyptus, le romarin et la sauge, à la note fraîche et camphrée." data-en="Also called eucalyptol; found in eucalyptus, rosemary and sage, with a fresh, camphor-like note.">Aussi appelé eucalyptol ; présent dans l'eucalyptus, le romarin et la sauge, à la note fraîche et camphrée.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="acetate de linalyle">
+      <div class="mol-head"><span class="mol-name">Acétate de linalyle</span><span class="mol-hz">146.2827 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Accompagne le linalol dans l'huile essentielle de lavande, dont il signe la note florale caractéristique." data-en="Accompanies linalool in lavender essential oil, giving it its characteristic floral note.">Accompagne le linalol dans l'huile essentielle de lavande, dont il signe la note florale caractéristique.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="alpha-pinene">
+      <div class="mol-head"><span class="mol-name">Alpha-Pinène</span><span class="mol-hz">101.5237 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Molécule à l'odeur résineuse de pin, présente dans les conifères, le romarin et de nombreuses plantes." data-en="A molecule with a resinous pine scent, found in conifers, rosemary and many plants.">Molécule à l'odeur résineuse de pin, présente dans les conifères, le romarin et de nombreuses plantes.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="bisabolol">
+      <div class="mol-head"><span class="mol-name">Bisabolol</span><span class="mol-hz">165.7185 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="L'un des composants de l'huile essentielle de camomille, traditionnellement associée aux ambiances douces et apaisantes." data-en="One of the components of chamomile essential oil, traditionally associated with soft, soothing atmospheres.">L'un des composants de l'huile essentielle de camomille, traditionnellement associée aux ambiances douces et apaisantes.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="camphre">
+      <div class="mol-head"><span class="mol-name">Camphre</span><span class="mol-hz">113.4475 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Odeur fraîche et pénétrante, extraite du camphrier, un arbre d'Asie ; utilisé de longue date en parfumerie et dans les traditions." data-en="Fresh, penetrating smell, extracted from the camphor tree of Asia; long used in perfumery and traditions.">Odeur fraîche et pénétrante, extraite du camphrier, un arbre d'Asie ; utilisé de longue date en parfumerie et dans les traditions.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="carvacrol">
+      <div class="mol-head"><span class="mol-name">Carvacrol</span><span class="mol-hz">111.9496 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Donne à l'origan son arôme puissant et chaud ; herbe emblématique de la cuisine méditerranéenne." data-en="Gives oregano its powerful, warm aroma; an emblematic herb of Mediterranean cuisine.">Donne à l'origan son arôme puissant et chaud ; herbe emblématique de la cuisine méditerranéenne.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="cinnamaldehyde">
+      <div class="mol-head"><span class="mol-name">Cinnamaldéhyde</span><span class="mol-hz">196.9812 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Molécule qui donne à la cannelle son odeur chaude et sucrée ; l'une des épices les plus anciennes." data-en="The molecule that gives cinnamon its warm, sweet smell; one of the oldest spices.">Molécule qui donne à la cannelle son odeur chaude et sucrée ; l'une des épices les plus anciennes.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="citronellal">
+      <div class="mol-head"><span class="mol-name">Citronellal</span><span class="mol-hz">114.9529 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Molécule aromatique de la mélisse (Melissa officinalis), aux notes citronnées. Plante de jardin classique des traditions européennes." data-en="Aromatic molecule of lemon balm (Melissa officinalis), with citrusy notes. A classic garden herb of European traditions.">Molécule aromatique de la mélisse (Melissa officinalis), aux notes citronnées. Plante de jardin classique des traditions européennes.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="eugenol">
+      <div class="mol-head"><span class="mol-name">Eugénol</span><span class="mol-hz">122.3680 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Principale molécule aromatique du clou de girofle, à la note chaude et épicée ; une épice ancienne des cuisines du monde." data-en="Main aromatic molecule of clove, with a warm, spicy note; an ancient spice of world cuisines.">Principale molécule aromatique du clou de girofle, à la note chaude et épicée ; une épice ancienne des cuisines du monde.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="geraniol">
+      <div class="mol-head"><span class="mol-name">Géraniol</span><span class="mol-hz">114.9529 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Molécule à l'odeur de rose, présente dans le géranium et de nombreuses fleurs ; très utilisée en parfumerie." data-en="A rose-scented molecule found in geranium and many flowers; widely used in perfumery.">Molécule à l'odeur de rose, présente dans le géranium et de nombreuses fleurs ; très utilisée en parfumerie.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="limonene">
+      <div class="mol-head"><span class="mol-name">Limonène</span><span class="mol-hz">101.5237 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Molécule responsable de l'odeur des agrumes (citron, orange, pamplemousse), présente dans leur zeste." data-en="The molecule behind the scent of citrus fruits (lemon, orange, grapefruit), found in their peel.">Molécule responsable de l'odeur des agrumes (citron, orange, pamplemousse), présente dans leur zeste.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="linalol">
+      <div class="mol-head"><span class="mol-name">Linalol</span><span class="mol-hz">114.9529 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Principale molécule aromatique de la lavande vraie. En aromathérapie traditionnelle, la lavande évoque la détente et le calme." data-en="Main aromatic molecule of true lavender. In traditional aromatherapy, lavender evokes relaxation and calm.">Principale molécule aromatique de la lavande vraie. En aromathérapie traditionnelle, la lavande évoque la détente et le calme.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="menthol">
+      <div class="mol-head"><span class="mol-name">Menthol</span><span class="mol-hz">116.4583 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Molécule emblématique de la menthe poivrée, connue pour sa sensation de fraîcheur caractéristique." data-en="The emblematic molecule of peppermint, known for its characteristic cooling sensation.">Molécule emblématique de la menthe poivrée, connue pour sa sensation de fraîcheur caractéristique.</p>
+    </div>
+    <div class="mol" data-cat="he" data-name="thymol">
+      <div class="mol-head"><span class="mol-name">Thymol</span><span class="mol-hz">111.9496 Hz</span></div>
+      <span class="mol-cat he" data-fr="Huile essentielle" data-en="Essential oil">Huile essentielle</span>
+      <p class="mol-desc" data-fr="Molécule aromatique caractéristique du thym, herbe méditerranéenne classique des jardins et des cuisines." data-en="Characteristic aromatic molecule of thyme, a classic Mediterranean herb of gardens and kitchens.">Molécule aromatique caractéristique du thym, herbe méditerranéenne classique des jardins et des cuisines.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="5-htp">
+      <div class="mol-head"><span class="mol-name">5-HTP</span><span class="mol-hz">164.1237 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Précurseur naturel de la sérotonine, extrait des graines de Griffonia simplicifolia, plante africaine." data-en="A natural precursor of serotonin, from the seeds of Griffonia simplicifolia, an African plant.">Précurseur naturel de la sérotonine, extrait des graines de Griffonia simplicifolia, plante africaine.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="acide carnosique">
+      <div class="mol-head"><span class="mol-name">Acide carnosique</span><span class="mol-hz">123.8697 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé du romarin et de la sauge, en partie responsable de leur arôme." data-en="A compound of rosemary and sage, partly responsible for their aroma.">Composé du romarin et de la sauge, en partie responsable de leur arôme.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="acide ganoderique a">
+      <div class="mol-head"><span class="mol-name">Acide ganodérique A</span><span class="mol-hz">192.5209 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="L'un des composés du reishi (Ganoderma lucidum), champignon des traditions d'Asie." data-en="One of the compounds of reishi (Ganoderma lucidum), a mushroom of Asian traditions.">L'un des composés du reishi (Ganoderma lucidum), champignon des traditions d'Asie.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="acide rosmarinique">
+      <div class="mol-head"><span class="mol-name">Acide rosmarinique</span><span class="mol-hz">134.2583 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Présent dans la mélisse, le romarin et d'autres plantes de la famille de la menthe." data-en="Found in lemon balm, rosemary and other plants of the mint family.">Présent dans la mélisse, le romarin et d'autres plantes de la famille de la menthe.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="acide valerenique">
+      <div class="mol-head"><span class="mol-name">Acide valérénique</span><span class="mol-hz">174.6315 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé caractéristique de la racine de valériane, plante des traditions européennes." data-en="The characteristic compound of valerian root, a plant of European traditions.">Composé caractéristique de la racine de valériane, plante des traditions européennes.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="akba">
+      <div class="mol-head"><span class="mol-name">AKBA</span><span class="mol-hz">191.0491 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Acide boswellique de l'encens (Boswellia), résine aromatique utilisée depuis l'Antiquité." data-en="A boswellic acid from frankincense (Boswellia), an aromatic resin used since antiquity.">Acide boswellique de l'encens (Boswellia), résine aromatique utilisée depuis l'Antiquité.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="apigenine">
+      <div class="mol-head"><span class="mol-name">Apigénine</span><span class="mol-hz">100.6965 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Flavonoïde présent dans la camomille, le persil et d'autres plantes." data-en="A flavonoid found in chamomile, parsley and other plants.">Flavonoïde présent dans la camomille, le persil et d'autres plantes.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="asiaticoside">
+      <div class="mol-head"><span class="mol-name">Asiaticoside</span><span class="mol-hz">178.6930 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé du gotu kola (Centella asiatica), plante de la tradition ayurvédique." data-en="A compound of gotu kola (Centella asiatica), a plant of the Ayurvedic tradition.">Composé du gotu kola (Centella asiatica), plante de la tradition ayurvédique.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="astragaloside iv">
+      <div class="mol-head"><span class="mol-name">Astragaloside IV</span><span class="mol-hz">146.2473 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé de l'astragale, racine classique de la médecine traditionnelle chinoise." data-en="A compound of astragalus, a classic root of traditional Chinese medicine.">Composé de l'astragale, racine classique de la médecine traditionnelle chinoise.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="bacoside a3">
+      <div class="mol-head"><span class="mol-name">Bacoside A3</span><span class="mol-hz">143.2719 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé du Bacopa monnieri (brahmi), plante de la tradition ayurvédique." data-en="A compound of Bacopa monnieri (brahmi), a plant of the Ayurvedic tradition.">Composé du Bacopa monnieri (brahmi), plante de la tradition ayurvédique.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="bilobalide">
+      <div class="mol-head"><span class="mol-name">Bilobalide</span><span class="mol-hz">121.5855 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé caractéristique des feuilles de Ginkgo biloba, l'un des plus anciens arbres du monde." data-en="A characteristic compound of Ginkgo biloba leaves, one of the world's oldest trees.">Composé caractéristique des feuilles de Ginkgo biloba, l'un des plus anciens arbres du monde.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="cafeine">
+      <div class="mol-head"><span class="mol-name">Caféine</span><span class="mol-hz">144.7177 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Molécule stimulante naturelle du café, du thé, du cacao et du guarana." data-en="A natural stimulant molecule of coffee, tea, cocoa and guarana.">Molécule stimulante naturelle du café, du thé, du cacao et du guarana.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="chrysine">
+      <div class="mol-head"><span class="mol-name">Chrysine</span><span class="mol-hz">189.4692 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Flavonoïde présent dans la passiflore, certaines plantes et le miel." data-en="A flavonoid found in passionflower, some plants and honey.">Flavonoïde présent dans la passiflore, certaines plantes et le miel.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="cordycepine">
+      <div class="mol-head"><span class="mol-name">Cordycépine</span><span class="mol-hz">187.2335 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé du cordyceps, champignon des traditions de l'Himalaya." data-en="A compound of cordyceps, a mushroom of Himalayan traditions.">Composé du cordyceps, champignon des traditions de l'Himalaya.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="curcumine">
+      <div class="mol-head"><span class="mol-name">Curcumine</span><span class="mol-hz">137.2653 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Pigment jaune du curcuma, l'épice qui colore le curry." data-en="The yellow pigment of turmeric, the spice that colours curry.">Pigment jaune du curcuma, l'épice qui colore le curry.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="echinacoside">
+      <div class="mol-head"><span class="mol-name">Échinacoside</span><span class="mol-hz">146.5752 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé de l'échinacée, fleur d'Amérique du Nord des traditions autochtones." data-en="A compound of echinacea, a North American flower of Indigenous traditions.">Composé de l'échinacée, fleur d'Amérique du Nord des traditions autochtones.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="egcg">
+      <div class="mol-head"><span class="mol-name">EGCG</span><span class="mol-hz">170.7973 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Principal polyphénol du thé vert, l'un des plus étudiés." data-en="The main polyphenol of green tea, one of the most studied.">Principal polyphénol du thé vert, l'un des plus étudiés.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="erinacine a">
+      <div class="mol-head"><span class="mol-name">Érinacine A</span><span class="mol-hz">155.2143 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé de la crinière de lion (Hericium erinaceus), champignon comestible d'Asie." data-en="A compound of lion's mane (Hericium erinaceus), an edible mushroom from Asia.">Composé de la crinière de lion (Hericium erinaceus), champignon comestible d'Asie.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="faradiol">
+      <div class="mol-head"><span class="mol-name">Faradiol</span><span class="mol-hz">164.9658 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé des fleurs de souci (calendula), classique des jardins." data-en="A compound of calendula (marigold) flowers, a garden classic.">Composé des fleurs de souci (calendula), classique des jardins.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="ginkgolide a">
+      <div class="mol-head"><span class="mol-name">Ginkgolide A</span><span class="mol-hz">152.1775 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="L'un des composés caractéristiques du Ginkgo biloba." data-en="One of the characteristic compounds of Ginkgo biloba.">L'un des composés caractéristiques du Ginkgo biloba.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="ginkgolide b">
+      <div class="mol-head"><span class="mol-name">Ginkgolide B</span><span class="mol-hz">158.1394 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé des feuilles de Ginkgo biloba, proche des autres ginkgolides." data-en="A compound of Ginkgo biloba leaves, related to the other ginkgolides.">Composé des feuilles de Ginkgo biloba, proche des autres ginkgolides.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="ginkgolide c">
+      <div class="mol-head"><span class="mol-name">Ginkgolide C</span><span class="mol-hz">164.1013 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Un autre des composés naturels du Ginkgo biloba." data-en="Another of the natural compounds of Ginkgo biloba.">Un autre des composés naturels du Ginkgo biloba.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="ginsenoside rb1">
+      <div class="mol-head"><span class="mol-name">Ginsénoside Rb1</span><span class="mol-hz">103.3356 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="L'un des composés actifs du ginseng (Panax ginseng), racine emblématique d'Asie." data-en="One of the active compounds of ginseng (Panax ginseng), an emblematic Asian root.">L'un des composés actifs du ginseng (Panax ginseng), racine emblématique d'Asie.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="ginsenoside rg1">
+      <div class="mol-head"><span class="mol-name">Ginsénoside Rg1</span><span class="mol-hz">149.2357 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé du ginseng, l'un des plus présents dans la racine." data-en="A ginseng compound, one of the most abundant in the root.">Composé du ginseng, l'un des plus présents dans la racine.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="ginsenoside rg3">
+      <div class="mol-head"><span class="mol-name">Ginsénoside Rg3</span><span class="mol-hz">146.2547 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé du ginseng, formé lors de la préparation du ginseng rouge." data-en="A ginseng compound, formed during the preparation of red ginseng.">Composé du ginseng, formé lors de la préparation du ginseng rouge.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="honokiol">
+      <div class="mol-head"><span class="mol-name">Honokiol</span><span class="mol-hz">198.4791 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé de l'écorce de magnolia, utilisée dans les traditions d'Asie." data-en="A compound of magnolia bark, used in Asian traditions.">Composé de l'écorce de magnolia, utilisée dans les traditions d'Asie.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="huperzine a">
+      <div class="mol-head"><span class="mol-name">Huperzine A</span><span class="mol-hz">180.5860 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé de la mousse Huperzia serrata, plante de la tradition chinoise." data-en="A compound of the moss Huperzia serrata, a plant of Chinese tradition.">Composé de la mousse Huperzia serrata, plante de la tradition chinoise.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="isovitexine">
+      <div class="mol-head"><span class="mol-name">Isovitexine</span><span class="mol-hz">161.1129 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Flavonoïde présent dans la passiflore et diverses plantes." data-en="A flavonoid found in passionflower and various plants.">Flavonoïde présent dans la passiflore et diverses plantes.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="l-theanine">
+      <div class="mol-head"><span class="mol-name">L-Théanine</span><span class="mol-hz">129.8204 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Acide aminé particulier au thé, notamment au thé vert." data-en="An amino acid specific to tea, notably green tea.">Acide aminé particulier au thé, notamment au thé vert.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="l-tyrosine">
+      <div class="mol-head"><span class="mol-name">L-Tyrosine</span><span class="mol-hz">135.0296 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Acide aminé apporté par l'alimentation, présent dans les protéines du corps." data-en="An amino acid provided by food, present in the body's proteins.">Acide aminé apporté par l'alimentation, présent dans les protéines du corps.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="luteine">
+      <div class="mol-head"><span class="mol-name">Lutéine</span><span class="mol-hz">105.9858 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Pigment caroténoïde des légumes verts et du souci (calendula)." data-en="A carotenoid pigment of green vegetables and marigold (calendula).">Pigment caroténoïde des légumes verts et du souci (calendula).</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="macamide">
+      <div class="mol-head"><span class="mol-name">Macamide</span><span class="mol-hz">128.7621 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé caractéristique de la maca (Lepidium meyenii), plante des Andes." data-en="A characteristic compound of maca (Lepidium meyenii), an Andean plant.">Composé caractéristique de la maca (Lepidium meyenii), plante des Andes.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="madecassoside">
+      <div class="mol-head"><span class="mol-name">Madecassoside</span><span class="mol-hz">181.6759 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé du gotu kola (Centella asiatica), proche de l'asiaticoside." data-en="A compound of gotu kola (Centella asiatica), related to asiaticoside.">Composé du gotu kola (Centella asiatica), proche de l'asiaticoside.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="magnolol">
+      <div class="mol-head"><span class="mol-name">Magnolol</span><span class="mol-hz">198.4791 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé de l'écorce de magnolia, aux côtés du honokiol." data-en="A compound of magnolia bark, alongside honokiol.">Composé de l'écorce de magnolia, aux côtés du honokiol.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="piperine">
+      <div class="mol-head"><span class="mol-name">Pipérine</span><span class="mol-hz">106.3230 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Molécule responsable du piquant du poivre noir." data-en="The molecule responsible for the pungency of black pepper.">Molécule responsable du piquant du poivre noir.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="quercetine">
+      <div class="mol-head"><span class="mol-name">Quercétine</span><span class="mol-hz">112.6188 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Flavonoïde répandu dans les fruits et légumes (oignon, pomme, câpres)." data-en="A flavonoid widespread in fruits and vegetables (onion, apple, capers).">Flavonoïde répandu dans les fruits et légumes (oignon, pomme, câpres).</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="resveratrol">
+      <div class="mol-head"><span class="mol-name">Resvératrol</span><span class="mol-hz">170.0930 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Présent dans la peau du raisin, le vin rouge et certaines baies." data-en="Found in grape skin, red wine and some berries.">Présent dans la peau du raisin, le vin rouge et certaines baies.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="rosavine">
+      <div class="mol-head"><span class="mol-name">Rosavine</span><span class="mol-hz">159.6411 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé de la Rhodiola rosea, plante des régions froides, classée parmi les adaptogènes." data-en="A compound of Rhodiola rosea, a cold-region plant classed among the adaptogens.">Composé de la Rhodiola rosea, plante des régions froides, classée parmi les adaptogènes.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="salidroside">
+      <div class="mol-head"><span class="mol-name">Salidroside</span><span class="mol-hz">111.8974 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé de la Rhodiola rosea, aux côtés des rosavines." data-en="A compound of Rhodiola rosea, alongside the rosavins.">Composé de la Rhodiola rosea, aux côtés des rosavines.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="schisandrine a">
+      <div class="mol-head"><span class="mol-name">Schisandrine A</span><span class="mol-hz">155.1994 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé du schisandra (baie aux cinq saveurs), de la tradition chinoise." data-en="A compound of schisandra (the five-flavour berry), from Chinese tradition.">Composé du schisandra (baie aux cinq saveurs), de la tradition chinoise.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="schisandrine b">
+      <div class="mol-head"><span class="mol-name">Schisandrine B</span><span class="mol-hz">149.2226 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="L'un des composés de la baie de schisandra." data-en="One of the compounds of the schisandra berry.">L'un des composés de la baie de schisandra.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="schisandrine c">
+      <div class="mol-head"><span class="mol-name">Schisandrine C</span><span class="mol-hz">143.2421 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Un autre composé naturel de la baie de schisandra." data-en="Another natural compound of the schisandra berry.">Un autre composé naturel de la baie de schisandra.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="sulforaphane">
+      <div class="mol-head"><span class="mol-name">Sulforaphane</span><span class="mol-hz">132.1232 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé des légumes crucifères (brocoli, chou), formé lors de leur découpe." data-en="A compound of cruciferous vegetables (broccoli, cabbage), formed when cut.">Composé des légumes crucifères (brocoli, chou), formé lors de leur découpe.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="tryptophane">
+      <div class="mol-head"><span class="mol-name">Tryptophane</span><span class="mol-hz">152.1961 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Acide aminé essentiel de l'alimentation, précurseur naturel de la sérotonine." data-en="An essential dietary amino acid, a natural precursor of serotonin.">Acide aminé essentiel de l'alimentation, précurseur naturel de la sérotonine.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="valtrate">
+      <div class="mol-head"><span class="mol-name">Valtrate</span><span class="mol-hz">157.4202 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé de la racine de valériane, aux côtés de l'acide valérénique." data-en="A compound of valerian root, alongside valerenic acid.">Composé de la racine de valériane, aux côtés de l'acide valérénique.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="vinpocetine">
+      <div class="mol-head"><span class="mol-name">Vinpocétine</span><span class="mol-hz">130.5842 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Dérivé d'un composé de la petite pervenche (Vinca minor)." data-en="A derivative of a compound from lesser periwinkle (Vinca minor).">Dérivé d'un composé de la petite pervenche (Vinca minor).</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="vitexine">
+      <div class="mol-head"><span class="mol-name">Vitexine</span><span class="mol-hz">161.1129 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Flavonoïde présent dans la passiflore, l'aubépine et le millet." data-en="A flavonoid found in passionflower, hawthorn and millet.">Flavonoïde présent dans la passiflore, l'aubépine et le millet.</p>
+    </div>
+    <div class="mol" data-cat="phyto" data-name="withaferine a">
+      <div class="mol-head"><span class="mol-name">Withaférine A</span><span class="mol-hz">175.3544 Hz</span></div>
+      <span class="mol-cat phyto" data-fr="Phytothérapie" data-en="Phytotherapy">Phytothérapie</span>
+      <p class="mol-desc" data-fr="Composé de l'ashwagandha (Withania somnifera), classée parmi les adaptogènes." data-en="A compound of ashwagandha (Withania somnifera), classed among the adaptogens.">Composé de l'ashwagandha (Withania somnifera), classée parmi les adaptogènes.</p>
+    </div>
+  </div>
+  <p class="nores" id="nores" style="display:none" data-fr="Aucun résultat." data-en="No result.">Aucun résultat.</p>
+
+  <p class="freq-foot" data-fr="Auralis est un appareil de bien-être et de relaxation. Ce n'est pas un dispositif médical : il ne diagnostique, ne traite ni ne guérit aucune maladie. Les fréquences n'ont pas d'effet thérapeutique démontré." data-en="Auralis is a wellness and relaxation device. It is not a medical device: it does not diagnose, treat or cure any illness. The frequencies have no proven therapeutic effect.">Auralis est un appareil de bien-être et de relaxation. Ce n'est pas un dispositif médical : il ne diagnostique, ne traite ni ne guérit aucune maladie. Les fréquences n'ont pas d'effet thérapeutique démontré.</p>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  let curFilter = "all";
+  const search = document.getElementById('search');
+  const mols = Array.from(document.querySelectorAll('.mol'));
+  const nores = document.getElementById('nores');
+  function apply() {
+    const q = search.value.trim().toLowerCase();
+    let n = 0;
+    mols.forEach(m => {
+      const okCat = curFilter === "all" || m.dataset.cat === curFilter;
+      const okQ = !q || m.dataset.name.includes(q);
+      const show = okCat && okQ;
+      m.style.display = show ? "" : "none";
+      if (show) n++;
+    });
+    nores.style.display = n ? "none" : "block";
+  }
+  document.querySelectorAll('.filt').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.filt').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); curFilter = b.dataset.f; apply();
+  }));
+  search.addEventListener('input', apply);
+</script>
+</body>
+</html>
