@@ -265,11 +265,11 @@ footer {
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 760px) {
   #navToggle { display: block; }
-  #navLinks {
+  #nav #navLinks {
     display: none; flex-direction: column; width: 100%;
     padding-top: 14px; gap: 14px;
   }
-  #navLinks.open { display: flex; }
+  #nav #navLinks.open { display: flex; }
   .two-col { grid-template-columns: 1fr; }
   .logo { font-size: 2.6rem; letter-spacing: 6px; }
 }
