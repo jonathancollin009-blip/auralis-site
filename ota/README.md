@@ -35,4 +35,7 @@ URL utilisées par l'appareil (`OTA_BASE` = `https://aura-lis.ca/ota`) :
 
 ## Historique
 - **v6** (2026-07-01) — 1ʳᵉ publication PROD, **pour tester l'OTA de bout en bout**. Embarquait une fréquence de test « Accord 432 Hz » (retirée du code depuis). Compilé headless (arduino-cli), bin octet-identique à un export IDE.
-- **6.1.1** (code prêt le 2026-07-02, **non publié**) — support du versionnage semver, 432 de test retiré (retour à 7 chakras).
+- **6.1.1** (2026-07-02) — versionnage semver, 432 de test retiré.
+- **6.1.3** (2026-07-02) — bounce buffer remis à ×10 (le ×20 cassait l'OTA/TLS).
+- **6.1.4** (2026-07-02) — pixel clock 22 MHz (réduit le glitch écran pendant l'OTA).
+- **6.1.7** (2026-07-03) — **3ᵉ langue : laotien** (script laotien, police Noto Sans Lao avec marques décalées).
