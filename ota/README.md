@@ -30,5 +30,9 @@ URL utilisées par l'appareil (`OTA_BASE` = `https://aura-lis.ca/ota`) :
   est mis en cache et l'URL canonique reste 404 quelques minutes (l'URL avec `?t=...` répond 200). Attendre / re-tester.
 - **Vieux firmware** : un boîtier dont `OTA_BASE` pointait encore vers une IP locale ne verra pas la MAJ → un dernier reflash câble.
 
+## Versionnage (semver depuis 6.1.1)
+`version.txt` contient un **entier encodé** `major*10000 + minor*100 + patch` (ex. `6.1.1` → `60101`). Le firmware compare cet entier et affiche la forme « M.m.p ». Rétro-compatible avec l'ancien schéma entier (v6 = `6`, car `60101 > 6`).
+
 ## Historique
-- **v6** (2026-07-01) — 1ʳᵉ publication PROD. Ajout fréquence **432 Hz** (« Accord 432 Hz ») au mode Chakras. Compilé headless (arduino-cli), bin octet-identique à un export IDE.
+- **v6** (2026-07-01) — 1ʳᵉ publication PROD, **pour tester l'OTA de bout en bout**. Embarquait une fréquence de test « Accord 432 Hz » (retirée du code depuis). Compilé headless (arduino-cli), bin octet-identique à un export IDE.
+- **6.1.1** (code prêt le 2026-07-02, **non publié**) — support du versionnage semver, 432 de test retiré (retour à 7 chakras).
