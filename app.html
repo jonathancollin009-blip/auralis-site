@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#070d1c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Auralis — App (test)</title>
+</head>
+<body>
+<style>
+  :root{
+    --bg:#070d1c; --pan:#111a33; --pan2:#18223f; --line:#26325a; --line2:#334066;
+    --cyan:#7fd8f0; --mauve:#b98fe0; --gold:#e9c96a;
+    --txt:#e8edf8; --dim:#93a2c2; --dimmer:#63719a;
+    --endo:#7fd8f0; --phyto:#8fe0a8; --he:#e6b866; --elem:#b98fe0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0; height:100%}
+  body{background:radial-gradient(900px 560px at 50% -12%, rgba(127,216,240,.09), transparent 60%), var(--bg);
+    color:var(--txt); font:16px/1.5 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; display:flex; justify-content:center}
+  .app{width:100%; max-width:520px; min-height:100%; display:flex; flex-direction:column; position:relative}
+  .view{display:none; flex-direction:column; flex:1}
+  .view.on{display:flex}
+  .home{padding-bottom:74px}
+
+  .bar{position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:12px; padding:16px 18px 12px;
+       background:linear-gradient(180deg,var(--bg),rgba(7,13,28,.86)); backdrop-filter:blur(8px)}
+  .bar .logo{font-size:1rem; font-weight:800; letter-spacing:.3em; margin:0}
+  .bar .logo .a{color:var(--cyan)} .bar .logo .l{color:var(--mauve)}
+  .bar .count{margin-left:auto; font-size:.74rem; color:var(--dimmer); font-variant-numeric:tabular-nums}
+  .langbtn{background:transparent; border:1px solid var(--mauve); color:var(--mauve); border-radius:18px; font:inherit; font-size:.78rem; font-weight:700; padding:5px 12px; cursor:pointer; letter-spacing:.05em}
+  .backbtn{background:var(--pan); border:1px solid var(--line); color:var(--cyan); font:inherit; font-size:1.1rem; width:40px; height:40px; border-radius:11px; cursor:pointer}
+  .bar h2{font-size:1rem; font-weight:700; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+  .pad{padding:0 18px}
+  .search{width:100%; background:var(--pan); border:1px solid var(--line); border-radius:12px; color:var(--txt); font:inherit; font-size:.95rem; padding:12px 14px; margin-bottom:12px}
+  .search::placeholder{color:var(--dimmer)} .search:focus{outline:none; border-color:var(--cyan)}
+  .filters{display:flex; gap:8px; overflow-x:auto; padding-bottom:12px; scrollbar-width:none}
+  .filters::-webkit-scrollbar{display:none}
+  .filters button{flex:0 0 auto; background:var(--pan); border:1px solid var(--line); color:var(--dim); font:inherit; font-size:.82rem; padding:7px 13px; border-radius:20px; cursor:pointer; white-space:nowrap}
+  .filters button[aria-pressed="true"]{background:rgba(127,216,240,.13); border-color:var(--cyan); color:var(--cyan)}
+  .manualbtn{width:100%; background:var(--pan); border:1px dashed var(--line2); color:var(--cyan); font:inherit; font-size:.9rem; font-weight:600; padding:12px; border-radius:12px; cursor:pointer; margin-bottom:12px}
+  .manualbtn:active{background:var(--pan2)}
+
+  .list{padding:2px 18px 20px; overflow-y:auto}
+  .item{display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:var(--pan); border:1px solid var(--line); border-radius:12px; padding:13px 14px; margin-bottom:9px; cursor:pointer; color:var(--txt); font:inherit}
+  .item:active{background:var(--pan2)}
+  .item .dot{flex:0 0 auto; width:9px; height:9px; border-radius:50%}
+  .dot.Endogène{background:var(--endo)} .dot.Phyto{background:var(--phyto)} .dot.Huiles{background:var(--he)} .dot.Élément{background:var(--elem)}
+  .item .nm{flex:1; min-width:0; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .item .cat{font-size:.7rem; color:var(--dimmer); letter-spacing:.04em}
+  .item .hz{font-variant-numeric:tabular-nums; font-weight:700; color:var(--cyan); font-size:.92rem}
+  .item .fav{color:var(--gold); font-size:.9rem}
+  .empty{text-align:center; color:var(--dimmer); padding:40px 20px; font-size:.9rem}
+
+  .pcard{display:flex; align-items:center; gap:14px; width:100%; text-align:left; background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:11px; cursor:pointer; color:var(--txt); font:inherit}
+  .pcard:active{background:var(--pan2)}
+  .pcard .ico{flex:0 0 auto; width:44px; height:44px; border-radius:12px; background:var(--pan2); display:flex; align-items:center; justify-content:center; font-size:1.4rem}
+  .pcard .pt{flex:1; min-width:0} .pcard .pt b{font-size:1.05rem; font-weight:700} .pcard .pt span{display:block; font-size:.78rem; color:var(--dim); margin-top:2px}
+  .pcard .go{color:var(--mauve); font-size:1.2rem}
+
+  .player{flex:1; display:flex; flex-direction:column; padding:6px 20px 30px}
+  .stage{position:relative; display:flex; align-items:center; justify-content:center; margin:6px 0}
+  canvas{display:block; width:200px; height:200px}
+  .readout{position:absolute; text-align:center; pointer-events:none}
+  .hz{font-size:2.4rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums}
+  .hz .u{font-size:.9rem; font-weight:600; color:var(--dim); margin-left:3px}
+  .pcat{font-size:.75rem; color:var(--dim); letter-spacing:.06em; margin-top:5px}
+  .beatline{font-size:.72rem; color:var(--gold); margin-top:3px; min-height:1em}
+
+  .seg{display:flex; background:var(--pan); border:1px solid var(--line); border-radius:12px; padding:4px; margin:10px 0 16px}
+  .seg button{flex:1; background:none; border:0; color:var(--dim); font:inherit; font-size:.9rem; font-weight:600; padding:9px; border-radius:9px; cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--pan2); color:var(--txt); box-shadow:0 0 0 1px var(--line)}
+
+  .label{font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--dimmer)}
+  .ctl{margin-bottom:15px}
+  .ctl .row{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:7px}
+  .ctl .row .v{font-variant-numeric:tabular-nums; font-weight:700}
+  input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:6px; background:linear-gradient(90deg,var(--cyan),var(--mauve)); outline:none; margin:0}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:#fff; border:3px solid var(--cyan); cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:20px; height:20px; border-radius:50%; background:#fff; border:3px solid var(--cyan); cursor:pointer}
+  .hint.head{font-size:.76rem; color:var(--gold); margin:8px 0 0}
+
+  .mInput{width:100%; text-align:center; background:var(--pan); border:1px solid var(--cyan); border-radius:12px; color:var(--txt); font:inherit; font-size:1.8rem; font-weight:800; font-variant-numeric:tabular-nums; padding:12px; margin-bottom:10px}
+  .mInput:focus{outline:none; box-shadow:0 0 0 3px rgba(127,216,240,.25)}
+  .fine{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px}
+  .fine button{flex:1 1 17%; background:var(--pan); border:1px solid var(--line); color:var(--txt); font:inherit; font-size:.8rem; font-weight:700; font-variant-numeric:tabular-nums; padding:11px 2px; border-radius:9px; cursor:pointer}
+  .fine button:active{background:var(--pan2)}
+
+  .timer{display:flex; gap:7px; margin-bottom:16px}
+  .timer button{flex:1; background:var(--pan); border:1px solid var(--line); color:var(--dim); font:inherit; font-size:.82rem; padding:9px 0; border-radius:9px; cursor:pointer; font-variant-numeric:tabular-nums}
+  .timer button[aria-pressed="true"]{background:rgba(233,201,106,.13); border-color:var(--gold); color:var(--gold)}
+  .tclock{text-align:center; font-variant-numeric:tabular-nums; color:var(--gold); font-weight:700; min-height:1.2em; margin:-8px 0 14px; font-size:.95rem}
+
+  .actions{margin-top:auto; display:flex; gap:10px}
+  .play{flex:1; padding:17px; border:0; border-radius:15px; font:inherit; font-size:1.1rem; font-weight:800; cursor:pointer; color:#04101f; background:linear-gradient(96deg,var(--cyan),var(--mauve))}
+  .play:active{transform:translateY(1px)}
+  .play.on{background:linear-gradient(96deg,#e8836f,#e6b866); color:#2a0f08}
+  .favbtn{flex:0 0 auto; width:58px; border-radius:15px; border:1px solid var(--line2); background:var(--pan); color:var(--dimmer); font-size:1.4rem; cursor:pointer}
+  .favbtn.on{color:var(--gold); border-color:var(--gold)}
+  .disc{font-size:.7rem; color:var(--dimmer); text-align:center; margin-top:16px; line-height:1.5}
+
+  .prog{height:8px; border-radius:6px; background:var(--pan); overflow:hidden; margin:4px 0 6px}
+  .prog i{display:block; height:100%; background:linear-gradient(90deg,var(--cyan),var(--mauve)); width:0; transition:width .5s linear}
+  .steps{margin:14px 0 0; padding:0; list-style:none}
+  .steps li{display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; margin-bottom:7px; font-size:.9rem; color:var(--dim)}
+  .steps li.active{border-color:var(--cyan); background:rgba(127,216,240,.08); color:var(--txt)}
+  .steps li.done{opacity:.5}
+  .steps li .si{width:22px; height:22px; border-radius:50%; background:var(--pan2); font-size:.72rem; font-weight:700; display:flex; align-items:center; justify-content:center; color:var(--dim); flex:0 0 auto}
+  .steps li.active .si{background:var(--cyan); color:#04101f}
+  .steps li .sn{flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:600}
+  .steps li .sh{font-variant-numeric:tabular-nums; color:var(--cyan); font-size:.82rem}
+  .steps li .sm{font-variant-numeric:tabular-nums; color:var(--dimmer); font-size:.75rem}
+
+  .tabbar{position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:520px; display:flex; background:rgba(10,17,34,.94); backdrop-filter:blur(10px); border-top:1px solid var(--line); z-index:10}
+  .tabbar.hide{display:none}
+  .tabbar button{flex:1; background:none; border:0; color:var(--dimmer); font:inherit; font-size:.78rem; font-weight:600; padding:11px 0 14px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px}
+  .tabbar button .ti{font-size:1.25rem; line-height:1}
+  .tabbar button[aria-pressed="true"]{color:var(--cyan)}
+</style>
+
+<div class="app">
+  <section class="view on home" id="vLib">
+    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><span class="count" id="count"></span><button class="langbtn" id="langBtn">FR</button></div>
+    <div class="pad">
+      <input class="search" id="search" type="search" aria-label="Rechercher">
+      <div class="filters" id="filters"></div>
+      <button class="manualbtn" id="manualBtn"></button>
+    </div>
+    <div class="list" id="list"></div>
+  </section>
+
+  <section class="view home" id="vProtos">
+    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><span class="count" id="protHead"></span><button class="langbtn" id="langBtn2">FR</button></div>
+    <div class="list" id="protoList"></div>
+  </section>
+
+  <section class="view" id="vPlay">
+    <div class="bar"><button class="backbtn" id="back" aria-label="Retour">‹</button><h2 id="pTitle">—</h2></div>
+    <div class="player">
+      <div class="stage"><canvas id="viz" width="400" height="400" aria-hidden="true"></canvas>
+        <div class="readout"><div class="hz"><span id="hzval">0</span><span class="u">Hz</span></div><div class="pcat" id="pcat"></div><div class="beatline" id="beatline"></div></div></div>
+      <div id="manualWrap" hidden>
+        <p class="label" id="hzLabel" style="margin-bottom:8px"></p>
+        <input class="mInput" id="mInput" type="number" inputmode="decimal" step="0.01" min="20" max="1000" value="100.00" aria-label="Hz">
+        <div class="fine">
+          <button data-d="-100">−100</button><button data-d="-10">−10</button><button data-d="-1">−1</button><button data-d="-0.1">−0.1</button><button data-d="-0.01">−0.01</button>
+          <button data-d="0.01">+0.01</button><button data-d="0.1">+0.1</button><button data-d="1">+1</button><button data-d="10">+10</button><button data-d="100">+100</button>
+        </div>
+      </div>
+      <div class="seg" role="group"><button id="mSimple" aria-pressed="true"></button><button id="mBin" aria-pressed="false"></button></div>
+      <div id="beatWrap" class="ctl" hidden>
+        <div class="row"><span class="label" id="beatLabel"></span><span class="v"><span id="beatLbl">6.0</span> Hz</span></div>
+        <input type="range" id="beat" min="0.5" max="20" step="0.5" value="6"><div class="hint head" id="binHint"></div>
+      </div>
+      <div class="ctl"><div class="row"><span class="label" id="volLabel"></span><span class="v"><span id="volLbl">50</span> %</span></div><input type="range" id="vol" min="0" max="100" step="1" value="50"></div>
+      <p class="label" id="timerLabel" style="margin-bottom:8px"></p>
+      <div class="timer" id="timer"></div><div class="tclock" id="tclock"></div>
+      <div class="actions"><button class="play" id="play"></button><button class="favbtn" id="fav">☆</button></div>
+      <p class="disc" id="discSingle"></p>
+    </div>
+  </section>
+
+  <section class="view" id="vSeq">
+    <div class="bar"><button class="backbtn" id="sBack" aria-label="Retour">‹</button><h2 id="sTitle">—</h2></div>
+    <div class="player">
+      <div class="stage"><canvas id="sViz" width="400" height="400" aria-hidden="true"></canvas>
+        <div class="readout"><div class="hz"><span id="sHz">0</span><span class="u">Hz</span></div><div class="pcat" id="sStep"></div><div class="beatline" id="sClock"></div></div></div>
+      <div class="prog"><i id="sBar"></i></div>
+      <div class="ctl"><div class="row"><span class="label" id="sVolLabel"></span><span class="v"><span id="sVolLbl">50</span> %</span></div><input type="range" id="sVol" min="0" max="100" step="1" value="50"></div>
+      <ul class="steps" id="sSteps"></ul>
+      <div class="actions"><button class="play" id="sPlay"></button></div>
+      <p class="disc" id="discSeq"></p>
+    </div>
+  </section>
+
+  <nav class="tabbar" id="tabbar">
+    <button data-t="lib" aria-pressed="true"><span class="ti">🎵</span><span class="tl" id="tabFreq"></span></button>
+    <button data-t="protos" aria-pressed="false"><span class="ti">✨</span><span class="tl" id="tabProto"></span></button>
+  </nav>
+</div>
+
+<script>
+var LIB=[{n:"Acétylcholine",f:108.9612,c:"Endogène"},{n:"Adénosine",f:199.1573,c:"Endogène"},{n:"Alpha-GPC",f:191.69,c:"Endogène"},{n:"ATP",f:188.9848,c:"Endogène"},{n:"Citicoline",f:181.9572,c:"Endogène"},{n:"Coenzyme Q10",f:160.8483,c:"Endogène"},{n:"Créatine",f:195.446,c:"Endogène"},{n:"Dopamine",f:114.1555,c:"Endogène"},{n:"GABA",f:153.6978,c:"Endogène"},{n:"Glutathion",f:114.5143,c:"Endogène"},{n:"Glycine",f:111.8855,c:"Endogène"},{n:"Histamine",f:165.6663,c:"Endogène"},{n:"L-Carnitine",f:120.1315,c:"Endogène"},{n:"Mélatonine",f:173.1023,c:"Endogène"},{n:"NAD+",f:123.6032,c:"Endogène"},{n:"NADH",f:123.9777,c:"Endogène"},{n:"Oxyde nitrique",f:89.4583,c:"Endogène"},{n:"PQQ",f:123.0424,c:"Endogène"},{n:"Sérotonine",f:131.322,c:"Endogène"},{n:"Taurine",f:186.5329,c:"Endogène"},{n:"Vitamine B12",f:126.2586,c:"Endogène"},{n:"Vitamine D",f:143.3233,c:"Endogène"},{n:"5-HTP",f:164.1237,c:"Phyto"},{n:"Acide carnosique",f:123.8697,c:"Phyto"},{n:"Acide ganodérique A",f:192.5209,c:"Phyto"},{n:"Acide rosmarinique",f:134.2583,c:"Phyto"},{n:"Acide valérénique",f:174.6315,c:"Phyto"},{n:"AKBA",f:191.0491,c:"Phyto"},{n:"Apigénine",f:100.6965,c:"Phyto"},{n:"Asiaticoside",f:178.693,c:"Phyto"},{n:"Astragaloside IV",f:146.2473,c:"Phyto"},{n:"Bacoside A3",f:143.2719,c:"Phyto"},{n:"Bilobalide",f:121.5855,c:"Phyto"},{n:"Caféine",f:144.7177,c:"Phyto"},{n:"Chrysine",f:189.4692,c:"Phyto"},{n:"Cordycépine",f:187.2335,c:"Phyto"},{n:"Curcumine",f:137.2653,c:"Phyto"},{n:"EGCG",f:170.7973,c:"Phyto"},{n:"Faradiol",f:164.9658,c:"Phyto"},{n:"Ginkgolide A",f:152.1775,c:"Phyto"},{n:"Ginkgolide B",f:158.1394,c:"Phyto"},{n:"Ginkgolide C",f:164.1013,c:"Phyto"},{n:"Ginsénoside Rb1",f:103.3356,c:"Phyto"},{n:"Ginsénoside Rg1",f:149.2357,c:"Phyto"},{n:"Ginsénoside Rg3",f:146.2547,c:"Phyto"},{n:"Honokiol",f:198.4791,c:"Phyto"},{n:"Huperzine A",f:180.586,c:"Phyto"},{n:"Isovitexine",f:161.1129,c:"Phyto"},{n:"L-Théanine",f:129.8204,c:"Phyto"},{n:"L-Tyrosine",f:135.0296,c:"Phyto"},{n:"Lutéine",f:105.9858,c:"Phyto"},{n:"Macamide",f:128.7621,c:"Phyto"},{n:"Madecassoside",f:181.6759,c:"Phyto"},{n:"Magnolol",f:198.4791,c:"Phyto"},{n:"Pipérine",f:106.323,c:"Phyto"},{n:"Quercétine",f:112.6188,c:"Phyto"},{n:"Resvératrol",f:170.093,c:"Phyto"},{n:"Rosavine",f:159.6411,c:"Phyto"},{n:"Salidroside",f:111.8974,c:"Phyto"},{n:"Schisandrine A",f:155.1994,c:"Phyto"},{n:"Schisandrine B",f:149.2226,c:"Phyto"},{n:"Schisandrine C",f:143.2421,c:"Phyto"},{n:"Sulforaphane",f:132.1232,c:"Phyto"},{n:"Tryptophane",f:152.1961,c:"Phyto"},{n:"Valtrate",f:157.4202,c:"Phyto"},{n:"Vinpocétine",f:130.5842,c:"Phyto"},{n:"Vitexine",f:161.1129,c:"Phyto"},{n:"Withaférine A",f:175.3544,c:"Phyto"},{n:"Échinacoside",f:146.5752,c:"Phyto"},{n:"Érinacine A",f:155.2143,c:"Phyto"},{n:"1,8-Cinéole",f:114.9529,c:"Huiles ess."},{n:"Acétate de linalyle",f:146.2827,c:"Huiles ess."},{n:"Alpha-Pinène",f:101.5237,c:"Huiles ess."},{n:"Bisabolol",f:165.7185,c:"Huiles ess."},{n:"Camphre",f:113.4475,c:"Huiles ess."},{n:"Carvacrol",f:111.9496,c:"Huiles ess."},{n:"Cinnamaldéhyde",f:196.9812,c:"Huiles ess."},{n:"Citronellal",f:114.9529,c:"Huiles ess."},{n:"Eugénol",f:122.368,c:"Huiles ess."},{n:"Géraniol",f:114.9529,c:"Huiles ess."},{n:"Limonène",f:101.5237,c:"Huiles ess."},{n:"Linalol",f:114.9529,c:"Huiles ess."},{n:"Menthol",f:116.4583,c:"Huiles ess."},{n:"Thymol",f:111.9496,c:"Huiles ess."},{n:"Azote",f:83.5262,c:"Élément"},{n:"Bore",f:64.454,c:"Élément"},{n:"Calcium",f:59.735,c:"Élément"},{n:"Carbone",f:71.604,c:"Élément"},{n:"Chrome",f:77.499,c:"Élément"},{n:"Cuivre",f:94.71,c:"Élément"},{n:"Eau Structurée (H3O2) - R.Ruhlmann",f:104.3988,c:"Élément"},{n:"Fer",f:83.2355,c:"Élément"},{n:"Fluor",f:113.266,c:"Élément"},{n:"Hélium",f:95.452,c:"Élément"},{n:"Iode",f:94.572,c:"Élément"},{n:"Lithium",f:82.765,c:"Élément"},{n:"Magnésium",f:72.452,c:"Élément"},{n:"Manganèse",f:83.235,c:"Élément"},{n:"Molybdène",f:71.505,c:"Élément"},{n:"Or",f:73.233,c:"Élément"},{n:"Oxygène",f:95.387,c:"Élément"},{n:"Phosphore",f:92.322,c:"Élément"},{n:"Platine",f:72.532,c:"Élément"},{n:"Potassium",f:116.55,c:"Élément"},{n:"Silicium",f:83.721,c:"Élément"},{n:"Sodium",f:68.53,c:"Élément"},{n:"Soufre",f:95.584,c:"Élément"},{n:"Strontium",f:87.62,c:"Élément"},{n:"Sélénium",f:117.706,c:"Élément"},{n:"Vanadium",f:75.927,c:"Élément"},{n:"Xénon",f:97.8405,c:"Élément"},{n:"Zinc",f:97.4475,c:"Élément"}];
+var PROTOS=[
+ {fr:"Focus",en:"Focus",es:"Concentración",ic:"🎯",s:[{n:"Acétylcholine",f:108.96117,m:6},{n:"Huperzine A",f:180.58595,m:6},{n:"Bacoside A3",f:143.27191,m:6},{n:"L-Tyrosine",f:135.02958,m:6},{n:"Caféine",f:144.71767,m:6},{n:"Ginkgolide B",f:158.1394,m:6}]},
+ {fr:"Anti-stress",en:"Anti-stress",es:"Antiestrés",ic:"🌿",s:[{n:"L-Théanine",f:129.82037,m:6},{n:"Withaférine A",f:175.35438,m:6},{n:"Apigénine",f:100.69649,m:6},{n:"GABA",f:153.69778,m:6},{n:"Linalol",f:114.95288,m:6},{n:"Sérotonine",f:131.32203,m:6}]},
+ {fr:"Sommeil",en:"Sleep",es:"Sueño",ic:"🌙",s:[{n:"Mélatonine",f:173.10228,m:6},{n:"Glycine",f:111.88549,m:6},{n:"Acide valérénique",f:174.6315,m:6},{n:"Apigénine",f:100.69649,m:6},{n:"Honokiol",f:198.4791,m:6},{n:"Linalol",f:114.95288,m:6}]},
+ {fr:"Énergie",en:"Energy",es:"Energía",ic:"⚡",s:[{n:"Coenzyme Q10",f:160.84834,m:6},{n:"Salidroside",f:111.89741,m:6},{n:"Ginsénoside Rg1",f:149.23567,m:6},{n:"L-Carnitine",f:120.13154,m:6},{n:"Cordycépine",f:187.23347,m:6},{n:"PQQ",f:123.04244,m:6}]},
+ {fr:"Récupération",en:"Recovery",es:"Recuperación",ic:"🛠️",s:[{n:"Glutathion",f:114.51431,m:6},{n:"Curcumine",f:137.2653,m:6},{n:"Asiaticoside",f:178.69305,m:6},{n:"Resvératrol",f:170.09301,m:6},{n:"Astragaloside IV",f:146.24727,m:6},{n:"Taurine",f:186.53295,m:6}]},
+ {fr:"Clarté mentale",en:"Mental Clarity",es:"Claridad mental",ic:"💡",s:[{n:"Bilobalide",f:121.5855,m:6},{n:"Acide carnosique",f:123.86965,m:6},{n:"Schisandrine B",f:149.22263,m:6},{n:"EGCG",f:170.79726,m:6},{n:"Érinacine A",f:155.21434,m:6},{n:"Sulforaphane",f:132.12316,m:6}]},
+ {fr:"Humeur",en:"Mood",es:"Ánimo",ic:"😊",s:[{n:"Tryptophane",f:152.19613,m:6},{n:"Sérotonine",f:131.32203,m:6},{n:"Dopamine",f:114.15548,m:6},{n:"Safranal",f:111.94958,m:6},{n:"Salidroside",f:111.89741,m:6},{n:"Curcumine",f:137.2653,m:6}]},
+ {fr:"Vitalité",en:"Vitality",es:"Vitalidad",ic:"🔥",s:[{n:"Ginsénoside Rg1",f:149.23567,m:6},{n:"Astragaloside IV",f:146.24727,m:6},{n:"Échinacoside",f:146.57517,m:6},{n:"Acide ganodérique A",f:192.52093,m:6},{n:"EGCG",f:170.79726,m:6},{n:"Quercétine",f:112.6188,m:6}]},
+ {fr:"Chakras",en:"Chakras",es:"Chakras",ic:"🌀",s:[{n:"Chakra Racine",f:108.0,m:6},{n:"Chakra Sacré",f:117.0,m:6},{n:"Plexus Solaire",f:126.0,m:6},{n:"Chakra du Coeur",f:144.0,m:6},{n:"Chakra de la Gorge",f:162.0,m:6},{n:"Troisième Oeil",f:171.0,m:6},{n:"Chakra Couronne",f:189.0,m:6}]}];
+
+var T={
+ search_ph:{fr:"Rechercher une fréquence…",en:"Search a frequency…",es:"Buscar una frecuencia…"},
+ f_Toutes:{fr:"Toutes",en:"All",es:"Todas"},
+ "f_★ Favoris":{fr:"★ Favoris",en:"★ Favorites",es:"★ Favoritos"},
+ "f_Endogène":{fr:"Endogène",en:"Endogenous",es:"Endógeno"},
+ f_Phyto:{fr:"Phyto",en:"Phyto",es:"Fito"},
+ "f_Huiles ess.":{fr:"Huiles ess.",en:"Ess. oils",es:"Aceites es."},
+ "f_Élément":{fr:"Élément",en:"Element",es:"Elemento"},
+ manual_btn:{fr:"⌨  Entrer une fréquence manuellement",en:"⌨  Enter a frequency manually",es:"⌨  Introducir una frecuencia"},
+ none_freq:{fr:"Aucune fréquence.",en:"No frequency.",es:"Ninguna frecuencia."},
+ none_fav:{fr:"Ajoute des favoris avec l'étoile ☆.",en:"Add favorites with the ☆ star.",es:"Añade favoritos con la estrella ☆."},
+ hz_label:{fr:"Fréquence (Hz)",en:"Frequency (Hz)",es:"Frecuencia (Hz)"},
+ mode_simple:{fr:"Simple",en:"Simple",es:"Simple"},
+ mode_bin:{fr:"Binaural 🎧",en:"Binaural 🎧",es:"Binaural 🎧"},
+ beat_label:{fr:"Battement",en:"Beat",es:"Batido"},
+ bin_hint:{fr:"Le mode binaural nécessite un casque.",en:"Binaural mode requires headphones.",es:"El modo binaural requiere auriculares."},
+ volume:{fr:"Volume",en:"Volume",es:"Volumen"},
+ timer_label:{fr:"Minuteur",en:"Timer",es:"Temporizador"},
+ remaining:{fr:"restant",en:"left",es:"restante"},
+ done:{fr:"Terminé",en:"Done",es:"Terminado"},
+ play:{fr:"▶  Écouter",en:"▶  Play",es:"▶  Escuchar"},
+ stop:{fr:"■  Arrêter",en:"■  Stop",es:"■  Detener"},
+ disc_single:{fr:"Bien-être et relaxation — pas un usage médical. Commence à volume bas.",en:"Wellness and relaxation — not medical use. Start at low volume.",es:"Bienestar y relajación — no es un uso médico. Empieza a volumen bajo."},
+ manual_title:{fr:"Fréquence manuelle",en:"Manual frequency",es:"Frecuencia manual"},
+ manual_cat:{fr:"Saisie précise",en:"Precise entry",es:"Entrada precisa"},
+ protos_head:{fr:"Protocoles bien-être",en:"Wellness protocols",es:"Protocolos de bienestar"},
+ steps:{fr:"étapes",en:"steps",es:"etapas"},
+ seq_done:{fr:"Terminé ✓",en:"Done ✓",es:"Terminado ✓"},
+ seq_start:{fr:"▶  Démarrer",en:"▶  Start",es:"▶  Iniciar"},
+ disc_seq:{fr:"Bien-être et relaxation — pas un usage médical. Écoute au casque ou sur enceintes.",en:"Wellness and relaxation — not medical use. Listen with headphones or speakers.",es:"Bienestar y relajación — no es un uso médico. Escucha con auriculares o altavoces."},
+ tab_freq:{fr:"Fréquences",en:"Frequencies",es:"Frecuencias"},
+ tab_proto:{fr:"Protocoles",en:"Protocols",es:"Protocolos"}
+};
+
+(function(){
+  "use strict";
+  var $=function(id){return document.getElementById(id);};
+  var LANGS=["fr","en","es"], NEXT={fr:"EN",en:"ES",es:"FR"};
+  // Détecte la langue du téléphone au 1er lancement (fr/en/es), défaut anglais pour les autres.
+  function detectLang(){
+    var navs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||navigator.userLanguage||"en"];
+    for(var i=0;i<navs.length;i++){ var l=(navs[i]||"").toLowerCase();
+      if(l.indexOf("fr")===0)return "fr"; if(l.indexOf("es")===0)return "es"; if(l.indexOf("en")===0)return "en"; }
+    return "en";
+  }
+  var lang=null; try{ lang=localStorage.getItem("auralis_lang"); }catch(e){}
+  if(!lang || LANGS.indexOf(lang)<0){ lang=detectLang(); }   // pas de choix sauvegardé → langue du téléphone
+  function t(k){ return (T[k]&&(T[k][lang]||T[k].fr))||k; }
+  function pname(p){ return p[lang]||p.fr; }
+
+  var CATS=["Toutes","★ Favoris","Endogène","Phyto","Huiles ess.","Élément"];
+  var state={filter:"Toutes",q:"",cur:null,mode:"simple",beat:6,vol:0.5,playing:false,timerMin:0};
+  var favs={}; try{favs=JSON.parse(localStorage.getItem("auralis_favs")||"{}");}catch(e){favs={};}
+  function saveFavs(){try{localStorage.setItem("auralis_favs",JSON.stringify(favs));}catch(e){}}
+
+  var ctx=null;
+  function ensureCtx(){ if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==="suspended")ctx.resume(); return ctx; }
+
+  // ---------- langue ----------
+  function applyLang(){
+    $("langBtn").textContent=NEXT[lang]; $("langBtn2").textContent=NEXT[lang];
+    $("search").placeholder=t("search_ph");
+    $("manualBtn").textContent=t("manual_btn");
+    $("protHead").textContent=t("protos_head");
+    $("hzLabel").textContent=t("hz_label");
+    $("mSimple").textContent=t("mode_simple"); $("mBin").textContent=t("mode_bin");
+    $("beatLabel").textContent=t("beat_label"); $("binHint").textContent=t("bin_hint");
+    $("volLabel").textContent=t("volume"); $("sVolLabel").textContent=t("volume");
+    $("timerLabel").textContent=t("timer_label");
+    $("discSingle").textContent=t("disc_single"); $("discSeq").textContent=t("disc_seq");
+    $("tabFreq").textContent=t("tab_freq"); $("tabProto").textContent=t("tab_proto");
+    Array.prototype.forEach.call(fEl.children,function(b){ b.textContent=t("f_"+b.getAttribute("data-c")); });
+    setBtn(state.playing); renderLib(); renderProtos();
+  }
+  function cycleLang(){ lang=LANGS[(LANGS.indexOf(lang)+1)%3]; try{localStorage.setItem("auralis_lang",lang);}catch(e){} applyLang(); }
+  $("langBtn").addEventListener("click",cycleLang); $("langBtn2").addEventListener("click",cycleLang);
+
+  // ---------- nav ----------
+  function show(v){ ["vLib","vProtos","vPlay","vSeq"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
+    var home=(v==="lib"||v==="protos"); $("tabbar").classList.toggle("hide",!home);
+    if(home)Array.prototype.forEach.call($("tabbar").children,function(b){ b.setAttribute("aria-pressed",b.getAttribute("data-t")===v?"true":"false"); }); }
+  function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+  Array.prototype.forEach.call($("tabbar").children,function(b){ b.addEventListener("click",function(){ var tb=b.getAttribute("data-t"); if(tb==="lib"){stopSeq(false);show("lib");}else{stopSingle(false);show("protos");} }); });
+
+  // ---------- bibliothèque ----------
+  var fEl=$("filters");
+  CATS.forEach(function(c){ var b=document.createElement("button"); b.setAttribute("data-c",c); b.setAttribute("aria-pressed",c===state.filter?"true":"false");
+    b.addEventListener("click",function(){ state.filter=c; Array.prototype.forEach.call(fEl.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-c")===c?"true":"false");}); renderLib(); }); fEl.appendChild(b); });
+  $("search").addEventListener("input",function(){ state.q=this.value.toLowerCase(); renderLib(); });
+  function matches(m){ if(state.filter==="★ Favoris"&&!favs[m.n])return false; if(state.filter!=="Toutes"&&state.filter!=="★ Favoris"&&m.c!==state.filter)return false; if(state.q&&m.n.toLowerCase().indexOf(state.q)<0)return false; return true; }
+  function catShort(c){ return c==="Huiles ess."?"Huiles":c; }
+  function renderLib(){
+    var list=$("list"); list.innerHTML=""; var arr=LIB.filter(matches);
+    $("count").textContent=arr.length+" / "+LIB.length;
+    if(!arr.length){ list.innerHTML='<p class="empty">'+t("none_freq")+(state.filter==="★ Favoris"?'<br>'+t("none_fav"):'')+'</p>'; return; }
+    arr.forEach(function(m){ var b=document.createElement("button"); b.className="item";
+      b.innerHTML='<span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span>'+(favs[m.n]?'<span class="fav">★</span>':'')+'<span class="hz">'+m.f.toFixed(2)+' Hz</span>';
+      b.addEventListener("click",function(){ openPlayer(m); }); list.appendChild(b); });
+  }
+  $("back").addEventListener("click",function(){ stopSingle(false); show("lib"); });
+
+  function openPlayer(m){
+    state.cur=m; state.mode="simple"; setMode("simple",true);
+    var manual=!!m.manual; $("manualWrap").hidden=!manual; $("fav").style.display=manual?"none":"";
+    $("pTitle").textContent=manual?t("manual_title"):m.n; $("pcat").textContent=manual?t("manual_cat"):t("f_"+m.c);
+    $("hzval").textContent=m.f.toFixed(2); if(manual)$("mInput").value=m.f.toFixed(2);
+    updFav(); refresh(); setTimer(0); show("play");
+  }
+  var lastManual=100.00; try{lastManual=parseFloat(localStorage.getItem("auralis_manual"))||100.00;}catch(e){}
+  $("manualBtn").addEventListener("click",function(){ openPlayer({n:"Fréquence manuelle",f:lastManual,c:"Manuel",manual:true}); });
+  function setManual(v){ v=Math.max(20,Math.min(1000,Math.round(v*100)/100)); state.cur.f=v; lastManual=v; try{localStorage.setItem("auralis_manual",v);}catch(e){}
+    $("hzval").textContent=v.toFixed(2); if(document.activeElement!==$("mInput"))$("mInput").value=v.toFixed(2); live(); }
+  $("mInput").addEventListener("input",function(){ var v=parseFloat(this.value); if(!isNaN(v))setManual(v); });
+  Array.prototype.forEach.call(document.querySelectorAll(".fine button"),function(b){ b.addEventListener("click",function(){ if(state.cur&&state.cur.manual)setManual(state.cur.f+parseFloat(b.getAttribute("data-d"))); }); });
+
+  $("mSimple").addEventListener("click",function(){ setMode("simple"); });
+  $("mBin").addEventListener("click",function(){ setMode("binaural"); });
+  function setMode(m,silent){ state.mode=m; $("mSimple").setAttribute("aria-pressed",m==="simple"?"true":"false"); $("mBin").setAttribute("aria-pressed",m==="binaural"?"true":"false"); $("beatWrap").hidden=(m!=="binaural"); refresh(); if(!silent&&state.playing){stopSingle(true);startSingle();} }
+  $("beat").addEventListener("input",function(){ state.beat=parseFloat(this.value); refresh(); live(); });
+  $("vol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("volLbl").textContent=this.value; $("sVol").value=this.value; $("sVolLbl").textContent=this.value; if(sMaster&&ctx)sMaster.gain.setTargetAtTime(state.playing?state.vol:0,ctx.currentTime,0.02); });
+  function refresh(){ if(!state.cur)return; $("beatLbl").textContent=state.beat.toFixed(1); $("beatline").textContent=state.mode==="binaural"?(t("beat_label").toLowerCase()+" "+state.beat.toFixed(1)+" Hz"):""; }
+  function updFav(){ var on=state.cur&&favs[state.cur.n]; $("fav").classList.toggle("on",!!on); $("fav").textContent=on?"★":"☆"; }
+  $("fav").addEventListener("click",function(){ if(!state.cur)return; if(favs[state.cur.n])delete favs[state.cur.n]; else favs[state.cur.n]=1; saveFavs(); updFav(); });
+
+  var tEl=$("timer"),OPTS=[0,5,10,15,20,30],tHandle=null,tRemain=0;
+  OPTS.forEach(function(o){ var b=document.createElement("button"); b.textContent=o===0?"∞":o+"m"; b.addEventListener("click",function(){ setTimer(o); if(state.playing)armTimer(); }); tEl.appendChild(b); });
+  function setTimer(o){ state.timerMin=o; Array.prototype.forEach.call(tEl.children,function(x,i){x.setAttribute("aria-pressed",OPTS[i]===o?"true":"false");}); if(!state.playing||o===0)$("tclock").textContent=""; }
+  function armTimer(){ clearInterval(tHandle);tHandle=null; if(state.timerMin===0){$("tclock").textContent="";return;} tRemain=state.timerMin*60; tTick(); tHandle=setInterval(tTick,1000); }
+  function tTick(){ if(tRemain<=0){clearInterval(tHandle);tHandle=null;stopSingle(false);$("tclock").textContent=t("done");return;} var mm=Math.floor(tRemain/60),ss=tRemain%60; $("tclock").textContent=mm+":"+(ss<10?"0":"")+ss+" "+t("remaining"); tRemain--; }
+
+  var sMaster=null,sOscs=[];
+  function startSingle(){ if(!state.cur)return; ensureCtx(); var ti=ctx.currentTime,f=state.cur.f;
+    sMaster=ctx.createGain(); sMaster.gain.setValueAtTime(0.0001,ti); sMaster.gain.linearRampToValueAtTime(state.vol,ti+0.05); sMaster.connect(ctx.destination); sOscs=[];
+    if(state.mode==="simple"){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(f,ti);o.connect(sMaster);o.start();sOscs.push(o); }
+    else{ var oa=ctx.createOscillator();oa.type="sine";oa.frequency.setValueAtTime(f,ti); var ob=ctx.createOscillator();ob.type="sine";ob.frequency.setValueAtTime(f+state.beat,ti);
+      var pa=ctx.createStereoPanner();pa.pan.setValueAtTime(-1,ti); var pb=ctx.createStereoPanner();pb.pan.setValueAtTime(1,ti); oa.connect(pa);pa.connect(sMaster);ob.connect(pb);pb.connect(sMaster);oa.start();ob.start();sOscs.push(oa,ob); }
+    state.playing=true; setBtn(true); armTimer(); }
+  function stopSingle(immediate){ clearInterval(tHandle);tHandle=null; if(!ctx||!sMaster){state.playing=false;setBtn(false);return;}
+    var ti=ctx.currentTime,m=sMaster,os=sOscs; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
+    setTimeout(function(){os.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?30:90);
+    sMaster=null;sOscs=[];state.playing=false;setBtn(false); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; }
+  function live(){ if(!state.playing||!ctx||!state.cur)return; var ti=ctx.currentTime,f=state.cur.f; if(state.mode==="simple"&&sOscs[0])sOscs[0].frequency.setTargetAtTime(f,ti,0.03); else if(sOscs[0]&&sOscs[1]){sOscs[0].frequency.setTargetAtTime(f,ti,0.03);sOscs[1].frequency.setTargetAtTime(f+state.beat,ti,0.03);} }
+  function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); }
+  $("play").addEventListener("click",function(){ if(state.playing)stopSingle(false); else startSingle(); });
+
+  // ---------- protocoles ----------
+  function renderProtos(){ var el=$("protoList"); el.innerHTML="";
+    PROTOS.forEach(function(p,i){ var tot=p.s.reduce(function(a,x){return a+x.m;},0);
+      var b=document.createElement("button"); b.className="pcard";
+      b.innerHTML='<span class="ico">'+p.ic+'</span><span class="pt"><b>'+pname(p)+'</b><span>'+p.s.length+' '+t("steps")+' · '+tot+' min</span></span><span class="go">›</span>';
+      b.addEventListener("click",function(){ openSeq(i); }); el.appendChild(b); }); }
+  var seq={p:null,idx:0,remain:0,timer:null,master:null,osc:null,playing:false,total:0,elapsed:0};
+  function openSeq(i){ stopSeq(true); seq.p=PROTOS[i]; seq.idx=0; seq.playing=false; seq.total=seq.p.s.reduce(function(a,x){return a+x.m*60;},0); seq.elapsed=0;
+    $("sTitle").textContent=pname(seq.p);
+    var st=$("sSteps"); st.innerHTML="";
+    seq.p.s.forEach(function(x,k){ var li=document.createElement("li"); li.id="st"+k; li.innerHTML='<span class="si">'+(k+1)+'</span><span class="sn">'+x.n+'</span><span class="sh">'+x.f.toFixed(2)+' Hz</span><span class="sm">'+x.m+'m</span>'; st.appendChild(li); });
+    var s0=seq.p.s[0]; $("sHz").textContent=s0.f.toFixed(2); $("sStep").textContent="1/"+seq.p.s.length+" · "+s0.n; $("sClock").textContent=""; $("sBar").style.width="0%"; highlight(0); setSeqBtn(false); show("seq"); }
+  function highlight(active){ seq.p.s.forEach(function(x,k){ var li=$("st"+k); if(!li)return; li.classList.toggle("active",k===active); li.classList.toggle("done",k<active); }); }
+  $("sBack").addEventListener("click",function(){ stopSeq(false); show("protos"); });
+  $("sVol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("sVolLbl").textContent=this.value; $("vol").value=this.value; $("volLbl").textContent=this.value; if(seq.master&&ctx)seq.master.gain.setTargetAtTime(seq.playing?state.vol:0,ctx.currentTime,0.02); });
+  $("sPlay").addEventListener("click",function(){ if(seq.playing)stopSeq(false); else startSeq(); });
+  function setSeqBtn(on){ var b=$("sPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("seq_start"); }
+  function startSeq(){ if(!seq.p)return; ensureCtx(); var ti=ctx.currentTime; if(seq.idx>=seq.p.s.length){seq.idx=0;seq.elapsed=0;}
+    seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(ctx.destination);
+    seq.osc=ctx.createOscillator(); seq.osc.type="sine"; seq.osc.frequency.setValueAtTime(seq.p.s[seq.idx].f,ti); seq.osc.connect(seq.master); seq.osc.start();
+    seq.remain=seq.p.s[seq.idx].m*60; seq.playing=true; setSeqBtn(true); updSeqUI(); seq.timer=setInterval(seqTick,1000); }
+  function seqTick(){ seq.remain--; seq.elapsed++;
+    if(seq.remain<=0){ seq.idx++; if(seq.idx>=seq.p.s.length){ stopSeq(false); $("sClock").textContent=t("seq_done"); $("sBar").style.width="100%"; highlight(-1); return; }
+      seq.osc.frequency.setTargetAtTime(seq.p.s[seq.idx].f,ctx.currentTime,0.06); seq.remain=seq.p.s[seq.idx].m*60; }
+    updSeqUI(); }
+  function updSeqUI(){ var s=seq.p.s[seq.idx]; $("sHz").textContent=s.f.toFixed(2); $("sStep").textContent=(seq.idx+1)+"/"+seq.p.s.length+" · "+s.n;
+    var mm=Math.floor(seq.remain/60),ss=seq.remain%60; $("sClock").textContent=mm+":"+(ss<10?"0":"")+ss; $("sBar").style.width=Math.min(100,(seq.elapsed/seq.total)*100)+"%"; highlight(seq.idx); }
+  function stopSeq(immediate){ clearInterval(seq.timer);seq.timer=null;
+    if(ctx&&seq.master){ var ti=ctx.currentTime,m=seq.master,o=seq.osc; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
+      setTimeout(function(){try{o.stop();o.disconnect();}catch(e){}try{m.disconnect();}catch(e){}},immediate?30:90); }
+    seq.master=null;seq.osc=null;seq.playing=false;setSeqBtn(false); }
+
+  function makeViz(cvId,isPlaying){ var cv=$(cvId),g=cv.getContext("2d"),W=cv.width,H=cv.height,cx=W/2,cy=H/2,phase=0;
+    var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function mix(a,b,tt){return[Math.round(a[0]+(b[0]-a[0])*tt),Math.round(a[1]+(b[1]-a[1])*tt),Math.round(a[2]+(b[2]-a[2])*tt)];}
+    (function draw(){ g.clearRect(0,0,W,H); var on=isPlaying(); var amp=on?1:0.28;
+      for(var i=6;i>=1;i--){ var base=i*(W*0.072); var pulse=on?Math.sin(phase-i*0.5)*8*amp:0; var r=base+pulse; var tc=i/6; var col=mix([127,216,240],[185,143,224],tc);
+        g.beginPath();g.arc(cx,cy,r,0,Math.PI*2);g.lineWidth=3;g.strokeStyle="rgba("+col[0]+","+col[1]+","+col[2]+","+(0.16+0.5*(1-tc)*amp)+")";g.stroke(); }
+      g.beginPath();g.arc(cx,cy,7+(on?Math.sin(phase)*3:0),0,Math.PI*2);g.fillStyle="rgba(233,201,106,"+(on?0.95:0.5)+")";g.fill();
+      if(!reduce)phase+=on?0.11:0.02; requestAnimationFrame(draw); })(); }
+  makeViz("viz",function(){return state.playing;}); makeViz("sViz",function(){return seq.playing;});
+
+  applyLang(); show("lib");
+})();
+</script>
+
+</body>
+</html>
