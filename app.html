@@ -204,7 +204,7 @@
       <div class="filters" id="gInstr"></div>
       <div class="seg" role="group" aria-label="Boucle"><button id="gLoopOn" aria-pressed="true"></button><button id="gLoopOff" aria-pressed="false"></button></div>
       <div class="seg" role="group" aria-label="Ambiance"><button id="gDry" aria-pressed="true"></button><button id="gRev" aria-pressed="false"></button></div>
-      <div class="ctl"><div class="row"><span class="label" id="gTempoLabel"></span><span class="v"><span id="gDurLbl">0.50</span> s</span></div><input type="range" id="gDur" min="0.25" max="1" step="0.05" value="0.5"></div>
+      <div class="ctl"><div class="row"><span class="label" id="gTempoLabel"></span><span class="v" id="gDurLbl">0.50 s · 120 bpm</span></div><input type="range" id="gDur" min="0.5" max="1.2" step="0.05" value="0.5"></div>
       <div class="ctl"><div class="row"><span class="label" id="gVolLabel"></span><span class="v"><span id="gVolLbl">50</span> %</span></div><input type="range" id="gVol" min="0" max="100" step="1" value="50"></div>
       <div class="actions"><button class="play" id="gPlay"></button></div>
       <p class="disc" id="discGeo"></p>
@@ -482,7 +482,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
   $("gDry").addEventListener("click",function(){ gSetReverb(false); }); $("gRev").addEventListener("click",function(){ gSetReverb(true); });
   function gSetLoop(v){ gp.loop=v; $("gLoopOn").setAttribute("aria-pressed",v?"true":"false"); $("gLoopOff").setAttribute("aria-pressed",v?"false":"true"); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }
-  $("gDur").addEventListener("input",function(){ gp.dur=parseFloat(this.value); $("gDurLbl").textContent=gp.dur.toFixed(2); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } });
+  $("gDur").addEventListener("input",function(){ gp.dur=parseFloat(this.value); $("gDurLbl").textContent=gp.dur.toFixed(2)+" s · "+Math.round(60/gp.dur)+" bpm"; if(gp.playing){ gStop(true); setTimeout(gPlay,60); } });
   $("gVol").addEventListener("input",function(){ gp.vol=parseInt(this.value,10)/100; $("gVolLbl").textContent=this.value; if(gp.master&&ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02); });
   $("gPlay").addEventListener("click",function(){ if(gp.playing)gStop(false); else gPlay(); });
   function gSetBtn(on){ var b=$("gPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); }
