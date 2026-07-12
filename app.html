@@ -451,9 +451,11 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    sine:{name:{fr:"Sinus",en:"Sine",es:"Seno"},env:"bell"},
    trumpet:{name:{fr:"Trompette",en:"Trumpet",es:"Trompeta"},partials:[1,0.5,0.66,0.5,0.4,0.33,0.26,0.2,0.15,0.11,0.08],env:"sustain",atk:0.04,rel:0.08,vib:{rate:5.5,depth:3}},
    guitar:{name:{fr:"Guitare",en:"Guitar",es:"Guitarra"},partials:[1,0.55,0.35,0.28,0.18,0.12,0.08,0.05],env:"pluck",lp:3500},
-   sax:{name:{fr:"Saxophone",en:"Saxophone",es:"Saxofón"},partials:[1,0.75,0.5,0.55,0.32,0.35,0.2,0.22,0.12,0.09],env:"sustain",atk:0.06,rel:0.1,vib:{rate:5,depth:4}}
+   sax:{name:{fr:"Saxophone",en:"Saxophone",es:"Saxofón"},partials:[1,0.75,0.5,0.55,0.32,0.35,0.2,0.22,0.12,0.09],env:"sustain",atk:0.06,rel:0.1,vib:{rate:5,depth:4}},
+   piano:{name:{fr:"Piano",en:"Piano",es:"Piano"},partials:[1,0.6,0.4,0.28,0.2,0.15,0.1,0.08,0.05],env:"piano",lp:4800},
+   violin:{name:{fr:"Violon",en:"Violin",es:"Violín"},partials:[1,0.5,0.33,0.25,0.2,0.16,0.14,0.12,0.1,0.08],env:"sustain",atk:0.09,rel:0.12,lp:5200,vib:{rate:6,depth:4.5}}
   };
-  var GORDER=["sine","trumpet","guitar","sax"], _waves={};
+  var GORDER=["sine","piano","guitar","violin","trumpet","sax"], _waves={};
   function getWave(id){ if(!_waves[id]){ var p=INSTR[id].partials,n=p.length+1,r=new Float32Array(n),im=new Float32Array(n); for(var i=0;i<p.length;i++)im[i+1]=p[i]; _waves[id]=ctx.createPeriodicWave(r,im); } return _waves[id]; }
   function buildInstr(){ var el=$("gInstr"); el.innerHTML=""; GORDER.forEach(function(id){ var b=document.createElement("button"); b.setAttribute("data-i",id); b.setAttribute("aria-pressed",id===gp.instr?"true":"false"); b.textContent=INSTR[id].name[lang]||INSTR[id].name.fr;
     b.addEventListener("click",function(){ gp.instr=id; Array.prototype.forEach.call(el.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-i")===id?"true":"false");}); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }); el.appendChild(b); }); }
@@ -482,6 +484,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var last=o;
     if(ins.lp){ var flt=ctx.createBiquadFilter(); flt.type="lowpass"; flt.frequency.setValueAtTime(ins.lp,start); o.connect(flt); last=flt; }
     if(ins.env==="pluck"){ g.gain.linearRampToValueAtTime(1,start+0.006); g.gain.exponentialRampToValueAtTime(0.02,start+dur*0.92); g.gain.linearRampToValueAtTime(0.0001,start+dur); }
+    else if(ins.env==="piano"){ g.gain.linearRampToValueAtTime(1,start+0.004); g.gain.exponentialRampToValueAtTime(0.15,start+dur*0.85); g.gain.linearRampToValueAtTime(0.0001,start+dur); }
     else if(ins.env==="sustain"){ var atk=ins.atk||0.04, rel=ins.rel||0.08; g.gain.linearRampToValueAtTime(1,start+atk); var rs=Math.max(start+atk+0.01,start+dur-rel); g.gain.setValueAtTime(1,rs); g.gain.linearRampToValueAtTime(0.0001,start+dur); }
     else { try{ g.gain.setValueCurveAtTime(GENV,start,dur); }catch(e){ g.gain.linearRampToValueAtTime(1,start+dur/2); g.gain.linearRampToValueAtTime(0.0001,start+dur); } }
     last.connect(g); g.connect(gp.master);
