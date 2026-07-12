@@ -429,14 +429,15 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       g.beginPath();g.arc(cx,cy,7+(on?Math.sin(phase)*3:0),0,Math.PI*2);g.fillStyle="rgba(233,201,106,"+(on?0.95:0.5)+")";g.fill();
       if(!reduce)phase+=on?0.11:0.02; requestAnimationFrame(draw); })(); }
   // ================= GÉOMÉTRIE SACRÉE & AGROGLYPHES =================
-  var NM={"Do":261.63,"Ré":294.33,"Mi":327.04,"Fa":348.84,"Sol":392.44,"La":436.05,"Si":490.55,"Do′":523.25};
+  // Accordage 432 Hz · Pythagore pur (Do=256, La=256×27/16=432 exactement)
+  var NM={"Do":256.00,"Ré":288.00,"Mi":324.00,"Fa":341.33,"Sol":384.00,"La":432.00,"Si":486.00,"Do′":512.00};
   var GEO=[
    {name:"Agroglyphe",ic:"🌀",shape:"crop",sym:{fr:"Symétrie 8 · Pythagore",en:"8-fold · Pythagoras",es:"Simetría 8 · Pitágoras"},ratios:"2:1 · 3:2 · 4:3",notes:["Do","Fa","Sol","Do′","Do′","Sol","Fa","Do"],drone:[["Do",0.3],["Sol",0.2]]},
-   {name:"Triangle · Tétraèdre",ic:"△",shape:"triangle",sym:{fr:"Le 3 · accord parfait",en:"The 3 · perfect chord",es:"El 3 · acorde perfecto"},ratios:"4:5:6",notes:["Do","Mi","Sol","Do′"],drone:[["Do",0.35]]},
+   {name:"Triangle · Tétraèdre",ic:"△",shape:"triangle",sym:{fr:"Le 3 · accord parfait",en:"The 3 · perfect chord",es:"El 3 · acorde perfecto"},ratios:"accord majeur",notes:["Do","Mi","Sol","Do′"],drone:[["Do",0.35]]},
    {name:"Fleur de Vie",ic:"❀",shape:"flower",sym:{fr:"Symétrie 6 · hexagonale",en:"6-fold · hexagonal",es:"Simetría 6 · hexagonal"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],drone:[["Do",0.3],["Sol",0.2]]},
    {name:"Pentagramme · φ",ic:"⛤",shape:"penta",sym:{fr:"Le 5 · nombre d'or",en:"The 5 · golden ratio",es:"El 5 · número áureo"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],drone:[["Do",0.3],["La",0.15]]},
    {name:"Merkaba",ic:"✡",shape:"merkaba",sym:{fr:"Deux triangles en miroir",en:"Two mirrored triangles",es:"Dos triángulos en espejo"},ratios:"triade ↑ ↓",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],drone:[["Do",0.3],["Sol",0.2]]},
-   {name:"Cube de Métatron",ic:"✴️",shape:"metatron",sym:{fr:"13 cercles · les 5 solides de Platon",en:"13 circles · the 5 Platonic solids",es:"13 círculos · los 5 sólidos de Platón"},ratios:"triade majeure + 6te (4:5:6 · 5:3)",notes:["Do","Mi","Sol","La","Do′","Sol","Mi","Do"],drone:[["Do",0.28],["Mi",0.13],["Sol",0.18]]},
+   {name:"Cube de Métatron",ic:"✴️",shape:"metatron",sym:{fr:"13 cercles · les 5 solides de Platon",en:"13 circles · the 5 Platonic solids",es:"13 círculos · los 5 sólidos de Platón"},ratios:"accord majeur + sixte",notes:["Do","Mi","Sol","La","Do′","Sol","Mi","Do"],drone:[["Do",0.28],["Mi",0.13],["Sol",0.18]]},
    {name:"Carré · Cube",ic:"▢",shape:"square",sym:{fr:"Le 4 · stabilité",en:"The 4 · stability",es:"El 4 · estabilidad"},ratios:"4:3",notes:["Do","Fa","Do′","Fa"],drone:[["Do",0.3],["Fa",0.2]]}
   ];
   var gp={fig:null,dur:0.5,loop:true,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0}, gPhase=0;
