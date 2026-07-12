@@ -445,6 +445,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    {name:"Pentagramme · φ",ic:"⛤",shape:"penta",sym:{fr:"Le 5 · nombre d'or",en:"The 5 · golden ratio",es:"El 5 · número áureo"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],drone:[["Do",0.3],["La",0.15]]},
    {name:"Merkaba",ic:"✡",shape:"merkaba",sym:{fr:"Deux triangles en miroir",en:"Two mirrored triangles",es:"Dos triángulos en espejo"},ratios:"triade ↑ ↓",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],drone:[["Do",0.3],["Sol",0.2]]},
    {name:"Cube de Métatron",ic:"✴️",shape:"metatron",sym:{fr:"13 cercles · les 5 solides de Platon",en:"13 circles · the 5 Platonic solids",es:"13 círculos · los 5 sólidos de Platón"},ratios:"accord majeur + sixte",notes:["Do","Mi","Sol","La","Do′","Sol","Mi","Do"],drone:[["Do",0.28],["Mi",0.13],["Sol",0.18]]},
+   {name:"Sri Yantra",ic:"🕉️",shape:"sriyantra",sym:{fr:"9 triangles · le son primordial",en:"9 triangles · the primordial sound",es:"9 triángulos · el sonido primordial"},ratios:"gamme ascendante",notes:["Do","Ré","Mi","Fa","Sol","La","Si","Do′"],drone:[["Do",0.28],["Sol",0.18]]},
    {name:"Carré · Cube",ic:"▢",shape:"square",sym:{fr:"Le 4 · stabilité",en:"The 4 · stability",es:"El 4 · estabilidad"},ratios:"4:3",notes:["Do","Fa","Do′","Fa"],drone:[["Do",0.3],["Fa",0.2]]}
   ];
   var gp={fig:null,dur:0.5,loop:true,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0,instr:"sine",reverb:false,dry:null,wet:null,conv:null}, gPhase=0;
@@ -529,6 +530,15 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       for(var i=0;i<pts.length;i++){ for(var j=i+1;j<pts.length;j++){ g.beginPath(); g.moveTo(pts[i][0],pts[i][1]); g.lineTo(pts[j][0],pts[j][1]); g.stroke(); } } g.restore();
       g.strokeStyle="rgba(185,143,224,"+(on?0.9:0.6)+")"; g.lineWidth=2; var cr=R*0.24;
       for(var k=0;k<pts.length;k++){ g.beginPath(); g.arc(pts[k][0],pts[k][1],cr,0,Math.PI*2); g.stroke(); } }
+    else if(type==="sriyantra"){
+      g.strokeStyle="rgba(127,216,240,"+(on?0.4:0.26)+")"; g.lineWidth=2;
+      poly(4,-Math.PI/4,R*1.26); g.stroke();
+      g.beginPath();g.arc(cx,cy,R*1.06,0,Math.PI*2);g.stroke(); g.beginPath();g.arc(cx,cy,R*0.96,0,Math.PI*2);g.stroke();
+      for(var i=0;i<16;i++){ var a=i*Math.PI/8; g.beginPath(); g.moveTo(cx+R*0.96*Math.cos(a),cy+R*0.96*Math.sin(a)); g.lineTo(cx+R*1.06*Math.cos(a),cy+R*1.06*Math.sin(a)); g.stroke(); }
+      g.strokeStyle="rgba(185,143,224,"+(on?0.92:0.62)+")"; g.lineWidth=1.8;
+      [R*0.9,R*0.64,R*0.42,R*0.23].forEach(function(r){ poly(3,Math.PI/2,r); g.stroke(); });
+      [R*0.84,R*0.57,R*0.37,R*0.2].forEach(function(r){ poly(3,-Math.PI/2,r); g.stroke(); });
+      g.fillStyle="rgba(233,201,106,"+(on?0.95:0.6)+")"; g.beginPath();g.arc(cx,cy,R*0.045,0,Math.PI*2);g.fill(); }
     else if(type==="square"){ poly(4,-Math.PI/4,R); g.fill(); g.stroke(); poly(4,0,R*0.9); g.stroke(); }
     g.restore();
   }
