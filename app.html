@@ -268,7 +268,7 @@ var T={
  tempo:{fr:"Tempo",en:"Tempo",es:"Tempo"},
  loop_inf:{fr:"Boucle ∞",en:"Loop ∞",es:"Bucle ∞"},
  loop_once:{fr:"Une fois",en:"Once",es:"Una vez"},
- disc_geo:{fr:"Sonification de la géométrie — exploration sonore, sans allégation. Piano : Salamander Grand (A. Holm, CC-BY).",en:"Sonification of geometry — sound exploration, no claim. Piano: Salamander Grand (A. Holm, CC-BY).",es:"Sonificación de la geometría — exploración sonora, sin afirmaciones. Piano: Salamander Grand (A. Holm, CC-BY)."},
+ disc_geo:{fr:"Sonification de la géométrie — exploration sonore, sans allégation. Sons : Salamander Grand (CC-BY) + tonejs-instruments.",en:"Sonification of geometry — sound exploration, no claim. Sounds: Salamander Grand (CC-BY) + tonejs-instruments.",es:"Sonificación de la geometría — exploración sonora, sin afirmaciones. Sonidos: Salamander Grand (CC-BY) + tonejs-instruments."},
  instr_label:{fr:"Instrument",en:"Instrument",es:"Instrumento"},
  amb_dry:{fr:"Normal",en:"Normal",es:"Normal"},
  amb_cath:{fr:"Cathédrale 🏛️",en:"Cathedral 🏛️",es:"Catedral 🏛️"}
@@ -470,7 +470,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   // et dans l'app Capacitor ; en cas d'échec -> repli automatique sur le timbre synthétisé).
   // Piano : Salamander Grand Piano (Alexander Holm, CC-BY). Réaccordé 432/Pythagore via playbackRate.
   var SAMPLES={
-   piano:{base:"app-sounds/piano/",map:[[261.63,"C4.mp3"],[311.13,"Ds4.mp3"],[369.99,"Fs4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false}
+   piano:{base:"app-sounds/piano/",map:[[261.63,"C4.mp3"],[311.13,"Ds4.mp3"],[369.99,"Fs4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false},
+   guitar:{base:"app-sounds/guitar/",map:[[261.63,"C4.mp3"],[311.13,"Ds4.mp3"],[369.99,"Fs4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false},
+   violin:{base:"app-sounds/violin/",map:[[261.63,"C4.mp3"],[329.63,"E4.mp3"],[392.00,"G4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false},
+   sax:{base:"app-sounds/sax/",map:[[261.63,"C4.mp3"],[311.13,"Ds4.mp3"],[369.99,"Fs4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false}
   };
   function loadSamples(id){ var sm=SAMPLES[id]; if(!sm||sm.buffers||sm.loading)return; sm.loading=true; ensureCtx();
     var res=[],pend=sm.map.length;
@@ -489,7 +492,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     GEO.forEach(function(fig,i){ var b=document.createElement("button"); b.className="pcard";
       b.innerHTML='<span class="ico">'+fig.ic+'</span><span class="pt"><b>'+fig.name+'</b><span>'+(fig.sym[lang]||fig.sym.fr)+'</span></span><span class="go">›</span>';
       b.addEventListener("click",function(){ gOpen(i); }); el.appendChild(b); }); }
-  function gOpen(i){ gStop(true); gp.fig=GEO[i]; loadSamples("piano");
+  function gOpen(i){ gStop(true); gp.fig=GEO[i]; for(var sk in SAMPLES){ loadSamples(sk); }
     $("gTitle").textContent=gp.fig.name; $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=gp.fig.ratios;
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+nn+"</b>"; row.appendChild(d); });
