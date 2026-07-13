@@ -268,7 +268,7 @@ var T={
  tempo:{fr:"Tempo",en:"Tempo",es:"Tempo"},
  loop_inf:{fr:"Boucle ∞",en:"Loop ∞",es:"Bucle ∞"},
  loop_once:{fr:"Une fois",en:"Once",es:"Una vez"},
- disc_geo:{fr:"Sonification de la géométrie — exploration sonore, sans allégation.",en:"Sonification of geometry — sound exploration, no claim.",es:"Sonificación de la geometría — exploración sonora, sin afirmaciones."},
+ disc_geo:{fr:"Sonification de la géométrie — exploration sonore, sans allégation. Piano : Salamander Grand (A. Holm, CC-BY).",en:"Sonification of geometry — sound exploration, no claim. Piano: Salamander Grand (A. Holm, CC-BY).",es:"Sonificación de la geometría — exploración sonora, sin afirmaciones. Piano: Salamander Grand (A. Holm, CC-BY)."},
  instr_label:{fr:"Instrument",en:"Instrument",es:"Instrumento"},
  amb_dry:{fr:"Normal",en:"Normal",es:"Normal"},
  amb_cath:{fr:"Cathédrale 🏛️",en:"Cathedral 🏛️",es:"Catedral 🏛️"}
@@ -465,6 +465,22 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    violin:{name:{fr:"Violon",en:"Violin",es:"Violín"},partials:[1,0.5,0.33,0.25,0.2,0.16,0.14,0.12,0.1,0.08],env:"sustain",atk:0.09,rel:0.12,lp:5200,vib:{rate:6,depth:4.5}}
   };
   var GORDER=["sine","piano","guitar","violin","sax"], _waves={};
+
+  // Échantillons réels (vrais enregistrements) : chargés depuis app-sounds/ (marche sur aura-lis.ca/app
+  // et dans l'app Capacitor ; en cas d'échec -> repli automatique sur le timbre synthétisé).
+  // Piano : Salamander Grand Piano (Alexander Holm, CC-BY). Réaccordé 432/Pythagore via playbackRate.
+  var SAMPLES={
+   piano:{base:"app-sounds/piano/",map:[[261.63,"C4.mp3"],[311.13,"Ds4.mp3"],[369.99,"Fs4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false}
+  };
+  function loadSamples(id){ var sm=SAMPLES[id]; if(!sm||sm.buffers||sm.loading)return; sm.loading=true; ensureCtx();
+    var res=[],pend=sm.map.length;
+    function step(){ pend--; if(pend<=0){ if(res.length)sm.buffers=res; sm.loading=false; } }
+    sm.map.forEach(function(m){
+      var xhr=new XMLHttpRequest(); xhr.open("GET",sm.base+m[1],true); xhr.responseType="arraybuffer";
+      xhr.onload=function(){ if(xhr.status===200){ ctx.decodeAudioData(xhr.response,function(buf){ res.push({f:m[0],buf:buf}); step(); },function(){ step(); }); } else step(); };
+      xhr.onerror=function(){ step(); }; xhr.send();
+    });
+  }
   function getWave(id){ if(!_waves[id]){ var p=INSTR[id].partials,n=p.length+1,r=new Float32Array(n),im=new Float32Array(n); for(var i=0;i<p.length;i++)im[i+1]=p[i]; _waves[id]=ctx.createPeriodicWave(r,im); } return _waves[id]; }
   function buildInstr(){ var el=$("gInstr"); el.innerHTML=""; GORDER.forEach(function(id){ var b=document.createElement("button"); b.setAttribute("data-i",id); b.setAttribute("aria-pressed",id===gp.instr?"true":"false"); b.textContent=INSTR[id].name[lang]||INSTR[id].name.fr;
     b.addEventListener("click",function(){ gp.instr=id; Array.prototype.forEach.call(el.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-i")===id?"true":"false");}); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }); el.appendChild(b); }); }
@@ -473,7 +489,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     GEO.forEach(function(fig,i){ var b=document.createElement("button"); b.className="pcard";
       b.innerHTML='<span class="ico">'+fig.ic+'</span><span class="pt"><b>'+fig.name+'</b><span>'+(fig.sym[lang]||fig.sym.fr)+'</span></span><span class="go">›</span>';
       b.addEventListener("click",function(){ gOpen(i); }); el.appendChild(b); }); }
-  function gOpen(i){ gStop(true); gp.fig=GEO[i];
+  function gOpen(i){ gStop(true); gp.fig=GEO[i]; loadSamples("piano");
     $("gTitle").textContent=gp.fig.name; $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=gp.fig.ratios;
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+nn+"</b>"; row.appendChild(d); });
@@ -488,6 +504,17 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("gPlay").addEventListener("click",function(){ if(gp.playing)gStop(false); else gPlay(); });
   function gSetBtn(on){ var b=$("gPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); }
   function gScheduleNote(f,start,dur){
+    // Échantillon réel disponible ? -> le jouer réaccordé (qualité studio)
+    var sm=SAMPLES[gp.instr];
+    if(sm&&sm.buffers&&sm.buffers.length){
+      var best=null,bd=1e9;
+      sm.buffers.forEach(function(b){ var d=Math.abs(Math.log(f/b.f)); if(d<bd){bd=d;best=b;} });
+      var src=ctx.createBufferSource(); src.buffer=best.buf; src.playbackRate.setValueAtTime(f/best.f,start);
+      var sg=ctx.createGain(); sg.gain.setValueAtTime(0.0001,start); sg.gain.linearRampToValueAtTime(1,start+0.005);
+      var rs=Math.max(start+0.02,start+dur-0.09); sg.gain.setValueAtTime(1,rs); sg.gain.linearRampToValueAtTime(0.0001,start+dur);
+      src.connect(sg); sg.connect(gp.master); src.start(start); src.stop(start+dur+0.05);
+      return;
+    }
     var ins=INSTR[gp.instr]||INSTR.sine;
     var o=ctx.createOscillator(); if(ins.partials){ o.setPeriodicWave(getWave(gp.instr)); } else { o.type="sine"; } o.frequency.setValueAtTime(f,start);
     var g=ctx.createGain(); g.gain.setValueAtTime(0.0001,start);
