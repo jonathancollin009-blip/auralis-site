@@ -270,7 +270,7 @@ var T={
  tempo:{fr:"Tempo",en:"Tempo",es:"Tempo"},
  loop_inf:{fr:"Boucle ∞",en:"Loop ∞",es:"Bucle ∞"},
  loop_once:{fr:"Une fois",en:"Once",es:"Una vez"},
- disc_geo:{fr:"Sonification de la géométrie — exploration sonore, sans allégation. Sons : Salamander Grand (CC-BY) + tonejs-instruments.",en:"Sonification of geometry — sound exploration, no claim. Sounds: Salamander Grand (CC-BY) + tonejs-instruments.",es:"Sonificación de la geometría — exploración sonora, sin afirmaciones. Sonidos: Salamander Grand (CC-BY) + tonejs-instruments."},
+ disc_geo:{fr:"Sonification de la géométrie — exploration sonore, sans allégation. Sons : Salamander Grand (CC-BY), tonejs-instruments, réverb Voxengo (St Nicolaes Church).",en:"Sonification of geometry — sound exploration, no claim. Sounds: Salamander Grand (CC-BY), tonejs-instruments, Voxengo reverb (St Nicolaes Church).",es:"Sonificación de la geometría — exploración sonora, sin afirmaciones. Sonidos: Salamander Grand (CC-BY), tonejs-instruments, reverb Voxengo (St Nicolaes Church)."},
  instr_label:{fr:"Instrument",en:"Instrument",es:"Instrumento"},
  reverb_label:{fr:"Réverb 🏛️",en:"Reverb 🏛️",es:"Reverb 🏛️"},
  echo_label:{fr:"Écho",en:"Echo",es:"Eco"},
@@ -453,11 +453,17 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   ];
   var gp={fig:null,dur:0.5,loop:true,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0,instr:"sine",
     reverbAmt:0,echoAmt:0,delayMs:250,   // 0-1, 0-1, ms — reglables pendant la lecture
-    dry:null,wet:null,conv:null,delayNode:null,feedback:null,echoWet:null}, gPhase=0;
-  // Réverbération « cathédrale » : impulse response synthétique (bruit à décroissance longue ~3,5 s)
-  var _ir=null;
-  function getReverbIR(){ if(_ir)return _ir; var dur=3.5,sr=ctx.sampleRate,len=Math.floor(sr*dur),buf=ctx.createBuffer(2,len,sr);
+    dry:null,wet:null,conv:null,delayNode:null,feedback:null,echoWet:null,echoFilter:null}, gPhase=0;
+  // Réverbération « cathédrale » : vraie empreinte acoustique enregistrée (St Nicolaes Church,
+  // Voxengo Free Impulse Responses, usage commercial autorisé) ; repli sur bruit synthétique
+  // tant qu'elle n'a pas fini de charger (ou si le chargement échoue).
+  var _ir=null,_realIR=null,_realIRLoading=false;
+  function getReverbIR(){ if(_realIR)return _realIR; if(_ir)return _ir; var dur=3.5,sr=ctx.sampleRate,len=Math.floor(sr*dur),buf=ctx.createBuffer(2,len,sr);
     for(var ch=0;ch<2;ch++){ var d=buf.getChannelData(ch); for(var i=0;i<len;i++){ var x=i/len; d[i]=(Math.random()*2-1)*Math.pow(1-x,2.2); } } _ir=buf; return _ir; }
+  function loadRealIR(){ if(_realIR||_realIRLoading)return; _realIRLoading=true; ensureCtx();
+    var xhr=new XMLHttpRequest(); xhr.open("GET","app-sounds/ir/cathedral.mp3",true); xhr.responseType="arraybuffer";
+    xhr.onload=function(){ if(xhr.status===200){ ctx.decodeAudioData(xhr.response,function(buf){ _realIR=buf; if(gp.conv)gp.conv.buffer=_realIR; },function(){}); } };
+    xhr.send(); }
   function gSetReverbAmt(v){ gp.reverbAmt=v; if(gp.wet&&ctx){ gp.wet.gain.setTargetAtTime(v*0.7,ctx.currentTime,0.05); } }
   function gSetEchoAmt(v){ gp.echoAmt=v; if(gp.feedback&&gp.echoWet&&ctx){ gp.feedback.gain.setTargetAtTime(v*0.55,ctx.currentTime,0.05); gp.echoWet.gain.setTargetAtTime(v>0?0.5:0.0001,ctx.currentTime,0.05); } }
   function gSetDelayMs(ms){ gp.delayMs=ms; if(gp.delayNode&&ctx){ gp.delayNode.delayTime.setTargetAtTime(ms/1000,ctx.currentTime,0.03); } }
@@ -499,7 +505,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     GEO.forEach(function(fig,i){ var b=document.createElement("button"); b.className="pcard";
       b.innerHTML='<span class="ico">'+fig.ic+'</span><span class="pt"><b>'+fig.name+'</b><span>'+(fig.sym[lang]||fig.sym.fr)+'</span></span><span class="go">›</span>';
       b.addEventListener("click",function(){ gOpen(i); }); el.appendChild(b); }); }
-  function gOpen(i){ gStop(true); gp.fig=GEO[i]; for(var sk in SAMPLES){ loadSamples(sk); }
+  function gOpen(i){ gStop(true); gp.fig=GEO[i]; for(var sk in SAMPLES){ loadSamples(sk); } loadRealIR();
     $("gTitle").textContent=gp.fig.name; $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=gp.fig.ratios;
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+nn+"</b>"; row.appendChild(d); });
@@ -548,20 +554,22 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     // Écho / Delay (delay = espacement des répétitions, écho = quantité/persistance des répétitions)
     gp.delayNode=ctx.createDelay(1.0); gp.delayNode.delayTime.setValueAtTime(gp.delayMs/1000,t);
     gp.feedback=ctx.createGain(); gp.feedback.gain.setValueAtTime(gp.echoAmt*0.55,t);
+    // Chaque répétition perd un peu d'aigus (comme un vrai écho absorbé par l'air) -> évite l'effet "métallique" artificiel
+    gp.echoFilter=ctx.createBiquadFilter(); gp.echoFilter.type="lowpass"; gp.echoFilter.frequency.setValueAtTime(3200,t); gp.echoFilter.Q.value=0.4;
     gp.echoWet=ctx.createGain(); gp.echoWet.gain.setValueAtTime(gp.echoAmt>0?0.5:0.0001,t);
-    gp.master.connect(gp.delayNode); gp.delayNode.connect(gp.feedback); gp.feedback.connect(gp.delayNode); gp.delayNode.connect(gp.echoWet); gp.echoWet.connect(ctx.destination);
+    gp.master.connect(gp.delayNode); gp.delayNode.connect(gp.echoFilter); gp.echoFilter.connect(gp.feedback); gp.feedback.connect(gp.delayNode); gp.delayNode.connect(gp.echoWet); gp.echoWet.connect(ctx.destination);
     gp.drones=[]; gp.fig.drone.forEach(function(dr){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(NM[dr[0]],t); var g=ctx.createGain();g.gain.setValueAtTime(dr[1],t); o.connect(g);g.connect(gp.master);o.start(t);gp.drones.push(o); });
     gp.cycleStart=t; gScheduleCycle(t); gp.playing=true; gSetBtn(true);
     var cl=gp.fig.notes.length*gp.dur;
     if(gp.loop){ gp.timer=setInterval(function(){ gp.cycleStart=ctx.currentTime; gScheduleCycle(gp.cycleStart); }, cl*1000); }
     else { gp.timer=setTimeout(function(){ if(gp.playing)gStop(false); }, cl*1000+120); } }
   function gStop(immediate){ if(gp.timer){ clearInterval(gp.timer); clearTimeout(gp.timer); gp.timer=null; }
-    if(ctx&&gp.master){ var t=ctx.currentTime,m=gp.master,ds=gp.drones,dy=gp.dry,wt=gp.wet,cv=gp.conv,dl=gp.delayNode,fb=gp.feedback,ew=gp.echoWet;
+    if(ctx&&gp.master){ var t=ctx.currentTime,m=gp.master,ds=gp.drones,dy=gp.dry,wt=gp.wet,cv=gp.conv,dl=gp.delayNode,fb=gp.feedback,ew=gp.echoWet,ef=gp.echoFilter;
       try{m.gain.cancelScheduledValues(t);m.gain.setValueAtTime(m.gain.value,t);m.gain.linearRampToValueAtTime(0.0001,t+(immediate?0.02:0.12));}catch(e){}
       try{ if(fb)fb.gain.setValueAtTime(0,t); }catch(e){}   // coupe la boucle de feedback pour eviter une traine infinie
       var tail=immediate?60:(gp.echoAmt>0||gp.reverbAmt>0?900:220);
-      setTimeout(function(){ ds.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}}); [m,dy,cv,wt,dl,fb,ew].forEach(function(nd){ if(nd){try{nd.disconnect();}catch(e){}} }); }, tail); }
-    gp.master=null; gp.drones=[]; gp.dry=null; gp.wet=null; gp.conv=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.playing=false; gSetBtn(false); }
+      setTimeout(function(){ ds.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}}); [m,dy,cv,wt,dl,fb,ew,ef].forEach(function(nd){ if(nd){try{nd.disconnect();}catch(e){}} }); }, tail); }
+    gp.master=null; gp.drones=[]; gp.dry=null; gp.wet=null; gp.conv=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.echoFilter=null; gp.playing=false; gSetBtn(false); }
   function gCurrentIndex(){ if(!gp.playing||!ctx||!gp.fig)return -1; var el=ctx.currentTime-gp.cycleStart; if(el<0)return -1; var i=Math.floor(el/gp.dur); return (i>=0&&i<gp.fig.notes.length)?i:-1; }
 
   function drawShape(g,W,H,type,on,phase){
