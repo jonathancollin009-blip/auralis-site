@@ -774,7 +774,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     if(bin.step===1){ bin.f1=v; bin.kb=""; bin.step=2; renderBinInput(); }
     else{ bin.f2=v; if(Math.abs(bin.f1-bin.f2)>20){ showBinError(); } else{ openBinPlay(); } }
   }
-  Array.prototype.forEach.call(document.querySelectorAll("#binKeypad button"),function(b){
+  Array.prototype.forEach.call(document.querySelectorAll("#binKeypad button[data-k]"),function(b){
     b.addEventListener("click",function(){ var k=b.getAttribute("data-k"); if(k==="back")binBack(); else binDigit(k); });
   });
   $("binOk").addEventListener("click",binOk);
