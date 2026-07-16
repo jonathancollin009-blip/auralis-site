@@ -145,6 +145,8 @@
   .steps li .sn{flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:600}
   .steps li .sh{font-variant-numeric:tabular-nums; color:var(--cyan); font-size:.82rem}
   .steps li .sm{font-variant-numeric:tabular-nums; color:var(--dimmer); font-size:.75rem}
+  .steps li .rm{margin-left:auto; flex:0 0 auto; color:var(--dimmer); font-size:1rem; padding:2px 4px; cursor:pointer}
+  .linkbtn{display:block; width:100%; text-align:center; background:none; border:0; color:var(--dimmer); font:inherit; font-size:.85rem; padding:8px; cursor:pointer; text-decoration:underline}
 
   .gnow{position:absolute; text-align:center; pointer-events:none}
   .gnow .gn{font-size:1.7rem; font-weight:800; line-height:1}
@@ -204,7 +206,7 @@
       <div class="ctl"><div class="row"><span class="label" id="volLabel"></span><span class="v"><span id="volLbl">50</span> %</span></div><input type="range" id="vol" min="0" max="100" step="1" value="50"></div>
       <p class="label" id="timerLabel" style="margin-bottom:8px"></p>
       <div class="timer" id="timer"></div><div class="tclock" id="tclock"></div>
-      <div class="actions"><button class="play" id="play"></button><button class="favbtn" id="fav">☆</button></div>
+      <div class="actions"><button class="play" id="play"></button></div>
       <p class="disc" id="discSingle"></p>
     </div>
   </section>
@@ -244,7 +246,7 @@
       <div class="ctl"><div class="row"><span class="label" id="gReverbLabel"></span><span class="v"><span id="gReverbVal">0</span> %</span></div><input type="range" id="gReverb" min="0" max="100" step="1" value="0"></div>
       <div class="ctl"><div class="row"><span class="label" id="gEchoLabel"></span><span class="v"><span id="gEchoVal">0</span> %</span></div><input type="range" id="gEcho" min="0" max="100" step="1" value="0"></div>
       <div class="ctl"><div class="row"><span class="label" id="gDelayLabel"></span><span class="v"><span id="gDelayVal">250</span> ms</span></div><input type="range" id="gDelay" min="50" max="800" step="10" value="250"></div>
-      <div class="actions"><button class="play" id="gPlay"></button><button class="favbtn" id="gFav">☆</button></div>
+      <div class="actions"><button class="play" id="gPlay"></button></div>
       <p class="disc" id="discGeo"></p>
     </div>
   </section>
@@ -256,7 +258,7 @@
         <div class="readout"><div class="pformula">ॐ = 432 Hz —Ω— <span class="pfnum" id="pBpmNum">72</span> BPM = φ</div></div></div>
       <div class="ctl"><div class="row"><span class="label" id="pTempoLabel"></span><span class="v" id="pBpmVal">72 bpm</span></div><input type="range" id="pBpm" min="40" max="120" step="1" value="72"></div>
       <div class="ctl"><div class="row"><span class="label" id="pVolLabel"></span><span class="v"><span id="pVolLbl">50</span> %</span></div><input type="range" id="pVol" min="0" max="100" step="1" value="50"></div>
-      <div class="actions"><button class="play" id="pPlay"></button><button class="favbtn" id="pFav">☆</button></div>
+      <div class="actions"><button class="play" id="pPlay"></button></div>
       <p class="disc" id="discPulse"></p>
     </div>
   </section>
@@ -303,6 +305,57 @@
     </div>
   </section>
 
+  <section class="view" id="vFavKeypad">
+    <div class="bar"><button class="backbtn" id="favKbBack" aria-label="Retour">‹</button><h2 id="favKbTitle">—</h2></div>
+    <div class="player">
+      <div class="binpanel">
+        <p class="binhint" id="favKbSub" style="margin-bottom:10px; min-height:1em"></p>
+        <p class="val" id="favKbVal" style="font-size:2rem; text-align:center; color:var(--cyan)">—</p>
+        <p class="binhint" id="favKbHint"></p>
+      </div>
+      <div class="keypad" id="favKeypadGrid">
+        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+        <button data-k=".">.</button><button data-k="0">0</button><button data-k="back">⌫</button>
+        <button class="ok" id="favKbOk">OK</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="vFavNext">
+    <div class="bar"><h2 id="favNextTitle">—</h2></div>
+    <div class="player" style="align-items:center; justify-content:center; text-align:center">
+      <p class="binerr" id="favNextCount" style="color:var(--cyan)"></p>
+      <p class="binerrsub" id="favNextLast"></p>
+      <div style="margin-top:28px; display:flex; flex-direction:column; gap:10px; width:100%">
+        <button class="manualbtn" id="favAddMore"></button>
+        <button class="play" id="favPlaySel"></button>
+        <button class="linkbtn" id="favNextCancel"></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="vFavRecap">
+    <div class="bar"><button class="backbtn" id="favRecapBack" aria-label="Retour">‹</button><h2 id="favRecapTitle">—</h2></div>
+    <div class="player">
+      <ul class="steps" id="favRecapSteps"></ul>
+      <div style="margin-top:auto; display:flex; flex-direction:column; gap:10px; padding-top:16px">
+        <button class="manualbtn" id="favRecapAdd"></button>
+        <button class="play" id="favRecapSave"></button>
+        <button class="linkbtn" id="favRecapCancel"></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="vFavName">
+    <div class="bar"><button class="backbtn" id="favNameBack" aria-label="Retour">‹</button><h2 id="favNameTitle">—</h2></div>
+    <div class="player">
+      <input class="mInput" id="favNameInput" type="text" maxlength="24">
+      <button class="play" id="favNameSave" style="margin-top:16px"></button>
+    </div>
+  </section>
+
   <section class="view" id="vFavList">
     <div class="bar"><button class="backbtn" id="favBack" aria-label="Retour">‹</button><h2 id="favTitle">—</h2></div>
     <div class="list" id="favListEl"></div>
@@ -325,14 +378,12 @@ var PROTOS=[
 var T={
  search_ph:{fr:"Rechercher une fréquence…",en:"Search a frequency…",es:"Buscar una frecuencia…"},
  f_Toutes:{fr:"Toutes",en:"All",es:"Todas"},
- "f_★ Favoris":{fr:"★ Favoris",en:"★ Favorites",es:"★ Favoritos"},
  "f_Endogène":{fr:"Endogène",en:"Endogenous",es:"Endógeno"},
  f_Phyto:{fr:"Phyto",en:"Phyto",es:"Fito"},
  "f_Huiles ess.":{fr:"Huiles ess.",en:"Ess. oils",es:"Aceites es."},
  "f_Élément":{fr:"Élément",en:"Element",es:"Elemento"},
  manual_btn:{fr:"⌨  Entrer une fréquence manuellement",en:"⌨  Enter a frequency manually",es:"⌨  Introducir una frecuencia"},
  none_freq:{fr:"Aucune fréquence.",en:"No frequency.",es:"Ninguna frecuencia."},
- none_fav:{fr:"Ajoute des favoris avec l'étoile ☆.",en:"Add favorites with the ☆ star.",es:"Añade favoritos con la estrella ☆."},
  hz_label:{fr:"Fréquence (Hz)",en:"Frequency (Hz)",es:"Frecuencia (Hz)"},
  volume:{fr:"Volume",en:"Volume",es:"Volumen"},
  timer_label:{fr:"Minuteur",en:"Timer",es:"Temporizador"},
@@ -362,8 +413,25 @@ var T={
  delay_label:{fr:"Delay",en:"Delay",es:"Delay"},
  home_pulse:{fr:"432 Hz Pulsé",en:"432 Hz Pulsed",es:"432 Hz Pulsado"},
  fav_title:{fr:"Favoris",en:"Favorites",es:"Favoritos"},
- fav_empty:{fr:"— vide —",en:"— empty —",es:"— vacío —"},
- fav_full:{fr:"12/12 — libère un emplacement d'abord",en:"12/12 — free a slot first",es:"12/12 — libera un espacio primero"},
+ fav_new:{fr:"+ Nouveau",en:"+ New",es:"+ Nuevo"},
+ fav_default_name:{fr:"Favori",en:"Favorite",es:"Favorito"},
+ fav_pick_title:{fr:"Choisir une fréquence — Favori",en:"Choose a frequency — Favorite",es:"Elegir una frecuencia — Favorito"},
+ fav_dur_title:{fr:"Durée de lecture",en:"Playback duration",es:"Duración de reproducción"},
+ fav_dur_hint:{fr:"1 à 60 minutes",en:"1 to 60 minutes",es:"1 a 60 minutos"},
+ fav_dur_err:{fr:"1 à 60 min seulement",en:"1 to 60 min only",es:"Solo de 1 a 60 min"},
+ fav_next_title:{fr:"Ajoutée à la séquence",en:"Added to sequence",es:"Añadida a la secuencia"},
+ fav_count_one:{fr:"fréquence programmée",en:"frequency programmed",es:"frecuencia programada"},
+ fav_count_many:{fr:"fréquences programmées",en:"frequencies programmed",es:"frecuencias programadas"},
+ fav_last_added:{fr:"Dernier ajout",en:"Last added",es:"Último añadido"},
+ fav_add_more:{fr:"+ Ajouter une fréquence",en:"+ Add a frequency",es:"+ Añadir una frecuencia"},
+ fav_play_sel:{fr:"Jouer la sélection",en:"Play selection",es:"Reproducir selección"},
+ fav_cancel:{fr:"Annuler",en:"Cancel",es:"Cancelar"},
+ fav_recap_title:{fr:"Récapitulatif",en:"Summary",es:"Resumen"},
+ fav_add:{fr:"+ Ajouter",en:"+ Add",es:"+ Añadir"},
+ fav_save:{fr:"Enregistrer",en:"Save",es:"Guardar"},
+ fav_name_title:{fr:"Nom du protocole",en:"Protocol name",es:"Nombre del protocolo"},
+ fav_name_ph:{fr:"Ex. Ma routine du soir",en:"E.g. My evening routine",es:"Ej. Mi rutina nocturna"},
+ fav_max_steps:{fr:"Maximum 8 fréquences par favori",en:"Maximum 8 frequencies per favorite",es:"Máximo 8 frecuencias por favorito"},
  geo_filter_crop:{fr:"Crop Circle",en:"Crop Circle",es:"Crop Circle"},
  geo_filter_sacred:{fr:"Géométrie sacrée",en:"Sacred geometry",es:"Geometría sagrada"},
  disc_pulse:{fr:"Bien-être et relaxation — pas un usage médical. Le volume pulse au rythme choisi, comme un battement.",en:"Wellness and relaxation — not medical use. Volume pulses at the chosen tempo, like a heartbeat.",es:"Bienestar y relajación — no es un uso médico. El volumen pulsa al ritmo elegido, como un latido."},
@@ -398,7 +466,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function t(k){ return (T[k]&&(T[k][lang]||T[k].fr))||k; }
   function pname(p){ return p[lang]||p.fr; }
 
-  var CATS=["Toutes","★ Favoris","Endogène","Phyto","Huiles ess.","Élément"];
+  var CATS=["Toutes","Endogène","Phyto","Huiles ess.","Élément"];
   var state={filter:"Toutes",q:"",cur:null,mode:"simple",beat:6,vol:0.5,playing:false,timerMin:0};
 
   var ctx=null;
@@ -406,29 +474,27 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   var _silence=null;
   function unlockAudio(){ try{ if(!_silence){ _silence=new Audio(SILENCE_URI); _silence.loop=true; _silence.setAttribute("playsinline",""); } var pr=_silence.play(); if(pr&&pr.catch)pr.catch(function(){}); }catch(e){} ensureCtx(); }
 
-  var FAV_MAX=12;
-  var favSlots=[]; try{ favSlots=JSON.parse(localStorage.getItem("auralis_favslots")||"[]"); }catch(e){ favSlots=[]; }
+  var FAV_MAX=12, FAV_STEP_MAX=8;
+  var favSlots=[]; try{ favSlots=JSON.parse(localStorage.getItem("auralis_favorites")||"[]"); }catch(e){ favSlots=[]; }
   while(favSlots.length<FAV_MAX)favSlots.push(null); if(favSlots.length>FAV_MAX)favSlots.length=FAV_MAX;
-  function saveFavSlots(){ try{ localStorage.setItem("auralis_favslots",JSON.stringify(favSlots)); }catch(e){} }
-  function favKey(it){ if(!it)return ""; if(it.type==="freq")return it.manual?("freq:manual:"+it.f.toFixed(2)):("freq:"+it.n); if(it.type==="geo")return "geo:"+it.idx; if(it.type==="proto")return "proto:"+it.idx; if(it.type==="pulse")return "pulse:"+it.bpm; return ""; }
-  function favIndexOf(it){ var k=favKey(it); if(!k)return -1; for(var i=0;i<FAV_MAX;i++){ if(favSlots[i]&&favKey(favSlots[i])===k)return i; } return -1; }
-  function favToggle(it){ var idx=favIndexOf(it); if(idx>=0){ favSlots[idx]=null; saveFavSlots(); return false; }
-    for(var i=0;i<FAV_MAX;i++){ if(!favSlots[i]){ favSlots[i]=it; saveFavSlots(); return true; } }
-    flashMsg(t("fav_full")); return false; }
-  function isLibFav(n){ return favIndexOf({type:"freq",n:n,manual:false})>=0; }
+  function saveFavSlots(){ try{ localStorage.setItem("auralis_favorites",JSON.stringify(favSlots)); }catch(e){} }
+  var favBuild=null; // {slot, steps:[{n,f,m}], name?, pending?}
   var _flashT=null;
   function flashMsg(msg){ var el=$("flashMsg"); if(!el){ el=document.createElement("div"); el.id="flashMsg"; el.className="flashmsg"; document.querySelector(".app").appendChild(el); }
     el.textContent=msg; el.classList.add("show"); clearTimeout(_flashT); _flashT=setTimeout(function(){ el.classList.remove("show"); },2200); }
 
   // ---------- nav ----------
   var returnTo="lib";
-  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavList"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); }); }
+  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); }); }
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   Array.prototype.forEach.call(document.querySelectorAll(".hcard"),function(b){
     b.addEventListener("click",function(){ var g=b.getAttribute("data-go");
       if(g==="pulse")openPulse(); else if(g==="bin")openBinInput(); else if(g==="favList"){ renderFavList(); show("favList"); } else show(g); });
   });
-  $("libBack").addEventListener("click",function(){ show("home"); });
+  $("libBack").addEventListener("click",function(){
+    if(favBuild){ if(favBuild.steps.length>0){ show("favRecap"); renderFavRecap(); } else { favBuild=null; $("libTitle").textContent=t("tab_freq"); show("favList"); renderFavList(); } }
+    else show("home");
+  });
   $("protBack").addEventListener("click",function(){ show("home"); });
   $("geoBack").addEventListener("click",function(){ show("home"); });
   $("favBack").addEventListener("click",function(){ show("home"); });
@@ -451,6 +517,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("gReverbLabel").textContent=t("reverb_label"); $("gEchoLabel").textContent=t("echo_label"); $("gDelayLabel").textContent=t("delay_label");
     $("binLbl1").textContent=t("bin_f1"); $("binLbl2").textContent=t("bin_f2"); $("binMaxgap").textContent=t("bin_maxgap"); $("binMaxgap2").textContent=t("bin_maxgap");
     $("binErrTitle").textContent=t("bin_err_title"); $("binRetry").textContent=t("bin_retry"); $("binPlayTitle").textContent=t("bin_playing"); $("binStop").textContent=t("stop");
+    $("favAddMore").textContent=t("fav_add_more"); $("favPlaySel").textContent=t("fav_play_sel"); $("favNextCancel").textContent=t("fav_cancel");
+    $("favRecapAdd").textContent=t("fav_add"); $("favRecapSave").textContent=t("fav_save"); $("favRecapCancel").textContent=t("fav_cancel");
+    $("favNameSave").textContent=t("fav_save"); $("favNameInput").placeholder=t("fav_name_ph");
     setBtn(state.playing); gSetBtn(gp.playing); pulseSetBtn(pulse.playing); setSeqBtn(seq.playing);
     renderLib(); renderProtos(); gRenderList(); buildInstr(); renderFavList(); renderBinInput();
   }
@@ -462,15 +531,15 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   CATS.forEach(function(c){ var b=document.createElement("button"); b.setAttribute("data-c",c); b.setAttribute("aria-pressed",c===state.filter?"true":"false");
     b.addEventListener("click",function(){ state.filter=c; Array.prototype.forEach.call(fEl.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-c")===c?"true":"false");}); renderLib(); }); fEl.appendChild(b); });
   $("search").addEventListener("input",function(){ state.q=this.value.toLowerCase(); renderLib(); });
-  function matches(m){ if(state.filter==="★ Favoris"&&!isLibFav(m.n))return false; if(state.filter!=="Toutes"&&state.filter!=="★ Favoris"&&m.c!==state.filter)return false; if(state.q&&m.n.toLowerCase().indexOf(state.q)<0)return false; return true; }
+  function matches(m){ if(state.filter!=="Toutes"&&m.c!==state.filter)return false; if(state.q&&m.n.toLowerCase().indexOf(state.q)<0)return false; return true; }
   function catShort(c){ return c==="Huiles ess."?"Huiles":c; }
   function renderLib(){
     var list=$("list"); list.innerHTML=""; var arr=LIB.filter(matches);
     $("count").textContent=arr.length+" / "+LIB.length;
-    if(!arr.length){ list.innerHTML='<p class="empty">'+t("none_freq")+(state.filter==="★ Favoris"?'<br>'+t("none_fav"):'')+'</p>'; return; }
+    if(!arr.length){ list.innerHTML='<p class="empty">'+t("none_freq")+'</p>'; return; }
     arr.forEach(function(m){ var b=document.createElement("button"); b.className="item";
-      b.innerHTML='<span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span>'+(isLibFav(m.n)?'<span class="fav">★</span>':'')+'<span class="hz">'+m.f.toFixed(2)+' Hz</span>';
-      b.addEventListener("click",function(){ openPlayer(m,"lib"); }); list.appendChild(b); });
+      b.innerHTML='<span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span><span class="hz">'+m.f.toFixed(2)+' Hz</span>';
+      b.addEventListener("click",function(){ if(favBuild)favPickFreq(m); else openPlayer(m,"lib"); }); list.appendChild(b); });
   }
   $("back").addEventListener("click",function(){ stopSingle(false); show(returnTo); });
 
@@ -480,16 +549,13 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var manual=!!m.manual; $("manualWrap").hidden=!manual;
     $("pTitle").textContent=manual?t("manual_title"):m.n; $("pcat").textContent=manual?t("manual_cat"):t("f_"+m.c);
     $("hzval").textContent=m.f.toFixed(2); if(manual)$("mInput").value=m.f.toFixed(2);
-    updFav(); setTimer(0); show("play");
+    setTimer(0); show("play");
   }
-  function currentFavItem(){ if(!state.cur)return null; return state.cur.manual?{type:"freq",n:null,f:state.cur.f,c:null,manual:true}:{type:"freq",n:state.cur.n,f:state.cur.f,c:state.cur.c,manual:false}; }
-  function updFav(){ var it=currentFavItem(); var on=it&&favIndexOf(it)>=0; $("fav").classList.toggle("on",!!on); $("fav").textContent=on?"★":"☆"; }
-  $("fav").addEventListener("click",function(){ var it=currentFavItem(); if(!it)return; favToggle(it); updFav(); });
 
   var lastManual=100.00; try{lastManual=parseFloat(localStorage.getItem("auralis_manual"))||100.00;}catch(e){}
-  $("manualBtn").addEventListener("click",function(){ openPlayer({n:"Fréquence manuelle",f:lastManual,c:"Manuel",manual:true},"lib"); });
+  $("manualBtn").addEventListener("click",function(){ if(favBuild)openFavKeypad("freq"); else openPlayer({n:"Fréquence manuelle",f:lastManual,c:"Manuel",manual:true},"lib"); });
   function setManual(v){ v=Math.max(20,Math.min(1000,Math.round(v*100)/100)); state.cur.f=v; lastManual=v; try{localStorage.setItem("auralis_manual",v);}catch(e){}
-    $("hzval").textContent=v.toFixed(2); if(document.activeElement!==$("mInput"))$("mInput").value=v.toFixed(2); live(); updFav(); }
+    $("hzval").textContent=v.toFixed(2); if(document.activeElement!==$("mInput"))$("mInput").value=v.toFixed(2); live(); }
   $("mInput").addEventListener("input",function(){ var v=parseFloat(this.value); if(!isNaN(v))setManual(v); });
   Array.prototype.forEach.call(document.querySelectorAll(".fine button"),function(b){ b.addEventListener("click",function(){ if(state.cur&&state.cur.manual)setManual(state.cur.f+parseFloat(b.getAttribute("data-d"))); }); });
 
@@ -521,7 +587,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       b.innerHTML='<span class="ico">'+p.ic+'</span><span class="pt"><b>'+pname(p)+'</b><span>'+p.s.length+' '+t("steps")+' · '+tot+' min</span></span><span class="go">›</span>';
       b.addEventListener("click",function(){ openSeq(i,"protos"); }); el.appendChild(b); }); }
   var seq={p:null,idx:0,protoIdx:null,remain:0,timer:null,master:null,osc:null,playing:false,total:0,elapsed:0};
-  function openSeq(i, from){ stopSeq(true); returnTo=from||"protos"; seq.p=PROTOS[i]; seq.protoIdx=i; seq.idx=0; seq.playing=false; seq.total=seq.p.s.reduce(function(a,x){return a+x.m*60;},0); seq.elapsed=0;
+  function openSeq(source, from){ stopSeq(true); returnTo=from||"protos";
+    seq.p=(typeof source==="number")?PROTOS[source]:source; seq.protoIdx=(typeof source==="number")?source:null;
+    seq.idx=0; seq.playing=false; seq.total=seq.p.s.reduce(function(a,x){return a+x.m*60;},0); seq.elapsed=0;
     $("sTitle").textContent=pname(seq.p);
     var st=$("sSteps"); st.innerHTML="";
     seq.p.s.forEach(function(x,k){ var li=document.createElement("li"); li.id="st"+k; li.innerHTML='<span class="si">'+(k+1)+'</span><span class="sn">'+x.n+'</span><span class="sh">'+x.f.toFixed(2)+' Hz</span><span class="sm">'+x.m+'m</span>'; st.appendChild(li); });
@@ -631,7 +699,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+nn+"</b>"; row.appendChild(d); });
     var n0=gp.fig.notes[0]; $("gNowN").textContent=n0; $("gNowF").textContent=NM[n0].toFixed(2)+" Hz";
-    gSetBtn(false); updGFav(); show("geoPlay"); }
+    gSetBtn(false); show("geoPlay"); }
   $("gBack").addEventListener("click",function(){ gStop(false); show(returnTo); });
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
   $("gReverb").addEventListener("input",function(){ var v=parseInt(this.value,10); $("gReverbVal").textContent=v; gSetReverbAmt(v/100); });
@@ -642,9 +710,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("gVol").addEventListener("input",function(){ gp.vol=parseInt(this.value,10)/100; $("gVolLbl").textContent=this.value; if(gp.master&&ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02); });
   $("gPlay").addEventListener("click",function(){ if(gp.playing)gStop(false); else gPlay(); });
   function gSetBtn(on){ var b=$("gPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); }
-  function gFavItem(){ return gp.figIdx==null?null:{type:"geo",idx:gp.figIdx}; }
-  function updGFav(){ var it=gFavItem(); var on=it&&favIndexOf(it)>=0; $("gFav").classList.toggle("on",!!on); $("gFav").textContent=on?"★":"☆"; }
-  $("gFav").addEventListener("click",function(){ var it=gFavItem(); if(!it)return; favToggle(it); updGFav(); });
 
   function gScheduleNote(f,start,dur){
     var sm=SAMPLES[gp.instr];
@@ -745,18 +810,15 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     try{ m.gain.cancelScheduledValues(ti); m.gain.setValueAtTime(m.gain.value,ti); m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.02:0.08)); }catch(e){}
     setTimeout(function(){ [o,l,d].forEach(function(nd){ try{nd.stop();nd.disconnect();}catch(e){} }); try{m.disconnect();}catch(e){} }, immediate?40:140);
     pulse.master=null; pulse.osc=null; pulse.trem=null; pulse.dc=null; pulse.lfo=null; pulse.lfoGain=null; pulse.playing=false; pulseSetBtn(false); }
-  function pulseFavItem(){ return {type:"pulse", bpm:pulse.bpm}; }
-  function updPFav(){ var on=favIndexOf(pulseFavItem())>=0; $("pFav").classList.toggle("on",on); $("pFav").textContent=on?"★":"☆"; }
   function openPulse(from,bpm){ pulseStop(true); returnTo=from||"home";
     if(typeof bpm==="number"){ pulse.bpm=Math.max(40,Math.min(120,bpm)); }
     $("pBpm").value=pulse.bpm; $("pBpmVal").textContent=pulse.bpm+" bpm"; $("pBpmNum").textContent=pulse.bpm;
-    $("pulseTitle").textContent=t("home_pulse"); updPFav(); pulseSetBtn(false); show("pulse"); }
+    $("pulseTitle").textContent=t("home_pulse"); pulseSetBtn(false); show("pulse"); }
   $("pBack").addEventListener("click",function(){ pulseStop(false); show(returnTo); });
   $("pBpm").addEventListener("input",function(){ pulse.bpm=parseInt(this.value,10); $("pBpmVal").textContent=pulse.bpm+" bpm"; $("pBpmNum").textContent=pulse.bpm;
-    if(pulse.playing&&pulse.lfo&&ctx)pulse.lfo.frequency.setTargetAtTime(pulse.bpm/60,ctx.currentTime,0.05); updPFav(); });
+    if(pulse.playing&&pulse.lfo&&ctx)pulse.lfo.frequency.setTargetAtTime(pulse.bpm/60,ctx.currentTime,0.05); });
   $("pVol").addEventListener("input",function(){ pulse.vol=parseInt(this.value,10)/100; $("pVolLbl").textContent=this.value; if(pulse.master&&ctx)pulse.master.gain.setTargetAtTime(pulse.playing?pulse.vol:0,ctx.currentTime,0.02); });
   $("pPlay").addEventListener("click",function(){ unlockAudio(); if(pulse.playing)pulseStop(false); else pulseStart(); });
-  $("pFav").addEventListener("click",function(){ favToggle(pulseFavItem()); updPFav(); });
 
   // ================= BINAURAUX (façon boîtier) =================
   var bin={step:1,f1:0,f2:0,kb:"",vol:0.5,playing:false,master:null,oscA:null,oscB:null};
@@ -808,23 +870,116 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("binVol").addEventListener("input",function(){ bin.vol=parseInt(this.value,10)/100; $("binVolLbl").textContent=this.value; if(bin.master&&ctx)bin.master.gain.setTargetAtTime(bin.playing?bin.vol:0,ctx.currentTime,0.02); });
   $("binStop").addEventListener("click",function(){ binStop(false); show("home"); });
 
-  // ---------- favoris (liste) ----------
-  function favIcon(it){ if(it.type==="freq")return it.manual?"⌨":"🎵"; if(it.type==="geo")return GEO[it.idx].ic; if(it.type==="proto")return PROTOS[it.idx].ic; if(it.type==="pulse")return "💓"; return ""; }
-  function favLabel(it){ if(it.type==="freq")return it.manual?t("manual_title"):it.n; if(it.type==="geo")return GEO[it.idx].name; if(it.type==="proto")return pname(PROTOS[it.idx]); if(it.type==="pulse")return t("home_pulse"); return ""; }
-  function favSub(it){ if(it.type==="freq")return it.f.toFixed(2)+" Hz"; if(it.type==="geo")return GEO[it.idx].sym[lang]||GEO[it.idx].sym.fr; if(it.type==="proto")return PROTOS[it.idx].s.length+" "+t("steps"); if(it.type==="pulse")return it.bpm+" bpm"; return ""; }
-  function favOpen(it){ if(it.type==="freq")openPlayer(it.manual?{n:null,f:it.f,c:null,manual:true}:{n:it.n,f:it.f,c:it.c},"favList");
-    else if(it.type==="geo")gOpen(it.idx,"favList"); else if(it.type==="proto")openSeq(it.idx,"favList"); else if(it.type==="pulse")openPulse("favList",it.bpm); }
-  function renderFavList(){ $("favTitle").textContent=t("fav_title"); var el=$("favListEl"); el.innerHTML="";
-    favSlots.forEach(function(it,i){
-      if(it){ var row=document.createElement("button"); row.className="item";
-        row.innerHTML='<span class="nm">'+favIcon(it)+' '+favLabel(it)+'<br><span class="cat">'+favSub(it)+'</span></span><span class="rm" data-i="'+i+'">✕</span>';
-        row.addEventListener("click",function(ev){ if(ev.target.classList.contains("rm"))return; favOpen(it); });
-        row.querySelector(".rm").addEventListener("click",function(ev){ ev.stopPropagation(); favSlots[i]=null; saveFavSlots(); renderFavList(); });
-        el.appendChild(row);
-      } else { var row2=document.createElement("div"); row2.className="item"; row2.style.opacity=".45"; row2.style.cursor="default";
-        row2.innerHTML='<span class="nm">'+t("fav_empty")+'</span>'; el.appendChild(row2); }
+  // ---------- favoris = constructeur de séquence (façon boîtier) ----------
+  function renderFavList(){
+    $("favTitle").textContent=t("fav_title");
+    var el=$("favListEl"); el.innerHTML="";
+    favSlots.forEach(function(f,i){
+      var row=document.createElement("button"); row.className="item";
+      if(f){
+        var tot=f.steps.reduce(function(a,s){return a+s.m;},0);
+        row.innerHTML='<span class="nm">⭐ '+f.name+'<br><span class="cat">'+f.steps.length+' '+t("steps")+' · '+tot+' min</span></span>'
+          +'<span class="rm" data-a="edit" style="color:var(--cyan)">✎</span><span class="rm" data-a="del">✕</span>';
+        row.addEventListener("click",function(ev){
+          var a=ev.target.getAttribute&&ev.target.getAttribute("data-a");
+          if(a==="del"){ favSlots[i]=null; saveFavSlots(); renderFavList(); return; }
+          if(a==="edit"){ favBuild={slot:i, steps:f.steps.slice(), name:f.name}; show("favRecap"); renderFavRecap(); return; }
+          openSeq({fr:f.name,en:f.name,es:f.name,ic:"⭐",s:f.steps}, "favList");
+        });
+      } else {
+        row.innerHTML='<span class="nm">'+t("fav_new")+'</span>';
+        row.addEventListener("click",function(){ favBuild={slot:i, steps:[]}; enterFavPicker(); });
+      }
+      el.appendChild(row);
     });
   }
+  function enterFavPicker(){ $("libTitle").textContent=t("fav_pick_title"); show("lib"); }
+  function favPickFreq(m){ favBuild.pending={n:m.n, f:m.f}; openFavKeypad("duration"); }
+
+  var favKb={mode:"duration",kb:""};
+  function openFavKeypad(mode){ favKb.mode=mode; favKb.kb=""; renderFavKeypad(); show("favKeypad"); }
+  function renderFavKeypad(){
+    if(favKb.mode==="duration"){
+      $("favKbTitle").textContent=t("fav_dur_title");
+      $("favKbSub").textContent=favBuild.pending.n+"  —  "+favBuild.pending.f.toFixed(4)+" Hz";
+      $("favKbVal").textContent=(favKb.kb||"—")+" min";
+      $("favKbHint").textContent=t("fav_dur_hint");
+    } else {
+      $("favKbTitle").textContent=t("manual_title");
+      $("favKbSub").textContent="";
+      $("favKbVal").textContent=(favKb.kb||"—.—")+" Hz";
+      $("favKbHint").textContent="";
+    }
+  }
+  function favKbDigit(d){ var max=(favKb.mode==="duration")?2:9; if(favKb.kb.length>=max)return; if(d==="."){ if(favKb.mode==="duration"||favKb.kb.indexOf(".")>=0)return; } favKb.kb+=d; renderFavKeypad(); }
+  function favKbBack(){ favKb.kb=favKb.kb.slice(0,-1); renderFavKeypad(); }
+  function favKbOk(){
+    if(favKb.mode==="duration"){
+      var mn=parseInt(favKb.kb,10);
+      if(!favKb.kb||isNaN(mn)||mn<1||mn>60){ flashMsg(t("fav_dur_err")); return; }
+      favBuild.steps.push({n:favBuild.pending.n, f:favBuild.pending.f, m:mn});
+      favBuild.pending=null;
+      renderFavNext(); show("favNext");
+    } else {
+      var v=parseFloat(favKb.kb); if(!favKb.kb||isNaN(v)||v<=0)return;
+      favBuild.pending={n:t("manual_title"), f:v};
+      openFavKeypad("duration");
+    }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#favKeypadGrid button[data-k]"),function(b){
+    b.addEventListener("click",function(){ var k=b.getAttribute("data-k"); if(k==="back")favKbBack(); else favKbDigit(k); });
+  });
+  $("favKbOk").addEventListener("click",favKbOk);
+  $("favKbBack").addEventListener("click",function(){ show("lib"); });
+
+  function renderFavNext(){
+    $("favNextTitle").textContent=t("fav_next_title");
+    var n=favBuild.steps.length;
+    $("favNextCount").textContent=n+" "+(n>1?t("fav_count_many"):t("fav_count_one"));
+    var last=favBuild.steps[n-1];
+    $("favNextLast").textContent=t("fav_last_added")+" : "+last.n+" — "+last.m+" min";
+  }
+  $("favAddMore").addEventListener("click",function(){
+    if(favBuild.steps.length>=FAV_STEP_MAX){ flashMsg(t("fav_max_steps")); return; }
+    enterFavPicker();
+  });
+  $("favPlaySel").addEventListener("click",function(){ show("favRecap"); renderFavRecap(); });
+  $("favNextCancel").addEventListener("click",function(){ favBuild=null; show("favList"); renderFavList(); });
+
+  function renderFavRecap(){
+    $("favRecapTitle").textContent=t("fav_recap_title");
+    var el=$("favRecapSteps"); el.innerHTML="";
+    favBuild.steps.forEach(function(s,i){
+      var li=document.createElement("li");
+      li.innerHTML='<span class="si">'+(i+1)+'</span><span class="sn">'+s.n+'</span><span class="sh">'+s.f.toFixed(2)+' Hz</span><span class="sm">'+s.m+'m</span><span class="rm">✕</span>';
+      li.querySelector(".rm").addEventListener("click",function(){
+        favBuild.steps.splice(i,1);
+        if(!favBuild.steps.length){ favBuild=null; show("favList"); renderFavList(); } else renderFavRecap();
+      });
+      el.appendChild(li);
+    });
+  }
+  function favCancelBuild(){ favBuild=null; show("favList"); renderFavList(); }
+  $("favRecapBack").addEventListener("click",favCancelBuild);
+  $("favRecapCancel").addEventListener("click",favCancelBuild);
+  $("favRecapAdd").addEventListener("click",function(){
+    if(favBuild.steps.length>=FAV_STEP_MAX){ flashMsg(t("fav_max_steps")); return; }
+    enterFavPicker();
+  });
+  $("favRecapSave").addEventListener("click",function(){
+    $("favNameTitle").textContent=t("fav_name_title");
+    $("favNameInput").placeholder=t("fav_name_ph");
+    $("favNameInput").value=favBuild.name||"";
+    show("favName");
+  });
+  $("favNameBack").addEventListener("click",function(){ show("favRecap"); });
+  $("favNameSave").addEventListener("click",function(){
+    var name=$("favNameInput").value.trim() || (t("fav_default_name")+" "+(favBuild.slot+1));
+    favSlots[favBuild.slot]={name:name, steps:favBuild.steps.slice()};
+    saveFavSlots();
+    favBuild=null; $("libTitle").textContent=t("tab_freq");
+    show("favList"); renderFavList();
+  });
 
   makeViz("viz",function(){return state.playing;});
   makeViz("sViz",function(){return seq.playing;});
