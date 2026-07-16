@@ -498,7 +498,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       if(!reduce)phase+=on?0.11:0.02; requestAnimationFrame(draw); })(); }
 
   // ================= GÉOMÉTRIE SACRÉE & AGROGLYPHES =================
-  var NM={"Do":256.00,"Ré":288.00,"Mi":324.00,"Fa":341.33,"Sol":384.00,"La":432.00,"Si":486.00,"Do′":512.00};
+  // Accordage "Factor 9" Grid Built on 432 (grille de Nicolas Tesla) : chaque note = +9 Hz (colonne de base),
+  // ici colonne ×2 pour rester dans une plage audible confortable. La=432 exactement, comme sur la grille.
+  var NM={"Do":252.00,"Ré":288.00,"Mi":324.00,"Fa":342.00,"Sol":378.00,"La":432.00,"Si":468.00,"Do′":504.00};
   var GEO=[
    {name:"Agroglyphe",ic:"🌀",shape:"crop",cat:"crop",sym:{fr:"Symétrie 8 · Pythagore",en:"8-fold · Pythagoras",es:"Simetría 8 · Pitágoras"},ratios:"2:1 · 3:2 · 4:3",notes:["Do","Fa","Sol","Do′","Do′","Sol","Fa","Do"],drone:[["Do",0.3],["Sol",0.2]]},
    {name:"Triangle · Tétraèdre",ic:"△",shape:"triangle",cat:"sacred",sym:{fr:"Le 3 · accord parfait",en:"The 3 · perfect chord",es:"El 3 · acorde perfecto"},ratios:"accord majeur",notes:["Do","Mi","Sol","Do′"],drone:[["Do",0.35]]},
