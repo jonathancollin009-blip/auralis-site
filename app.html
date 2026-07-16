@@ -25,16 +25,23 @@
   .app{width:100%; max-width:520px; min-height:100%; display:flex; flex-direction:column; position:relative}
   .view{display:none; flex-direction:column; flex:1}
   .view.on{display:flex}
-  .home{padding-bottom:74px}
 
   .bar{position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:12px; padding:16px 18px 12px;
        background:linear-gradient(180deg,var(--bg),rgba(7,13,28,.86)); backdrop-filter:blur(8px)}
   .bar .logo{font-size:1rem; font-weight:800; letter-spacing:.3em; margin:0}
   .bar .logo .a{color:var(--cyan)} .bar .logo .l{color:var(--mauve)}
   .bar .count{margin-left:auto; font-size:.74rem; color:var(--dimmer); font-variant-numeric:tabular-nums}
-  .langbtn{background:transparent; border:1px solid var(--mauve); color:var(--mauve); border-radius:18px; font:inherit; font-size:.78rem; font-weight:700; padding:5px 12px; cursor:pointer; letter-spacing:.05em}
-  .backbtn{background:var(--pan); border:1px solid var(--line); color:var(--cyan); font:inherit; font-size:1.1rem; width:40px; height:40px; border-radius:11px; cursor:pointer}
+  .langbtn{background:transparent; border:1px solid var(--mauve); color:var(--mauve); border-radius:18px; font:inherit; font-size:.78rem; font-weight:700; padding:5px 12px; cursor:pointer; letter-spacing:.05em; margin-left:auto}
+  .backbtn{background:var(--pan); border:1px solid var(--line); color:var(--cyan); font:inherit; font-size:1.1rem; width:40px; height:40px; border-radius:11px; cursor:pointer; flex:0 0 auto}
   .bar h2{font-size:1rem; font-weight:700; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+  .hgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:10px 18px 26px}
+  .hcard{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; aspect-ratio:1; background:var(--pan); border:1px solid var(--line); border-radius:20px; color:var(--txt); font:inherit; cursor:pointer}
+  .hcard:active{background:var(--pan2)}
+  .hcard .hic{font-size:2.3rem}
+  .hcard .hn{font-size:.94rem; font-weight:700; text-align:center; letter-spacing:.01em}
+  .hcard.wide{grid-column:1/3; aspect-ratio:auto; flex-direction:row; padding:20px}
+  .hcard.wide .hic{font-size:1.8rem}
 
   .pad{padding:0 18px}
   .search{width:100%; background:var(--pan); border:1px solid var(--line); border-radius:12px; color:var(--txt); font:inherit; font-size:.95rem; padding:12px 14px; margin-bottom:12px}
@@ -55,6 +62,8 @@
   .item .cat{font-size:.7rem; color:var(--dimmer); letter-spacing:.04em}
   .item .hz{font-variant-numeric:tabular-nums; font-weight:700; color:var(--cyan); font-size:.92rem}
   .item .fav{color:var(--gold); font-size:.9rem}
+  .item .rm{flex:0 0 auto; color:var(--dimmer); font-size:1.05rem; padding:4px 6px; cursor:pointer}
+  .item .rm:active{color:#e8836f}
   .empty{text-align:center; color:var(--dimmer); padding:40px 20px; font-size:.9rem}
 
   .pcard{display:flex; align-items:center; gap:14px; width:100%; text-align:left; background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:11px; cursor:pointer; color:var(--txt); font:inherit}
@@ -125,16 +134,25 @@
   .gnote b{display:block; font-size:.95rem; font-weight:800}
   .gratios{text-align:center; color:var(--gold); font-size:.8rem; font-variant-numeric:tabular-nums; margin:2px 0 0}
   .gsym{text-align:center; color:var(--dim); font-size:.78rem; margin:2px 0 6px}
-  .tabbar{position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:520px; display:flex; background:rgba(10,17,34,.94); backdrop-filter:blur(10px); border-top:1px solid var(--line); z-index:10}
-  .tabbar.hide{display:none}
-  .tabbar button{flex:1; background:none; border:0; color:var(--dimmer); font:inherit; font-size:.78rem; font-weight:600; padding:11px 0 14px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px}
-  .tabbar button .ti{font-size:1.25rem; line-height:1}
-  .tabbar button[aria-pressed="true"]{color:var(--cyan)}
+
+  .flashmsg{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); background:var(--pan2); border:1px solid var(--gold); color:var(--gold); font-size:.82rem; font-weight:600; padding:10px 18px; border-radius:12px; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:20; max-width:80%; text-align:center}
+  .flashmsg.show{opacity:1; transform:translateX(-50%) translateY(0)}
 </style>
 
 <div class="app">
-  <section class="view on home" id="vLib">
-    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><span class="count" id="count"></span><button class="langbtn" id="langBtn">FR</button></div>
+  <section class="view on" id="vHome">
+    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><button class="langbtn" id="langBtn">FR</button></div>
+    <div class="hgrid" id="hgrid">
+      <button class="hcard" data-go="geo"><span class="hic">🔯</span><span class="hn" id="hGeo"></span></button>
+      <button class="hcard" data-go="lib"><span class="hic">🎵</span><span class="hn" id="hFreq"></span></button>
+      <button class="hcard" data-go="protos"><span class="hic">✨</span><span class="hn" id="hProto"></span></button>
+      <button class="hcard" data-go="pulse"><span class="hic">💓</span><span class="hn" id="hPulse"></span></button>
+      <button class="hcard wide" data-go="favList"><span class="hic">⭐</span><span class="hn" id="hFav"></span></button>
+    </div>
+  </section>
+
+  <section class="view" id="vLib">
+    <div class="bar"><button class="backbtn" id="libBack" aria-label="Retour">‹</button><h2 id="libTitle">—</h2><span class="count" id="count"></span></div>
     <div class="pad">
       <input class="search" id="search" type="search" aria-label="Rechercher">
       <div class="filters" id="filters"></div>
@@ -143,8 +161,8 @@
     <div class="list" id="list"></div>
   </section>
 
-  <section class="view home" id="vProtos">
-    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><span class="count" id="protHead"></span><button class="langbtn" id="langBtn2">FR</button></div>
+  <section class="view" id="vProtos">
+    <div class="bar"><button class="backbtn" id="protBack" aria-label="Retour">‹</button><h2 id="protTitle">—</h2></div>
     <div class="list" id="protoList"></div>
   </section>
 
@@ -182,13 +200,14 @@
       <div class="prog"><i id="sBar"></i></div>
       <div class="ctl"><div class="row"><span class="label" id="sVolLabel"></span><span class="v"><span id="sVolLbl">50</span> %</span></div><input type="range" id="sVol" min="0" max="100" step="1" value="50"></div>
       <ul class="steps" id="sSteps"></ul>
-      <div class="actions"><button class="play" id="sPlay"></button></div>
+      <div class="actions"><button class="play" id="sPlay"></button><button class="favbtn" id="sFav">☆</button></div>
       <p class="disc" id="discSeq"></p>
     </div>
   </section>
 
-  <section class="view home" id="vGeo">
-    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><span class="count" id="geoHead"></span></div>
+  <section class="view" id="vGeo">
+    <div class="bar"><button class="backbtn" id="geoBack" aria-label="Retour">‹</button><h2 id="geoTitle">—</h2></div>
+    <div class="pad"><div class="filters" id="geoFilters"></div></div>
     <div class="list" id="geoList"></div>
   </section>
 
@@ -208,16 +227,27 @@
       <div class="ctl"><div class="row"><span class="label" id="gReverbLabel"></span><span class="v"><span id="gReverbVal">0</span> %</span></div><input type="range" id="gReverb" min="0" max="100" step="1" value="0"></div>
       <div class="ctl"><div class="row"><span class="label" id="gEchoLabel"></span><span class="v"><span id="gEchoVal">0</span> %</span></div><input type="range" id="gEcho" min="0" max="100" step="1" value="0"></div>
       <div class="ctl"><div class="row"><span class="label" id="gDelayLabel"></span><span class="v"><span id="gDelayVal">250</span> ms</span></div><input type="range" id="gDelay" min="50" max="800" step="10" value="250"></div>
-      <div class="actions"><button class="play" id="gPlay"></button></div>
+      <div class="actions"><button class="play" id="gPlay"></button><button class="favbtn" id="gFav">☆</button></div>
       <p class="disc" id="discGeo"></p>
     </div>
   </section>
 
-  <nav class="tabbar" id="tabbar">
-    <button data-t="lib" aria-pressed="true"><span class="ti">🎵</span><span class="tl" id="tabFreq"></span></button>
-    <button data-t="protos" aria-pressed="false"><span class="ti">✨</span><span class="tl" id="tabProto"></span></button>
-    <button data-t="geo" aria-pressed="false"><span class="ti">🔯</span><span class="tl" id="tabGeo"></span></button>
-  </nav>
+  <section class="view" id="vPulse">
+    <div class="bar"><button class="backbtn" id="pBack" aria-label="Retour">‹</button><h2 id="pulseTitle">—</h2></div>
+    <div class="player">
+      <div class="stage"><canvas id="pViz" width="400" height="400" aria-hidden="true"></canvas>
+        <div class="readout"><div class="hz"><span id="pHzVal">432</span><span class="u">Hz</span></div><div class="pcat" id="pBpmLbl">72 bpm</div></div></div>
+      <div class="ctl"><div class="row"><span class="label" id="pTempoLabel"></span><span class="v" id="pBpmVal">72 bpm</span></div><input type="range" id="pBpm" min="40" max="120" step="1" value="72"></div>
+      <div class="ctl"><div class="row"><span class="label" id="pVolLabel"></span><span class="v"><span id="pVolLbl">50</span> %</span></div><input type="range" id="pVol" min="0" max="100" step="1" value="50"></div>
+      <div class="actions"><button class="play" id="pPlay"></button><button class="favbtn" id="pFav">☆</button></div>
+      <p class="disc" id="discPulse"></p>
+    </div>
+  </section>
+
+  <section class="view" id="vFavList">
+    <div class="bar"><button class="backbtn" id="favBack" aria-label="Retour">‹</button><h2 id="favTitle">—</h2></div>
+    <div class="list" id="favListEl"></div>
+  </section>
 </div>
 
 <script>
@@ -274,16 +304,22 @@ var T={
  instr_label:{fr:"Instrument",en:"Instrument",es:"Instrumento"},
  reverb_label:{fr:"Réverb 🏛️",en:"Reverb 🏛️",es:"Reverb 🏛️"},
  echo_label:{fr:"Écho",en:"Echo",es:"Eco"},
- delay_label:{fr:"Delay",en:"Delay",es:"Delay"}
+ delay_label:{fr:"Delay",en:"Delay",es:"Delay"},
+ home_pulse:{fr:"432 Hz Pulsé",en:"432 Hz Pulsed",es:"432 Hz Pulsado"},
+ fav_title:{fr:"Favoris",en:"Favorites",es:"Favoritos"},
+ fav_empty:{fr:"— vide —",en:"— empty —",es:"— vacío —"},
+ fav_full:{fr:"12/12 — libère un emplacement d'abord",en:"12/12 — free a slot first",es:"12/12 — libera un espacio primero"},
+ geo_filter_crop:{fr:"Crop Circle",en:"Crop Circle",es:"Crop Circle"},
+ geo_filter_sacred:{fr:"Géométrie sacrée",en:"Sacred geometry",es:"Geometría sagrada"},
+ disc_pulse:{fr:"Bien-être et relaxation — pas un usage médical. Le volume pulse au rythme choisi, comme un battement.",en:"Wellness and relaxation — not medical use. Volume pulses at the chosen tempo, like a heartbeat.",es:"Bienestar y relajación — no es un uso médico. El volumen pulsa al ritmo elegido, como un latido."}
 };
 
-var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
+var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
 
 (function(){
   "use strict";
   var $=function(id){return document.getElementById(id);};
   var LANGS=["fr","en","es"], NEXT={fr:"EN",en:"ES",es:"FR"};
-  // Détecte la langue du téléphone au 1er lancement (fr/en/es), défaut anglais pour les autres.
   function detectLang(){
     var navs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||navigator.userLanguage||"en"];
     for(var i=0;i<navs.length;i++){ var l=(navs[i]||"").toLowerCase();
@@ -291,80 +327,102 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     return "en";
   }
   var lang=null; try{ lang=localStorage.getItem("auralis_lang"); }catch(e){}
-  if(!lang || LANGS.indexOf(lang)<0){ lang=detectLang(); }   // pas de choix sauvegardé → langue du téléphone
+  if(!lang || LANGS.indexOf(lang)<0){ lang=detectLang(); }
   function t(k){ return (T[k]&&(T[k][lang]||T[k].fr))||k; }
   function pname(p){ return p[lang]||p.fr; }
 
   var CATS=["Toutes","★ Favoris","Endogène","Phyto","Huiles ess.","Élément"];
   var state={filter:"Toutes",q:"",cur:null,mode:"simple",beat:6,vol:0.5,playing:false,timerMin:0};
-  var favs={}; try{favs=JSON.parse(localStorage.getItem("auralis_favs")||"{}");}catch(e){favs={};}
-  function saveFavs(){try{localStorage.setItem("auralis_favs",JSON.stringify(favs));}catch(e){}}
 
   var ctx=null;
   function ensureCtx(){ if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==="suspended")ctx.resume(); return ctx; }
-  // Débloque le son en mode silencieux iOS : joue un audio silencieux en boucle (bascule la session en "lecture média").
   var _silence=null;
   function unlockAudio(){ try{ if(!_silence){ _silence=new Audio(SILENCE_URI); _silence.loop=true; _silence.setAttribute("playsinline",""); } var pr=_silence.play(); if(pr&&pr.catch)pr.catch(function(){}); }catch(e){} ensureCtx(); }
 
+  var FAV_MAX=12;
+  var favSlots=[]; try{ favSlots=JSON.parse(localStorage.getItem("auralis_favslots")||"[]"); }catch(e){ favSlots=[]; }
+  while(favSlots.length<FAV_MAX)favSlots.push(null); if(favSlots.length>FAV_MAX)favSlots.length=FAV_MAX;
+  function saveFavSlots(){ try{ localStorage.setItem("auralis_favslots",JSON.stringify(favSlots)); }catch(e){} }
+  function favKey(it){ if(!it)return ""; if(it.type==="freq")return it.manual?("freq:manual:"+it.f.toFixed(2)):("freq:"+it.n); if(it.type==="geo")return "geo:"+it.idx; if(it.type==="proto")return "proto:"+it.idx; if(it.type==="pulse")return "pulse:"+it.bpm; return ""; }
+  function favIndexOf(it){ var k=favKey(it); if(!k)return -1; for(var i=0;i<FAV_MAX;i++){ if(favSlots[i]&&favKey(favSlots[i])===k)return i; } return -1; }
+  function favToggle(it){ var idx=favIndexOf(it); if(idx>=0){ favSlots[idx]=null; saveFavSlots(); return false; }
+    for(var i=0;i<FAV_MAX;i++){ if(!favSlots[i]){ favSlots[i]=it; saveFavSlots(); return true; } }
+    flashMsg(t("fav_full")); return false; }
+  function isLibFav(n){ return favIndexOf({type:"freq",n:n,manual:false})>=0; }
+  var _flashT=null;
+  function flashMsg(msg){ var el=$("flashMsg"); if(!el){ el=document.createElement("div"); el.id="flashMsg"; el.className="flashmsg"; document.querySelector(".app").appendChild(el); }
+    el.textContent=msg; el.classList.add("show"); clearTimeout(_flashT); _flashT=setTimeout(function(){ el.classList.remove("show"); },2200); }
+
+  // ---------- nav ----------
+  var returnTo="lib";
+  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vFavList"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); }); }
+  function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+  Array.prototype.forEach.call(document.querySelectorAll(".hcard"),function(b){
+    b.addEventListener("click",function(){ var g=b.getAttribute("data-go");
+      if(g==="pulse")openPulse(); else if(g==="favList"){ renderFavList(); show("favList"); } else show(g); });
+  });
+  $("libBack").addEventListener("click",function(){ show("home"); });
+  $("protBack").addEventListener("click",function(){ show("home"); });
+  $("geoBack").addEventListener("click",function(){ show("home"); });
+  $("favBack").addEventListener("click",function(){ show("home"); });
+
   // ---------- langue ----------
   function applyLang(){
-    $("langBtn").textContent=NEXT[lang]; $("langBtn2").textContent=NEXT[lang];
+    $("langBtn").textContent=NEXT[lang];
     $("search").placeholder=t("search_ph");
     $("manualBtn").textContent=t("manual_btn");
-    $("protHead").textContent=t("protos_head");
     $("hzLabel").textContent=t("hz_label");
     $("mSimple").textContent=t("mode_simple"); $("mBin").textContent=t("mode_bin");
     $("beatLabel").textContent=t("beat_label"); $("binHint").textContent=t("bin_hint");
-    $("volLabel").textContent=t("volume"); $("sVolLabel").textContent=t("volume");
+    $("volLabel").textContent=t("volume"); $("sVolLabel").textContent=t("volume"); $("pVolLabel").textContent=t("volume"); $("gVolLabel").textContent=t("volume");
     $("timerLabel").textContent=t("timer_label");
-    $("discSingle").textContent=t("disc_single"); $("discSeq").textContent=t("disc_seq");
-    $("tabFreq").textContent=t("tab_freq"); $("tabProto").textContent=t("tab_proto");
+    $("discSingle").textContent=t("disc_single"); $("discSeq").textContent=t("disc_seq"); $("discGeo").textContent=t("disc_geo"); $("discPulse").textContent=t("disc_pulse");
     Array.prototype.forEach.call(fEl.children,function(b){ b.textContent=t("f_"+b.getAttribute("data-c")); });
-    $("tabGeo").textContent=t("tab_geo"); $("geoHead").textContent=t("geo_head");
+    Array.prototype.forEach.call(gfEl.children,function(b){ b.textContent=t(b.getAttribute("data-l")); });
+    $("hGeo").textContent=t("tab_geo"); $("hFreq").textContent=t("tab_freq"); $("hProto").textContent=t("tab_proto"); $("hPulse").textContent=t("home_pulse"); $("hFav").textContent=t("fav_title");
+    $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); $("pulseTitle").textContent=t("home_pulse");
     $("gLoopOn").textContent=t("loop_inf"); $("gLoopOff").textContent=t("loop_once");
-    $("gTempoLabel").textContent=t("tempo"); $("gVolLabel").textContent=t("volume"); $("discGeo").textContent=t("disc_geo"); $("gInstrLabel").textContent=t("instr_label");
+    $("gTempoLabel").textContent=t("tempo"); $("pTempoLabel").textContent=t("tempo"); $("gInstrLabel").textContent=t("instr_label");
     $("gReverbLabel").textContent=t("reverb_label"); $("gEchoLabel").textContent=t("echo_label"); $("gDelayLabel").textContent=t("delay_label");
-    setBtn(state.playing); gSetBtn(gp.playing); renderLib(); renderProtos(); gRenderList(); buildInstr();
+    setBtn(state.playing); gSetBtn(gp.playing); pulseSetBtn(pulse.playing); setSeqBtn(seq.playing);
+    renderLib(); renderProtos(); gRenderList(); buildInstr(); renderFavList();
   }
   function cycleLang(){ lang=LANGS[(LANGS.indexOf(lang)+1)%3]; try{localStorage.setItem("auralis_lang",lang);}catch(e){} applyLang(); }
-  $("langBtn").addEventListener("click",cycleLang); $("langBtn2").addEventListener("click",cycleLang);
-
-  // ---------- nav ----------
-  function show(v){ ["vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
-    var home=(v==="lib"||v==="protos"||v==="geo"); $("tabbar").classList.toggle("hide",!home);
-    if(home)Array.prototype.forEach.call($("tabbar").children,function(b){ b.setAttribute("aria-pressed",b.getAttribute("data-t")===v?"true":"false"); }); }
-  function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
-  function stopAllPlayers(){ stopSingle(false); stopSeq(false); gStop(false); }
-  Array.prototype.forEach.call($("tabbar").children,function(b){ b.addEventListener("click",function(){ stopAllPlayers(); show(b.getAttribute("data-t")); }); });
+  $("langBtn").addEventListener("click",cycleLang);
 
   // ---------- bibliothèque ----------
   var fEl=$("filters");
   CATS.forEach(function(c){ var b=document.createElement("button"); b.setAttribute("data-c",c); b.setAttribute("aria-pressed",c===state.filter?"true":"false");
     b.addEventListener("click",function(){ state.filter=c; Array.prototype.forEach.call(fEl.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-c")===c?"true":"false");}); renderLib(); }); fEl.appendChild(b); });
   $("search").addEventListener("input",function(){ state.q=this.value.toLowerCase(); renderLib(); });
-  function matches(m){ if(state.filter==="★ Favoris"&&!favs[m.n])return false; if(state.filter!=="Toutes"&&state.filter!=="★ Favoris"&&m.c!==state.filter)return false; if(state.q&&m.n.toLowerCase().indexOf(state.q)<0)return false; return true; }
+  function matches(m){ if(state.filter==="★ Favoris"&&!isLibFav(m.n))return false; if(state.filter!=="Toutes"&&state.filter!=="★ Favoris"&&m.c!==state.filter)return false; if(state.q&&m.n.toLowerCase().indexOf(state.q)<0)return false; return true; }
   function catShort(c){ return c==="Huiles ess."?"Huiles":c; }
   function renderLib(){
     var list=$("list"); list.innerHTML=""; var arr=LIB.filter(matches);
     $("count").textContent=arr.length+" / "+LIB.length;
     if(!arr.length){ list.innerHTML='<p class="empty">'+t("none_freq")+(state.filter==="★ Favoris"?'<br>'+t("none_fav"):'')+'</p>'; return; }
     arr.forEach(function(m){ var b=document.createElement("button"); b.className="item";
-      b.innerHTML='<span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span>'+(favs[m.n]?'<span class="fav">★</span>':'')+'<span class="hz">'+m.f.toFixed(2)+' Hz</span>';
-      b.addEventListener("click",function(){ openPlayer(m); }); list.appendChild(b); });
+      b.innerHTML='<span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span>'+(isLibFav(m.n)?'<span class="fav">★</span>':'')+'<span class="hz">'+m.f.toFixed(2)+' Hz</span>';
+      b.addEventListener("click",function(){ openPlayer(m,"lib"); }); list.appendChild(b); });
   }
-  $("back").addEventListener("click",function(){ stopSingle(false); show("lib"); });
+  $("back").addEventListener("click",function(){ stopSingle(false); show(returnTo); });
 
-  function openPlayer(m){
+  function openPlayer(m, from){
+    returnTo=from||"lib";
     state.cur=m; state.mode="simple"; setMode("simple",true);
-    var manual=!!m.manual; $("manualWrap").hidden=!manual; $("fav").style.display=manual?"none":"";
+    var manual=!!m.manual; $("manualWrap").hidden=!manual;
     $("pTitle").textContent=manual?t("manual_title"):m.n; $("pcat").textContent=manual?t("manual_cat"):t("f_"+m.c);
     $("hzval").textContent=m.f.toFixed(2); if(manual)$("mInput").value=m.f.toFixed(2);
     updFav(); refresh(); setTimer(0); show("play");
   }
+  function currentFavItem(){ if(!state.cur)return null; return state.cur.manual?{type:"freq",n:null,f:state.cur.f,c:null,manual:true}:{type:"freq",n:state.cur.n,f:state.cur.f,c:state.cur.c,manual:false}; }
+  function updFav(){ var it=currentFavItem(); var on=it&&favIndexOf(it)>=0; $("fav").classList.toggle("on",!!on); $("fav").textContent=on?"★":"☆"; }
+  $("fav").addEventListener("click",function(){ var it=currentFavItem(); if(!it)return; favToggle(it); updFav(); });
+
   var lastManual=100.00; try{lastManual=parseFloat(localStorage.getItem("auralis_manual"))||100.00;}catch(e){}
-  $("manualBtn").addEventListener("click",function(){ openPlayer({n:"Fréquence manuelle",f:lastManual,c:"Manuel",manual:true}); });
+  $("manualBtn").addEventListener("click",function(){ openPlayer({n:"Fréquence manuelle",f:lastManual,c:"Manuel",manual:true},"lib"); });
   function setManual(v){ v=Math.max(20,Math.min(1000,Math.round(v*100)/100)); state.cur.f=v; lastManual=v; try{localStorage.setItem("auralis_manual",v);}catch(e){}
-    $("hzval").textContent=v.toFixed(2); if(document.activeElement!==$("mInput"))$("mInput").value=v.toFixed(2); live(); }
+    $("hzval").textContent=v.toFixed(2); if(document.activeElement!==$("mInput"))$("mInput").value=v.toFixed(2); live(); updFav(); }
   $("mInput").addEventListener("input",function(){ var v=parseFloat(this.value); if(!isNaN(v))setManual(v); });
   Array.prototype.forEach.call(document.querySelectorAll(".fine button"),function(b){ b.addEventListener("click",function(){ if(state.cur&&state.cur.manual)setManual(state.cur.f+parseFloat(b.getAttribute("data-d"))); }); });
 
@@ -374,8 +432,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("beat").addEventListener("input",function(){ state.beat=parseFloat(this.value); refresh(); live(); });
   $("vol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("volLbl").textContent=this.value; $("sVol").value=this.value; $("sVolLbl").textContent=this.value; if(sMaster&&ctx)sMaster.gain.setTargetAtTime(state.playing?state.vol:0,ctx.currentTime,0.02); });
   function refresh(){ if(!state.cur)return; $("beatLbl").textContent=state.beat.toFixed(1); $("beatline").textContent=state.mode==="binaural"?(t("beat_label").toLowerCase()+" "+state.beat.toFixed(1)+" Hz"):""; }
-  function updFav(){ var on=state.cur&&favs[state.cur.n]; $("fav").classList.toggle("on",!!on); $("fav").textContent=on?"★":"☆"; }
-  $("fav").addEventListener("click",function(){ if(!state.cur)return; if(favs[state.cur.n])delete favs[state.cur.n]; else favs[state.cur.n]=1; saveFavs(); updFav(); });
 
   var tEl=$("timer"),OPTS=[0,5,10,15,20,30],tHandle=null,tRemain=0;
   OPTS.forEach(function(o){ var b=document.createElement("button"); b.textContent=o===0?"∞":o+"m"; b.addEventListener("click",function(){ setTimer(o); if(state.playing)armTimer(); }); tEl.appendChild(b); });
@@ -403,15 +459,15 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     PROTOS.forEach(function(p,i){ var tot=p.s.reduce(function(a,x){return a+x.m;},0);
       var b=document.createElement("button"); b.className="pcard";
       b.innerHTML='<span class="ico">'+p.ic+'</span><span class="pt"><b>'+pname(p)+'</b><span>'+p.s.length+' '+t("steps")+' · '+tot+' min</span></span><span class="go">›</span>';
-      b.addEventListener("click",function(){ openSeq(i); }); el.appendChild(b); }); }
-  var seq={p:null,idx:0,remain:0,timer:null,master:null,osc:null,playing:false,total:0,elapsed:0};
-  function openSeq(i){ stopSeq(true); seq.p=PROTOS[i]; seq.idx=0; seq.playing=false; seq.total=seq.p.s.reduce(function(a,x){return a+x.m*60;},0); seq.elapsed=0;
+      b.addEventListener("click",function(){ openSeq(i,"protos"); }); el.appendChild(b); }); }
+  var seq={p:null,idx:0,protoIdx:null,remain:0,timer:null,master:null,osc:null,playing:false,total:0,elapsed:0};
+  function openSeq(i, from){ stopSeq(true); returnTo=from||"protos"; seq.p=PROTOS[i]; seq.protoIdx=i; seq.idx=0; seq.playing=false; seq.total=seq.p.s.reduce(function(a,x){return a+x.m*60;},0); seq.elapsed=0;
     $("sTitle").textContent=pname(seq.p);
     var st=$("sSteps"); st.innerHTML="";
     seq.p.s.forEach(function(x,k){ var li=document.createElement("li"); li.id="st"+k; li.innerHTML='<span class="si">'+(k+1)+'</span><span class="sn">'+x.n+'</span><span class="sh">'+x.f.toFixed(2)+' Hz</span><span class="sm">'+x.m+'m</span>'; st.appendChild(li); });
-    var s0=seq.p.s[0]; $("sHz").textContent=s0.f.toFixed(2); $("sStep").textContent="1/"+seq.p.s.length+" · "+s0.n; $("sClock").textContent=""; $("sBar").style.width="0%"; highlight(0); setSeqBtn(false); show("seq"); }
+    var s0=seq.p.s[0]; $("sHz").textContent=s0.f.toFixed(2); $("sStep").textContent="1/"+seq.p.s.length+" · "+s0.n; $("sClock").textContent=""; $("sBar").style.width="0%"; highlight(0); setSeqBtn(false); updSFav(); show("seq"); }
   function highlight(active){ seq.p.s.forEach(function(x,k){ var li=$("st"+k); if(!li)return; li.classList.toggle("active",k===active); li.classList.toggle("done",k<active); }); }
-  $("sBack").addEventListener("click",function(){ stopSeq(false); show("protos"); });
+  $("sBack").addEventListener("click",function(){ stopSeq(false); show(returnTo); });
   $("sVol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("sVolLbl").textContent=this.value; $("vol").value=this.value; $("volLbl").textContent=this.value; if(seq.master&&ctx)seq.master.gain.setTargetAtTime(seq.playing?state.vol:0,ctx.currentTime,0.02); });
   $("sPlay").addEventListener("click",function(){ unlockAudio(); if(seq.playing)stopSeq(false); else startSeq(); });
   function setSeqBtn(on){ var b=$("sPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("seq_start"); }
@@ -429,6 +485,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     if(ctx&&seq.master){ var ti=ctx.currentTime,m=seq.master,o=seq.osc; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
       setTimeout(function(){try{o.stop();o.disconnect();}catch(e){}try{m.disconnect();}catch(e){}},immediate?30:90); }
     seq.master=null;seq.osc=null;seq.playing=false;setSeqBtn(false); }
+  function sFavItem(){ return seq.protoIdx==null?null:{type:"proto",idx:seq.protoIdx}; }
+  function updSFav(){ var it=sFavItem(); var on=it&&favIndexOf(it)>=0; $("sFav").classList.toggle("on",!!on); $("sFav").textContent=on?"★":"☆"; }
+  $("sFav").addEventListener("click",function(){ var it=sFavItem(); if(!it)return; favToggle(it); updSFav(); });
 
   function makeViz(cvId,isPlaying){ var cv=$(cvId),g=cv.getContext("2d"),W=cv.width,H=cv.height,cx=W/2,cy=H/2,phase=0;
     var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -438,25 +497,30 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
         g.beginPath();g.arc(cx,cy,r,0,Math.PI*2);g.lineWidth=3;g.strokeStyle="rgba("+col[0]+","+col[1]+","+col[2]+","+(0.16+0.5*(1-tc)*amp)+")";g.stroke(); }
       g.beginPath();g.arc(cx,cy,7+(on?Math.sin(phase)*3:0),0,Math.PI*2);g.fillStyle="rgba(233,201,106,"+(on?0.95:0.5)+")";g.fill();
       if(!reduce)phase+=on?0.11:0.02; requestAnimationFrame(draw); })(); }
+
   // ================= GÉOMÉTRIE SACRÉE & AGROGLYPHES =================
-  // Accordage 432 Hz · Pythagore pur (Do=256, La=256×27/16=432 exactement)
   var NM={"Do":256.00,"Ré":288.00,"Mi":324.00,"Fa":341.33,"Sol":384.00,"La":432.00,"Si":486.00,"Do′":512.00};
   var GEO=[
-   {name:"Agroglyphe",ic:"🌀",shape:"crop",sym:{fr:"Symétrie 8 · Pythagore",en:"8-fold · Pythagoras",es:"Simetría 8 · Pitágoras"},ratios:"2:1 · 3:2 · 4:3",notes:["Do","Fa","Sol","Do′","Do′","Sol","Fa","Do"],drone:[["Do",0.3],["Sol",0.2]]},
-   {name:"Triangle · Tétraèdre",ic:"△",shape:"triangle",sym:{fr:"Le 3 · accord parfait",en:"The 3 · perfect chord",es:"El 3 · acorde perfecto"},ratios:"accord majeur",notes:["Do","Mi","Sol","Do′"],drone:[["Do",0.35]]},
-   {name:"Fleur de Vie",ic:"❀",shape:"flower",sym:{fr:"Symétrie 6 · hexagonale",en:"6-fold · hexagonal",es:"Simetría 6 · hexagonal"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],drone:[["Do",0.3],["Sol",0.2]]},
-   {name:"Pentagramme · φ",ic:"⛤",shape:"penta",sym:{fr:"Le 5 · nombre d'or",en:"The 5 · golden ratio",es:"El 5 · número áureo"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],drone:[["Do",0.3],["La",0.15]]},
-   {name:"Merkaba",ic:"✡",shape:"merkaba",sym:{fr:"Deux triangles en miroir",en:"Two mirrored triangles",es:"Dos triángulos en espejo"},ratios:"triade ↑ ↓",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],drone:[["Do",0.3],["Sol",0.2]]},
-   {name:"Cube de Métatron",ic:"✴️",shape:"metatron",sym:{fr:"13 cercles · les 5 solides de Platon",en:"13 circles · the 5 Platonic solids",es:"13 círculos · los 5 sólidos de Platón"},ratios:"accord majeur + sixte",notes:["Do","Mi","Sol","La","Do′","Sol","Mi","Do"],drone:[["Do",0.28],["Mi",0.13],["Sol",0.18]]},
-   {name:"Sri Yantra",ic:"🕉️",shape:"sriyantra",sym:{fr:"9 triangles · le son primordial",en:"9 triangles · the primordial sound",es:"9 triángulos · el sonido primordial"},ratios:"gamme ascendante",notes:["Do","Ré","Mi","Fa","Sol","La","Si","Do′"],drone:[["Do",0.28],["Sol",0.18]]},
-   {name:"Carré · Cube",ic:"▢",shape:"square",sym:{fr:"Le 4 · stabilité",en:"The 4 · stability",es:"El 4 · estabilidad"},ratios:"4:3",notes:["Do","Fa","Do′","Fa"],drone:[["Do",0.3],["Fa",0.2]]}
+   {name:"Agroglyphe",ic:"🌀",shape:"crop",cat:"crop",sym:{fr:"Symétrie 8 · Pythagore",en:"8-fold · Pythagoras",es:"Simetría 8 · Pitágoras"},ratios:"2:1 · 3:2 · 4:3",notes:["Do","Fa","Sol","Do′","Do′","Sol","Fa","Do"],drone:[["Do",0.3],["Sol",0.2]]},
+   {name:"Triangle · Tétraèdre",ic:"△",shape:"triangle",cat:"sacred",sym:{fr:"Le 3 · accord parfait",en:"The 3 · perfect chord",es:"El 3 · acorde perfecto"},ratios:"accord majeur",notes:["Do","Mi","Sol","Do′"],drone:[["Do",0.35]]},
+   {name:"Fleur de Vie",ic:"❀",shape:"flower",cat:"sacred",sym:{fr:"Symétrie 6 · hexagonale",en:"6-fold · hexagonal",es:"Simetría 6 · hexagonal"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],drone:[["Do",0.3],["Sol",0.2]]},
+   {name:"Pentagramme · φ",ic:"⛤",shape:"penta",cat:"sacred",sym:{fr:"Le 5 · nombre d'or",en:"The 5 · golden ratio",es:"El 5 · número áureo"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],drone:[["Do",0.3],["La",0.15]]},
+   {name:"Merkaba",ic:"✡",shape:"merkaba",cat:"sacred",sym:{fr:"Deux triangles en miroir",en:"Two mirrored triangles",es:"Dos triángulos en espejo"},ratios:"triade ↑ ↓",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],drone:[["Do",0.3],["Sol",0.2]]},
+   {name:"Cube de Métatron",ic:"✴️",shape:"metatron",cat:"sacred",sym:{fr:"13 cercles · les 5 solides de Platon",en:"13 circles · the 5 Platonic solids",es:"13 círculos · los 5 sólidos de Platón"},ratios:"accord majeur + sixte",notes:["Do","Mi","Sol","La","Do′","Sol","Mi","Do"],drone:[["Do",0.28],["Mi",0.13],["Sol",0.18]]},
+   {name:"Sri Yantra",ic:"🕉️",shape:"sriyantra",cat:"sacred",sym:{fr:"9 triangles · le son primordial",en:"9 triangles · the primordial sound",es:"9 triángulos · el sonido primordial"},ratios:"gamme ascendante",notes:["Do","Ré","Mi","Fa","Sol","La","Si","Do′"],drone:[["Do",0.28],["Sol",0.18]]},
+   {name:"Carré · Cube",ic:"▢",shape:"square",cat:"sacred",sym:{fr:"Le 4 · stabilité",en:"The 4 · stability",es:"El 4 · estabilidad"},ratios:"4:3",notes:["Do","Fa","Do′","Fa"],drone:[["Do",0.3],["Fa",0.2]]}
   ];
-  var gp={fig:null,dur:0.5,loop:true,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0,instr:"sine",
-    reverbAmt:0,echoAmt:0,delayMs:250,   // 0-1, 0-1, ms — reglables pendant la lecture
+  var geoState={filter:"all"};
+  var gfEl=$("geoFilters");
+  [{k:"all",l:"f_Toutes"},{k:"crop",l:"geo_filter_crop"},{k:"sacred",l:"geo_filter_sacred"}].forEach(function(gf){
+    var b=document.createElement("button"); b.setAttribute("data-k",gf.k); b.setAttribute("data-l",gf.l); b.setAttribute("aria-pressed",gf.k==="all"?"true":"false");
+    b.addEventListener("click",function(){ geoState.filter=gf.k; Array.prototype.forEach.call(gfEl.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-k")===gf.k?"true":"false");}); gRenderList(); });
+    gfEl.appendChild(b);
+  });
+
+  var gp={fig:null,figIdx:null,dur:0.5,loop:true,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0,instr:"sine",
+    reverbAmt:0,echoAmt:0,delayMs:250,
     dry:null,wet:null,conv:null,delayNode:null,feedback:null,echoWet:null,echoFilter:null}, gPhase=0;
-  // Réverbération « cathédrale » : vraie empreinte acoustique enregistrée (St Nicolaes Church,
-  // Voxengo Free Impulse Responses, usage commercial autorisé) ; repli sur bruit synthétique
-  // tant qu'elle n'a pas fini de charger (ou si le chargement échoue).
   var _ir=null,_realIR=null,_realIRLoading=false;
   function getReverbIR(){ if(_realIR)return _realIR; if(_ir)return _ir; var dur=3.5,sr=ctx.sampleRate,len=Math.floor(sr*dur),buf=ctx.createBuffer(2,len,sr);
     for(var ch=0;ch<2;ch++){ var d=buf.getChannelData(ch); for(var i=0;i<len;i++){ var x=i/len; d[i]=(Math.random()*2-1)*Math.pow(1-x,2.2); } } _ir=buf; return _ir; }
@@ -469,7 +533,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function gSetDelayMs(ms){ gp.delayMs=ms; if(gp.delayNode&&ctx){ gp.delayNode.delayTime.setTargetAtTime(ms/1000,ctx.currentTime,0.03); } }
   var GENV=new Float32Array(64); for(var gk=0;gk<64;gk++){ GENV[gk]=Math.sin(Math.PI*gk/63); }
 
-  // Instruments : timbres synthétisés (spectre harmonique + enveloppe + vibrato). Approximations, pas des échantillons réels.
   var INSTR={
    sine:{name:{fr:"Sinus",en:"Sine",es:"Seno"},env:"bell"},
    guitar:{name:{fr:"Guitare",en:"Guitar",es:"Guitarra"},partials:[1,0.55,0.35,0.28,0.18,0.12,0.08,0.05],env:"pluck",lp:3500},
@@ -479,9 +542,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   };
   var GORDER=["sine","piano","guitar","violin","sax"], _waves={};
 
-  // Échantillons réels (vrais enregistrements) : chargés depuis app-sounds/ (marche sur aura-lis.ca/app
-  // et dans l'app Capacitor ; en cas d'échec -> repli automatique sur le timbre synthétisé).
-  // Piano : Salamander Grand Piano (Alexander Holm, CC-BY). Réaccordé 432/Pythagore via playbackRate.
   var SAMPLES={
    piano:{base:"app-sounds/piano/",map:[[261.63,"C4.mp3"],[311.13,"Ds4.mp3"],[369.99,"Fs4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false},
    guitar:{base:"app-sounds/guitar/",map:[[261.63,"C4.mp3"],[311.13,"Ds4.mp3"],[369.99,"Fs4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false},
@@ -502,16 +562,17 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     b.addEventListener("click",function(){ gp.instr=id; Array.prototype.forEach.call(el.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-i")===id?"true":"false");}); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }); el.appendChild(b); }); }
 
   function gRenderList(){ var el=$("geoList"); el.innerHTML="";
-    GEO.forEach(function(fig,i){ var b=document.createElement("button"); b.className="pcard";
+    var arr=GEO.filter(function(fig){ return geoState.filter==="all"||fig.cat===geoState.filter; });
+    arr.forEach(function(fig){ var i=GEO.indexOf(fig); var b=document.createElement("button"); b.className="pcard";
       b.innerHTML='<span class="ico">'+fig.ic+'</span><span class="pt"><b>'+fig.name+'</b><span>'+(fig.sym[lang]||fig.sym.fr)+'</span></span><span class="go">›</span>';
-      b.addEventListener("click",function(){ gOpen(i); }); el.appendChild(b); }); }
-  function gOpen(i){ gStop(true); gp.fig=GEO[i]; for(var sk in SAMPLES){ loadSamples(sk); } loadRealIR();
+      b.addEventListener("click",function(){ gOpen(i,"geo"); }); el.appendChild(b); }); }
+  function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); } loadRealIR();
     $("gTitle").textContent=gp.fig.name; $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=gp.fig.ratios;
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+nn+"</b>"; row.appendChild(d); });
     var n0=gp.fig.notes[0]; $("gNowN").textContent=n0; $("gNowF").textContent=NM[n0].toFixed(2)+" Hz";
-    gSetBtn(false); show("geoPlay"); }
-  $("gBack").addEventListener("click",function(){ gStop(false); show("geo"); });
+    gSetBtn(false); updGFav(); show("geoPlay"); }
+  $("gBack").addEventListener("click",function(){ gStop(false); show(returnTo); });
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
   $("gReverb").addEventListener("input",function(){ var v=parseInt(this.value,10); $("gReverbVal").textContent=v; gSetReverbAmt(v/100); });
   $("gEcho").addEventListener("input",function(){ var v=parseInt(this.value,10); $("gEchoVal").textContent=v; gSetEchoAmt(v/100); });
@@ -521,8 +582,11 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("gVol").addEventListener("input",function(){ gp.vol=parseInt(this.value,10)/100; $("gVolLbl").textContent=this.value; if(gp.master&&ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02); });
   $("gPlay").addEventListener("click",function(){ if(gp.playing)gStop(false); else gPlay(); });
   function gSetBtn(on){ var b=$("gPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); }
+  function gFavItem(){ return gp.figIdx==null?null:{type:"geo",idx:gp.figIdx}; }
+  function updGFav(){ var it=gFavItem(); var on=it&&favIndexOf(it)>=0; $("gFav").classList.toggle("on",!!on); $("gFav").textContent=on?"★":"☆"; }
+  $("gFav").addEventListener("click",function(){ var it=gFavItem(); if(!it)return; favToggle(it); updGFav(); });
+
   function gScheduleNote(f,start,dur){
-    // Échantillon réel disponible ? -> le jouer réaccordé (qualité studio)
     var sm=SAMPLES[gp.instr];
     if(sm&&sm.buffers&&sm.buffers.length){
       var best=null,bd=1e9;
@@ -549,12 +613,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function gPlay(){ if(!gp.fig)return; ensureCtx(); unlockAudio(); var t=ctx.currentTime+0.06;
     gp.master=ctx.createGain(); gp.master.gain.setValueAtTime(0.0001,t); gp.master.gain.linearRampToValueAtTime(gp.vol,t+0.05);
     gp.dry=ctx.createGain(); gp.dry.gain.value=1; gp.master.connect(gp.dry); gp.dry.connect(ctx.destination);
-    // Réverb (dosable 0-100%)
     gp.conv=ctx.createConvolver(); gp.conv.buffer=getReverbIR(); gp.wet=ctx.createGain(); gp.wet.gain.setValueAtTime(gp.reverbAmt*0.7,t); gp.master.connect(gp.conv); gp.conv.connect(gp.wet); gp.wet.connect(ctx.destination);
-    // Écho / Delay (delay = espacement des répétitions, écho = quantité/persistance des répétitions)
     gp.delayNode=ctx.createDelay(1.0); gp.delayNode.delayTime.setValueAtTime(gp.delayMs/1000,t);
     gp.feedback=ctx.createGain(); gp.feedback.gain.setValueAtTime(gp.echoAmt*0.55,t);
-    // Chaque répétition perd un peu d'aigus (comme un vrai écho absorbé par l'air) -> évite l'effet "métallique" artificiel
     gp.echoFilter=ctx.createBiquadFilter(); gp.echoFilter.type="lowpass"; gp.echoFilter.frequency.setValueAtTime(3200,t); gp.echoFilter.Q.value=0.4;
     gp.echoWet=ctx.createGain(); gp.echoWet.gain.setValueAtTime(gp.echoAmt>0?0.5:0.0001,t);
     gp.master.connect(gp.delayNode); gp.delayNode.connect(gp.echoFilter); gp.echoFilter.connect(gp.feedback); gp.feedback.connect(gp.delayNode); gp.delayNode.connect(gp.echoWet); gp.echoWet.connect(ctx.destination);
@@ -566,7 +627,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function gStop(immediate){ if(gp.timer){ clearInterval(gp.timer); clearTimeout(gp.timer); gp.timer=null; }
     if(ctx&&gp.master){ var t=ctx.currentTime,m=gp.master,ds=gp.drones,dy=gp.dry,wt=gp.wet,cv=gp.conv,dl=gp.delayNode,fb=gp.feedback,ew=gp.echoWet,ef=gp.echoFilter;
       try{m.gain.cancelScheduledValues(t);m.gain.setValueAtTime(m.gain.value,t);m.gain.linearRampToValueAtTime(0.0001,t+(immediate?0.02:0.12));}catch(e){}
-      try{ if(fb)fb.gain.setValueAtTime(0,t); }catch(e){}   // coupe la boucle de feedback pour eviter une traine infinie
+      try{ if(fb)fb.gain.setValueAtTime(0,t); }catch(e){}
       var tail=immediate?60:(gp.echoAmt>0||gp.reverbAmt>0?900:220);
       setTimeout(function(){ ds.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}}); [m,dy,cv,wt,dl,fb,ew,ef].forEach(function(nd){ if(nd){try{nd.disconnect();}catch(e){}} }); }, tail); }
     gp.master=null; gp.drones=[]; gp.dry=null; gp.wet=null; gp.conv=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.echoFilter=null; gp.playing=false; gSetBtn(false); }
@@ -605,11 +666,64 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     if(!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)) gPhase+=gp.playing?0.09:0.015;
     requestAnimationFrame(gDraw); })();
 
-  makeViz("viz",function(){return state.playing;}); makeViz("sViz",function(){return seq.playing;});
+  // ================= 432 Hz PULSÉ =================
+  var pulse={bpm:72,vol:0.5,playing:false,master:null,osc:null,trem:null,dc:null,lfo:null,lfoGain:null};
+  function pulseSetBtn(on){ var b=$("pPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); }
+  function pulseStart(){ ensureCtx(); unlockAudio(); var t=ctx.currentTime+0.05;
+    pulse.master=ctx.createGain(); pulse.master.gain.setValueAtTime(0.0001,t); pulse.master.gain.linearRampToValueAtTime(pulse.vol,t+0.08); pulse.master.connect(ctx.destination);
+    pulse.osc=ctx.createOscillator(); pulse.osc.type="sine"; pulse.osc.frequency.setValueAtTime(432,t);
+    pulse.trem=ctx.createGain(); pulse.trem.gain.setValueAtTime(0.65,t);
+    pulse.dc=ctx.createConstantSource(); pulse.dc.offset.setValueAtTime(0.65,t);
+    pulse.lfo=ctx.createOscillator(); pulse.lfo.type="sine"; pulse.lfo.frequency.setValueAtTime(pulse.bpm/60,t);
+    pulse.lfoGain=ctx.createGain(); pulse.lfoGain.gain.setValueAtTime(0.35,t);
+    pulse.lfo.connect(pulse.lfoGain); pulse.lfoGain.connect(pulse.trem.gain); pulse.dc.connect(pulse.trem.gain);
+    pulse.osc.connect(pulse.trem); pulse.trem.connect(pulse.master);
+    pulse.osc.start(t); pulse.lfo.start(t); pulse.dc.start(t);
+    pulse.playing=true; pulseSetBtn(true); }
+  function pulseStop(immediate){ if(!ctx||!pulse.master){ pulse.playing=false; pulseSetBtn(false); return; }
+    var ti=ctx.currentTime,m=pulse.master,o=pulse.osc,l=pulse.lfo,d=pulse.dc;
+    try{ m.gain.cancelScheduledValues(ti); m.gain.setValueAtTime(m.gain.value,ti); m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.02:0.08)); }catch(e){}
+    setTimeout(function(){ [o,l,d].forEach(function(nd){ try{nd.stop();nd.disconnect();}catch(e){} }); try{m.disconnect();}catch(e){} }, immediate?40:140);
+    pulse.master=null; pulse.osc=null; pulse.trem=null; pulse.dc=null; pulse.lfo=null; pulse.lfoGain=null; pulse.playing=false; pulseSetBtn(false); }
+  function pulseFavItem(){ return {type:"pulse", bpm:pulse.bpm}; }
+  function updPFav(){ var on=favIndexOf(pulseFavItem())>=0; $("pFav").classList.toggle("on",on); $("pFav").textContent=on?"★":"☆"; }
+  function openPulse(from,bpm){ pulseStop(true); returnTo=from||"home";
+    if(typeof bpm==="number"){ pulse.bpm=Math.max(40,Math.min(120,bpm)); }
+    $("pBpm").value=pulse.bpm; $("pBpmVal").textContent=pulse.bpm+" bpm"; $("pBpmLbl").textContent=pulse.bpm+" bpm";
+    $("pulseTitle").textContent=t("home_pulse"); updPFav(); pulseSetBtn(false); show("pulse"); }
+  $("pBack").addEventListener("click",function(){ pulseStop(false); show(returnTo); });
+  $("pBpm").addEventListener("input",function(){ pulse.bpm=parseInt(this.value,10); $("pBpmVal").textContent=pulse.bpm+" bpm"; $("pBpmLbl").textContent=pulse.bpm+" bpm";
+    if(pulse.playing&&pulse.lfo&&ctx)pulse.lfo.frequency.setTargetAtTime(pulse.bpm/60,ctx.currentTime,0.05); updPFav(); });
+  $("pVol").addEventListener("input",function(){ pulse.vol=parseInt(this.value,10)/100; $("pVolLbl").textContent=this.value; if(pulse.master&&ctx)pulse.master.gain.setTargetAtTime(pulse.playing?pulse.vol:0,ctx.currentTime,0.02); });
+  $("pPlay").addEventListener("click",function(){ unlockAudio(); if(pulse.playing)pulseStop(false); else pulseStart(); });
+  $("pFav").addEventListener("click",function(){ favToggle(pulseFavItem()); updPFav(); });
 
-  applyLang(); show("lib");
+  // ---------- favoris (liste) ----------
+  function favIcon(it){ if(it.type==="freq")return it.manual?"⌨":"🎵"; if(it.type==="geo")return GEO[it.idx].ic; if(it.type==="proto")return PROTOS[it.idx].ic; if(it.type==="pulse")return "💓"; return ""; }
+  function favLabel(it){ if(it.type==="freq")return it.manual?t("manual_title"):it.n; if(it.type==="geo")return GEO[it.idx].name; if(it.type==="proto")return pname(PROTOS[it.idx]); if(it.type==="pulse")return t("home_pulse"); return ""; }
+  function favSub(it){ if(it.type==="freq")return it.f.toFixed(2)+" Hz"; if(it.type==="geo")return GEO[it.idx].sym[lang]||GEO[it.idx].sym.fr; if(it.type==="proto")return PROTOS[it.idx].s.length+" "+t("steps"); if(it.type==="pulse")return it.bpm+" bpm"; return ""; }
+  function favOpen(it){ if(it.type==="freq")openPlayer(it.manual?{n:null,f:it.f,c:null,manual:true}:{n:it.n,f:it.f,c:it.c},"favList");
+    else if(it.type==="geo")gOpen(it.idx,"favList"); else if(it.type==="proto")openSeq(it.idx,"favList"); else if(it.type==="pulse")openPulse("favList",it.bpm); }
+  function renderFavList(){ $("favTitle").textContent=t("fav_title"); var el=$("favListEl"); el.innerHTML="";
+    favSlots.forEach(function(it,i){
+      if(it){ var row=document.createElement("button"); row.className="item";
+        row.innerHTML='<span class="nm">'+favIcon(it)+' '+favLabel(it)+'<br><span class="cat">'+favSub(it)+'</span></span><span class="rm" data-i="'+i+'">✕</span>';
+        row.addEventListener("click",function(ev){ if(ev.target.classList.contains("rm"))return; favOpen(it); });
+        row.querySelector(".rm").addEventListener("click",function(ev){ ev.stopPropagation(); favSlots[i]=null; saveFavSlots(); renderFavList(); });
+        el.appendChild(row);
+      } else { var row2=document.createElement("div"); row2.className="item"; row2.style.opacity=".45"; row2.style.cursor="default";
+        row2.innerHTML='<span class="nm">'+t("fav_empty")+'</span>'; el.appendChild(row2); }
+    });
+  }
+
+  makeViz("viz",function(){return state.playing;});
+  makeViz("sViz",function(){return seq.playing;});
+  makeViz("pViz",function(){return pulse.playing;});
+
+  applyLang(); show("home");
 })();
 </script>
+
 
 </body>
 </html>
