@@ -224,7 +224,7 @@
       <p class="label" id="gInstrLabel" style="margin:10px 0 8px"></p>
       <div class="filters" id="gInstr"></div>
       <div class="seg" role="group" aria-label="Boucle"><button id="gLoopOn" aria-pressed="true"></button><button id="gLoopOff" aria-pressed="false"></button></div>
-      <div class="ctl"><div class="row"><span class="label" id="gTempoLabel"></span><span class="v" id="gDurLbl">120 bpm · 0.50 s</span></div><input type="range" id="gDur" min="50" max="120" step="1" value="120"></div>
+      <div class="ctl"><div class="row"><span class="label" id="gTempoLabel"></span><span class="v" id="gDurLbl">72 bpm · 0.83 s</span></div><input type="range" id="gDur" min="50" max="120" step="1" value="72"></div>
       <div class="ctl"><div class="row"><span class="label" id="gVolLabel"></span><span class="v"><span id="gVolLbl">50</span> %</span></div><input type="range" id="gVol" min="0" max="100" step="1" value="50"></div>
       <div class="ctl"><div class="row"><span class="label" id="gReverbLabel"></span><span class="v"><span id="gReverbVal">0</span> %</span></div><input type="range" id="gReverb" min="0" max="100" step="1" value="0"></div>
       <div class="ctl"><div class="row"><span class="label" id="gEchoLabel"></span><span class="v"><span id="gEchoVal">0</span> %</span></div><input type="range" id="gEcho" min="0" max="100" step="1" value="0"></div>
@@ -517,7 +517,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     gfEl.appendChild(b);
   });
 
-  var gp={fig:null,figIdx:null,dur:0.5,loop:true,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0,instr:"sine",
+  var gp={fig:null,figIdx:null,dur:60/72,loop:true,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0,instr:"sine",
     reverbAmt:0,echoAmt:0,delayMs:250,
     dry:null,wet:null,conv:null,delayNode:null,feedback:null,echoWet:null,echoFilter:null}, gPhase=0;
   var _ir=null,_realIR=null,_realIRLoading=false;
