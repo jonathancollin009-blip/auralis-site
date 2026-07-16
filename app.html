@@ -80,6 +80,8 @@
   .hz .u{font-size:.9rem; font-weight:600; color:var(--dim); margin-left:3px}
   .pcat{font-size:.75rem; color:var(--dim); letter-spacing:.06em; margin-top:5px}
   .beatline{font-size:.72rem; color:var(--gold); margin-top:3px; min-height:1em}
+  .pformula{font-size:1.12rem; font-weight:700; letter-spacing:.02em; color:var(--txt); line-height:1.7; white-space:nowrap}
+  .pformula .pfnum{color:var(--gold); font-variant-numeric:tabular-nums}
 
   .seg{display:flex; background:var(--pan); border:1px solid var(--line); border-radius:12px; padding:4px; margin:10px 0 16px}
   .seg button{flex:1; background:none; border:0; color:var(--dim); font:inherit; font-size:.9rem; font-weight:600; padding:9px; border-radius:9px; cursor:pointer}
@@ -236,7 +238,7 @@
     <div class="bar"><button class="backbtn" id="pBack" aria-label="Retour">‹</button><h2 id="pulseTitle">—</h2></div>
     <div class="player">
       <div class="stage"><canvas id="pViz" width="400" height="400" aria-hidden="true"></canvas>
-        <div class="readout"><div class="hz"><span id="pHzVal">432</span><span class="u">Hz</span></div><div class="pcat" id="pBpmLbl">72 bpm</div></div></div>
+        <div class="readout"><div class="pformula">ॐ = 432 Hz —Ω— <span class="pfnum" id="pBpmNum">72</span> BPM = φ</div></div></div>
       <div class="ctl"><div class="row"><span class="label" id="pTempoLabel"></span><span class="v" id="pBpmVal">72 bpm</span></div><input type="range" id="pBpm" min="40" max="120" step="1" value="72"></div>
       <div class="ctl"><div class="row"><span class="label" id="pVolLabel"></span><span class="v"><span id="pVolLbl">50</span> %</span></div><input type="range" id="pVol" min="0" max="100" step="1" value="50"></div>
       <div class="actions"><button class="play" id="pPlay"></button><button class="favbtn" id="pFav">☆</button></div>
@@ -689,10 +691,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function updPFav(){ var on=favIndexOf(pulseFavItem())>=0; $("pFav").classList.toggle("on",on); $("pFav").textContent=on?"★":"☆"; }
   function openPulse(from,bpm){ pulseStop(true); returnTo=from||"home";
     if(typeof bpm==="number"){ pulse.bpm=Math.max(40,Math.min(120,bpm)); }
-    $("pBpm").value=pulse.bpm; $("pBpmVal").textContent=pulse.bpm+" bpm"; $("pBpmLbl").textContent=pulse.bpm+" bpm";
+    $("pBpm").value=pulse.bpm; $("pBpmVal").textContent=pulse.bpm+" bpm"; $("pBpmNum").textContent=pulse.bpm;
     $("pulseTitle").textContent=t("home_pulse"); updPFav(); pulseSetBtn(false); show("pulse"); }
   $("pBack").addEventListener("click",function(){ pulseStop(false); show(returnTo); });
-  $("pBpm").addEventListener("input",function(){ pulse.bpm=parseInt(this.value,10); $("pBpmVal").textContent=pulse.bpm+" bpm"; $("pBpmLbl").textContent=pulse.bpm+" bpm";
+  $("pBpm").addEventListener("input",function(){ pulse.bpm=parseInt(this.value,10); $("pBpmVal").textContent=pulse.bpm+" bpm"; $("pBpmNum").textContent=pulse.bpm;
     if(pulse.playing&&pulse.lfo&&ctx)pulse.lfo.frequency.setTargetAtTime(pulse.bpm/60,ctx.currentTime,0.05); updPFav(); });
   $("pVol").addEventListener("input",function(){ pulse.vol=parseInt(this.value,10)/100; $("pVolLbl").textContent=this.value; if(pulse.master&&ctx)pulse.master.gain.setTargetAtTime(pulse.playing?pulse.vol:0,ctx.currentTime,0.02); });
   $("pPlay").addEventListener("click",function(){ unlockAudio(); if(pulse.playing)pulseStop(false); else pulseStart(); });
