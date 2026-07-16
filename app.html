@@ -202,7 +202,7 @@
       <div class="prog"><i id="sBar"></i></div>
       <div class="ctl"><div class="row"><span class="label" id="sVolLabel"></span><span class="v"><span id="sVolLbl">50</span> %</span></div><input type="range" id="sVol" min="0" max="100" step="1" value="50"></div>
       <ul class="steps" id="sSteps"></ul>
-      <div class="actions"><button class="play" id="sPlay"></button><button class="favbtn" id="sFav">☆</button></div>
+      <div class="actions"><button class="play" id="sPlay"></button></div>
       <p class="disc" id="discSeq"></p>
     </div>
   </section>
@@ -467,7 +467,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("sTitle").textContent=pname(seq.p);
     var st=$("sSteps"); st.innerHTML="";
     seq.p.s.forEach(function(x,k){ var li=document.createElement("li"); li.id="st"+k; li.innerHTML='<span class="si">'+(k+1)+'</span><span class="sn">'+x.n+'</span><span class="sh">'+x.f.toFixed(2)+' Hz</span><span class="sm">'+x.m+'m</span>'; st.appendChild(li); });
-    var s0=seq.p.s[0]; $("sHz").textContent=s0.f.toFixed(2); $("sStep").textContent="1/"+seq.p.s.length+" · "+s0.n; $("sClock").textContent=""; $("sBar").style.width="0%"; highlight(0); setSeqBtn(false); updSFav(); show("seq"); }
+    var s0=seq.p.s[0]; $("sHz").textContent=s0.f.toFixed(2); $("sStep").textContent="1/"+seq.p.s.length+" · "+s0.n; $("sClock").textContent=""; $("sBar").style.width="0%"; highlight(0); setSeqBtn(false); show("seq"); }
   function highlight(active){ seq.p.s.forEach(function(x,k){ var li=$("st"+k); if(!li)return; li.classList.toggle("active",k===active); li.classList.toggle("done",k<active); }); }
   $("sBack").addEventListener("click",function(){ stopSeq(false); show(returnTo); });
   $("sVol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("sVolLbl").textContent=this.value; $("vol").value=this.value; $("volLbl").textContent=this.value; if(seq.master&&ctx)seq.master.gain.setTargetAtTime(seq.playing?state.vol:0,ctx.currentTime,0.02); });
@@ -487,9 +487,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     if(ctx&&seq.master){ var ti=ctx.currentTime,m=seq.master,o=seq.osc; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
       setTimeout(function(){try{o.stop();o.disconnect();}catch(e){}try{m.disconnect();}catch(e){}},immediate?30:90); }
     seq.master=null;seq.osc=null;seq.playing=false;setSeqBtn(false); }
-  function sFavItem(){ return seq.protoIdx==null?null:{type:"proto",idx:seq.protoIdx}; }
-  function updSFav(){ var it=sFavItem(); var on=it&&favIndexOf(it)>=0; $("sFav").classList.toggle("on",!!on); $("sFav").textContent=on?"★":"☆"; }
-  $("sFav").addEventListener("click",function(){ var it=sFavItem(); if(!it)return; favToggle(it); updSFav(); });
 
   function makeViz(cvId,isPlaying){ var cv=$(cvId),g=cv.getContext("2d"),W=cv.width,H=cv.height,cx=W/2,cy=H/2,phase=0;
     var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
