@@ -98,6 +98,25 @@
 
   .mInput{width:100%; text-align:center; background:var(--pan); border:1px solid var(--cyan); border-radius:12px; color:var(--txt); font:inherit; font-size:1.8rem; font-weight:800; font-variant-numeric:tabular-nums; padding:12px; margin-bottom:10px}
   .mInput:focus{outline:none; box-shadow:0 0 0 3px rgba(127,216,240,.25)}
+  .binpanel{background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:16px}
+  .binrow{margin-bottom:14px} .binrow:last-of-type{margin-bottom:8px}
+  .binrow .label{margin-bottom:4px}
+  .binrow .val{margin:0; font-size:1.5rem; font-weight:800; font-variant-numeric:tabular-nums; color:var(--dim)}
+  .binrow:first-child .val{color:var(--cyan)} .binrow:nth-child(2) .val{color:var(--mauve)}
+  .binhint{font-size:.72rem; color:var(--dimmer); text-align:center; margin:6px 0 0}
+  .keypad{display:grid; grid-template-columns:repeat(3,1fr); gap:9px}
+  .keypad button{background:var(--pan); border:1px solid var(--line); color:var(--txt); font:inherit; font-size:1.3rem; font-weight:700; padding:16px 0; border-radius:11px; cursor:pointer}
+  .keypad button:active{background:var(--pan2)}
+  .keypad button.ok{grid-column:span 3; margin-top:2px; border:0; color:#04101f; font-size:1.05rem; font-weight:800; background:linear-gradient(96deg,var(--cyan),var(--mauve))}
+  .binerr{color:#e8836f; font-size:1.4rem; font-weight:800}
+  .binerrsub{color:var(--dimmer); font-size:.9rem; margin-top:8px}
+  .binplay{position:relative; align-items:center; justify-content:center}
+  .starfield{position:absolute; inset:0; width:100%; height:100%; pointer-events:none}
+  .binplay-content{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:10px; width:100%}
+  .binplay .f1{color:var(--cyan); font-size:1.05rem; font-weight:700; margin:0}
+  .binplay .f2{color:var(--mauve); font-size:1.05rem; font-weight:700; margin:0}
+  .binplay .beat{color:var(--gold); font-size:2rem; font-weight:800; margin:6px 0 14px}
+
   .fine{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px}
   .fine button{flex:1 1 17%; background:var(--pan); border:1px solid var(--line); color:var(--txt); font:inherit; font-size:.8rem; font-weight:700; font-variant-numeric:tabular-nums; padding:11px 2px; border-radius:9px; cursor:pointer}
   .fine button:active{background:var(--pan2)}
@@ -149,7 +168,8 @@
       <button class="hcard" data-go="lib"><span class="hic">🎵</span><span class="hn" id="hFreq"></span></button>
       <button class="hcard" data-go="protos"><span class="hic">✨</span><span class="hn" id="hProto"></span></button>
       <button class="hcard" data-go="pulse"><span class="hic">💓</span><span class="hn" id="hPulse"></span></button>
-      <button class="hcard wide" data-go="favList"><span class="hic">⭐</span><span class="hn" id="hFav"></span></button>
+      <button class="hcard" data-go="bin"><span class="hic">🎧</span><span class="hn" id="hBin"></span></button>
+      <button class="hcard" data-go="favList"><span class="hic">⭐</span><span class="hn" id="hFav"></span></button>
     </div>
   </section>
 
@@ -172,7 +192,7 @@
     <div class="bar"><button class="backbtn" id="back" aria-label="Retour">‹</button><h2 id="pTitle">—</h2></div>
     <div class="player">
       <div class="stage"><canvas id="viz" width="400" height="400" aria-hidden="true"></canvas>
-        <div class="readout"><div class="hz"><span id="hzval">0</span><span class="u">Hz</span></div><div class="pcat" id="pcat"></div><div class="beatline" id="beatline"></div></div></div>
+        <div class="readout"><div class="hz"><span id="hzval">0</span><span class="u">Hz</span></div><div class="pcat" id="pcat"></div></div></div>
       <div id="manualWrap" hidden>
         <p class="label" id="hzLabel" style="margin-bottom:8px"></p>
         <input class="mInput" id="mInput" type="number" inputmode="decimal" step="0.01" min="20" max="1000" value="100.00" aria-label="Hz">
@@ -180,11 +200,6 @@
           <button data-d="-100">−100</button><button data-d="-10">−10</button><button data-d="-1">−1</button><button data-d="-0.1">−0.1</button><button data-d="-0.01">−0.01</button>
           <button data-d="0.01">+0.01</button><button data-d="0.1">+0.1</button><button data-d="1">+1</button><button data-d="10">+10</button><button data-d="100">+100</button>
         </div>
-      </div>
-      <div class="seg" role="group"><button id="mSimple" aria-pressed="true"></button><button id="mBin" aria-pressed="false"></button></div>
-      <div id="beatWrap" class="ctl" hidden>
-        <div class="row"><span class="label" id="beatLabel"></span><span class="v"><span id="beatLbl">6.0</span> Hz</span></div>
-        <input type="range" id="beat" min="0.5" max="20" step="0.5" value="6"><div class="hint head" id="binHint"></div>
       </div>
       <div class="ctl"><div class="row"><span class="label" id="volLabel"></span><span class="v"><span id="volLbl">50</span> %</span></div><input type="range" id="vol" min="0" max="100" step="1" value="50"></div>
       <p class="label" id="timerLabel" style="margin-bottom:8px"></p>
@@ -246,6 +261,48 @@
     </div>
   </section>
 
+  <section class="view" id="vBinInput">
+    <div class="bar"><button class="backbtn" id="binBack" aria-label="Retour">‹</button><h2 id="binStepTitle">—</h2></div>
+    <div class="player">
+      <div class="binpanel">
+        <div class="binrow"><p class="label" id="binLbl1"></p><p class="val" id="binVal1">—.— Hz</p></div>
+        <div class="binrow"><p class="label" id="binLbl2"></p><p class="val" id="binVal2">—.— Hz</p></div>
+        <p class="binhint" id="binMaxgap"></p>
+      </div>
+      <div class="keypad" id="binKeypad">
+        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+        <button data-k=".">.</button><button data-k="0">0</button><button data-k="back">⌫</button>
+        <button class="ok" id="binOk">OK</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="vBinError">
+    <div class="bar"><button class="backbtn" id="binErrBack" aria-label="Retour">‹</button><h2 id="binErrTitle">—</h2></div>
+    <div class="player" style="align-items:center; justify-content:center; text-align:center">
+      <p class="binerr" id="binMaxgap2"></p>
+      <p class="binerrsub" id="binDiff"></p>
+      <button class="play" id="binRetry" style="margin-top:24px"></button>
+    </div>
+  </section>
+
+  <section class="view" id="vBinPlay">
+    <div class="bar"><h2 id="binPlayTitle">—</h2></div>
+    <div class="player binplay">
+      <canvas id="binStars" class="starfield" width="480" height="600" aria-hidden="true"></canvas>
+      <div class="binplay-content">
+        <p class="f1" id="binF1Lbl"></p>
+        <p class="f2" id="binF2Lbl"></p>
+        <p class="beat" id="binBeatLbl"></p>
+        <div class="ctl" style="width:100%; max-width:280px"><div class="row"><span class="label" id="binVolLabel"></span><span class="v"><span id="binVolLbl">50</span> %</span></div><input type="range" id="binVol" min="0" max="100" step="1" value="50"></div>
+        <button class="play on" id="binStop" style="max-width:280px; width:100%"></button>
+      </div>
+      <p class="disc" id="discBin"></p>
+    </div>
+  </section>
+
   <section class="view" id="vFavList">
     <div class="bar"><button class="backbtn" id="favBack" aria-label="Retour">‹</button><h2 id="favTitle">—</h2></div>
     <div class="list" id="favListEl"></div>
@@ -277,10 +334,6 @@ var T={
  none_freq:{fr:"Aucune fréquence.",en:"No frequency.",es:"Ninguna frecuencia."},
  none_fav:{fr:"Ajoute des favoris avec l'étoile ☆.",en:"Add favorites with the ☆ star.",es:"Añade favoritos con la estrella ☆."},
  hz_label:{fr:"Fréquence (Hz)",en:"Frequency (Hz)",es:"Frecuencia (Hz)"},
- mode_simple:{fr:"Simple",en:"Simple",es:"Simple"},
- mode_bin:{fr:"Binaural 🎧",en:"Binaural 🎧",es:"Binaural 🎧"},
- beat_label:{fr:"Battement",en:"Beat",es:"Batido"},
- bin_hint:{fr:"Le mode binaural nécessite un casque.",en:"Binaural mode requires headphones.",es:"El modo binaural requiere auriculares."},
  volume:{fr:"Volume",en:"Volume",es:"Volumen"},
  timer_label:{fr:"Minuteur",en:"Timer",es:"Temporizador"},
  remaining:{fr:"restant",en:"left",es:"restante"},
@@ -313,7 +366,19 @@ var T={
  fav_full:{fr:"12/12 — libère un emplacement d'abord",en:"12/12 — free a slot first",es:"12/12 — libera un espacio primero"},
  geo_filter_crop:{fr:"Crop Circle",en:"Crop Circle",es:"Crop Circle"},
  geo_filter_sacred:{fr:"Géométrie sacrée",en:"Sacred geometry",es:"Geometría sagrada"},
- disc_pulse:{fr:"Bien-être et relaxation — pas un usage médical. Le volume pulse au rythme choisi, comme un battement.",en:"Wellness and relaxation — not medical use. Volume pulses at the chosen tempo, like a heartbeat.",es:"Bienestar y relajación — no es un uso médico. El volumen pulsa al ritmo elegido, como un latido."}
+ disc_pulse:{fr:"Bien-être et relaxation — pas un usage médical. Le volume pulse au rythme choisi, comme un battement.",en:"Wellness and relaxation — not medical use. Volume pulses at the chosen tempo, like a heartbeat.",es:"Bienestar y relajación — no es un uso médico. El volumen pulsa al ritmo elegido, como un latido."},
+ home_bin:{fr:"Binauraux",en:"Binaural",es:"Binaurales"},
+ bin_step1:{fr:"Entrez la fréquence No.1",en:"Enter frequency No.1",es:"Introduzca la frecuencia N.º1"},
+ bin_step2:{fr:"Entrez la fréquence No.2",en:"Enter frequency No.2",es:"Introduzca la frecuencia N.º2"},
+ bin_f1:{fr:"Fréquence No.1 :",en:"Frequency No.1 :",es:"Frecuencia N.º1 :"},
+ bin_f2:{fr:"Fréquence No.2 :",en:"Frequency No.2 :",es:"Frecuencia N.º2 :"},
+ bin_maxgap:{fr:"Écart maximum : 20 Hz",en:"Maximum gap: 20 Hz",es:"Diferencia máxima: 20 Hz"},
+ bin_err_title:{fr:"Erreur",en:"Error",es:"Error"},
+ bin_diff:{fr:"Différence saisie",en:"Entered difference",es:"Diferencia introducida"},
+ bin_retry:{fr:"Recommencer",en:"Retry",es:"Reiniciar"},
+ bin_playing:{fr:"Binaural en lecture",en:"Binaural playing",es:"Binaural en reproducción"},
+ bin_beat:{fr:"Battement",en:"Beat",es:"Batido"},
+ disc_bin:{fr:"Bien-être et relaxation — pas un usage médical. Le mode binaural nécessite un casque.",en:"Wellness and relaxation — not medical use. Binaural mode requires headphones.",es:"Bienestar y relajación — no es un uso médico. El modo binaural requiere auriculares."}
 };
 
 var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
@@ -357,11 +422,11 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 
   // ---------- nav ----------
   var returnTo="lib";
-  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vFavList"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); }); }
+  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavList"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); }); }
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   Array.prototype.forEach.call(document.querySelectorAll(".hcard"),function(b){
     b.addEventListener("click",function(){ var g=b.getAttribute("data-go");
-      if(g==="pulse")openPulse(); else if(g==="favList"){ renderFavList(); show("favList"); } else show(g); });
+      if(g==="pulse")openPulse(); else if(g==="bin")openBinInput(); else if(g==="favList"){ renderFavList(); show("favList"); } else show(g); });
   });
   $("libBack").addEventListener("click",function(){ show("home"); });
   $("protBack").addEventListener("click",function(){ show("home"); });
@@ -374,20 +439,20 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("search").placeholder=t("search_ph");
     $("manualBtn").textContent=t("manual_btn");
     $("hzLabel").textContent=t("hz_label");
-    $("mSimple").textContent=t("mode_simple"); $("mBin").textContent=t("mode_bin");
-    $("beatLabel").textContent=t("beat_label"); $("binHint").textContent=t("bin_hint");
-    $("volLabel").textContent=t("volume"); $("sVolLabel").textContent=t("volume"); $("pVolLabel").textContent=t("volume"); $("gVolLabel").textContent=t("volume");
+    $("volLabel").textContent=t("volume"); $("sVolLabel").textContent=t("volume"); $("pVolLabel").textContent=t("volume"); $("gVolLabel").textContent=t("volume"); $("binVolLabel").textContent=t("volume");
     $("timerLabel").textContent=t("timer_label");
-    $("discSingle").textContent=t("disc_single"); $("discSeq").textContent=t("disc_seq"); $("discGeo").textContent=t("disc_geo"); $("discPulse").textContent=t("disc_pulse");
+    $("discSingle").textContent=t("disc_single"); $("discSeq").textContent=t("disc_seq"); $("discGeo").textContent=t("disc_geo"); $("discPulse").textContent=t("disc_pulse"); $("discBin").textContent=t("disc_bin");
     Array.prototype.forEach.call(fEl.children,function(b){ b.textContent=t("f_"+b.getAttribute("data-c")); });
     Array.prototype.forEach.call(gfEl.children,function(b){ b.textContent=t(b.getAttribute("data-l")); });
-    $("hGeo").textContent=t("tab_geo"); $("hFreq").textContent=t("tab_freq"); $("hProto").textContent=t("tab_proto"); $("hPulse").textContent=t("home_pulse"); $("hFav").textContent=t("fav_title");
+    $("hGeo").textContent=t("tab_geo"); $("hFreq").textContent=t("tab_freq"); $("hProto").textContent=t("tab_proto"); $("hPulse").textContent=t("home_pulse"); $("hBin").textContent=t("home_bin"); $("hFav").textContent=t("fav_title");
     $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); $("pulseTitle").textContent=t("home_pulse");
     $("gLoopOn").textContent=t("loop_inf"); $("gLoopOff").textContent=t("loop_once");
     $("gTempoLabel").textContent=t("tempo"); $("pTempoLabel").textContent=t("tempo"); $("gInstrLabel").textContent=t("instr_label");
     $("gReverbLabel").textContent=t("reverb_label"); $("gEchoLabel").textContent=t("echo_label"); $("gDelayLabel").textContent=t("delay_label");
+    $("binLbl1").textContent=t("bin_f1"); $("binLbl2").textContent=t("bin_f2"); $("binMaxgap").textContent=t("bin_maxgap"); $("binMaxgap2").textContent=t("bin_maxgap");
+    $("binErrTitle").textContent=t("bin_err_title"); $("binRetry").textContent=t("bin_retry"); $("binPlayTitle").textContent=t("bin_playing"); $("binStop").textContent=t("stop");
     setBtn(state.playing); gSetBtn(gp.playing); pulseSetBtn(pulse.playing); setSeqBtn(seq.playing);
-    renderLib(); renderProtos(); gRenderList(); buildInstr(); renderFavList();
+    renderLib(); renderProtos(); gRenderList(); buildInstr(); renderFavList(); renderBinInput();
   }
   function cycleLang(){ lang=LANGS[(LANGS.indexOf(lang)+1)%3]; try{localStorage.setItem("auralis_lang",lang);}catch(e){} applyLang(); }
   $("langBtn").addEventListener("click",cycleLang);
@@ -411,11 +476,11 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 
   function openPlayer(m, from){
     returnTo=from||"lib";
-    state.cur=m; state.mode="simple"; setMode("simple",true);
+    state.cur=m;
     var manual=!!m.manual; $("manualWrap").hidden=!manual;
     $("pTitle").textContent=manual?t("manual_title"):m.n; $("pcat").textContent=manual?t("manual_cat"):t("f_"+m.c);
     $("hzval").textContent=m.f.toFixed(2); if(manual)$("mInput").value=m.f.toFixed(2);
-    updFav(); refresh(); setTimer(0); show("play");
+    updFav(); setTimer(0); show("play");
   }
   function currentFavItem(){ if(!state.cur)return null; return state.cur.manual?{type:"freq",n:null,f:state.cur.f,c:null,manual:true}:{type:"freq",n:state.cur.n,f:state.cur.f,c:state.cur.c,manual:false}; }
   function updFav(){ var it=currentFavItem(); var on=it&&favIndexOf(it)>=0; $("fav").classList.toggle("on",!!on); $("fav").textContent=on?"★":"☆"; }
@@ -428,12 +493,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("mInput").addEventListener("input",function(){ var v=parseFloat(this.value); if(!isNaN(v))setManual(v); });
   Array.prototype.forEach.call(document.querySelectorAll(".fine button"),function(b){ b.addEventListener("click",function(){ if(state.cur&&state.cur.manual)setManual(state.cur.f+parseFloat(b.getAttribute("data-d"))); }); });
 
-  $("mSimple").addEventListener("click",function(){ setMode("simple"); });
-  $("mBin").addEventListener("click",function(){ setMode("binaural"); });
-  function setMode(m,silent){ state.mode=m; $("mSimple").setAttribute("aria-pressed",m==="simple"?"true":"false"); $("mBin").setAttribute("aria-pressed",m==="binaural"?"true":"false"); $("beatWrap").hidden=(m!=="binaural"); refresh(); if(!silent&&state.playing){stopSingle(true);startSingle();} }
-  $("beat").addEventListener("input",function(){ state.beat=parseFloat(this.value); refresh(); live(); });
   $("vol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("volLbl").textContent=this.value; $("sVol").value=this.value; $("sVolLbl").textContent=this.value; if(sMaster&&ctx)sMaster.gain.setTargetAtTime(state.playing?state.vol:0,ctx.currentTime,0.02); });
-  function refresh(){ if(!state.cur)return; $("beatLbl").textContent=state.beat.toFixed(1); $("beatline").textContent=state.mode==="binaural"?(t("beat_label").toLowerCase()+" "+state.beat.toFixed(1)+" Hz"):""; }
 
   var tEl=$("timer"),OPTS=[0,5,10,15,20,30],tHandle=null,tRemain=0;
   OPTS.forEach(function(o){ var b=document.createElement("button"); b.textContent=o===0?"∞":o+"m"; b.addEventListener("click",function(){ setTimer(o); if(state.playing)armTimer(); }); tEl.appendChild(b); });
@@ -444,15 +504,13 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   var sMaster=null,sOscs=[];
   function startSingle(){ if(!state.cur)return; ensureCtx(); var ti=ctx.currentTime,f=state.cur.f;
     sMaster=ctx.createGain(); sMaster.gain.setValueAtTime(0.0001,ti); sMaster.gain.linearRampToValueAtTime(state.vol,ti+0.05); sMaster.connect(ctx.destination); sOscs=[];
-    if(state.mode==="simple"){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(f,ti);o.connect(sMaster);o.start();sOscs.push(o); }
-    else{ var oa=ctx.createOscillator();oa.type="sine";oa.frequency.setValueAtTime(f,ti); var ob=ctx.createOscillator();ob.type="sine";ob.frequency.setValueAtTime(f+state.beat,ti);
-      var pa=ctx.createStereoPanner();pa.pan.setValueAtTime(-1,ti); var pb=ctx.createStereoPanner();pb.pan.setValueAtTime(1,ti); oa.connect(pa);pa.connect(sMaster);ob.connect(pb);pb.connect(sMaster);oa.start();ob.start();sOscs.push(oa,ob); }
+    var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(f,ti);o.connect(sMaster);o.start();sOscs.push(o);
     state.playing=true; setBtn(true); armTimer(); }
   function stopSingle(immediate){ clearInterval(tHandle);tHandle=null; if(!ctx||!sMaster){state.playing=false;setBtn(false);return;}
     var ti=ctx.currentTime,m=sMaster,os=sOscs; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
     setTimeout(function(){os.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?30:90);
     sMaster=null;sOscs=[];state.playing=false;setBtn(false); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; }
-  function live(){ if(!state.playing||!ctx||!state.cur)return; var ti=ctx.currentTime,f=state.cur.f; if(state.mode==="simple"&&sOscs[0])sOscs[0].frequency.setTargetAtTime(f,ti,0.03); else if(sOscs[0]&&sOscs[1]){sOscs[0].frequency.setTargetAtTime(f,ti,0.03);sOscs[1].frequency.setTargetAtTime(f+state.beat,ti,0.03);} }
+  function live(){ if(!state.playing||!ctx||!state.cur||!sOscs[0])return; sOscs[0].frequency.setTargetAtTime(state.cur.f,ctx.currentTime,0.03); }
   function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); }
   $("play").addEventListener("click",function(){ unlockAudio(); if(state.playing)stopSingle(false); else startSingle(); });
 
@@ -699,6 +757,56 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("pVol").addEventListener("input",function(){ pulse.vol=parseInt(this.value,10)/100; $("pVolLbl").textContent=this.value; if(pulse.master&&ctx)pulse.master.gain.setTargetAtTime(pulse.playing?pulse.vol:0,ctx.currentTime,0.02); });
   $("pPlay").addEventListener("click",function(){ unlockAudio(); if(pulse.playing)pulseStop(false); else pulseStart(); });
   $("pFav").addEventListener("click",function(){ favToggle(pulseFavItem()); updPFav(); });
+
+  // ================= BINAURAUX (façon boîtier) =================
+  var bin={step:1,f1:0,f2:0,kb:"",vol:0.5,playing:false,master:null,oscA:null,oscB:null};
+  function binReset(){ bin.step=1; bin.f1=0; bin.f2=0; bin.kb=""; }
+  function renderBinInput(){
+    $("binStepTitle").textContent = bin.step===1?t("bin_step1"):t("bin_step2");
+    $("binVal1").textContent=(bin.step===1?(bin.kb||"—.—"):bin.f1.toFixed(4))+" Hz";
+    $("binVal2").textContent=(bin.step===2?(bin.kb||"—.—"):(bin.f2>0?bin.f2.toFixed(4):"—.—"))+" Hz";
+  }
+  function openBinInput(){ binStop(true); binReset(); returnTo="home"; renderBinInput(); show("binInput"); }
+  function binDigit(d){ if(bin.kb.length>=9)return; if(d==="."&&bin.kb.indexOf(".")>=0)return; bin.kb+=d; renderBinInput(); }
+  function binBack(){ bin.kb=bin.kb.slice(0,-1); renderBinInput(); }
+  function binOk(){
+    var v=parseFloat(bin.kb); if(!bin.kb||isNaN(v)||v<=0)return;
+    if(bin.step===1){ bin.f1=v; bin.kb=""; bin.step=2; renderBinInput(); }
+    else{ bin.f2=v; if(Math.abs(bin.f1-bin.f2)>20){ showBinError(); } else{ openBinPlay(); } }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#binKeypad button"),function(b){
+    b.addEventListener("click",function(){ var k=b.getAttribute("data-k"); if(k==="back")binBack(); else binDigit(k); });
+  });
+  $("binOk").addEventListener("click",binOk);
+  $("binBack").addEventListener("click",function(){ binStop(true); show("home"); });
+
+  function showBinError(){ $("binDiff").textContent=t("bin_diff")+" : "+Math.abs(bin.f1-bin.f2).toFixed(2)+" Hz"; show("binError"); }
+  $("binRetry").addEventListener("click",function(){ binReset(); renderBinInput(); show("binInput"); });
+  $("binErrBack").addEventListener("click",function(){ binReset(); show("home"); });
+
+  function drawStars(cvId){ var c=$(cvId),g=c.getContext("2d"),W=c.width,H=c.height; g.clearRect(0,0,W,H);
+    for(var i=0;i<80;i++){ var x=Math.random()*W,y=Math.random()*H,r=(i%3===0)?1.6:1;
+      g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fillStyle=(i%4===0)?"rgba(127,216,240,.9)":"rgba(147,162,194,.7)"; g.fill(); } }
+  function openBinPlay(){
+    $("binF1Lbl").textContent=t("bin_f1")+" "+bin.f1.toFixed(4)+" Hz";
+    $("binF2Lbl").textContent=t("bin_f2")+" "+bin.f2.toFixed(4)+" Hz";
+    $("binBeatLbl").textContent=t("bin_beat")+" : "+Math.abs(bin.f1-bin.f2).toFixed(2)+" Hz";
+    show("binPlay"); drawStars("binStars"); binStart();
+  }
+  function binStart(){ ensureCtx(); unlockAudio(); var ti=ctx.currentTime;
+    bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(0.0001,ti); bin.master.gain.linearRampToValueAtTime(bin.vol,ti+0.05); bin.master.connect(ctx.destination);
+    bin.oscA=ctx.createOscillator(); bin.oscA.type="sine"; bin.oscA.frequency.setValueAtTime(bin.f1,ti);
+    bin.oscB=ctx.createOscillator(); bin.oscB.type="sine"; bin.oscB.frequency.setValueAtTime(bin.f2,ti);
+    var pa=ctx.createStereoPanner(); pa.pan.setValueAtTime(-1,ti); var pb=ctx.createStereoPanner(); pb.pan.setValueAtTime(1,ti);
+    bin.oscA.connect(pa); pa.connect(bin.master); bin.oscB.connect(pb); pb.connect(bin.master);
+    bin.oscA.start(ti); bin.oscB.start(ti); bin.playing=true; }
+  function binStop(immediate){ if(!ctx||!bin.master){ bin.playing=false; return; }
+    var ti=ctx.currentTime,m=bin.master,a=bin.oscA,b=bin.oscB;
+    try{ m.gain.cancelScheduledValues(ti); m.gain.setValueAtTime(m.gain.value,ti); m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.02:0.06)); }catch(e){}
+    setTimeout(function(){ [a,b].forEach(function(o){try{o.stop();o.disconnect();}catch(e){}}); try{m.disconnect();}catch(e){} }, immediate?40:120);
+    bin.master=null; bin.oscA=null; bin.oscB=null; bin.playing=false; }
+  $("binVol").addEventListener("input",function(){ bin.vol=parseInt(this.value,10)/100; $("binVolLbl").textContent=this.value; if(bin.master&&ctx)bin.master.gain.setTargetAtTime(bin.playing?bin.vol:0,ctx.currentTime,0.02); });
+  $("binStop").addEventListener("click",function(){ binStop(false); show("home"); });
 
   // ---------- favoris (liste) ----------
   function favIcon(it){ if(it.type==="freq")return it.manual?"⌨":"🎵"; if(it.type==="geo")return GEO[it.idx].ic; if(it.type==="proto")return PROTOS[it.idx].ic; if(it.type==="pulse")return "💓"; return ""; }
