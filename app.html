@@ -72,6 +72,8 @@
   .pcard{display:flex; align-items:center; gap:14px; width:100%; text-align:left; background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:11px; cursor:pointer; color:var(--txt); font:inherit}
   .pcard:active{background:var(--pan2)}
   .pcard .ico{flex:0 0 auto; width:44px; height:44px; border-radius:12px; background:var(--pan2); display:flex; align-items:center; justify-content:center; font-size:1.4rem}
+  .pcard .pcphoto{flex:0 0 auto; width:44px; height:44px; border-radius:12px; object-fit:cover; filter:grayscale(1) contrast(1.1) brightness(0.9); border:1px solid var(--line)}
+  .gphoto{display:block; width:150px; height:150px; margin:2px auto 12px; border-radius:18px; object-fit:cover; filter:grayscale(1) contrast(1.1) brightness(0.92); border:1px solid var(--line); box-shadow:0 0 0 5px rgba(127,216,240,.06)}
   .pcard .pt{flex:1; min-width:0} .pcard .pt b{font-size:1.05rem; font-weight:700} .pcard .pt span{display:block; font-size:.78rem; color:var(--dim); margin-top:2px}
   .pcard .go{color:var(--mauve); font-size:1.2rem}
 
@@ -242,6 +244,7 @@
   <section class="view" id="vGeoPlay">
     <div class="bar"><button class="backbtn" id="gBack" aria-label="Retour">‹</button><h2 id="gTitle">—</h2></div>
     <div class="player">
+      <img class="gphoto" id="gPhoto" hidden alt="">
       <div class="stage"><canvas id="gViz" width="400" height="400" aria-hidden="true"></canvas>
         <div class="gnow"><div class="gn" id="gNowN">—</div><div class="gf" id="gNowF"></div></div></div>
       <p class="gsym" id="gSym"></p>
@@ -747,18 +750,18 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    {name:"Cube de Métatron",ic:"✴️",shape:"metatron",cat:"sacred",sym:{fr:"13 cercles · les 5 solides de Platon",en:"13 circles · the 5 Platonic solids",es:"13 círculos · los 5 sólidos de Platón"},ratios:"accord majeur + sixte",notes:["Do","Mi","Sol","La","Do′","Sol","Mi","Do"],drone:[["Do",0.28],["Mi",0.13],["Sol",0.18]]},
    {name:"Sri Yantra",ic:"🕉️",shape:"sriyantra",cat:"sacred",sym:{fr:"9 triangles · le son primordial",en:"9 triangles · the primordial sound",es:"9 triángulos · el sonido primordial"},ratios:"gamme ascendante",notes:["Do","Ré","Mi","Fa","Sol","La","Si","Do′"],drone:[["Do",0.28],["Sol",0.18]]},
    {name:"Carré · Cube",ic:"▢",shape:"square",cat:"sacred",sym:{fr:"Le 4 · stabilité",en:"The 4 · stability",es:"El 4 · estabilidad"},ratios:"4:3",notes:["Do","Fa","Do′","Fa"],drone:[["Do",0.3],["Fa",0.2]]},
-   {name:"Spirale Double",ic:"☯",shape:"yinyang",cat:"crop",sym:{fr:"Spirale double · dualité",en:"Double spiral · duality",es:"Espiral doble · dualidad"},ratios:"2:1 · octave",notes:["Do","Sol","Do′","Sol","Do","Sol","Do′","Sol"],drone:[["Do",0.3],["Sol",0.2]]},
-   {name:"Rosace Solaire",ic:"✺",shape:"rosace",cat:"crop",sym:{fr:"Rosace solaire · mandala rayonnant",en:"Solar rosette · radiant mandala",es:"Rosetón solar · mandala radiante"},ratios:"accord majeur rayonnant",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do","Sol"],drone:[["Do",0.28],["Sol",0.18]]},
-   {name:"Amas de Bulles",ic:"🫧",shape:"bubbles",cat:"crop",sym:{fr:"Amas de bulles · spirale double",en:"Bubble cluster · double spiral",es:"Racimo de burbujas · espiral doble"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Sol","Mi","Ré"],drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Pentagramme Rayonnant",ic:"✦",shape:"pentastar",cat:"crop",sym:{fr:"Symétrie 5 · étoile rayonnante",en:"5-fold · radiant star",es:"Simetría 5 · estrella radiante"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],drone:[["Do",0.3],["La",0.15]]},
-   {name:"Spirale Dorée · Système",ic:"☄️",shape:"fibonacci",cat:"crop",sym:{fr:"Suite de Fibonacci · nombre d'or",en:"Fibonacci sequence · golden ratio",es:"Secuencia de Fibonacci · número áureo"},ratios:"φ ≈ 1.618",notes:["Do","Ré","Mi","Sol","Do′","Sol","Mi","Ré"],drone:[["Do",0.3],["Sol",0.15]]},
-   {name:"Réseau Cristallin",ic:"❄️",shape:"lattice",cat:"crop",sym:{fr:"Symétrie 4 · réseau cristallin",en:"4-fold · crystal lattice",es:"Simetría 4 · red cristalina"},ratios:"accord majeur en treillis",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do","Mi"],drone:[["Do",0.3],["Mi",0.15],["Sol",0.15]]},
-   {name:"Spirale Ailée",ic:"🌊",shape:"wingspiral",cat:"crop",sym:{fr:"Spirale ailée · méandre grec",en:"Winged spiral · Greek meander",es:"Espiral alada · meandro griego"},ratios:"4:3 · méandre",notes:["Do","Fa","Do","Fa","Sol","Do′","Fa","Do"],drone:[["Do",0.3],["Fa",0.18]]},
-   {name:"Galaxie de Bulles",ic:"🌌",shape:"spiralbubbles",cat:"crop",sym:{fr:"Spirale logarithmique · croissance",en:"Logarithmic spiral · growth",es:"Espiral logarítmica · crecimiento"},ratios:"suite de Fibonacci",notes:["Do","Ré","Mi","Sol","La","Do′"],drone:[["Do",0.28],["Sol",0.16]]},
-   {name:"Noyau et Satellites",ic:"⚛️",shape:"nucleus3",cat:"crop",sym:{fr:"Noyau et 3 satellites · orbite",en:"Nucleus and 3 satellites · orbit",es:"Núcleo y 3 satélites · órbita"},ratios:"triade orbitale",notes:["Do","Mi","Do","Sol","Do","La","Do"],drone:[["Do",0.32]]},
-   {name:"Nautile Doré",ic:"🐚",shape:"nautilus",cat:"crop",sym:{fr:"Spirale logarithmique · nombre d'or",en:"Logarithmic spiral · golden ratio",es:"Espiral logarítmica · número áureo"},ratios:"φ ≈ 1.618",notes:["Do′","Si","La","Sol","Fa","Mi","Ré","Do"],drone:[["Do",0.3],["Sol",0.15]]},
-   {name:"Modèle Atomique",ic:"🪐",shape:"atom2",cat:"crop",sym:{fr:"Noyau et 2 satellites · orbite double",en:"Nucleus and 2 satellites · double orbit",es:"Núcleo y 2 satélites · órbita doble"},ratios:"dyade orbitale",notes:["Do","Sol","Do","La","Do","Sol","Do","La"],drone:[["Do",0.32]]},
-   {name:"Masque Solaire",ic:"🎭",shape:"sunmask",cat:"crop",sym:{fr:"Symétrie miroir · couronne rayonnante",en:"Mirror symmetry · radiant crown",es:"Simetría especular · corona radiante"},ratios:"accord majeur en miroir",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],drone:[["Do",0.3],["Sol",0.18]]}
+   {name:"Spirale Double",ic:"☯",shape:"yinyang",cat:"crop",photo:"113.jpg",sym:{fr:"Spirale double · dualité",en:"Double spiral · duality",es:"Espiral doble · dualidad"},ratios:"2:1 · octave",notes:["Do","Sol","Do′","Sol","Do","Sol","Do′","Sol"],drone:[["Do",0.3],["Sol",0.2]]},
+   {name:"Rosace Solaire",ic:"✺",shape:"rosace",cat:"crop",photo:"114.jpg",sym:{fr:"Rosace solaire · mandala rayonnant",en:"Solar rosette · radiant mandala",es:"Rosetón solar · mandala radiante"},ratios:"accord majeur rayonnant",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do","Sol"],drone:[["Do",0.28],["Sol",0.18]]},
+   {name:"Amas de Bulles",ic:"🫧",shape:"bubbles",cat:"crop",photo:"115.jpg",sym:{fr:"Amas de bulles · spirale double",en:"Bubble cluster · double spiral",es:"Racimo de burbujas · espiral doble"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Sol","Mi","Ré"],drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Pentagramme Rayonnant",ic:"✦",shape:"pentastar",cat:"crop",photo:"116.jpg",sym:{fr:"Symétrie 5 · étoile rayonnante",en:"5-fold · radiant star",es:"Simetría 5 · estrella radiante"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],drone:[["Do",0.3],["La",0.15]]},
+   {name:"Spirale Dorée · Système",ic:"☄️",shape:"fibonacci",cat:"crop",photo:"117.jpg",sym:{fr:"Suite de Fibonacci · nombre d'or",en:"Fibonacci sequence · golden ratio",es:"Secuencia de Fibonacci · número áureo"},ratios:"φ ≈ 1.618",notes:["Do","Ré","Mi","Sol","Do′","Sol","Mi","Ré"],drone:[["Do",0.3],["Sol",0.15]]},
+   {name:"Réseau Cristallin",ic:"❄️",shape:"lattice",cat:"crop",photo:"118.jpg",sym:{fr:"Symétrie 4 · réseau cristallin",en:"4-fold · crystal lattice",es:"Simetría 4 · red cristalina"},ratios:"accord majeur en treillis",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do","Mi"],drone:[["Do",0.3],["Mi",0.15],["Sol",0.15]]},
+   {name:"Spirale Ailée",ic:"🌊",shape:"wingspiral",cat:"crop",photo:"119.jpg",sym:{fr:"Spirale ailée · méandre grec",en:"Winged spiral · Greek meander",es:"Espiral alada · meandro griego"},ratios:"4:3 · méandre",notes:["Do","Fa","Do","Fa","Sol","Do′","Fa","Do"],drone:[["Do",0.3],["Fa",0.18]]},
+   {name:"Galaxie de Bulles",ic:"🌌",shape:"spiralbubbles",cat:"crop",photo:"120.jpg",sym:{fr:"Spirale logarithmique · croissance",en:"Logarithmic spiral · growth",es:"Espiral logarítmica · crecimiento"},ratios:"suite de Fibonacci",notes:["Do","Ré","Mi","Sol","La","Do′"],drone:[["Do",0.28],["Sol",0.16]]},
+   {name:"Noyau et Satellites",ic:"⚛️",shape:"nucleus3",cat:"crop",photo:"121.jpg",sym:{fr:"Noyau et 3 satellites · orbite",en:"Nucleus and 3 satellites · orbit",es:"Núcleo y 3 satélites · órbita"},ratios:"triade orbitale",notes:["Do","Mi","Do","Sol","Do","La","Do"],drone:[["Do",0.32]]},
+   {name:"Nautile Doré",ic:"🐚",shape:"nautilus",cat:"crop",photo:"122.jpg",sym:{fr:"Spirale logarithmique · nombre d'or",en:"Logarithmic spiral · golden ratio",es:"Espiral logarítmica · número áureo"},ratios:"φ ≈ 1.618",notes:["Do′","Si","La","Sol","Fa","Mi","Ré","Do"],drone:[["Do",0.3],["Sol",0.15]]},
+   {name:"Modèle Atomique",ic:"🪐",shape:"atom2",cat:"crop",photo:"123.jpg",sym:{fr:"Noyau et 2 satellites · orbite double",en:"Nucleus and 2 satellites · double orbit",es:"Núcleo y 2 satélites · órbita doble"},ratios:"dyade orbitale",notes:["Do","Sol","Do","La","Do","Sol","Do","La"],drone:[["Do",0.32]]},
+   {name:"Masque Solaire",ic:"🎭",shape:"sunmask",cat:"crop",photo:"124.jpg",sym:{fr:"Symétrie miroir · couronne rayonnante",en:"Mirror symmetry · radiant crown",es:"Simetría especular · corona radiante"},ratios:"accord majeur en miroir",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],drone:[["Do",0.3],["Sol",0.18]]}
   ];
   var geoState={filter:"all"};
   var gfEl=$("geoFilters");
@@ -815,10 +818,12 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function gRenderList(){ var el=$("geoList"); el.innerHTML="";
     var arr=GEO.filter(function(fig){ return geoState.filter==="all"||fig.cat===geoState.filter; });
     arr.forEach(function(fig){ var i=GEO.indexOf(fig); var b=document.createElement("button"); b.className="pcard";
-      b.innerHTML='<span class="ico">'+fig.ic+'</span><span class="pt"><b>'+fig.name+'</b><span>'+(fig.sym[lang]||fig.sym.fr)+'</span></span><span class="go">›</span>';
+      var icoHtml=fig.photo?('<img class="pcphoto" src="app-images/'+fig.photo+'" alt="">'):('<span class="ico">'+fig.ic+'</span>');
+      b.innerHTML=icoHtml+'<span class="pt"><b>'+fig.name+'</b><span>'+(fig.sym[lang]||fig.sym.fr)+'</span></span><span class="go">›</span>';
       b.addEventListener("click",function(){ gOpen(i,"geo"); }); el.appendChild(b); }); }
   function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); } loadRealIR();
     $("gTitle").textContent=gp.fig.name; $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=gp.fig.ratios;
+    var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; } else { ph.hidden=true; ph.removeAttribute("src"); }
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+nn+"</b>"; row.appendChild(d); });
     var n0=gp.fig.notes[0]; $("gNowN").textContent=n0; $("gNowF").textContent=NM[n0].toFixed(2)+" Hz";
