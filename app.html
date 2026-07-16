@@ -543,11 +543,12 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   };
   var GORDER=["sine","piano","guitar","violin","sax"], _waves={};
 
+  var CHROM4=[[261.63,"C4.wav"],[277.18,"Cs4.wav"],[293.66,"D4.wav"],[311.13,"Ds4.wav"],[329.63,"E4.wav"],[349.23,"F4.wav"],[369.99,"Fs4.wav"],[392.00,"G4.wav"],[415.30,"Gs4.wav"],[440.00,"A4.wav"],[466.16,"As4.wav"],[493.88,"B4.wav"]];
   var SAMPLES={
-   piano:{base:"app-sounds/piano/",map:[[261.63,"C4.mp3"],[311.13,"Ds4.mp3"],[369.99,"Fs4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false},
-   guitar:{base:"app-sounds/guitar/",map:[[261.63,"C4.mp3"],[311.13,"Ds4.mp3"],[369.99,"Fs4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false},
-   violin:{base:"app-sounds/violin/",map:[[261.63,"C4.mp3"],[329.63,"E4.mp3"],[392.00,"G4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false},
-   sax:{base:"app-sounds/sax/",map:[[261.63,"C4.mp3"],[311.13,"Ds4.mp3"],[369.99,"Fs4.mp3"],[440.00,"A4.mp3"],[523.25,"C5.mp3"]],buffers:null,loading:false}
+   piano:{base:"app-sounds/piano/",map:CHROM4,buffers:null,loading:false},
+   guitar:{base:"app-sounds/guitar/",map:CHROM4,buffers:null,loading:false},
+   violin:{base:"app-sounds/violin/",map:[[261.63,"C4.wav"],[329.63,"E4.wav"],[392.00,"G4.wav"],[440.00,"A4.wav"],[523.25,"C5.wav"]],buffers:null,loading:false},
+   sax:{base:"app-sounds/sax/",map:CHROM4,buffers:null,loading:false}
   };
   function loadSamples(id){ var sm=SAMPLES[id]; if(!sm||sm.buffers||sm.loading)return; sm.loading=true; ensureCtx();
     var res=[],pend=sm.map.length;
