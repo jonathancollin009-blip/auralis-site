@@ -76,11 +76,11 @@
   .pcard:active{background:var(--pan2)}
   .pcard .ico{flex:0 0 auto; width:44px; height:44px; border-radius:12px; background:var(--pan2); display:flex; align-items:center; justify-content:center; font-size:1.4rem}
   .pcard .pcphoto{flex:0 0 auto; width:44px; height:44px; border-radius:12px; object-fit:cover; filter:grayscale(1) contrast(1.1) brightness(0.9); border:1px solid var(--line)}
-  .gphoto{display:block; width:150px; height:150px; margin:2px auto 12px; border-radius:18px; object-fit:cover; filter:grayscale(1) contrast(1.1) brightness(0.92); border:1px solid var(--line); box-shadow:0 0 0 5px rgba(127,216,240,.06)}
+  .gstagephoto{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:192px; height:192px; border-radius:50%; object-fit:cover; filter:grayscale(1) contrast(1.08) brightness(0.8); z-index:0}
   .pcard .pt{flex:1; min-width:0} .pcard .pt b{font-size:1.05rem; font-weight:700} .pcard .pt span{display:block; font-size:.78rem; color:var(--dim); margin-top:2px}
   .pcard .go{color:var(--mauve); font-size:1.2rem}
 
-  .player{flex:1; display:flex; flex-direction:column; padding:6px 20px 30px}
+  .player{flex:1; display:flex; flex-direction:column; padding:4px 20px 24px}
   .stage{position:relative; display:flex; align-items:center; justify-content:center; margin:6px 0}
   .stage::before{content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:212px; height:212px; border-radius:50%;
     border:1.5px solid rgba(127,216,240,.5); box-shadow:0 0 26px 4px rgba(127,216,240,.32), 0 0 70px 20px rgba(185,143,224,.14), inset 0 0 22px rgba(127,216,240,.12);
@@ -105,7 +105,7 @@
   .seg button[aria-pressed="true"]{background:var(--pan2); color:var(--txt); box-shadow:0 0 0 1px var(--line)}
 
   .label{font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--dimmer)}
-  .ctl{margin-bottom:15px}
+  .ctl{margin-bottom:11px}
   .ctl .row{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:7px}
   .ctl .row .v{font-variant-numeric:tabular-nums; font-weight:700}
   input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:6px; background:linear-gradient(90deg,var(--cyan),var(--mauve)); outline:none; margin:0}
@@ -171,9 +171,9 @@
   .steps li .rm{margin-left:auto; flex:0 0 auto; color:var(--dimmer); font-size:1rem; padding:2px 4px; cursor:pointer}
   .linkbtn{display:block; width:100%; text-align:center; background:none; border:0; color:var(--dimmer); font:inherit; font-size:.85rem; padding:8px; cursor:pointer; text-decoration:underline}
 
-  .gnow{position:absolute; text-align:center; pointer-events:none}
-  .gnow .gn{font-size:1.7rem; font-weight:800; line-height:1}
-  .gnow .gf{font-size:.72rem; color:var(--cyan); font-variant-numeric:tabular-nums; margin-top:3px}
+  .gnow{position:absolute; text-align:center; pointer-events:none; z-index:2}
+  .gnow .gn{font-size:1.9rem; font-weight:800; line-height:1; text-shadow:0 2px 14px rgba(0,0,0,.85)}
+  .gnow .gf{font-size:.8rem; color:var(--cyan); font-variant-numeric:tabular-nums; margin-top:4px; text-shadow:0 1px 10px rgba(0,0,0,.85)}
   .grow{display:flex; gap:6px; margin:12px 0 4px; justify-content:center; flex-wrap:wrap}
   .gnote{flex:0 0 auto; min-width:46px; text-align:center; background:var(--pan); border:1px solid var(--line); border-radius:9px; padding:8px 5px; transition:.1s}
   .gnote.on{background:rgba(127,216,240,.14); border-color:var(--cyan); color:var(--cyan); transform:translateY(-3px)}
@@ -257,8 +257,7 @@
   <section class="view" id="vGeoPlay">
     <div class="bar"><button class="backbtn" id="gBack" aria-label="Retour">‹</button><h2 id="gTitle">—</h2></div>
     <div class="player">
-      <img class="gphoto" id="gPhoto" hidden alt="">
-      <div class="stage"><canvas id="gViz" width="400" height="400" aria-hidden="true"></canvas>
+      <div class="stage"><img class="gstagephoto" id="gPhoto" hidden alt=""><canvas id="gViz" width="400" height="400" aria-hidden="true"></canvas>
         <div class="gnow"><div class="gn" id="gNowN">—</div><div class="gf" id="gNowF"></div></div></div>
       <p class="gsym" id="gSym"></p>
       <p class="gratios" id="gRatios"></p>
@@ -862,7 +861,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       b.addEventListener("click",function(){ gOpen(i,"geo"); }); el.appendChild(b); }); }
   function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); } loadRealIR();
     $("gTitle").textContent=gp.fig.name; $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=gp.fig.ratios;
-    var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; } else { ph.hidden=true; ph.removeAttribute("src"); }
+    var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); $("gViz").style.visibility="visible"; }
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+noteLabel(nn)+"</b>"; row.appendChild(d); });
     var n0=gp.fig.notes[0]; $("gNowN").textContent=noteLabel(n0); $("gNowF").textContent=noteFreq(n0).toFixed(2)+" Hz";
