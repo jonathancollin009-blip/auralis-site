@@ -543,6 +543,10 @@ var T={
  fav_max_steps:{fr:"Maximum 8 fréquences par favori",en:"Maximum 8 frequencies per favorite",es:"Máximo 8 frecuencias por favorito"},
  geo_filter_crop:{fr:"Crop Circle",en:"Crop Circle",es:"Crop Circle"},
  geo_filter_sacred:{fr:"Géométrie sacrée",en:"Sacred geometry",es:"Geometría sagrada"},
+ geo_filter_snowflake:{fr:"Flocon de neige",en:"Snowflake",es:"Copo de nieve"},
+ geo_filter_color:{fr:"Couleur",en:"Color",es:"Color"},
+ geo_filter_planet:{fr:"Planète",en:"Planet",es:"Planeta"},
+ geo_empty_cat:{fr:"Aucune figure pour l'instant.",en:"No figures yet.",es:"Aún no hay figuras."},
  disc_pulse:{fr:"Bien-être et relaxation — pas un usage médical. Le volume pulse au rythme choisi, comme un battement.",en:"Wellness and relaxation — not medical use. Volume pulses at the chosen tempo, like a heartbeat.",es:"Bienestar y relajación — no es un uso médico. El volumen pulsa al ritmo elegido, como un latido."},
  home_bin:{fr:"Binauraux",en:"Binaural",es:"Binaurales"},
  bin_step1:{fr:"Entrez la fréquence No.1",en:"Enter frequency No.1",es:"Introduzca la frecuencia N.º1"},
@@ -768,7 +772,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   ];
   var geoState={filter:"all"};
   var gfEl=$("geoFilters");
-  [{k:"all",l:"f_Toutes"},{k:"crop",l:"geo_filter_crop"},{k:"sacred",l:"geo_filter_sacred"}].forEach(function(gf){
+  [{k:"all",l:"f_Toutes"},{k:"crop",l:"geo_filter_crop"},{k:"sacred",l:"geo_filter_sacred"},{k:"snowflake",l:"geo_filter_snowflake"},{k:"color",l:"geo_filter_color"},{k:"planet",l:"geo_filter_planet"}].forEach(function(gf){
     var b=document.createElement("button"); b.setAttribute("data-k",gf.k); b.setAttribute("data-l",gf.l); b.setAttribute("aria-pressed",gf.k==="all"?"true":"false");
     b.addEventListener("click",function(){ geoState.filter=gf.k; Array.prototype.forEach.call(gfEl.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-k")===gf.k?"true":"false");}); gRenderList(); });
     gfEl.appendChild(b);
@@ -820,6 +824,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 
   function gRenderList(){ var el=$("geoList"); el.innerHTML="";
     var arr=GEO.filter(function(fig){ return geoState.filter==="all"||fig.cat===geoState.filter; });
+    if(!arr.length){ el.innerHTML='<p class="empty">'+t("geo_empty_cat")+'</p>'; return; }
     arr.forEach(function(fig){ var i=GEO.indexOf(fig); var b=document.createElement("button"); b.className="pcard";
       var icoHtml=fig.photo?('<img class="pcphoto" src="app-images/'+fig.photo+'" alt="">'):('<span class="ico">'+fig.ic+'</span>');
       b.innerHTML=icoHtml+'<span class="pt"><b>'+fig.name+'</b><span>'+(fig.sym[lang]||fig.sym.fr)+'</span></span><span class="go">›</span>';
