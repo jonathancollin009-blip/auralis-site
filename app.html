@@ -780,7 +780,15 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    {name:"Saturne",ic:"♄",shape:"psaturn",cat:"planet",sym:{fr:"Période orbitale octaviée (2³⁷)",en:"Octaved orbital period (2³⁷)",es:"Período orbital octavado (2³⁷)"},ratios:"147.85 Hz · Octave Cosmique",notes:[147.85],drone:[[147.85,0.3]]},
    {name:"Uranus",ic:"♅",shape:"planet2",cat:"planet",sym:{fr:"Période orbitale octaviée (2³⁹)",en:"Octaved orbital period (2³⁹)",es:"Período orbital octavado (2³⁹)"},ratios:"207.36 Hz · Octave Cosmique",notes:[207.36],drone:[[207.36,0.3]]},
    {name:"Neptune",ic:"♆",shape:"planet3",cat:"planet",sym:{fr:"Période orbitale octaviée (2⁴⁰)",en:"Octaved orbital period (2⁴⁰)",es:"Período orbital octavado (2⁴⁰)"},ratios:"211.44 Hz · Octave Cosmique",notes:[211.44],drone:[[211.44,0.3]]},
-   {name:"Pluton",ic:"♇",shape:"planet1",cat:"planet",sym:{fr:"Période orbitale octaviée",en:"Octaved orbital period",es:"Período orbital octavado"},ratios:"140.25 Hz · Octave Cosmique",notes:[140.25],drone:[[140.25,0.3]]}
+   {name:"Pluton",ic:"♇",shape:"planet1",cat:"planet",sym:{fr:"Période orbitale octaviée",en:"Octaved orbital period",es:"Período orbital octavado"},ratios:"140.25 Hz · Octave Cosmique",notes:[140.25],drone:[[140.25,0.3]]},
+   {name:"Rouge",ic:'<b style="color:#ff3b30">●</b>',shape:"pcolor",color:"#ff3b30",cat:"color",sym:{fr:"Lumière rouge · λ 700 nm · −40 octaves",en:"Red light · λ 700 nm · −40 octaves",es:"Luz roja · λ 700 nm · −40 octavas"},ratios:"389.53 Hz · lumière octaviée",notes:[389.53],drone:[[389.53,0.3]]},
+   {name:"Orange",ic:'<b style="color:#ff9500">●</b>',shape:"pcolor",color:"#ff9500",cat:"color",sym:{fr:"Lumière orange · λ 620 nm · −40 octaves",en:"Orange light · λ 620 nm · −40 octaves",es:"Luz naranja · λ 620 nm · −40 octavas"},ratios:"439.79 Hz · lumière octaviée",notes:[439.79],drone:[[439.79,0.3]]},
+   {name:"Jaune",ic:'<b style="color:#ffd60a">●</b>',shape:"pcolor",color:"#ffd60a",cat:"color",sym:{fr:"Lumière jaune · λ 580 nm · −40 octaves",en:"Yellow light · λ 580 nm · −40 octaves",es:"Luz amarilla · λ 580 nm · −40 octavas"},ratios:"470.12 Hz · lumière octaviée",notes:[470.12],drone:[[470.12,0.3]]},
+   {name:"Vert",ic:'<b style="color:#34c759">●</b>',shape:"pcolor",color:"#34c759",cat:"color",sym:{fr:"Lumière verte · λ 530 nm · −40 octaves",en:"Green light · λ 530 nm · −40 octaves",es:"Luz verde · λ 530 nm · −40 octavas"},ratios:"514.47 Hz · lumière octaviée",notes:[514.47],drone:[[514.47,0.3]]},
+   {name:"Cyan",ic:'<b style="color:#00bcd4">●</b>',shape:"pcolor",color:"#00bcd4",cat:"color",sym:{fr:"Lumière cyan · λ 490 nm · −40 octaves",en:"Cyan light · λ 490 nm · −40 octaves",es:"Luz cian · λ 490 nm · −40 octavas"},ratios:"556.47 Hz · lumière octaviée",notes:[556.47],drone:[[556.47,0.3]]},
+   {name:"Bleu",ic:'<b style="color:#2b7bff">●</b>',shape:"pcolor",color:"#2b7bff",cat:"color",sym:{fr:"Lumière bleue · λ 470 nm · −40 octaves",en:"Blue light · λ 470 nm · −40 octaves",es:"Luz azul · λ 470 nm · −40 octavas"},ratios:"580.15 Hz · lumière octaviée",notes:[580.15],drone:[[580.15,0.3]]},
+   {name:"Indigo",ic:'<b style="color:#5856d6">●</b>',shape:"pcolor",color:"#5856d6",cat:"color",sym:{fr:"Lumière indigo · λ 445 nm · −40 octaves",en:"Indigo light · λ 445 nm · −40 octaves",es:"Luz índigo · λ 445 nm · −40 octavas"},ratios:"612.74 Hz · lumière octaviée",notes:[612.74],drone:[[612.74,0.3]]},
+   {name:"Violet",ic:'<b style="color:#af52de">●</b>',shape:"pcolor",color:"#af52de",cat:"color",sym:{fr:"Lumière violette · λ 410 nm · −40 octaves",en:"Violet light · λ 410 nm · −40 octaves",es:"Luz violeta · λ 410 nm · −40 octavas"},ratios:"665.05 Hz · lumière octaviée",notes:[665.05],drone:[[665.05,0.3]]}
   ];
   var geoState={filter:"all"};
   var gfEl=$("geoFilters");
@@ -908,7 +916,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     gp.master=null; gp.drones=[]; gp.dry=null; gp.wet=null; gp.conv=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.echoFilter=null; gp.playing=false; gSetBtn(false); }
   function gCurrentIndex(){ if(!gp.playing||!ctx||!gp.fig)return -1; var el=ctx.currentTime-gp.cycleStart; if(el<0)return -1; var i=Math.floor(el/gp.dur); return (i>=0&&i<gp.fig.notes.length)?i:-1; }
 
-  function drawShape(g,W,H,type,on,phase){
+  function drawShape(g,W,H,type,on,phase,fig){
     var cx=W/2,cy=H/2,R=W*0.34; g.save(); g.translate(cx,cy); var s=on?1+Math.sin(phase)*0.02:1; g.scale(s,s); g.translate(-cx,-cy);
     g.lineWidth=2.5; g.strokeStyle="rgba(127,216,240,"+(on?0.9:0.55)+")"; g.fillStyle="rgba(185,143,224,0.10)";
     function poly(n,rot,r){ g.beginPath(); for(var i=0;i<n;i++){ var a=rot+i*2*Math.PI/n; var x=cx+r*Math.cos(a),y=cy+r*Math.sin(a); if(i===0)g.moveTo(x,y);else g.lineTo(x,y);} g.closePath(); }
@@ -1008,6 +1016,15 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       [0.55,0.85].forEach(function(ro2,ie){ var ae=ie===0?Math.PI*0.35:Math.PI*1.35;
         g.fillStyle="rgba(185,143,224,0.2)"; g.beginPath(); g.arc(cx+R*ro2*Math.cos(ae),cy+R*ro2*Math.sin(ae),R*0.09,0,Math.PI*2); g.fill(); g.stroke(); });
     }
+    else if(type==="pcolor"){
+      var col=(fig&&fig.color)||"#7fd8f0";
+      var grad=g.createRadialGradient(cx,cy,R*0.05,cx,cy,R*0.75);
+      grad.addColorStop(0,col); grad.addColorStop(1,"rgba(7,13,28,0)");
+      g.globalAlpha=on?0.85:0.5; g.fillStyle=grad;
+      g.beginPath(); g.arc(cx,cy,R*0.75,0,Math.PI*2); g.fill(); g.globalAlpha=1;
+      g.strokeStyle=col; g.lineWidth=2.5;
+      g.beginPath(); g.arc(cx,cy,R*0.55,0,Math.PI*2); g.stroke();
+      g.globalAlpha=on?0.5:0.3; g.beginPath(); g.arc(cx,cy,R*0.8,0,Math.PI*2); g.stroke(); g.globalAlpha=1; }
     else if(type==="psun"){
       g.fillStyle="rgba(233,201,106,"+(on?0.35:0.2)+")"; g.beginPath(); g.arc(cx,cy,R*0.42,0,Math.PI*2); g.fill();
       g.strokeStyle="rgba(233,201,106,"+(on?0.95:0.6)+")"; g.beginPath(); g.arc(cx,cy,R*0.42,0,Math.PI*2); g.stroke();
@@ -1048,7 +1065,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     g.restore();
   }
   (function gDraw(){ var c=$("gViz"),g=c.getContext("2d"); g.clearRect(0,0,c.width,c.height);
-    if(gp.fig){ drawShape(g,c.width,c.height,gp.fig.shape,gp.playing,gPhase); var idx=gCurrentIndex();
+    if(gp.fig){ drawShape(g,c.width,c.height,gp.fig.shape,gp.playing,gPhase,gp.fig); var idx=gCurrentIndex();
       gp.fig.notes.forEach(function(nn,k){ var el=$("gn"+k); if(el)el.classList.toggle("on",k===idx); });
       if(idx>=0){ $("gNowN").textContent=noteLabel(gp.fig.notes[idx]); $("gNowF").textContent=noteFreq(gp.fig.notes[idx]).toFixed(2)+" Hz"; } }
     if(!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)) gPhase+=gp.playing?0.09:0.015;
