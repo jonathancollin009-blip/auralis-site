@@ -22,7 +22,8 @@
   html,body{margin:0; height:100%}
   body{background:var(--bg);
     color:var(--txt); font:16px/1.5 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; display:flex; justify-content:center}
-  .appbg{position:fixed; inset:0; z-index:0; background:var(--bg) url("app-images/bg.webp") center center / cover no-repeat; pointer-events:none}
+  .appbg{position:fixed; inset:0; z-index:0; background:var(--bg) url("app-images/bg.webp") center center / cover no-repeat; pointer-events:none; transition:opacity .6s ease}
+  .appbg.off{opacity:0}
   .appbg::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,13,28,.18), rgba(7,13,28,.3) 55%, rgba(7,13,28,.42))}
   .app{width:100%; max-width:520px; min-height:100%; display:flex; flex-direction:column; position:relative; z-index:1}
   .view{display:none; flex-direction:column; flex:1}
@@ -184,7 +185,7 @@
   .flashmsg.show{opacity:1; transform:translateX(-50%) translateY(0)}
 </style>
 
-<div class="appbg" aria-hidden="true"></div>
+<div class="appbg" id="appbg" aria-hidden="true"></div>
 <div class="app">
   <section class="view on" id="vHome">
     <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><button class="langbtn" id="langBtn">FR</button></div>
@@ -606,6 +607,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   while(favSlots.length<FAV_MAX)favSlots.push(null); if(favSlots.length>FAV_MAX)favSlots.length=FAV_MAX;
   function saveFavSlots(){ try{ localStorage.setItem("auralis_favorites",JSON.stringify(favSlots)); }catch(e){} }
   var favBuild=null; // {slot, steps:[{n,f,m}], name?, pending?}
+  function setBg(hidden){ var bg=$("appbg"); if(bg)bg.classList.toggle("off",!!hidden); }
   var _flashT=null;
   function flashMsg(msg){ var el=$("flashMsg"); if(!el){ el=document.createElement("div"); el.id="flashMsg"; el.className="flashmsg"; document.querySelector(".app").appendChild(el); }
     el.textContent=msg; el.classList.add("show"); clearTimeout(_flashT); _flashT=setTimeout(function(){ el.classList.remove("show"); },2200); }
@@ -707,7 +709,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     setTimeout(function(){os.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?30:90);
     sMaster=null;sOscs=[];state.playing=false;setBtn(false); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; }
   function live(){ if(!state.playing||!ctx||!state.cur||!sOscs[0])return; sOscs[0].frequency.setTargetAtTime(state.cur.f,ctx.currentTime,0.03); }
-  function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("viz").parentNode.classList.toggle("playing",on); }
+  function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("viz").parentNode.classList.toggle("playing",on); setBg(on); }
   $("play").addEventListener("click",function(){ unlockAudio(); if(state.playing)stopSingle(false); else startSingle(); });
 
   // ---------- protocoles ----------
@@ -728,7 +730,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("sBack").addEventListener("click",function(){ stopSeq(false); show(returnTo); });
   $("sVol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("sVolLbl").textContent=this.value; $("vol").value=this.value; $("volLbl").textContent=this.value; if(seq.master&&ctx)seq.master.gain.setTargetAtTime(seq.playing?state.vol:0,ctx.currentTime,0.02); });
   $("sPlay").addEventListener("click",function(){ unlockAudio(); if(seq.playing)stopSeq(false); else startSeq(); });
-  function setSeqBtn(on){ var b=$("sPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("seq_start"); $("sViz").parentNode.classList.toggle("playing",on); }
+  function setSeqBtn(on){ var b=$("sPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("seq_start"); $("sViz").parentNode.classList.toggle("playing",on); setBg(on); }
   function startSeq(){ if(!seq.p)return; ensureCtx(); var ti=ctx.currentTime; if(seq.idx>=seq.p.s.length){seq.idx=0;seq.elapsed=0;}
     seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(ctx.destination);
     seq.osc=ctx.createOscillator(); seq.osc.type="sine"; seq.osc.frequency.setValueAtTime(seq.p.s[seq.idx].f,ti); seq.osc.connect(seq.master); seq.osc.start();
@@ -874,7 +876,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("gDur").addEventListener("input",function(){ var bpm=parseInt(this.value,10); gp.dur=60/bpm; $("gDurLbl").textContent=bpm+" bpm · "+gp.dur.toFixed(2)+" s"; if(gp.playing){ gStop(true); setTimeout(gPlay,60); } });
   $("gVol").addEventListener("input",function(){ gp.vol=parseInt(this.value,10)/100; $("gVolLbl").textContent=this.value; if(gp.master&&ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02); });
   $("gPlay").addEventListener("click",function(){ if(gp.playing)gStop(false); else gPlay(); });
-  function gSetBtn(on){ var b=$("gPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("gViz").parentNode.classList.toggle("playing",on); }
+  function gSetBtn(on){ var b=$("gPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("gViz").parentNode.classList.toggle("playing",on); setBg(on); }
 
   function gScheduleNote(f,start,dur){
     var sm=SAMPLES[gp.instr];
@@ -1082,7 +1084,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 
   // ================= 432 Hz PULSÉ =================
   var pulse={bpm:72,vol:0.5,playing:false,master:null,osc:null,trem:null,dc:null,lfo:null,lfoGain:null};
-  function pulseSetBtn(on){ var b=$("pPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("pViz").parentNode.classList.toggle("playing",on); }
+  function pulseSetBtn(on){ var b=$("pPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("pViz").parentNode.classList.toggle("playing",on); setBg(false); }
   function pulseStart(){ ensureCtx(); unlockAudio(); var t=ctx.currentTime+0.05;
     pulse.master=ctx.createGain(); pulse.master.gain.setValueAtTime(0.0001,t); pulse.master.gain.linearRampToValueAtTime(pulse.vol,t+0.08); pulse.master.connect(ctx.destination);
     pulse.osc=ctx.createOscillator(); pulse.osc.type="sine"; pulse.osc.frequency.setValueAtTime(432,t);
@@ -1155,12 +1157,12 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     bin.oscB=ctx.createOscillator(); bin.oscB.type="sine"; bin.oscB.frequency.setValueAtTime(bin.f2,ti);
     var pa=ctx.createStereoPanner(); pa.pan.setValueAtTime(-1,ti); var pb=ctx.createStereoPanner(); pb.pan.setValueAtTime(1,ti);
     bin.oscA.connect(pa); pa.connect(bin.master); bin.oscB.connect(pb); pb.connect(bin.master);
-    bin.oscA.start(ti); bin.oscB.start(ti); bin.playing=true; }
+    bin.oscA.start(ti); bin.oscB.start(ti); bin.playing=true; setBg(true); }
   function binStop(immediate){ if(!ctx||!bin.master){ bin.playing=false; return; }
     var ti=ctx.currentTime,m=bin.master,a=bin.oscA,b=bin.oscB;
     try{ m.gain.cancelScheduledValues(ti); m.gain.setValueAtTime(m.gain.value,ti); m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.02:0.06)); }catch(e){}
     setTimeout(function(){ [a,b].forEach(function(o){try{o.stop();o.disconnect();}catch(e){}}); try{m.disconnect();}catch(e){} }, immediate?40:120);
-    bin.master=null; bin.oscA=null; bin.oscB=null; bin.playing=false; }
+    bin.master=null; bin.oscA=null; bin.oscB=null; bin.playing=false; setBg(false); }
   $("binVol").addEventListener("input",function(){ bin.vol=parseInt(this.value,10)/100; $("binVolLbl").textContent=this.value; if(bin.master&&ctx)bin.master.gain.setTargetAtTime(bin.playing?bin.vol:0,ctx.currentTime,0.02); });
   $("binStop").addEventListener("click",function(){ binStop(false); show("home"); });
 
