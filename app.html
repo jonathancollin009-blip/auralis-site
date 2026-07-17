@@ -79,6 +79,9 @@
 
   .player{flex:1; display:flex; flex-direction:column; padding:6px 20px 30px}
   .stage{position:relative; display:flex; align-items:center; justify-content:center; margin:6px 0}
+  .stage::before{content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:212px; height:212px; border-radius:50%;
+    border:1.5px solid rgba(127,216,240,.5); box-shadow:0 0 26px 4px rgba(127,216,240,.32), 0 0 70px 20px rgba(185,143,224,.14), inset 0 0 22px rgba(127,216,240,.12);
+    pointer-events:none}
   canvas{display:block; width:200px; height:200px}
   .readout{position:absolute; text-align:center; pointer-events:none}
   .hz{font-size:2.4rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums}
