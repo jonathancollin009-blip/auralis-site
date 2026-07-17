@@ -38,6 +38,7 @@
   .backbtn{background:var(--pan); border:1px solid var(--line); color:var(--cyan); font:inherit; font-size:1.1rem; width:40px; height:40px; border-radius:11px; cursor:pointer; flex:0 0 auto}
   .bar h2{font-size:1rem; font-weight:700; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
+  .homelogo{display:block; width:118px; height:118px; margin:8px auto 18px; object-fit:contain; filter:drop-shadow(0 0 18px rgba(233,201,106,.35))}
   .hgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:10px 18px 26px}
   .hcard{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; aspect-ratio:1; background:var(--pan); border:1px solid var(--line); border-radius:20px; color:var(--txt); font:inherit; cursor:pointer}
   .hcard:active{background:var(--pan2)}
@@ -189,6 +190,7 @@
 <div class="app">
   <section class="view on" id="vHome">
     <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><button class="langbtn" id="langBtn">FR</button></div>
+    <img class="homelogo" src="app-images/139.webp" alt="Auralis">
     <div class="hgrid" id="hgrid">
       <button class="hcard" data-go="geo"><span class="hic">🔯</span><span class="hn" id="hGeo"></span></button>
       <button class="hcard" data-go="lib"><span class="hic">🎵</span><span class="hn" id="hFreq"></span></button>
@@ -760,7 +762,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   // ici colonne ×2 pour rester dans une plage audible confortable. La=432 exactement, comme sur la grille.
   var NM={"Do":252.00,"Ré":288.00,"Mi":324.00,"Fa":342.00,"Sol":378.00,"La":432.00,"Si":468.00,"Do′":504.00};
   var GEO=[
-   {name:"Agroglyphe",ic:"🌀",shape:"crop",cat:"crop",sym:{fr:"Symétrie 8 · Pythagore",en:"8-fold · Pythagoras",es:"Simetría 8 · Pitágoras"},ratios:"2:1 · 3:2 · 4:3",notes:["Do","Fa","Sol","Do′","Do′","Sol","Fa","Do"],drone:[["Do",0.3],["Sol",0.2]]},
+   {name:"Agroglyphe",ic:"🌀",shape:"crop",cat:"crop",photo:"139.webp",sym:{fr:"Symétrie 8 · Pythagore",en:"8-fold · Pythagoras",es:"Simetría 8 · Pitágoras"},ratios:"2:1 · 3:2 · 4:3",notes:["Do","Fa","Sol","Do′","Do′","Sol","Fa","Do"],drone:[["Do",0.3],["Sol",0.2]]},
    {name:"Triangle · Tétraèdre",ic:"△",shape:"triangle",cat:"sacred",sym:{fr:"Le 3 · accord parfait",en:"The 3 · perfect chord",es:"El 3 · acorde perfecto"},ratios:"accord majeur",notes:["Do","Mi","Sol","Do′"],drone:[["Do",0.35]]},
    {name:"Fleur de Vie",ic:"❀",shape:"flower",cat:"sacred",sym:{fr:"Symétrie 6 · hexagonale",en:"6-fold · hexagonal",es:"Simetría 6 · hexagonal"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],drone:[["Do",0.3],["Sol",0.2]]},
    {name:"Pentagramme · φ",ic:"⛤",shape:"penta",cat:"sacred",sym:{fr:"Le 5 · nombre d'or",en:"The 5 · golden ratio",es:"El 5 · número áureo"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],drone:[["Do",0.3],["La",0.15]]},
