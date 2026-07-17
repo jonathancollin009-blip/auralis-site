@@ -81,7 +81,13 @@
   .stage{position:relative; display:flex; align-items:center; justify-content:center; margin:6px 0}
   .stage::before{content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:212px; height:212px; border-radius:50%;
     border:1.5px solid rgba(127,216,240,.5); box-shadow:0 0 26px 4px rgba(127,216,240,.32), 0 0 70px 20px rgba(185,143,224,.14), inset 0 0 22px rgba(127,216,240,.12);
-    pointer-events:none}
+    pointer-events:none; transition:box-shadow .5s ease, border-color .5s ease}
+  .stage.playing::before{border-color:rgba(230,244,255,.9);
+    box-shadow:0 0 40px 10px rgba(230,244,255,.6), 0 0 110px 34px rgba(185,143,224,.28), inset 0 0 34px rgba(230,244,255,.22);
+    animation:ringpulse 2.4s ease-in-out infinite}
+  @keyframes ringpulse{0%,100%{box-shadow:0 0 40px 10px rgba(230,244,255,.55), 0 0 110px 34px rgba(185,143,224,.26), inset 0 0 34px rgba(230,244,255,.2)}
+    50%{box-shadow:0 0 56px 16px rgba(230,244,255,.72), 0 0 130px 42px rgba(185,143,224,.34), inset 0 0 40px rgba(230,244,255,.28)}}
+  @media (prefers-reduced-motion: reduce){ .stage.playing::before{animation:none} }
   canvas{display:block; width:200px; height:200px}
   .readout{position:absolute; text-align:center; pointer-events:none}
   .hz{font-size:2.4rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums}
@@ -698,7 +704,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     setTimeout(function(){os.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?30:90);
     sMaster=null;sOscs=[];state.playing=false;setBtn(false); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; }
   function live(){ if(!state.playing||!ctx||!state.cur||!sOscs[0])return; sOscs[0].frequency.setTargetAtTime(state.cur.f,ctx.currentTime,0.03); }
-  function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); }
+  function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("viz").parentNode.classList.toggle("playing",on); }
   $("play").addEventListener("click",function(){ unlockAudio(); if(state.playing)stopSingle(false); else startSingle(); });
 
   // ---------- protocoles ----------
@@ -719,7 +725,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("sBack").addEventListener("click",function(){ stopSeq(false); show(returnTo); });
   $("sVol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("sVolLbl").textContent=this.value; $("vol").value=this.value; $("volLbl").textContent=this.value; if(seq.master&&ctx)seq.master.gain.setTargetAtTime(seq.playing?state.vol:0,ctx.currentTime,0.02); });
   $("sPlay").addEventListener("click",function(){ unlockAudio(); if(seq.playing)stopSeq(false); else startSeq(); });
-  function setSeqBtn(on){ var b=$("sPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("seq_start"); }
+  function setSeqBtn(on){ var b=$("sPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("seq_start"); $("sViz").parentNode.classList.toggle("playing",on); }
   function startSeq(){ if(!seq.p)return; ensureCtx(); var ti=ctx.currentTime; if(seq.idx>=seq.p.s.length){seq.idx=0;seq.elapsed=0;}
     seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(ctx.destination);
     seq.osc=ctx.createOscillator(); seq.osc.type="sine"; seq.osc.frequency.setValueAtTime(seq.p.s[seq.idx].f,ti); seq.osc.connect(seq.master); seq.osc.start();
@@ -865,7 +871,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("gDur").addEventListener("input",function(){ var bpm=parseInt(this.value,10); gp.dur=60/bpm; $("gDurLbl").textContent=bpm+" bpm · "+gp.dur.toFixed(2)+" s"; if(gp.playing){ gStop(true); setTimeout(gPlay,60); } });
   $("gVol").addEventListener("input",function(){ gp.vol=parseInt(this.value,10)/100; $("gVolLbl").textContent=this.value; if(gp.master&&ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02); });
   $("gPlay").addEventListener("click",function(){ if(gp.playing)gStop(false); else gPlay(); });
-  function gSetBtn(on){ var b=$("gPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); }
+  function gSetBtn(on){ var b=$("gPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("gViz").parentNode.classList.toggle("playing",on); }
 
   function gScheduleNote(f,start,dur){
     var sm=SAMPLES[gp.instr];
@@ -1073,7 +1079,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 
   // ================= 432 Hz PULSÉ =================
   var pulse={bpm:72,vol:0.5,playing:false,master:null,osc:null,trem:null,dc:null,lfo:null,lfoGain:null};
-  function pulseSetBtn(on){ var b=$("pPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); }
+  function pulseSetBtn(on){ var b=$("pPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("pViz").parentNode.classList.toggle("playing",on); }
   function pulseStart(){ ensureCtx(); unlockAudio(); var t=ctx.currentTime+0.05;
     pulse.master=ctx.createGain(); pulse.master.gain.setValueAtTime(0.0001,t); pulse.master.gain.linearRampToValueAtTime(pulse.vol,t+0.08); pulse.master.connect(ctx.destination);
     pulse.osc=ctx.createOscillator(); pulse.osc.type="sine"; pulse.osc.frequency.setValueAtTime(432,t);
