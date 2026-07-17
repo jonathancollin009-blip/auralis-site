@@ -768,7 +768,19 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    {name:"Noyau et Satellites",ic:"⚛️",shape:"nucleus3",cat:"crop",photo:"121.jpg",sym:{fr:"Noyau et 3 satellites · orbite",en:"Nucleus and 3 satellites · orbit",es:"Núcleo y 3 satélites · órbita"},ratios:"triade orbitale",notes:["Do","Mi","Do","Sol","Do","La","Do"],drone:[["Do",0.32]]},
    {name:"Nautile Doré",ic:"🐚",shape:"nautilus",cat:"crop",photo:"122.jpg",sym:{fr:"Spirale logarithmique · nombre d'or",en:"Logarithmic spiral · golden ratio",es:"Espiral logarítmica · número áureo"},ratios:"φ ≈ 1.618",notes:["Do′","Si","La","Sol","Fa","Mi","Ré","Do"],drone:[["Do",0.3],["Sol",0.15]]},
    {name:"Modèle Atomique",ic:"🪐",shape:"atom2",cat:"crop",photo:"123.jpg",sym:{fr:"Noyau et 2 satellites · orbite double",en:"Nucleus and 2 satellites · double orbit",es:"Núcleo y 2 satélites · órbita doble"},ratios:"dyade orbitale",notes:["Do","Sol","Do","La","Do","Sol","Do","La"],drone:[["Do",0.32]]},
-   {name:"Masque Solaire",ic:"🎭",shape:"sunmask",cat:"crop",photo:"124.jpg",sym:{fr:"Symétrie miroir · couronne rayonnante",en:"Mirror symmetry · radiant crown",es:"Simetría especular · corona radiante"},ratios:"accord majeur en miroir",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],drone:[["Do",0.3],["Sol",0.18]]}
+   {name:"Masque Solaire",ic:"🎭",shape:"sunmask",cat:"crop",photo:"124.jpg",sym:{fr:"Symétrie miroir · couronne rayonnante",en:"Mirror symmetry · radiant crown",es:"Simetría especular · corona radiante"},ratios:"accord majeur en miroir",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Soleil",ic:"☀️",shape:"psun",cat:"planet",sym:{fr:"Fréquence fondamentale du Soleil",en:"Fundamental frequency of the Sun",es:"Frecuencia fundamental del Sol"},ratios:"126.22 Hz · Octave Cosmique",notes:[126.22],drone:[[126.22,0.3]]},
+   {name:"Lune",ic:"🌙",shape:"pmoon",cat:"planet",sym:{fr:"Mois synodique octavié",en:"Octaved synodic month",es:"Mes sinódico octavado"},ratios:"210.42 Hz · Octave Cosmique",notes:[210.42],drone:[[210.42,0.3]]},
+   {name:"Mercure",ic:"☿",shape:"planet1",cat:"planet",sym:{fr:"Période orbitale octaviée (2³⁰)",en:"Octaved orbital period (2³⁰)",es:"Período orbital octavado (2³⁰)"},ratios:"141.27 Hz · Octave Cosmique",notes:[141.27],drone:[[141.27,0.3]]},
+   {name:"Vénus",ic:"♀",shape:"planet2",cat:"planet",sym:{fr:"Période orbitale octaviée (2³²)",en:"Octaved orbital period (2³²)",es:"Período orbital octavado (2³²)"},ratios:"221.23 Hz · Octave Cosmique",notes:[221.23],drone:[[221.23,0.3]]},
+   {name:"Terre · Année (Om)",ic:"🌍",shape:"pearth",cat:"planet",sym:{fr:"Année terrestre octaviée (2³²) · le Om",en:"Octaved Earth year (2³²) · the Om",es:"Año terrestre octavado (2³²) · el Om"},ratios:"136.10 Hz · Octave Cosmique",notes:[136.10],drone:[[136.10,0.3]]},
+   {name:"Terre · Jour",ic:"🌎",shape:"pearth",cat:"planet",sym:{fr:"Rotation terrestre octaviée",en:"Octaved Earth rotation",es:"Rotación terrestre octavada"},ratios:"194.18 Hz · Octave Cosmique",notes:[194.18],drone:[[194.18,0.3]]},
+   {name:"Mars",ic:"♂",shape:"planet1",cat:"planet",sym:{fr:"Période orbitale octaviée (2³³)",en:"Octaved orbital period (2³³)",es:"Período orbital octavado (2³³)"},ratios:"144.72 Hz · Octave Cosmique",notes:[144.72],drone:[[144.72,0.3]]},
+   {name:"Jupiter",ic:"♃",shape:"planet3",cat:"planet",sym:{fr:"Période orbitale octaviée (2³⁶)",en:"Octaved orbital period (2³⁶)",es:"Período orbital octavado (2³⁶)"},ratios:"183.58 Hz · Octave Cosmique",notes:[183.58],drone:[[183.58,0.3]]},
+   {name:"Saturne",ic:"♄",shape:"psaturn",cat:"planet",sym:{fr:"Période orbitale octaviée (2³⁷)",en:"Octaved orbital period (2³⁷)",es:"Período orbital octavado (2³⁷)"},ratios:"147.85 Hz · Octave Cosmique",notes:[147.85],drone:[[147.85,0.3]]},
+   {name:"Uranus",ic:"♅",shape:"planet2",cat:"planet",sym:{fr:"Période orbitale octaviée (2³⁹)",en:"Octaved orbital period (2³⁹)",es:"Período orbital octavado (2³⁹)"},ratios:"207.36 Hz · Octave Cosmique",notes:[207.36],drone:[[207.36,0.3]]},
+   {name:"Neptune",ic:"♆",shape:"planet3",cat:"planet",sym:{fr:"Période orbitale octaviée (2⁴⁰)",en:"Octaved orbital period (2⁴⁰)",es:"Período orbital octavado (2⁴⁰)"},ratios:"211.44 Hz · Octave Cosmique",notes:[211.44],drone:[[211.44,0.3]]},
+   {name:"Pluton",ic:"♇",shape:"planet1",cat:"planet",sym:{fr:"Période orbitale octaviée",en:"Octaved orbital period",es:"Período orbital octavado"},ratios:"140.25 Hz · Octave Cosmique",notes:[140.25],drone:[[140.25,0.3]]}
   ];
   var geoState={filter:"all"};
   var gfEl=$("geoFilters");
@@ -833,8 +845,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("gTitle").textContent=gp.fig.name; $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=gp.fig.ratios;
     var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; } else { ph.hidden=true; ph.removeAttribute("src"); }
     var row=$("gRow"); row.innerHTML="";
-    gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+nn+"</b>"; row.appendChild(d); });
-    var n0=gp.fig.notes[0]; $("gNowN").textContent=n0; $("gNowF").textContent=NM[n0].toFixed(2)+" Hz";
+    gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+noteLabel(nn)+"</b>"; row.appendChild(d); });
+    var n0=gp.fig.notes[0]; $("gNowN").textContent=noteLabel(n0); $("gNowF").textContent=noteFreq(n0).toFixed(2)+" Hz";
     gSetBtn(false); show("geoPlay"); }
   $("gBack").addEventListener("click",function(){ gStop(false); show(returnTo); });
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
@@ -870,7 +882,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     last.connect(g); g.connect(gp.master);
     if(ins.vib){ var lfo=ctx.createOscillator(); lfo.frequency.setValueAtTime(ins.vib.rate,start); var lg=ctx.createGain(); lg.gain.setValueAtTime(ins.vib.depth,start); lfo.connect(lg); lg.connect(o.frequency); lfo.start(start); lfo.stop(start+dur+0.05); }
     o.start(start); o.stop(start+dur+0.05); }
-  function gScheduleCycle(t0){ var d=gp.dur, ns=gp.fig.notes; for(var i=0;i<ns.length;i++){ gScheduleNote(NM[ns[i]],t0+i*d,d); } }
+  function noteFreq(n){ return (typeof n==="number")?n:NM[n]; }
+  function noteLabel(n){ return (typeof n==="number")?n.toFixed(2):n; }
+  function gScheduleCycle(t0){ var d=gp.dur, ns=gp.fig.notes; for(var i=0;i<ns.length;i++){ gScheduleNote(noteFreq(ns[i]),t0+i*d,d); } }
   function gPlay(){ if(!gp.fig)return; ensureCtx(); unlockAudio(); var t=ctx.currentTime+0.06;
     gp.master=ctx.createGain(); gp.master.gain.setValueAtTime(0.0001,t); gp.master.gain.linearRampToValueAtTime(gp.vol,t+0.05);
     gp.dry=ctx.createGain(); gp.dry.gain.value=1; gp.master.connect(gp.dry); gp.dry.connect(ctx.destination);
@@ -880,7 +894,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     gp.echoFilter=ctx.createBiquadFilter(); gp.echoFilter.type="lowpass"; gp.echoFilter.frequency.setValueAtTime(3200,t); gp.echoFilter.Q.value=0.4;
     gp.echoWet=ctx.createGain(); gp.echoWet.gain.setValueAtTime(gp.echoAmt>0?0.5:0.0001,t);
     gp.master.connect(gp.delayNode); gp.delayNode.connect(gp.echoFilter); gp.echoFilter.connect(gp.feedback); gp.feedback.connect(gp.delayNode); gp.delayNode.connect(gp.echoWet); gp.echoWet.connect(ctx.destination);
-    gp.drones=[]; gp.fig.drone.forEach(function(dr){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(NM[dr[0]],t); var g=ctx.createGain();g.gain.setValueAtTime(dr[1],t); o.connect(g);g.connect(gp.master);o.start(t);gp.drones.push(o); });
+    gp.drones=[]; gp.fig.drone.forEach(function(dr){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(noteFreq(dr[0]),t); var g=ctx.createGain();g.gain.setValueAtTime(dr[1],t); o.connect(g);g.connect(gp.master);o.start(t);gp.drones.push(o); });
     gp.cycleStart=t; gScheduleCycle(t); gp.playing=true; gSetBtn(true);
     var cl=gp.fig.notes.length*gp.dur;
     if(gp.loop){ gp.timer=setInterval(function(){ gp.cycleStart=ctx.currentTime; gScheduleCycle(gp.cycleStart); }, cl*1000); }
@@ -994,6 +1008,32 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       [0.55,0.85].forEach(function(ro2,ie){ var ae=ie===0?Math.PI*0.35:Math.PI*1.35;
         g.fillStyle="rgba(185,143,224,0.2)"; g.beginPath(); g.arc(cx+R*ro2*Math.cos(ae),cy+R*ro2*Math.sin(ae),R*0.09,0,Math.PI*2); g.fill(); g.stroke(); });
     }
+    else if(type==="psun"){
+      g.fillStyle="rgba(233,201,106,"+(on?0.35:0.2)+")"; g.beginPath(); g.arc(cx,cy,R*0.42,0,Math.PI*2); g.fill();
+      g.strokeStyle="rgba(233,201,106,"+(on?0.95:0.6)+")"; g.beginPath(); g.arc(cx,cy,R*0.42,0,Math.PI*2); g.stroke();
+      for(var su=0;su<12;su++){ var asu=su*Math.PI/6; g.beginPath(); g.moveTo(cx+R*0.55*Math.cos(asu),cy+R*0.55*Math.sin(asu)); g.lineTo(cx+R*0.85*Math.cos(asu),cy+R*0.85*Math.sin(asu)); g.stroke(); } }
+    else if(type==="pmoon"){
+      g.beginPath(); g.arc(cx,cy,R*0.6,0,Math.PI*2); g.stroke();
+      g.fillStyle="rgba(185,143,224,0.15)";
+      g.beginPath(); g.arc(cx,cy,R*0.6,Math.PI*0.5,Math.PI*1.5); g.arc(cx+R*0.25,cy,R*0.48,Math.PI*1.5,Math.PI*0.5,true); g.closePath(); g.fill(); g.stroke(); }
+    else if(type==="pearth"){
+      g.beginPath(); g.arc(cx,cy,R*0.55,0,Math.PI*2); g.stroke();
+      g.beginPath(); g.ellipse(cx,cy,R*0.55,R*0.2,0,0,Math.PI*2); g.stroke();
+      g.beginPath(); g.ellipse(cx,cy,R*0.2,R*0.55,0,0,Math.PI*2); g.stroke();
+      g.strokeStyle="rgba(185,143,224,"+(on?0.7:0.45)+")"; g.beginPath(); g.arc(cx,cy,R*0.85,0,Math.PI*2); g.stroke(); }
+    else if(type==="psaturn"){
+      g.beginPath(); g.arc(cx,cy,R*0.42,0,Math.PI*2); g.stroke();
+      g.strokeStyle="rgba(233,201,106,"+(on?0.9:0.55)+")";
+      g.beginPath(); g.ellipse(cx,cy,R*0.85,R*0.24,-0.35,0,Math.PI*2); g.stroke();
+      g.beginPath(); g.ellipse(cx,cy,R*0.68,R*0.18,-0.35,0,Math.PI*2); g.stroke(); }
+    else if(type==="planet1"||type==="planet2"||type==="planet3"){
+      var pr=type==="planet1"?0.38:(type==="planet2"?0.5:0.6);
+      g.beginPath(); g.arc(cx,cy,R*pr,0,Math.PI*2); g.stroke();
+      g.strokeStyle="rgba(185,143,224,"+(on?0.6:0.4)+")";
+      g.beginPath(); g.arc(cx,cy,R*0.9,0,Math.PI*2); g.stroke();
+      var ap=on?phase*0.5:Math.PI/4;
+      g.fillStyle="rgba(127,216,240,"+(on?0.9:0.55)+")"; g.beginPath(); g.arc(cx+R*0.9*Math.cos(ap),cy+R*0.9*Math.sin(ap),R*0.06,0,Math.PI*2); g.fill();
+      if(type==="planet3"){ g.strokeStyle="rgba(127,216,240,"+(on?0.5:0.3)+")"; g.beginPath(); g.ellipse(cx,cy,R*pr*0.8,R*pr*0.3,0.4,0,Math.PI*2); g.stroke(); } }
     else if(type==="sunmask"){
       for(var spi=0; spi<9; spi++){ var frac=spi/8;
         var ang4=-Math.PI/2+(frac-0.5)*Math.PI*0.9;
@@ -1010,7 +1050,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   (function gDraw(){ var c=$("gViz"),g=c.getContext("2d"); g.clearRect(0,0,c.width,c.height);
     if(gp.fig){ drawShape(g,c.width,c.height,gp.fig.shape,gp.playing,gPhase); var idx=gCurrentIndex();
       gp.fig.notes.forEach(function(nn,k){ var el=$("gn"+k); if(el)el.classList.toggle("on",k===idx); });
-      if(idx>=0){ $("gNowN").textContent=gp.fig.notes[idx]; $("gNowF").textContent=NM[gp.fig.notes[idx]].toFixed(2)+" Hz"; } }
+      if(idx>=0){ $("gNowN").textContent=noteLabel(gp.fig.notes[idx]); $("gNowF").textContent=noteFreq(gp.fig.notes[idx]).toFixed(2)+" Hz"; } }
     if(!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)) gPhase+=gp.playing?0.09:0.015;
     requestAnimationFrame(gDraw); })();
 
