@@ -136,18 +136,18 @@
 
   .mInput{width:100%; text-align:center; background:var(--pan); border:1px solid var(--cyan); border-radius:12px; color:var(--txt); font:inherit; font-size:1.8rem; font-weight:800; font-variant-numeric:tabular-nums; padding:12px; margin-bottom:10px}
   .mInput:focus{outline:none; box-shadow:0 0 0 3px rgba(127,216,240,.25)}
-  .binpanel{background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:16px}
-  .binrow{margin-bottom:14px} .binrow:last-of-type{margin-bottom:8px}
+  .binpanel{background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:10px}
+  .binrow{margin-bottom:8px} .binrow:last-of-type{margin-bottom:6px}
   .binrow .label{margin-bottom:4px}
-  .binrow .val{margin:0; font-size:1.5rem; font-weight:800; font-variant-numeric:tabular-nums; color:var(--dim)}
+  .binrow .val{margin:0; font-size:1.35rem; font-weight:800; font-variant-numeric:tabular-nums; color:var(--dim)}
   .binrow:first-child .val{color:var(--cyan)} .binrow:nth-child(2) .val{color:var(--mauve)}
   .binhint{font-size:.72rem; color:var(--dimmer); text-align:center; margin:6px 0 0}
-  .keypad{display:grid; grid-template-columns:repeat(3,1fr); gap:9px}
-  .keypad button{background:var(--pan); border:1px solid var(--line); color:var(--txt); font:inherit; font-size:1.3rem; font-weight:700; padding:16px 0; border-radius:11px; cursor:pointer}
+  .keypad{display:grid; grid-template-columns:repeat(3,1fr); gap:7px}
+  .keypad button{background:var(--pan); border:1px solid var(--line); color:var(--txt); font:inherit; font-size:1.3rem; font-weight:700; padding:11px 0; border-radius:11px; cursor:pointer}
   .keypad button:active{background:var(--pan2)}
   .keypad button.ok{grid-column:span 3; margin-top:2px; border:0; color:#04101f; font-size:1.05rem; font-weight:800; background:linear-gradient(96deg,var(--cyan),var(--mauve))}
-  .binpresets{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
-  .binpresets button{background:var(--pan); border:1px solid var(--line); border-radius:11px; padding:12px 2px; color:var(--txt); font:inherit; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px}
+  .binpresets{display:grid; grid-template-columns:repeat(4,1fr); gap:7px}
+  .binpresets button{background:var(--pan); border:1px solid var(--line); border-radius:11px; padding:8px 2px; color:var(--txt); font:inherit; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:1px}
   .binpresets button:active{background:var(--pan2)}
   .binpresets button b{font-size:1.3rem; font-weight:700; color:var(--cyan)}
   .binpresets button span{font-size:.7rem; font-weight:600}
@@ -323,7 +323,7 @@
         <button data-k=".">.</button><button data-k="0">0</button><button data-k="back">⌫</button>
         <button class="ok" id="binOk">OK</button>
       </div>
-      <p class="label" id="binPresetsLabel" style="margin:16px 0 8px"></p>
+      <p class="label" id="binPresetsLabel" style="margin:9px 0 6px"></p>
       <div class="binpresets" id="binPresets">
         <button data-p="delta"><b>Δ</b><span id="binPDelta"></span><small>107/109</small></button>
         <button data-p="theta"><b>θ</b><span id="binPTheta"></span><small>105/111</small></button>
