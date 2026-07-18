@@ -542,6 +542,7 @@ var T={
  echo_label:{fr:"Écho",en:"Echo",es:"Eco"},
  delay_label:{fr:"Delay",en:"Delay",es:"Delay"},
  home_pulse:{fr:"432 Hz Pulsé @ 72 bpm",en:"432 Hz Pulsed @ 72 bpm",es:"432 Hz Pulsado @ 72 bpm"},
+ pulse_base:{fr:"432 Hz Pulsé",en:"432 Hz Pulsed",es:"432 Hz Pulsado"},
  fav_title:{fr:"Favoris",en:"Favorites",es:"Favoritos"},
  fav_new:{fr:"+ Nouveau",en:"+ New",es:"+ Nuevo"},
  fav_default_name:{fr:"Favori",en:"Favorite",es:"Favorito"},
@@ -717,7 +718,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     Array.prototype.forEach.call(fEl.children,function(b){ b.textContent=t("f_"+b.getAttribute("data-c")); });
     Array.prototype.forEach.call(gfEl.children,function(b){ b.textContent=t(b.getAttribute("data-l")); });
     $("hGeo").textContent=t("tab_geo"); $("hFreq").textContent=t("tab_freq"); $("hProto").textContent=t("tab_proto"); $("hPulse").textContent=t("home_pulse"); $("hBin").textContent=t("home_bin"); $("hFav").textContent=t("fav_title");
-    $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); $("pulseTitle").textContent=t("home_pulse");
+    $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); pulseUpdTitle();
     $("gLoopOn").textContent=t("loop_inf"); $("gLoopOff").textContent=t("loop_once");
     $("gTempoLabel").textContent=t("tempo"); $("pTempoLabel").textContent=t("tempo"); $("gInstrLabel").textContent=t("instr_label");
     $("gReverbLabel").textContent=t("reverb_label"); $("gEchoLabel").textContent=t("echo_label"); $("gDelayLabel").textContent=t("delay_label");
@@ -1177,12 +1178,13 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     try{ m.gain.cancelScheduledValues(ti); m.gain.setValueAtTime(m.gain.value,ti); m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.02:0.08)); }catch(e){}
     setTimeout(function(){ [o,l,d].forEach(function(nd){ try{nd.stop();nd.disconnect();}catch(e){} }); try{m.disconnect();}catch(e){} }, immediate?40:140);
     pulse.master=null; pulse.osc=null; pulse.trem=null; pulse.dc=null; pulse.lfo=null; pulse.lfoGain=null; pulse.playing=false; pulseSetBtn(false); }
+  function pulseUpdTitle(){ $("pulseTitle").textContent=t("pulse_base")+" @ "+pulse.bpm+" bpm"; }
   function openPulse(from,bpm){ pulseStop(true); returnTo=from||"home";
     if(typeof bpm==="number"){ pulse.bpm=Math.max(40,Math.min(120,bpm)); }
     $("pBpm").value=pulse.bpm; $("pBpmVal").textContent=pulse.bpm+" bpm"; $("pBpmNum").textContent=pulse.bpm;
-    $("pulseTitle").textContent=t("home_pulse"); pulseSetBtn(false); show("pulse"); }
+    pulseUpdTitle(); pulseSetBtn(false); show("pulse"); }
   $("pBack").addEventListener("click",function(){ pulseStop(false); show(returnTo); });
-  $("pBpm").addEventListener("input",function(){ pulse.bpm=parseInt(this.value,10); $("pBpmVal").textContent=pulse.bpm+" bpm"; $("pBpmNum").textContent=pulse.bpm;
+  $("pBpm").addEventListener("input",function(){ pulse.bpm=parseInt(this.value,10); $("pBpmVal").textContent=pulse.bpm+" bpm"; $("pBpmNum").textContent=pulse.bpm; pulseUpdTitle();
     if(pulse.playing&&pulse.lfo&&ctx)pulse.lfo.frequency.setTargetAtTime(pulse.bpm/60,ctx.currentTime,0.05); });
   $("pVol").addEventListener("input",function(){ pulse.vol=parseInt(this.value,10)/100; $("pVolLbl").textContent=this.value; if(pulse.master&&ctx)pulse.master.gain.setTargetAtTime(pulse.playing?pulse.vol:0,ctx.currentTime,0.02); });
   $("pPlay").addEventListener("click",function(){ unlockAudio(); if(pulse.playing)pulseStop(false); else pulseStart(); });
