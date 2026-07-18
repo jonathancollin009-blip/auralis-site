@@ -69,6 +69,15 @@
   .gtvis .gtico{font-size:3.4rem; line-height:1}
   .gtname{padding:9px 8px 11px; font-weight:700; font-size:.86rem; text-align:center; line-height:1.25}
   .geogrid .empty{grid-column:1/3}
+  .favgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:4px 18px 22px; overflow-y:auto}
+  .ftile{position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:4px; min-height:98px; background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:16px 10px 12px; cursor:pointer; color:var(--txt); font:inherit}
+  .ftile:active{background:var(--pan2)}
+  .ftile.vide{border-style:dashed; color:var(--dimmer)}
+  .ftile .fname{font-weight:700; font-size:.9rem; line-height:1.2; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical}
+  .ftile .fsub{font-size:.72rem; color:var(--dim); font-variant-numeric:tabular-nums}
+  .ftile .facts{position:absolute; top:5px; right:5px; display:flex; gap:1px}
+  .ftile .facts .rm{font-size:.92rem; padding:3px 5px; cursor:pointer; color:var(--dimmer)}
+  .ftile .facts .rm.ed{color:var(--cyan)}
   .item{display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:var(--pan); border:1px solid var(--line); border-radius:12px; padding:13px 14px; margin-bottom:9px; cursor:pointer; color:var(--txt); font:inherit}
   .item:active{background:var(--pan2)}
   .item .dot{flex:0 0 auto; width:9px; height:9px; border-radius:50%}
@@ -401,7 +410,7 @@
 
   <section class="view" id="vFavList">
     <div class="bar"><button class="backbtn" id="favBack" aria-label="Retour">‹</button><h2 id="favTitle">—</h2></div>
-    <div class="list" id="favListEl"></div>
+    <div class="favgrid" id="favListEl"></div>
   </section>
 </div>
 
@@ -1249,11 +1258,11 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("favTitle").textContent=t("fav_title");
     var el=$("favListEl"); el.innerHTML="";
     favSlots.forEach(function(f,i){
-      var row=document.createElement("button"); row.className="item";
+      var row=document.createElement("button"); row.className="ftile";
       if(f){
         var tot=f.steps.reduce(function(a,s){return a+s.m;},0);
-        row.innerHTML='<span class="nm">⭐ '+f.name+'<br><span class="cat">'+f.steps.length+' '+t("steps")+' · '+tot+' min</span></span>'
-          +'<span class="rm" data-a="edit" style="color:var(--cyan)">✎</span><span class="rm" data-a="del">✕</span>';
+        row.innerHTML='<span class="facts"><span class="rm ed" data-a="edit">✎</span><span class="rm" data-a="del">✕</span></span>'
+          +'<span class="fname">⭐ '+f.name+'</span><span class="fsub">'+f.steps.length+' '+t("steps")+' · '+tot+' min</span>';
         row.addEventListener("click",function(ev){
           var a=ev.target.getAttribute&&ev.target.getAttribute("data-a");
           if(a==="del"){ favSlots[i]=null; saveFavSlots(); renderFavList(); return; }
@@ -1261,7 +1270,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
           openSeq({fr:f.name,en:f.name,es:f.name,ic:"⭐",s:f.steps}, "favList");
         });
       } else {
-        row.innerHTML='<span class="nm">'+t("fav_new")+'</span>';
+        row.className="ftile vide";
+        row.innerHTML='<span class="fname">'+t("fav_new")+'</span>';
         row.addEventListener("click",function(){ favBuild={slot:i, steps:[]}; enterFavPicker(); });
       }
       el.appendChild(row);
