@@ -592,6 +592,72 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   if(!lang || LANGS.indexOf(lang)<0){ lang=detectLang(); }
   function t(k){ return (T[k]&&(T[k][lang]||T[k].fr))||k; }
   function pname(p){ return p[lang]||p.fr; }
+  // Traduction des noms de contenu (chakras, figures, planètes, couleurs, ratios). Clé = français.
+  var TN={
+   "Chakra Racine":{en:"Root Chakra",es:"Chakra Raíz"},
+   "Chakra Sacré":{en:"Sacral Chakra",es:"Chakra Sacro"},
+   "Plexus Solaire":{en:"Solar Plexus",es:"Plexo Solar"},
+   "Chakra du Coeur":{en:"Heart Chakra",es:"Chakra del Corazón"},
+   "Chakra de la Gorge":{en:"Throat Chakra",es:"Chakra de la Garganta"},
+   "Troisième Oeil":{en:"Third Eye",es:"Tercer Ojo"},
+   "Chakra Couronne":{en:"Crown Chakra",es:"Chakra Corona"},
+   "Agroglyphe":{en:"Crop Circle",es:"Agroglifo"},
+   "Triangle · Tétraèdre":{en:"Triangle · Tetrahedron",es:"Triángulo · Tetraedro"},
+   "Fleur de Vie":{en:"Flower of Life",es:"Flor de la Vida"},
+   "Pentagramme · φ":{en:"Pentagram · φ",es:"Pentagrama · φ"},
+   "Cube de Métatron":{en:"Metatron's Cube",es:"Cubo de Metatrón"},
+   "Carré · Cube":{en:"Square · Cube",es:"Cuadrado · Cubo"},
+   "Spirale Double":{en:"Double Spiral",es:"Espiral Doble"},
+   "Rosace Solaire":{en:"Solar Rosette",es:"Rosetón Solar"},
+   "Amas de Bulles":{en:"Bubble Cluster",es:"Racimo de Burbujas"},
+   "Pentagramme Rayonnant":{en:"Radiant Pentagram",es:"Pentagrama Radiante"},
+   "Spirale Dorée · Système":{en:"Golden Spiral · System",es:"Espiral Áurea · Sistema"},
+   "Réseau Cristallin":{en:"Crystal Lattice",es:"Red Cristalina"},
+   "Spirale Ailée":{en:"Winged Spiral",es:"Espiral Alada"},
+   "Galaxie de Bulles":{en:"Bubble Galaxy",es:"Galaxia de Burbujas"},
+   "Noyau et Satellites":{en:"Nucleus and Satellites",es:"Núcleo y Satélites"},
+   "Nautile Doré":{en:"Golden Nautilus",es:"Nautilo Áureo"},
+   "Modèle Atomique":{en:"Atomic Model",es:"Modelo Atómico"},
+   "Masque Solaire":{en:"Solar Mask",es:"Máscara Solar"},
+   "Soleil":{en:"Sun",es:"Sol"},
+   "Lune":{en:"Moon",es:"Luna"},
+   "Mercure":{en:"Mercury",es:"Mercurio"},
+   "Vénus":{en:"Venus",es:"Venus"},
+   "Terre · Année (Om)":{en:"Earth · Year (Om)",es:"Tierra · Año (Om)"},
+   "Terre · Jour":{en:"Earth · Day",es:"Tierra · Día"},
+   "Mars":{en:"Mars",es:"Marte"},
+   "Jupiter":{en:"Jupiter",es:"Júpiter"},
+   "Saturne":{en:"Saturn",es:"Saturno"},
+   "Uranus":{en:"Uranus",es:"Urano"},
+   "Neptune":{en:"Neptune",es:"Neptuno"},
+   "Pluton":{en:"Pluto",es:"Plutón"},
+   "Rouge":{en:"Red",es:"Rojo"},
+   "Orange":{en:"Orange",es:"Naranja"},
+   "Jaune":{en:"Yellow",es:"Amarillo"},
+   "Vert":{en:"Green",es:"Verde"},
+   "Cyan":{en:"Cyan",es:"Cian"},
+   "Bleu":{en:"Blue",es:"Azul"},
+   "Indigo":{en:"Indigo",es:"Índigo"},
+   "Violet":{en:"Violet",es:"Violeta"},
+   "accord majeur":{en:"major chord",es:"acorde mayor"},
+   "pentatonique":{en:"pentatonic",es:"pentatónica"},
+   "triade ↑ ↓":{en:"triad ↑ ↓",es:"tríada ↑ ↓"},
+   "accord majeur + sixte":{en:"major chord + sixth",es:"acorde mayor + sexta"},
+   "gamme ascendante":{en:"ascending scale",es:"escala ascendente"},
+   "2:1 · octave":{en:"2:1 · octave",es:"2:1 · octava"},
+   "accord majeur rayonnant":{en:"radiant major chord",es:"acorde mayor radiante"},
+   "accord majeur en treillis":{en:"lattice major chord",es:"acorde mayor en red"},
+   "4:3 · méandre":{en:"4:3 · meander",es:"4:3 · meandro"},
+   "suite de Fibonacci":{en:"Fibonacci sequence",es:"secuencia de Fibonacci"},
+   "triade orbitale":{en:"orbital triad",es:"tríada orbital"},
+   "dyade orbitale":{en:"orbital dyad",es:"díada orbital"},
+   "accord majeur en miroir":{en:"mirrored major chord",es:"acorde mayor en espejo"}
+  };
+  var TN_SUF=[["Octave Cosmique",{en:"Cosmic Octave",es:"Octava Cósmica"}],["lumière octaviée",{en:"octaved light",es:"luz octavada"}]];
+  function tn(s){ if(!s||lang==="fr")return s;
+    if(TN[s])return TN[s][lang]||s;
+    for(var i=0;i<TN_SUF.length;i++){ if(s.indexOf(TN_SUF[i][0])>=0)return s.replace(TN_SUF[i][0],TN_SUF[i][1][lang]||TN_SUF[i][0]); }
+    return s; }
 
   var CATS=["Toutes","Endogène","Phyto","Huiles ess.","Élément"];
   var state={filter:"Toutes",q:"",cur:null,mode:"simple",beat:6,vol:0.5,playing:false,timerMin:0};
@@ -723,7 +789,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     seq.idx=0; seq.playing=false; seq.total=seq.p.s.reduce(function(a,x){return a+x.m*60;},0); seq.elapsed=0;
     $("sTitle").textContent=pname(seq.p);
     var st=$("sSteps"); st.innerHTML="";
-    seq.p.s.forEach(function(x,k){ var li=document.createElement("li"); li.id="st"+k; li.innerHTML='<span class="si">'+(k+1)+'</span><span class="sn">'+x.n+'</span><span class="sh">'+x.f.toFixed(2)+' Hz</span><span class="sm">'+x.m+'m</span>'; st.appendChild(li); });
+    seq.p.s.forEach(function(x,k){ var li=document.createElement("li"); li.id="st"+k; li.innerHTML='<span class="si">'+(k+1)+'</span><span class="sn">'+tn(x.n)+'</span><span class="sh">'+x.f.toFixed(2)+' Hz</span><span class="sm">'+x.m+'m</span>'; st.appendChild(li); });
     var s0=seq.p.s[0]; $("sHz").textContent=s0.f.toFixed(2); $("sStep").textContent="1/"+seq.p.s.length+" · "+s0.n; $("sClock").textContent=""; $("sBar").style.width="0%"; highlight(0); setSeqBtn(false); show("seq"); }
   function highlight(active){ seq.p.s.forEach(function(x,k){ var li=$("st"+k); if(!li)return; li.classList.toggle("active",k===active); li.classList.toggle("done",k<active); }); }
   $("sBack").addEventListener("click",function(){ stopSeq(false); show(returnTo); });
@@ -738,7 +804,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     if(seq.remain<=0){ seq.idx++; if(seq.idx>=seq.p.s.length){ stopSeq(false); $("sClock").textContent=t("seq_done"); $("sBar").style.width="100%"; highlight(-1); return; }
       seq.osc.frequency.setTargetAtTime(seq.p.s[seq.idx].f,ctx.currentTime,0.06); seq.remain=seq.p.s[seq.idx].m*60; }
     updSeqUI(); }
-  function updSeqUI(){ var s=seq.p.s[seq.idx]; $("sHz").textContent=s.f.toFixed(2); $("sStep").textContent=(seq.idx+1)+"/"+seq.p.s.length+" · "+s.n;
+  function updSeqUI(){ var s=seq.p.s[seq.idx]; $("sHz").textContent=s.f.toFixed(2); $("sStep").textContent=(seq.idx+1)+"/"+seq.p.s.length+" · "+tn(s.n);
     var mm=Math.floor(seq.remain/60),ss=seq.remain%60; $("sClock").textContent=mm+":"+(ss<10?"0":"")+ss; $("sBar").style.width=Math.min(100,(seq.elapsed/seq.total)*100)+"%"; highlight(seq.idx); }
   function stopSeq(immediate){ clearInterval(seq.timer);seq.timer=null;
     if(ctx&&seq.master){ var ti=ctx.currentTime,m=seq.master,o=seq.osc; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
@@ -857,10 +923,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     if(!arr.length){ el.innerHTML='<p class="empty">'+t("geo_empty_cat")+'</p>'; return; }
     arr.forEach(function(fig){ var i=GEO.indexOf(fig); var b=document.createElement("button"); b.className="pcard";
       var icoHtml=fig.photo?('<img class="pcphoto" src="app-images/'+fig.photo+'" alt="">'):('<span class="ico">'+fig.ic+'</span>');
-      b.innerHTML=icoHtml+'<span class="pt"><b>'+fig.name+'</b><span>'+(fig.sym[lang]||fig.sym.fr)+'</span></span><span class="go">›</span>';
+      b.innerHTML=icoHtml+'<span class="pt"><b>'+tn(fig.name)+'</b><span>'+(fig.sym[lang]||fig.sym.fr)+'</span></span><span class="go">›</span>';
       b.addEventListener("click",function(){ gOpen(i,"geo"); }); el.appendChild(b); }); }
   function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); } loadRealIR();
-    $("gTitle").textContent=gp.fig.name; $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=gp.fig.ratios;
+    $("gTitle").textContent=tn(gp.fig.name); $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=tn(gp.fig.ratios);
     var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); $("gViz").style.visibility="visible"; }
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+noteLabel(nn)+"</b>"; row.appendChild(d); });
@@ -1246,7 +1312,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var el=$("favRecapSteps"); el.innerHTML="";
     favBuild.steps.forEach(function(s,i){
       var li=document.createElement("li");
-      li.innerHTML='<span class="si">'+(i+1)+'</span><span class="sn">'+s.n+'</span><span class="sh">'+s.f.toFixed(2)+' Hz</span><span class="sm">'+s.m+'m</span><span class="rm">✕</span>';
+      li.innerHTML='<span class="si">'+(i+1)+'</span><span class="sn">'+tn(s.n)+'</span><span class="sh">'+s.f.toFixed(2)+' Hz</span><span class="sm">'+s.m+'m</span><span class="rm">✕</span>';
       li.querySelector(".rm").addEventListener("click",function(){
         favBuild.steps.splice(i,1);
         if(!favBuild.steps.length){ favBuild=null; show("favList"); renderFavList(); } else renderFavRecap();
