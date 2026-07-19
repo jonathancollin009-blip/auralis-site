@@ -63,9 +63,7 @@
   .hscrim{position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,13,28,.12) 0%, rgba(7,13,28,.4) 46%, rgba(5,7,15,.9) 100%)}
   .hhero:active,.hscard:active,.hxcard:active,.hmethod:active{transform:scale(.98)}
 
-  .hring,.hsring,.hxr{position:absolute; border-radius:50%; border:2px solid rgba(255,255,255,.9); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#fff; font-weight:700; text-shadow:0 1px 10px rgba(0,0,0,.55); box-shadow:0 0 30px rgba(127,216,240,.5), inset 0 0 24px rgba(127,216,240,.2)}
-  .hsring.mv,.hxr{box-shadow:0 0 26px rgba(185,143,224,.5), inset 0 0 22px rgba(185,143,224,.2)}
-  .hsring.gd{box-shadow:0 0 26px rgba(233,201,106,.5), inset 0 0 22px rgba(233,201,106,.2)}
+  .hring{position:absolute; border-radius:50%; border:2px solid rgba(255,255,255,.9); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#fff; font-weight:700; text-shadow:0 1px 10px rgba(0,0,0,.55); box-shadow:0 0 30px rgba(127,216,240,.5), inset 0 0 24px rgba(127,216,240,.2)}
 
   .hhero{height:300px; border-color:rgba(127,216,240,.22)}
   .hhero .hring{width:150px; height:150px; top:40px; left:50%; transform:translateX(-50%); font-size:1.6rem; font-variant-numeric:tabular-nums}
@@ -78,7 +76,6 @@
 
   .hsgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
   .hscard{height:150px}
-  .hscard .hsring{width:74px; height:74px; top:16px; left:50%; transform:translateX(-50%); font-size:.95rem}
   .hsbody{position:absolute; left:0; right:0; bottom:0; padding:10px 12px}
   .hsbody b{display:block; font-size:.95rem; font-weight:700}
   .hsbody i{display:block; font-style:normal; font-size:.68rem; color:var(--dim); margin-top:2px}
@@ -88,7 +85,6 @@
   .hxrail{display:flex; gap:10px; overflow-x:auto; padding:0 16px 6px; margin:0 -16px; scrollbar-width:none}
   .hxrail::-webkit-scrollbar{display:none}
   .hxcard{flex:0 0 auto; width:120px; height:145px; border-radius:16px; border-color:rgba(185,143,224,.2)}
-  .hxr{top:12px; left:50%; transform:translateX(-50%); width:50px; height:50px; font-size:1.15rem; border-width:1.5px}
   .hxcard b{position:absolute; left:0; right:0; bottom:0; padding:9px 10px; font-size:.78rem; font-weight:700; z-index:2}
 
   .hmethod{display:flex; align-items:center; gap:12px; width:100%; margin-top:16px; padding:13px 14px; border:1px solid var(--line); border-radius:15px; background:linear-gradient(120deg, rgba(127,216,240,.08), rgba(17,26,51,.5)); color:var(--txt); font:inherit; cursor:pointer; text-align:left; transition:transform .12s ease}
@@ -297,19 +293,19 @@
 
       <p class="heyebrow"><span class="het" id="hebSess">—</span><span class="hel"></span></p>
       <div class="hsgrid">
-        <button class="hscard" data-go="protos"><img src="app-images/144.webp" alt=""><span class="hscrim"></span><span class="hsring mv">△</span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
-        <button class="hscard" data-go="pulse"><img src="app-images/145.webp" alt=""><span class="hscrim"></span><span class="hsring">432</span><span class="hsbody"><b id="hPulse">—</b><i id="hPulseSub">—</i></span></button>
-        <button class="hscard" data-go="bin"><img src="app-images/146.webp" alt=""><span class="hscrim"></span><span class="hsring">◎</span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
-        <button class="hscard" data-go="favList"><span class="hstar" aria-hidden="true">★</span><img src="app-images/147.webp" alt=""><span class="hscrim"></span><span class="hsring gd">♡</span><span class="hsbody"><b id="hFav">—</b><i id="hFavSub">—</i></span></button>
+        <button class="hscard" data-go="protos"><img src="app-images/144.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
+        <button class="hscard" data-go="pulse"><img src="app-images/145.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hPulse">—</b><i id="hPulseSub">—</i></span></button>
+        <button class="hscard" data-go="bin"><img src="app-images/146.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
+        <button class="hscard" data-go="favList"><span class="hstar" aria-hidden="true">★</span><img src="app-images/147.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hFav">—</b><i id="hFavSub">—</i></span></button>
       </div>
 
       <p class="heyebrow mv"><span class="het" id="hebExpl">—</span><span class="hel"></span></p>
       <p class="hexplain" id="hExplNote">—</p>
       <div class="hxrail">
-        <button class="hxcard" data-gocat="sacred"><img src="app-images/141.webp" alt=""><span class="hscrim"></span><span class="hxr">✶</span><b id="hxSacred">—</b></button>
-        <button class="hxcard" data-gocat="crop"><img src="app-images/139.webp" alt=""><span class="hscrim"></span><span class="hxr">◉</span><b id="hxCrop">—</b></button>
-        <button class="hxcard" data-gocat="planet"><img src="app-images/143.webp" alt=""><span class="hscrim"></span><span class="hxr">☉</span><b id="hxPlanet">—</b></button>
-        <button class="hxcard" data-gocat="color"><img src="app-images/131.webp" alt=""><span class="hscrim"></span><span class="hxr">◐</span><b id="hxColor">—</b></button>
+        <button class="hxcard" data-gocat="sacred"><img src="app-images/141.webp" alt=""><span class="hscrim"></span><b id="hxSacred">—</b></button>
+        <button class="hxcard" data-gocat="crop"><img src="app-images/139.webp" alt=""><span class="hscrim"></span><b id="hxCrop">—</b></button>
+        <button class="hxcard" data-gocat="planet"><img src="app-images/143.webp" alt=""><span class="hscrim"></span><b id="hxPlanet">—</b></button>
+        <button class="hxcard" data-gocat="color"><img src="app-images/131.webp" alt=""><span class="hscrim"></span><b id="hxColor">—</b></button>
       </div>
 
       <button class="hmethod" id="hMethodBtn">
