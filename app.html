@@ -185,6 +185,15 @@
   .steps li.sweep::after{content:""; position:absolute; inset:0; background:linear-gradient(100deg, transparent, rgba(127,216,240,.4), transparent); transform:translateX(-120%); animation:stepSweep .85s ease-out}
   @keyframes stepSweep{to{transform:translateX(120%)}}
   @media (prefers-reduced-motion: reduce){ .ftile.justadded .fstar{animation:none} .binring{animation:none!important} .steps li.sweep::after{animation:none; display:none} }
+  .iconbtn{background:transparent; border:none; color:var(--mauve); font-size:1.35rem; line-height:1; cursor:pointer; padding:2px 4px}
+  .setwrap{padding:8px 18px 28px; display:flex; flex-direction:column; gap:22px}
+  .setsec{display:flex; flex-direction:column; gap:11px}
+  .setlbl{font-size:.95rem; font-weight:700; color:var(--txt); margin:0}
+  .segbtns{display:flex; gap:8px}
+  .segbtns button{flex:1; padding:11px 8px; background:var(--pan); border:1px solid var(--line); border-radius:12px; color:var(--dim); font:inherit; font-size:.85rem; font-weight:600; cursor:pointer; transition:background .12s ease, color .12s ease, border-color .12s ease}
+  .segbtns button[aria-pressed="true"]{background:var(--pan2); border-color:var(--cyan); color:var(--cyan)}
+  .setabout{font-size:.82rem; color:var(--dim); line-height:1.65; margin:0}
+  .setabout b{color:var(--txt)} .setabout a{color:var(--cyan); text-decoration:none}
 
   .fine{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px}
   .fine button{flex:1 1 17%; background:var(--pan); border:1px solid var(--line); color:var(--txt); font:inherit; font-size:.8rem; font-weight:700; font-variant-numeric:tabular-nums; padding:11px 2px; border-radius:9px; cursor:pointer}
@@ -235,7 +244,7 @@
 <canvas class="pbg" id="pbg" aria-hidden="true"></canvas>
 <div class="app">
   <section class="view on" id="vHome">
-    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><button class="langbtn" id="langBtn">FR</button></div>
+    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><button class="langbtn" id="langBtn">FR</button><button class="iconbtn" id="setBtn" aria-label="Paramètres">⚙</button></div>
     <div class="hgrid" id="hgrid">
       <button class="hcard photo" data-go="geo"><span class="hpvis"><img src="app-images/141.webp" alt=""></span><span class="hn" id="hGeo"></span></button>
       <button class="hcard photo" data-go="lib"><span class="hpvis"><img src="app-images/142.webp" alt=""></span><span class="hn" id="hFreq"></span></button>
@@ -243,6 +252,36 @@
       <button class="hcard photo" data-go="pulse"><span class="hpvis"><img src="app-images/145.webp" alt=""></span><span class="hn" id="hPulse"></span></button>
       <button class="hcard photo" data-go="bin"><span class="hpvis"><img src="app-images/146.webp" alt=""></span><span class="hn" id="hBin"></span></button>
       <button class="hcard photo" data-go="favList"><span class="hpvis"><img src="app-images/147.webp" alt=""></span><span class="hn" id="hFav"></span></button>
+    </div>
+  </section>
+
+  <section class="view" id="vSettings">
+    <div class="bar"><button class="backbtn" id="setBack" aria-label="Retour">‹</button><h2 id="setTitle">—</h2></div>
+    <div class="setwrap">
+      <div class="setsec">
+        <p class="setlbl" id="setAnimLbl">—</p>
+        <div class="segbtns" id="setAnim">
+          <button data-v="full" id="setAnimFull">—</button>
+          <button data-v="reduced" id="setAnimReduced">—</button>
+          <button data-v="off" id="setAnimOff">—</button>
+        </div>
+      </div>
+      <div class="setsec">
+        <p class="setlbl" id="setLangLbl">—</p>
+        <div class="segbtns" id="setLang">
+          <button data-v="fr">Français</button>
+          <button data-v="en">English</button>
+          <button data-v="es">Español</button>
+        </div>
+      </div>
+      <div class="setsec">
+        <p class="setlbl"><span id="setVolLbl">—</span> : <span id="setVolVal">50</span> %</p>
+        <input type="range" id="setVol" min="0" max="100" step="1" value="50" aria-label="Volume">
+      </div>
+      <div class="setsec">
+        <p class="setlbl" id="setAboutLbl">—</p>
+        <p class="setabout" id="setAbout">—</p>
+      </div>
     </div>
   </section>
 
@@ -622,6 +661,15 @@ var T={
  fav_play_now:{fr:"▶  Jouer maintenant",en:"▶  Play now",es:"▶  Reproducir ahora"},
  fav_save_as_fav:{fr:"⭐  Enregistrer en favori",en:"⭐  Save as favorite",es:"⭐  Guardar como favorito"},
  fav_no_slot:{fr:"Aucun emplacement de favori libre",en:"No free favorite slot",es:"Ningún espacio de favoritos libre"},
+ set_title:{fr:"Paramètres",en:"Settings",es:"Ajustes"},
+ set_anim:{fr:"Animations ambiantes",en:"Ambient animations",es:"Animaciones ambientales"},
+ set_anim_full:{fr:"Complet",en:"Full",es:"Completo"},
+ set_anim_reduced:{fr:"Réduit",en:"Reduced",es:"Reducido"},
+ set_anim_off:{fr:"Désactivé",en:"Off",es:"Desactivado"},
+ set_lang:{fr:"Langue",en:"Language",es:"Idioma"},
+ set_vol:{fr:"Volume par défaut",en:"Default volume",es:"Volumen predeterminado"},
+ set_about:{fr:"À propos",en:"About",es:"Acerca de"},
+ set_about_txt:{fr:"<b>Auralis</b> — générateur de fréquences bien-être.<br>Bien-être et relaxation, sans usage médical ni allégation de santé.<br>Contact : <a href=\"mailto:auralis432@gmail.com\">auralis432@gmail.com</a>",en:"<b>Auralis</b> — wellness frequency generator.<br>Wellness and relaxation, not for medical use and no health claims.<br>Contact: <a href=\"mailto:auralis432@gmail.com\">auralis432@gmail.com</a>",es:"<b>Auralis</b> — generador de frecuencias de bienestar.<br>Bienestar y relajación, sin uso médico ni afirmaciones de salud.<br>Contacto: <a href=\"mailto:auralis432@gmail.com\">auralis432@gmail.com</a>"},
  geo_filter_crop:{fr:"Crop Circle",en:"Crop Circle",es:"Crop Circle"},
  geo_filter_sacred:{fr:"Géométrie sacrée",en:"Sacred geometry",es:"Geometría sagrada"},
  geo_filter_snowflake:{fr:"Flocon de neige",en:"Snowflake",es:"Copo de nieve"},
@@ -733,6 +781,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 
   var CATS=["Toutes","Endogène","Phyto","Huiles ess.","Élément"];
   var state={filter:"Toutes",q:"",cur:null,mode:"simple",beat:6,vol:0.5,playing:false,timerMin:0};
+  var prefersReduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var settings={anim:(prefersReduce?"reduced":"full"), vol:50};
+  try{ var _rs=JSON.parse(localStorage.getItem("auralis_settings")||"{}"); if(_rs.anim)settings.anim=_rs.anim; if(typeof _rs.vol==="number")settings.vol=_rs.vol; }catch(e){}
+  function saveSettings(){ try{ localStorage.setItem("auralis_settings",JSON.stringify(settings)); }catch(e){} }
 
   var ctx=null;
   function ensureCtx(){ if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==="suspended")ctx.resume(); return ctx; }
@@ -752,9 +804,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   // ---------- nav ----------
   var returnTo="lib";
   var curView="home";
-  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, favList:1,
+  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, favList:1, settings:1,
     play:2, seq:2, geoPlay:2, binPlay:2, binError:2, favKeypad:2, favNext:2, favRecap:2, favName:2};
-  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
+  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
     $("chainBtn").hidden=!!favBuild;
     if(v==="home"){ animHomeCards(); }
     else { var back=(NAV_LEVEL[v]||0)<(NAV_LEVEL[curView]||0);
@@ -797,6 +849,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("favAddMore").textContent=t("fav_add_more"); $("favPlaySel").textContent=t("fav_play_sel"); $("favNextCancel").textContent=t("fav_cancel");
     $("favRecapAdd").textContent=t("fav_add"); $("favRecapPlay").textContent=t("fav_play_now"); $("favRecapSave").textContent=t("fav_save_as_fav"); $("favRecapCancel").textContent=t("fav_cancel");
     $("favNameSave").textContent=t("fav_save"); $("favNameInput").placeholder=t("fav_name_ph");
+    $("setTitle").textContent=t("set_title"); $("setAnimLbl").textContent=t("set_anim");
+    $("setAnimFull").textContent=t("set_anim_full"); $("setAnimReduced").textContent=t("set_anim_reduced"); $("setAnimOff").textContent=t("set_anim_off");
+    $("setLangLbl").textContent=t("set_lang"); $("setVolLbl").textContent=t("set_vol");
+    $("setAboutLbl").textContent=t("set_about"); $("setAbout").innerHTML=t("set_about_txt");
     setBtn(state.playing); gSetBtn(gp.playing); pulseSetBtn(pulse.playing); setSeqBtn(seq.playing);
     renderLib(); renderProtos(); gRenderList(); buildInstr(); renderFavList(); renderBinInput();
   }
@@ -1436,16 +1492,18 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   });
 
   // ---------- fond de particules ----------
+  var Particles=null;
   (function(){
     var cv=$("pbg"); if(!cv)return;
     var g2=cv.getContext("2d"); if(!g2)return;
     var P=[],W=0,H=0,raf=null,last=0;
-    var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var level="full", dens=1, spd=1, tw=true;   // dens=densité, spd=vitesse, tw=scintillement
     var COLS=["127,216,240","127,216,240","127,216,240","185,143,224","185,143,224","233,201,106"];
+    function animates(){ return level!=="off" && !prefersReduce; }
     function size(){ var d=Math.min(window.devicePixelRatio||1,2);
       W=window.innerWidth; H=window.innerHeight;
       cv.width=Math.round(W*d); cv.height=Math.round(H*d); g2.setTransform(d,0,0,d,0,0); }
-    function make(){ P=[]; var n=Math.max(40,Math.min(80,Math.round(W*H/14000)));
+    function make(){ P=[]; var base=Math.max(40,Math.min(80,Math.round(W*H/14000))); var n=Math.round(base*dens);
       for(var i=0;i<n;i++){ var glow=Math.random()<0.12;
         P.push({ x:Math.random()*W, y:Math.random()*H,
           r:glow?(6+Math.random()*8):(0.7+Math.random()*1.5), g:glow,
@@ -1453,9 +1511,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
           c:COLS[(Math.random()*COLS.length)|0],
           vx:(Math.random()*12-6), vy:-(5+Math.random()*13),
           ph:Math.random()*6.283, ps:0.3+Math.random()*0.9 }); } }
-    function draw(tw){ g2.clearRect(0,0,W,H);
+    function draw(twinkle){ g2.clearRect(0,0,W,H);
       for(var i=0;i<P.length;i++){ var p=P[i];
-        var a=tw?p.a*(0.55+0.45*Math.sin(p.ph)):p.a;
+        var a=twinkle?p.a*(0.55+0.45*Math.sin(p.ph)):p.a;
         if(p.g){ var gr=g2.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
           gr.addColorStop(0,"rgba("+p.c+","+a.toFixed(3)+")"); gr.addColorStop(1,"rgba("+p.c+",0)");
           g2.fillStyle=gr; g2.fillRect(p.x-p.r,p.y-p.r,p.r*2,p.r*2); }
@@ -1465,24 +1523,43 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       if(!last){ last=ts; return; }
       var dt=Math.min((ts-last)/1000,0.1); last=ts;
       for(var i=0;i<P.length;i++){ var p=P[i];
-        p.x+=p.vx*dt; p.y+=p.vy*dt; p.ph+=p.ps*dt;
+        p.x+=p.vx*spd*dt; p.y+=p.vy*spd*dt; p.ph+=p.ps*dt;
         if(p.y<-20){ p.y=H+20; p.x=Math.random()*W; }
         if(p.x<-20)p.x=W+20; else if(p.x>W+20)p.x=-20; }
-      draw(true); }
-    function start(){ if(raf||reduce)return; last=0; raf=requestAnimationFrame(step); }
+      draw(tw); }
+    function start(){ if(raf)return; if(!animates()){ draw(false); return; } last=0; raf=requestAnimationFrame(step); }
     function stop(){ if(raf){ cancelAnimationFrame(raf); raf=null; } }
-    size(); make();
-    if(reduce) draw(false); else start();
-    document.addEventListener("visibilitychange",function(){ if(document.hidden)stop(); else start(); });
+    function setLevel(lv){ level=lv; stop();
+      if(lv==="off"){ cv.style.display="none"; g2.clearRect(0,0,W,H); return; }
+      cv.style.display="";
+      if(lv==="reduced"){ dens=0.45; spd=0.55; tw=false; } else { dens=1; spd=1; tw=true; }
+      size(); make(); start(); }
+    Particles={ setLevel:setLevel };
+    setLevel(settings.anim);
+    document.addEventListener("visibilitychange",function(){ if(document.hidden)stop(); else if(level!=="off")start(); });
     var rT=null;
     window.addEventListener("resize",function(){ clearTimeout(rT);
-      rT=setTimeout(function(){ size(); make(); if(reduce)draw(false); },200); });
+      rT=setTimeout(function(){ if(level==="off")return; stop(); size(); make(); start(); },200); });
   })();
+
+  // ---------- paramètres ----------
+  function applyDefaultVolume(pct){ var f=pct/100; state.vol=f; gp.vol=f; pulse.vol=f; bin.vol=f;
+    [["vol","volLbl"],["sVol","sVolLbl"],["gVol","gVolLbl"],["pVol","pVolLbl"],["binVol","binVolLbl"]].forEach(function(p){ var s=$(p[0]),l=$(p[1]); if(s)s.value=pct; if(l)l.textContent=pct; }); }
+  function renderSettings(){
+    Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-v")===settings.anim?"true":"false"); });
+    Array.prototype.forEach.call(document.querySelectorAll("#setLang button"),function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-v")===lang?"true":"false"); });
+    $("setVol").value=settings.vol; $("setVolVal").textContent=settings.vol; }
+  $("setBtn").addEventListener("click",function(){ show("settings"); renderSettings(); });
+  $("setBack").addEventListener("click",function(){ show("home"); });
+  Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.addEventListener("click",function(){ settings.anim=b.getAttribute("data-v"); saveSettings(); if(Particles)Particles.setLevel(settings.anim); renderSettings(); }); });
+  Array.prototype.forEach.call(document.querySelectorAll("#setLang button"),function(b){ b.addEventListener("click",function(){ lang=b.getAttribute("data-v"); try{localStorage.setItem("auralis_lang",lang);}catch(e){} applyLang(); renderSettings(); }); });
+  $("setVol").addEventListener("input",function(){ settings.vol=parseInt(this.value,10); $("setVolVal").textContent=settings.vol; applyDefaultVolume(settings.vol); saveSettings(); });
 
   makeViz("viz",function(){return state.playing;});
   makeViz("sViz",function(){return seq.playing;});
   makeViz("pViz",function(){return pulse.playing;});
 
+  applyDefaultVolume(settings.vol);
   applyLang(); show("home");
 })();
 </script>
