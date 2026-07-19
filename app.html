@@ -43,22 +43,58 @@
   .backbtn{background:var(--pan); border:1px solid var(--line); color:var(--cyan); font:inherit; font-size:1.1rem; width:40px; height:40px; border-radius:11px; cursor:pointer; flex:0 0 auto}
   .bar h2{font-size:1rem; font-weight:700; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
-  .hgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:6px 16px 14px}
-  .hcard{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; aspect-ratio:1; background:var(--pan); border:1px solid var(--line); border-radius:20px; color:var(--txt); font:inherit; cursor:pointer; transition:transform .12s ease, box-shadow .22s ease, background .12s ease, border-color .22s ease}
-  .hcard:active{background:var(--pan2); transform:scale(.975); border-color:rgba(127,216,240,.5); box-shadow:0 0 22px rgba(127,216,240,.28)}
-  .hgrid.in .hcard{opacity:0; animation:cardIn .34s cubic-bezier(.22,.61,.36,1) both}
-  .hgrid.in .hcard:nth-child(1){animation-delay:0ms} .hgrid.in .hcard:nth-child(2){animation-delay:45ms}
-  .hgrid.in .hcard:nth-child(3){animation-delay:90ms} .hgrid.in .hcard:nth-child(4){animation-delay:135ms}
-  .hgrid.in .hcard:nth-child(5){animation-delay:180ms} .hgrid.in .hcard:nth-child(6){animation-delay:225ms}
+  .home{flex:1; display:flex; flex-direction:column; padding:2px 16px 22px; overflow-y:auto; -webkit-overflow-scrolling:touch}
+  .home.in > *{opacity:0; animation:cardIn .38s cubic-bezier(.22,.61,.36,1) both}
+  .home.in > :nth-child(1){animation-delay:0ms} .home.in > :nth-child(2){animation-delay:50ms}
+  .home.in > :nth-child(3){animation-delay:100ms} .home.in > :nth-child(4){animation-delay:150ms}
+  .home.in > :nth-child(5){animation-delay:200ms} .home.in > :nth-child(6){animation-delay:250ms}
+  .home.in > :nth-child(7){animation-delay:300ms} .home.in > :nth-child(8){animation-delay:350ms}
   @keyframes cardIn{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
-  .hcard .hic{font-size:2.3rem}
-  .hcard .hn{font-size:.94rem; font-weight:700; text-align:center; letter-spacing:.01em}
-  .hcard.wide{grid-column:1/3; aspect-ratio:auto; flex-direction:row; padding:20px}
-  .hcard.wide .hic{font-size:1.8rem}
-  .hcard.photo{aspect-ratio:auto; gap:0; padding:0; overflow:hidden; justify-content:flex-start}
-  .hcard.photo .hpvis{width:100%; aspect-ratio:1.25; display:flex; align-items:center; justify-content:center; background:#05070f}
-  .hcard.photo .hpvis img{width:100%; height:100%; object-fit:cover}
-  .hcard.photo .hn{padding:7px 6px 9px; font-size:.9rem}
+
+  .heyebrow{display:flex; align-items:center; gap:9px; margin:16px 2px 10px}
+  .home > .heyebrow:first-child{margin-top:4px}
+  .heyebrow .het{font-size:.66rem; letter-spacing:.2em; text-transform:uppercase; color:var(--dim); font-weight:700; white-space:nowrap}
+  .heyebrow .hel{height:1px; flex:1; background:linear-gradient(90deg,var(--line),transparent)}
+  .heyebrow.cy .het{color:var(--cyan)}
+  .heyebrow.mv .het{color:var(--mauve)} .heyebrow.mv .hel{background:linear-gradient(90deg,rgba(185,143,224,.5),transparent)}
+
+  .hhero,.hscard,.hxcard{position:relative; display:block; text-align:left; padding:0; overflow:hidden; cursor:pointer; color:var(--txt); font:inherit; border:1px solid var(--line); border-radius:20px; transition:transform .12s ease, box-shadow .22s ease, border-color .22s ease}
+  .hhero > img,.hscard > img,.hxcard > img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+  .hscrim{position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,13,28,.12) 0%, rgba(7,13,28,.4) 46%, rgba(5,7,15,.9) 100%)}
+  .hhero:active,.hscard:active,.hxcard:active,.hmethod:active{transform:scale(.98)}
+
+  .hring,.hsring,.hxr{position:absolute; border-radius:50%; border:2px solid rgba(255,255,255,.9); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#fff; font-weight:700; text-shadow:0 1px 10px rgba(0,0,0,.55); box-shadow:0 0 30px rgba(127,216,240,.5), inset 0 0 24px rgba(127,216,240,.2)}
+  .hsring.mv,.hxr{box-shadow:0 0 26px rgba(185,143,224,.5), inset 0 0 22px rgba(185,143,224,.2)}
+  .hsring.gd{box-shadow:0 0 26px rgba(233,201,106,.5), inset 0 0 22px rgba(233,201,106,.2)}
+
+  .hhero{height:300px; border-color:rgba(127,216,240,.22)}
+  .hhero .hring{width:150px; height:150px; top:40px; left:50%; transform:translateX(-50%); font-size:1.6rem; font-variant-numeric:tabular-nums}
+  .hhero .hring i{font-style:normal; font-size:.6rem; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.72); margin-top:3px}
+  .hherobody{position:absolute; left:0; right:0; bottom:0; padding:16px 78px 16px 16px}
+  .htag{display:block; font-size:.62rem; letter-spacing:.13em; text-transform:uppercase; color:var(--cyan); font-weight:700; margin-bottom:6px}
+  .hh2{display:block; font-size:1.25rem; font-weight:700}
+  .hsub{display:block; font-size:.76rem; color:var(--dim); margin-top:3px}
+  .hplay{position:absolute; right:16px; bottom:18px; width:48px; height:48px; border-radius:50%; background:var(--cyan); color:#04121a; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 8px 22px -6px rgba(127,216,240,.6)}
+
+  .hsgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .hscard{height:150px}
+  .hscard .hsring{width:74px; height:74px; top:16px; left:50%; transform:translateX(-50%); font-size:.95rem}
+  .hsbody{position:absolute; left:0; right:0; bottom:0; padding:10px 12px}
+  .hsbody b{display:block; font-size:.95rem; font-weight:700}
+  .hsbody i{display:block; font-style:normal; font-size:.68rem; color:var(--dim); margin-top:2px}
+  .hstar{position:absolute; top:9px; right:11px; z-index:2; color:var(--gold); font-size:.9rem; text-shadow:0 1px 6px rgba(0,0,0,.6)}
+
+  .hexplain{margin:0 2px 10px; font-size:.72rem; line-height:1.5; color:var(--dimmer)}
+  .hxrail{display:flex; gap:10px; overflow-x:auto; padding:0 16px 6px; margin:0 -16px; scrollbar-width:none}
+  .hxrail::-webkit-scrollbar{display:none}
+  .hxcard{flex:0 0 auto; width:120px; height:145px; border-radius:16px; border-color:rgba(185,143,224,.2)}
+  .hxr{top:12px; left:50%; transform:translateX(-50%); width:50px; height:50px; font-size:1.15rem; border-width:1.5px}
+  .hxcard b{position:absolute; left:0; right:0; bottom:0; padding:9px 10px; font-size:.78rem; font-weight:700; z-index:2}
+
+  .hmethod{display:flex; align-items:center; gap:12px; width:100%; margin-top:16px; padding:13px 14px; border:1px solid var(--line); border-radius:15px; background:linear-gradient(120deg, rgba(127,216,240,.08), rgba(17,26,51,.5)); color:var(--txt); font:inherit; cursor:pointer; text-align:left; transition:transform .12s ease}
+  .hmic{flex:0 0 auto; width:34px; height:34px; border-radius:10px; background:rgba(127,216,240,.14); color:var(--cyan); display:flex; align-items:center; justify-content:center; font-size:1.05rem}
+  .hmt{flex:1} .hmt b{display:block; font-size:.9rem; font-weight:700} .hmt i{display:block; font-style:normal; font-size:.72rem; color:var(--dim); margin-top:1px}
+  .hmar{color:var(--cyan); font-size:1.1rem}
 
   .pad{padding:0 18px}
   .search{width:100%; background:var(--pan); border:1px solid var(--line); border-radius:12px; color:var(--txt); font:inherit; font-size:.95rem; padding:12px 14px; margin-bottom:12px}
@@ -125,9 +161,9 @@
   @keyframes ringpulse{0%,100%{box-shadow:0 0 40px 10px rgba(230,244,255,.55), 0 0 110px 34px rgba(185,143,224,.26), inset 0 0 34px rgba(230,244,255,.2)}
     50%{box-shadow:0 0 56px 16px rgba(230,244,255,.72), 0 0 130px 42px rgba(185,143,224,.34), inset 0 0 40px rgba(230,244,255,.28)}}
   @media (prefers-reduced-motion: reduce){ .stage.playing::before{animation:none}
-    .hgrid.in .hcard{animation:none; opacity:1}
+    .home.in > *{animation:none; opacity:1}
     .view.on.nav-fwd, .view.on.nav-back{animation:none}
-    .hcard:active, .gtile:active, .ftile:active, .pcard:active{transform:none} }
+    .hhero:active, .hscard:active, .hxcard:active, .hmethod:active, .gtile:active, .ftile:active, .pcard:active{transform:none} }
   canvas{display:block; width:200px; height:200px}
   .readout{position:absolute; text-align:center; pointer-events:none}
   .hz{font-size:2.4rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums}
@@ -245,13 +281,42 @@
 <div class="app">
   <section class="view on" id="vHome">
     <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><button class="langbtn" id="langBtn">FR</button><button class="iconbtn" id="setBtn" aria-label="Paramètres">⚙</button></div>
-    <div class="hgrid" id="hgrid">
-      <button class="hcard photo" data-go="geo"><span class="hpvis"><img src="app-images/141.webp" alt=""></span><span class="hn" id="hGeo"></span></button>
-      <button class="hcard photo" data-go="lib"><span class="hpvis"><img src="app-images/142.webp" alt=""></span><span class="hn" id="hFreq"></span></button>
-      <button class="hcard photo" data-go="protos"><span class="hpvis"><img src="app-images/144.webp" alt=""></span><span class="hn" id="hProto"></span></button>
-      <button class="hcard photo" data-go="pulse"><span class="hpvis"><img src="app-images/145.webp" alt=""></span><span class="hn" id="hPulse"></span></button>
-      <button class="hcard photo" data-go="bin"><span class="hpvis"><img src="app-images/146.webp" alt=""></span><span class="hn" id="hBin"></span></button>
-      <button class="hcard photo" data-go="favList"><span class="hpvis"><img src="app-images/147.webp" alt=""></span><span class="hn" id="hFav"></span></button>
+    <div class="home in" id="homeScroll">
+      <p class="heyebrow cy"><span class="het" id="hebFreq">—</span><span class="hel"></span></p>
+      <button class="hhero" data-go="lib">
+        <img src="app-images/142.webp" alt="">
+        <span class="hscrim"></span>
+        <span class="hring"><b id="hHeroHz">72.45</b><i>Magnésium</i></span>
+        <span class="hherobody">
+          <span class="htag" id="hHeroTag">—</span>
+          <span class="hh2" id="hFreq">—</span>
+          <span class="hsub" id="hHeroSub">—</span>
+        </span>
+        <span class="hplay" aria-hidden="true">▶</span>
+      </button>
+
+      <p class="heyebrow"><span class="het" id="hebSess">—</span><span class="hel"></span></p>
+      <div class="hsgrid">
+        <button class="hscard" data-go="protos"><img src="app-images/144.webp" alt=""><span class="hscrim"></span><span class="hsring mv">△</span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
+        <button class="hscard" data-go="pulse"><img src="app-images/145.webp" alt=""><span class="hscrim"></span><span class="hsring">432</span><span class="hsbody"><b id="hPulse">—</b><i id="hPulseSub">—</i></span></button>
+        <button class="hscard" data-go="bin"><img src="app-images/146.webp" alt=""><span class="hscrim"></span><span class="hsring">◎</span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
+        <button class="hscard" data-go="favList"><span class="hstar" aria-hidden="true">★</span><img src="app-images/147.webp" alt=""><span class="hscrim"></span><span class="hsring gd">♡</span><span class="hsbody"><b id="hFav">—</b><i id="hFavSub">—</i></span></button>
+      </div>
+
+      <p class="heyebrow mv"><span class="het" id="hebExpl">—</span><span class="hel"></span></p>
+      <p class="hexplain" id="hExplNote">—</p>
+      <div class="hxrail">
+        <button class="hxcard" data-gocat="sacred"><img src="app-images/141.webp" alt=""><span class="hscrim"></span><span class="hxr">✶</span><b id="hxSacred">—</b></button>
+        <button class="hxcard" data-gocat="crop"><img src="app-images/139.webp" alt=""><span class="hscrim"></span><span class="hxr">◉</span><b id="hxCrop">—</b></button>
+        <button class="hxcard" data-gocat="planet"><img src="app-images/143.webp" alt=""><span class="hscrim"></span><span class="hxr">☉</span><b id="hxPlanet">—</b></button>
+        <button class="hxcard" data-gocat="color"><img src="app-images/131.webp" alt=""><span class="hscrim"></span><span class="hxr">◐</span><b id="hxColor">—</b></button>
+      </div>
+
+      <button class="hmethod" id="hMethodBtn">
+        <span class="hmic" aria-hidden="true">∿</span>
+        <span class="hmt"><b id="hMethodT">—</b><i id="hMethodS">—</i></span>
+        <span class="hmar" aria-hidden="true">→</span>
+      </button>
     </div>
   </section>
 
@@ -283,6 +348,11 @@
         <p class="setabout" id="setAbout">—</p>
       </div>
     </div>
+  </section>
+
+  <section class="view" id="vMethod">
+    <div class="bar"><button class="backbtn" id="methBack" aria-label="Retour">‹</button><h2 id="methTitle">—</h2></div>
+    <div class="setwrap"><div class="setsec"><p class="setabout" id="methBody">—</p></div></div>
   </section>
 
   <section class="view" id="vLib">
@@ -694,7 +764,20 @@ var T={
  bin_delta:{fr:"Delta",en:"Delta",es:"Delta"},
  bin_theta:{fr:"Thêta",en:"Theta",es:"Theta"},
  bin_alpha:{fr:"Alpha",en:"Alpha",es:"Alfa"},
- bin_beta:{fr:"Bêta",en:"Beta",es:"Beta"}
+ bin_beta:{fr:"Bêta",en:"Beta",es:"Beta"},
+ home_eb_freq:{fr:"Fréquences · le cœur",en:"Frequencies · the core",es:"Frecuencias · el núcleo"},
+ home_eb_sess:{fr:"Séances",en:"Sessions",es:"Sesiones"},
+ home_eb_expl:{fr:"Exploration",en:"Exploration",es:"Exploración"},
+ home_hero_tag:{fr:"Éléments & molécules",en:"Elements & molecules",es:"Elementos y moléculas"},
+ home_hero_sub:{fr:"Calculées par masse molaire et octave",en:"Computed from molar mass and octave",es:"Calculadas por masa molar y octava"},
+ home_sess_proto:{fr:"Parcours bien-être",en:"Wellness journeys",es:"Recorridos de bienestar"},
+ home_sess_pulse:{fr:"Ancrage · au tempo",en:"Grounding · by tempo",es:"Anclaje · por tempo"},
+ home_sess_bin:{fr:"Focus · casque requis",en:"Focus · headphones",es:"Enfoque · auriculares"},
+ home_sess_fav:{fr:"Mes séquences",en:"My sequences",es:"Mis secuencias"},
+ home_expl_note:{fr:"Un espace contemplatif, distinct du cœur fréquences.",en:"A contemplative space, separate from the frequency core.",es:"Un espacio contemplativo, aparte del núcleo de frecuencias."},
+ home_method_t:{fr:"La méthode",en:"The method",es:"El método"},
+ home_method_s:{fr:"La logique derrière chaque fréquence",en:"The logic behind each frequency",es:"La lógica detrás de cada frecuencia"},
+ home_method_body:{fr:"<b>Chaque fréquence a une origine précise.</b><br><br>Pour les éléments et molécules, Auralis part de la <b>masse molaire</b> (g/mol) et la transpose dans le domaine audible : multiplication par une constante, puis montée ou descente d'un nombre entier d'<b>octaves</b> (×2 ou ÷2). Chaque substance obtient ainsi sa propre note.<br><br>Les <b>planètes</b> utilisent leur période orbitale octaviée, les <b>couleurs</b> leur longueur d'onde lumineuse ramenée dans le son, et les <b>agroglyphes</b> et figures sacrées leurs rapports géométriques.<br><br>Ce sont des correspondances mathématiques, pensées pour le bien-être et la relaxation — sans usage médical ni allégation de santé.",en:"<b>Every frequency has a precise origin.</b><br><br>For elements and molecules, Auralis starts from the <b>molar mass</b> (g/mol) and brings it into the audible range: multiply by a constant, then shift up or down by a whole number of <b>octaves</b> (×2 or ÷2). Each substance gets its own note.<br><br>The <b>planets</b> use their octaved orbital period, the <b>colors</b> their light wavelength mapped into sound, and the <b>crop circles</b> and sacred figures their geometric ratios.<br><br>These are mathematical correspondences, designed for wellness and relaxation — not for medical use and with no health claims.",es:"<b>Cada frecuencia tiene un origen preciso.</b><br><br>Para los elementos y moléculas, Auralis parte de la <b>masa molar</b> (g/mol) y la lleva al rango audible: multiplicación por una constante y luego subida o bajada de un número entero de <b>octavas</b> (×2 o ÷2). Cada sustancia obtiene su propia nota.<br><br>Los <b>planetas</b> usan su período orbital octavado, los <b>colores</b> su longitud de onda luminosa llevada al sonido, y los <b>agroglifos</b> y figuras sagradas sus proporciones geométricas.<br><br>Son correspondencias matemáticas, pensadas para el bienestar y la relajación — sin uso médico ni afirmaciones de salud."}
 };
 
 var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
@@ -806,20 +889,25 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   // ---------- nav ----------
   var returnTo="lib";
   var curView="home";
-  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, favList:1, settings:1,
+  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, favList:1, settings:1, method:1,
     play:2, seq:2, geoPlay:2, binPlay:2, binError:2, favKeypad:2, favNext:2, favRecap:2, favName:2};
-  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
+  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
     $("chainBtn").hidden=!!favBuild;
     if(v==="home"){ animHomeCards(); }
     else { var back=(NAV_LEVEL[v]||0)<(NAV_LEVEL[curView]||0);
       var el=$("v"+cap(v)); if(el){ el.classList.remove("nav-fwd","nav-back"); void el.offsetWidth; el.classList.add(back?"nav-back":"nav-fwd"); } }
     curView=v; }
-  function animHomeCards(){ var g=$("hgrid"); if(!g)return; g.classList.remove("in"); void g.offsetWidth; g.classList.add("in"); }
+  function animHomeCards(){ var g=$("homeScroll"); if(!g)return; g.classList.remove("in"); void g.offsetWidth; g.classList.add("in"); }
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
-  Array.prototype.forEach.call(document.querySelectorAll(".hcard"),function(b){
+  Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-go]"),function(b){
     b.addEventListener("click",function(){ var g=b.getAttribute("data-go");
       if(g==="pulse")openPulse(); else if(g==="bin")openBinInput(); else if(g==="favList"){ renderFavList(); show("favList"); } else show(g); });
   });
+  Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-gocat]"),function(b){
+    b.addEventListener("click",function(){ openGeoCat(b.getAttribute("data-gocat")); });
+  });
+  $("hMethodBtn").addEventListener("click",function(){ show("method"); });
+  $("methBack").addEventListener("click",function(){ show("home"); });
   $("libBack").addEventListener("click",function(){
     if(favBuild){ if(favBuild.steps.length>0){ show("favRecap"); renderFavRecap(); } else favBuildCancelHome(); }
     else show("home");
@@ -839,7 +927,14 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("discSingle").textContent=t("disc_single"); $("discSeq").textContent=t("disc_seq"); $("discGeo").textContent=t("disc_geo"); $("discPulse").textContent=t("disc_pulse"); $("discBin").textContent=t("disc_bin");
     Array.prototype.forEach.call(fEl.children,function(b){ b.textContent=t("f_"+b.getAttribute("data-c")); });
     Array.prototype.forEach.call(gfEl.children,function(b){ b.textContent=t(b.getAttribute("data-l")); });
-    $("hGeo").textContent=t("tab_geo"); $("hFreq").textContent=t("tab_freq"); $("hProto").textContent=t("tab_proto"); $("hPulse").textContent=t("home_pulse"); $("hBin").textContent=t("home_bin"); $("hFav").textContent=t("fav_title");
+    $("hFreq").textContent=t("tab_freq"); $("hProto").textContent=t("tab_proto"); $("hPulse").textContent=t("home_pulse"); $("hBin").textContent=t("home_bin"); $("hFav").textContent=t("fav_title");
+    $("hebFreq").textContent=t("home_eb_freq"); $("hebSess").textContent=t("home_eb_sess"); $("hebExpl").textContent=t("home_eb_expl");
+    $("hHeroTag").textContent=t("home_hero_tag"); $("hHeroSub").textContent=t("home_hero_sub");
+    $("hProtoSub").textContent=t("home_sess_proto"); $("hPulseSub").textContent=t("home_sess_pulse"); $("hBinSub").textContent=t("home_sess_bin"); $("hFavSub").textContent=t("home_sess_fav");
+    $("hExplNote").textContent=t("home_expl_note");
+    $("hxSacred").textContent=t("geo_filter_sacred"); $("hxCrop").textContent=t("geo_filter_crop"); $("hxPlanet").textContent=t("geo_filter_planet"); $("hxColor").textContent=t("geo_filter_color");
+    $("hMethodT").textContent=t("home_method_t"); $("hMethodS").textContent=t("home_method_s");
+    $("methTitle").textContent=t("home_method_t"); $("methBody").innerHTML=t("home_method_body");
     $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); pulseUpdTitle();
     $("gLoopOn").textContent=t("loop_inf"); $("gLoopOff").textContent=t("loop_once");
     $("gTempoLabel").textContent=t("tempo"); $("pTempoLabel").textContent=t("tempo"); $("gInstrLabel").textContent=t("instr_label");
@@ -1012,6 +1107,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     b.addEventListener("click",function(){ geoState.filter=gf.k; Array.prototype.forEach.call(gfEl.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-k")===gf.k?"true":"false");}); gRenderList(); });
     gfEl.appendChild(b);
   });
+  function openGeoCat(cat){ geoState.filter=cat;
+    Array.prototype.forEach.call(gfEl.children,function(x){ x.setAttribute("aria-pressed", x.getAttribute("data-k")===cat?"true":"false"); });
+    gRenderList(); show("geo"); }
 
   var gp={fig:null,figIdx:null,dur:60/72,loop:true,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0,instr:"sine",
     reverbAmt:0,echoAmt:0,delayMs:250,
@@ -1565,7 +1663,5 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   applyLang(); show("home");
 })();
 </script>
-
-
 </body>
 </html>
