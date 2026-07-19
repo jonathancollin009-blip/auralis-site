@@ -25,6 +25,7 @@
   .appbg{position:fixed; inset:0; z-index:0; background:var(--bg) url("app-images/bg.webp") center center / cover no-repeat; pointer-events:none; transition:opacity .6s ease}
   .appbg.off{opacity:0}
   .appbg::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,13,28,.18), rgba(7,13,28,.3) 55%, rgba(7,13,28,.42))}
+  .pbg{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
   .app{width:100%; max-width:520px; min-height:100%; display:flex; flex-direction:column; position:relative; z-index:1}
   .view{display:none; flex-direction:column; flex:1}
   .view.on{display:flex}
@@ -207,6 +208,7 @@
 </style>
 
 <div class="appbg" id="appbg" aria-hidden="true"></div>
+<canvas class="pbg" id="pbg" aria-hidden="true"></canvas>
 <div class="app">
   <section class="view on" id="vHome">
     <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><button class="langbtn" id="langBtn">FR</button></div>
@@ -1395,6 +1397,50 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     favBuild=null; $("libTitle").textContent=t("tab_freq");
     show("favList"); renderFavList();
   });
+
+  // ---------- fond de particules ----------
+  (function(){
+    var cv=$("pbg"); if(!cv)return;
+    var g2=cv.getContext("2d"); if(!g2)return;
+    var P=[],W=0,H=0,raf=null,last=0;
+    var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var COLS=["127,216,240","127,216,240","127,216,240","185,143,224","185,143,224","233,201,106"];
+    function size(){ var d=Math.min(window.devicePixelRatio||1,2);
+      W=window.innerWidth; H=window.innerHeight;
+      cv.width=Math.round(W*d); cv.height=Math.round(H*d); g2.setTransform(d,0,0,d,0,0); }
+    function make(){ P=[]; var n=Math.max(40,Math.min(80,Math.round(W*H/14000)));
+      for(var i=0;i<n;i++){ var glow=Math.random()<0.12;
+        P.push({ x:Math.random()*W, y:Math.random()*H,
+          r:glow?(6+Math.random()*8):(0.7+Math.random()*1.5), g:glow,
+          a:glow?(0.04+Math.random()*0.05):(0.08+Math.random()*0.24),
+          c:COLS[(Math.random()*COLS.length)|0],
+          vx:(Math.random()*12-6), vy:-(5+Math.random()*13),
+          ph:Math.random()*6.283, ps:0.3+Math.random()*0.9 }); } }
+    function draw(tw){ g2.clearRect(0,0,W,H);
+      for(var i=0;i<P.length;i++){ var p=P[i];
+        var a=tw?p.a*(0.55+0.45*Math.sin(p.ph)):p.a;
+        if(p.g){ var gr=g2.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+          gr.addColorStop(0,"rgba("+p.c+","+a.toFixed(3)+")"); gr.addColorStop(1,"rgba("+p.c+",0)");
+          g2.fillStyle=gr; g2.fillRect(p.x-p.r,p.y-p.r,p.r*2,p.r*2); }
+        else { g2.fillStyle="rgba("+p.c+","+a.toFixed(3)+")";
+          g2.beginPath(); g2.arc(p.x,p.y,p.r,0,6.283); g2.fill(); } } }
+    function step(ts){ raf=requestAnimationFrame(step);
+      if(!last){ last=ts; return; }
+      var dt=Math.min((ts-last)/1000,0.1); last=ts;
+      for(var i=0;i<P.length;i++){ var p=P[i];
+        p.x+=p.vx*dt; p.y+=p.vy*dt; p.ph+=p.ps*dt;
+        if(p.y<-20){ p.y=H+20; p.x=Math.random()*W; }
+        if(p.x<-20)p.x=W+20; else if(p.x>W+20)p.x=-20; }
+      draw(true); }
+    function start(){ if(raf||reduce)return; last=0; raf=requestAnimationFrame(step); }
+    function stop(){ if(raf){ cancelAnimationFrame(raf); raf=null; } }
+    size(); make();
+    if(reduce) draw(false); else start();
+    document.addEventListener("visibilitychange",function(){ if(document.hidden)stop(); else start(); });
+    var rT=null;
+    window.addEventListener("resize",function(){ clearTimeout(rT);
+      rT=setTimeout(function(){ size(); make(); if(reduce)draw(false); },200); });
+  })();
 
   makeViz("viz",function(){return state.playing;});
   makeViz("sViz",function(){return seq.playing;});
