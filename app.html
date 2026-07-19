@@ -786,7 +786,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   var settings={anim:(prefersReduce?"reduced":"full"), vol:50};
   try{ var _rs=JSON.parse(localStorage.getItem("auralis_settings")||"{}"); if(_rs.anim)settings.anim=_rs.anim; if(typeof _rs.vol==="number")settings.vol=_rs.vol; }catch(e){}
   function saveSettings(){ try{ localStorage.setItem("auralis_settings",JSON.stringify(settings)); }catch(e){} }
-  var APP_VERSION="1.0.0";
+  var APP_VERSION="1.1.0";
 
   var ctx=null;
   function ensureCtx(){ if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==="suspended")ctx.resume(); return ctx; }
