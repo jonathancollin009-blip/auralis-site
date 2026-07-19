@@ -226,6 +226,7 @@
       <input class="search" id="search" type="search" aria-label="Rechercher">
       <div class="filters" id="filters"></div>
       <button class="manualbtn" id="manualBtn"></button>
+      <button class="manualbtn" id="chainBtn"></button>
     </div>
     <div class="list" id="list"></div>
   </section>
@@ -394,7 +395,8 @@
       <ul class="steps" id="favRecapSteps"></ul>
       <div style="margin-top:auto; display:flex; flex-direction:column; gap:10px; padding-top:16px">
         <button class="manualbtn" id="favRecapAdd"></button>
-        <button class="play" id="favRecapSave"></button>
+        <button class="play" id="favRecapPlay"></button>
+        <button class="manualbtn" id="favRecapSave"></button>
         <button class="linkbtn" id="favRecapCancel"></button>
       </div>
     </div>
@@ -587,6 +589,12 @@ var T={
  fav_name_title:{fr:"Nom du protocole",en:"Protocol name",es:"Nombre del protocolo"},
  fav_name_ph:{fr:"Ex. Ma routine du soir",en:"E.g. My evening routine",es:"Ej. Mi rutina nocturna"},
  fav_max_steps:{fr:"Maximum 8 fréquences par favori",en:"Maximum 8 frequencies per favorite",es:"Máximo 8 frecuencias por favorito"},
+ chain_btn:{fr:"🔗  Enchaîner des fréquences",en:"🔗  Chain frequencies",es:"🔗  Encadenar frecuencias"},
+ chain_pick_title:{fr:"Choisir une fréquence — Séquence",en:"Choose a frequency — Sequence",es:"Elegir una frecuencia — Secuencia"},
+ chain_temp_name:{fr:"Séquence personnalisée",en:"Custom sequence",es:"Secuencia personalizada"},
+ fav_play_now:{fr:"▶  Jouer maintenant",en:"▶  Play now",es:"▶  Reproducir ahora"},
+ fav_save_as_fav:{fr:"⭐  Enregistrer en favori",en:"⭐  Save as favorite",es:"⭐  Guardar como favorito"},
+ fav_no_slot:{fr:"Aucun emplacement de favori libre",en:"No free favorite slot",es:"Ningún espacio de favoritos libre"},
  geo_filter_crop:{fr:"Crop Circle",en:"Crop Circle",es:"Crop Circle"},
  geo_filter_sacred:{fr:"Géométrie sacrée",en:"Sacred geometry",es:"Geometría sagrada"},
  geo_filter_snowflake:{fr:"Flocon de neige",en:"Snowflake",es:"Copo de nieve"},
@@ -716,14 +724,14 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 
   // ---------- nav ----------
   var returnTo="lib";
-  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); }); }
+  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); }); $("chainBtn").hidden=!!favBuild; }
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   Array.prototype.forEach.call(document.querySelectorAll(".hcard"),function(b){
     b.addEventListener("click",function(){ var g=b.getAttribute("data-go");
       if(g==="pulse")openPulse(); else if(g==="bin")openBinInput(); else if(g==="favList"){ renderFavList(); show("favList"); } else show(g); });
   });
   $("libBack").addEventListener("click",function(){
-    if(favBuild){ if(favBuild.steps.length>0){ show("favRecap"); renderFavRecap(); } else { favBuild=null; $("libTitle").textContent=t("tab_freq"); show("favList"); renderFavList(); } }
+    if(favBuild){ if(favBuild.steps.length>0){ show("favRecap"); renderFavRecap(); } else favBuildCancelHome(); }
     else show("home");
   });
   $("protBack").addEventListener("click",function(){ show("home"); });
@@ -734,7 +742,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function applyLang(){
     $("langBtn").textContent=NEXT[lang];
     $("search").placeholder=t("search_ph");
-    $("manualBtn").textContent=t("manual_btn");
+    $("manualBtn").textContent=t("manual_btn"); $("chainBtn").textContent=t("chain_btn");
     $("hzLabel").textContent=t("hz_label");
     $("volLabel").textContent=t("volume"); $("sVolLabel").textContent=t("volume"); $("pVolLabel").textContent=t("volume"); $("gVolLabel").textContent=t("volume"); $("binVolLabel").textContent=t("volume");
     $("timerLabel").textContent=t("timer_label");
@@ -751,7 +759,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("binPresetsLabel").textContent=t("bin_presets_label");
     $("binPDelta").textContent=t("bin_delta"); $("binPTheta").textContent=t("bin_theta"); $("binPAlpha").textContent=t("bin_alpha"); $("binPBeta").textContent=t("bin_beta");
     $("favAddMore").textContent=t("fav_add_more"); $("favPlaySel").textContent=t("fav_play_sel"); $("favNextCancel").textContent=t("fav_cancel");
-    $("favRecapAdd").textContent=t("fav_add"); $("favRecapSave").textContent=t("fav_save"); $("favRecapCancel").textContent=t("fav_cancel");
+    $("favRecapAdd").textContent=t("fav_add"); $("favRecapPlay").textContent=t("fav_play_now"); $("favRecapSave").textContent=t("fav_save_as_fav"); $("favRecapCancel").textContent=t("fav_cancel");
     $("favNameSave").textContent=t("fav_save"); $("favNameInput").placeholder=t("fav_name_ph");
     setBtn(state.playing); gSetBtn(gp.playing); pulseSetBtn(pulse.playing); setSeqBtn(seq.playing);
     renderLib(); renderProtos(); gRenderList(); buildInstr(); renderFavList(); renderBinInput();
@@ -1292,8 +1300,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       el.appendChild(row);
     });
   }
-  function enterFavPicker(){ $("libTitle").textContent=t("fav_pick_title"); show("lib"); }
+  function enterFavPicker(){ $("libTitle").textContent=t(favBuild.slot==null?"chain_pick_title":"fav_pick_title"); show("lib"); }
   function favPickFreq(m){ favBuild.pending={n:m.n, f:m.f}; openFavKeypad("duration"); }
+  function favBuildCancelHome(){ var hadSlot=favBuild&&favBuild.slot!=null; favBuild=null; $("libTitle").textContent=t("tab_freq"); if(hadSlot){ show("favList"); renderFavList(); } else show("home"); }
+  $("chainBtn").addEventListener("click",function(){ favBuild={slot:null, steps:[]}; enterFavPicker(); });
 
   var favKb={mode:"duration",kb:""};
   function openFavKeypad(mode){ favKb.mode=mode; favKb.kb=""; renderFavKeypad(); show("favKeypad"); }
@@ -1343,7 +1353,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     enterFavPicker();
   });
   $("favPlaySel").addEventListener("click",function(){ show("favRecap"); renderFavRecap(); });
-  $("favNextCancel").addEventListener("click",function(){ favBuild=null; show("favList"); renderFavList(); });
+  $("favNextCancel").addEventListener("click",favBuildCancelHome);
 
   function renderFavRecap(){
     $("favRecapTitle").textContent=t("fav_recap_title");
@@ -1353,17 +1363,21 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       li.innerHTML='<span class="si">'+(i+1)+'</span><span class="sn">'+tn(s.n)+'</span><span class="sh">'+s.f.toFixed(2)+' Hz</span><span class="sm">'+s.m+'m</span><span class="rm">✕</span>';
       li.querySelector(".rm").addEventListener("click",function(){
         favBuild.steps.splice(i,1);
-        if(!favBuild.steps.length){ favBuild=null; show("favList"); renderFavList(); } else renderFavRecap();
+        if(!favBuild.steps.length) favBuildCancelHome(); else renderFavRecap();
       });
       el.appendChild(li);
     });
   }
-  function favCancelBuild(){ favBuild=null; show("favList"); renderFavList(); }
-  $("favRecapBack").addEventListener("click",favCancelBuild);
-  $("favRecapCancel").addEventListener("click",favCancelBuild);
+  $("favRecapBack").addEventListener("click",favBuildCancelHome);
+  $("favRecapCancel").addEventListener("click",favBuildCancelHome);
   $("favRecapAdd").addEventListener("click",function(){
     if(favBuild.steps.length>=FAV_STEP_MAX){ flashMsg(t("fav_max_steps")); return; }
     enterFavPicker();
+  });
+  $("favRecapPlay").addEventListener("click",function(){
+    var steps=favBuild.steps.slice(), name=t("chain_temp_name");
+    favBuild=null; $("libTitle").textContent=t("tab_freq");
+    openSeq({fr:name,en:name,es:name,ic:"🔗",s:steps}, "home");
   });
   $("favRecapSave").addEventListener("click",function(){
     $("favNameTitle").textContent=t("fav_name_title");
@@ -1373,8 +1387,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   });
   $("favNameBack").addEventListener("click",function(){ show("favRecap"); });
   $("favNameSave").addEventListener("click",function(){
-    var name=$("favNameInput").value.trim() || (t("fav_default_name")+" "+(favBuild.slot+1));
-    favSlots[favBuild.slot]={name:name, steps:favBuild.steps.slice()};
+    var slot=favBuild.slot;
+    if(slot==null){ slot=favSlots.findIndex(function(s){return !s;}); if(slot<0){ flashMsg(t("fav_no_slot")); return; } }
+    var name=$("favNameInput").value.trim() || (t("fav_default_name")+" "+(slot+1));
+    favSlots[slot]={name:name, steps:favBuild.steps.slice()};
     saveFavSlots();
     favBuild=null; $("libTitle").textContent=t("tab_freq");
     show("favList"); renderFavList();
