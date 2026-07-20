@@ -798,7 +798,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 (function(){
   "use strict";
   var $=function(id){return document.getElementById(id);};
-  var LANGS=["fr","en","es"], LANG_NAMES={fr:"Français",en:"English",es:"Español"};
+  var LANGS=["fr","en","es","lo"], LANG_NAMES={fr:"Français",en:"English",es:"Español",lo:"ລາວ"};
   function detectLang(){
     var navs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||navigator.userLanguage||"en"];
     for(var i=0;i<navs.length;i++){ var l=(navs[i]||"").toLowerCase();
@@ -807,7 +807,45 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   }
   var lang=null; try{ lang=localStorage.getItem("auralis_lang"); }catch(e){}
   if(!lang || LANGS.indexOf(lang)<0){ lang=detectLang(); }
-  function t(k){ return (T[k]&&(T[k][lang]||T[k].fr))||k; }
+  // Laotien (brouillon repris/adapté du firmware ; à faire vérifier par un locuteur). Textes longs (méthode, à-propos, disclaimer géométrie) retombent sur l'anglais.
+  var LO={
+   search_ph:"ຄົ້ນຫາຄວາມຖີ່…", f_Toutes:"ທັງໝົດ", f_Phyto:"ພືດ",
+   manual_btn:"⌨  ປ້ອນຄວາມຖີ່ດ້ວຍມື", none_freq:"ບໍ່ມີຄວາມຖີ່.", hz_label:"ຄວາມຖີ່ (Hz)",
+   volume:"ລະດັບສຽງ", timer_label:"ໂມງຈັບເວລາ", remaining:"ເຫຼືອ", done:"ສຳເລັດ",
+   play:"▶  ຟັງ", stop:"■  ຢຸດ",
+   disc_single:"ສຸຂະພາບ ແລະ ຜ່ອນຄາຍ — ບໍ່ແມ່ນການໃຊ້ທາງການແພດ. ເລີ່ມທີ່ລະດັບສຽງຕ່ຳ.",
+   manual_title:"ຄວາມຖີ່ດ້ວຍມື", manual_cat:"ການປ້ອນທີ່ຊັດເຈນ",
+   protos_head:"ໂປຣໂຕຄໍສຸຂະພາບ", steps:"ຂັ້ນຕອນ", seq_done:"ສຳເລັດ ✓", seq_start:"▶  ເລີ່ມ",
+   disc_seq:"ສຸຂະພາບ ແລະ ຜ່ອນຄາຍ — ບໍ່ແມ່ນການໃຊ້ທາງການແພດ. ຟັງດ້ວຍຫູຟັງ ຫຼື ລຳໂພງ.",
+   tab_freq:"ຄວາມຖີ່", tab_proto:"ໂປຣໂຕຄໍ", tab_geo:"ເລຂາຄະນິດ",
+   geo_head:"ເລຂາຄະນິດສັກສິດ ແລະ Crop Circles", tempo:"ຈັງຫວະ", loop_inf:"ວົນຊ້ຳ ∞", loop_once:"ຄັ້ງດຽວ",
+   instr_label:"ເຄື່ອງດົນຕີ", reverb_label:"ສະທ້ອນ 🏛️", echo_label:"ສຽງກ້ອງ", delay_label:"Delay",
+   home_pulse:"432 Hz ເຕັ້ນ @ 72 bpm", pulse_base:"432 Hz ເຕັ້ນ",
+   fav_title:"ລາຍການໂປດ", fav_new:"+ ໃໝ່", fav_default_name:"ລາຍການໂປດ",
+   fav_pick_title:"ເລືອກຄວາມຖີ່ — ລາຍການໂປດ", fav_dur_title:"ໄລຍະເວລາຫຼິ້ນ", fav_dur_hint:"1 ຫາ 60 ນາທີ", fav_dur_err:"1 ຫາ 60 ນາທີເທົ່ານັ້ນ",
+   fav_next_title:"ເພີ່ມເຂົ້າລຳດັບແລ້ວ", fav_count_one:"ຄວາມຖີ່ທີ່ຕັ້ງໄວ້", fav_count_many:"ຄວາມຖີ່ທີ່ຕັ້ງໄວ້", fav_last_added:"ເພີ່ມລ່າສຸດ",
+   fav_add_more:"+ ເພີ່ມຄວາມຖີ່", fav_play_sel:"ຫຼິ້ນທີ່ເລືອກ", fav_cancel:"ຍົກເລີກ", fav_recap_title:"ສະຫຼຸບ",
+   fav_add:"+ ເພີ່ມ", fav_save:"ບັນທຶກ", fav_name_title:"ຊື່ໂປຣໂຕຄໍ", fav_name_ph:"ຕົວຢ່າງ: ກິດຈະວັດຕອນແລງ",
+   fav_max_steps:"ສູງສຸດ 8 ຄວາມຖີ່ຕໍ່ລາຍການໂປດ", chain_btn:"🔗  ຕໍ່ຄວາມຖີ່ເປັນລຳດັບ",
+   chain_pick_title:"ເລືອກຄວາມຖີ່ — ລຳດັບ", chain_temp_name:"ລຳດັບກຳນົດເອງ",
+   fav_play_now:"▶  ຫຼິ້ນດຽວນີ້", fav_save_as_fav:"⭐  ບັນທຶກເປັນລາຍການໂປດ", fav_no_slot:"ບໍ່ມີບ່ອນວ່າງລາຍການໂປດ",
+   set_title:"ການຕັ້ງຄ່າ", set_anim:"ພາບເຄື່ອນໄຫວ", set_anim_full:"ເຕັມ", set_anim_reduced:"ຫຼຸດ", set_anim_off:"ປິດ",
+   set_lang:"ພາສາ", set_vol:"ລະດັບສຽງເລີ່ມຕົ້ນ", set_about:"ກ່ຽວກັບ", set_version:"ເວີຊັນ",
+   geo_filter_crop:"Crop Circle", geo_filter_sacred:"ເລຂາຄະນິດສັກສິດ", geo_filter_snowflake:"ເກັດຫິມະ", geo_filter_color:"ສີ", geo_filter_planet:"ດາວເຄາະ",
+   geo_empty_cat:"ຍັງບໍ່ມີຮູບ.",
+   disc_pulse:"ສຸຂະພາບ ແລະ ຜ່ອນຄາຍ — ບໍ່ແມ່ນການໃຊ້ທາງການແພດ. ລະດັບສຽງເຕັ້ນຕາມຈັງຫວະທີ່ເລືອກ ຄືກັບການເຕັ້ນຂອງຫົວໃຈ.",
+   home_bin:"ສຽງໄບໂນຣອລ", bin_step1:"ປ້ອນຄວາມຖີ່ No.1", bin_step2:"ປ້ອນຄວາມຖີ່ No.2",
+   bin_f1:"ຄວາມຖີ່ No.1 :", bin_f2:"ຄວາມຖີ່ No.2 :", bin_maxgap:"ຄວາມຕ່າງສູງສຸດ : 30 Hz",
+   bin_err_title:"ຂໍ້ຜິດພາດ", bin_diff:"ຄວາມຕ່າງທີ່ປ້ອນ", bin_retry:"ລອງໃໝ່", bin_playing:"ໄບໂນຣອລກຳລັງຫຼິ້ນ", bin_beat:"ຈັງຫວະ",
+   disc_bin:"ສຸຂະພາບ ແລະ ຜ່ອນຄາຍ — ບໍ່ແມ່ນການໃຊ້ທາງການແພດ. ໂໝດໄບໂນຣອລຕ້ອງໃຊ້ຫູຟັງ.",
+   bin_presets_label:"ຄື້ນທີ່ກຳນົດໄວ້", bin_delta:"Delta", bin_theta:"Theta", bin_alpha:"Alpha", bin_beta:"Beta",
+   home_eb_freq:"ຄວາມຖີ່ · ຫົວໃຈ", home_eb_sess:"ຮອບການຟັງ", home_eb_expl:"ການສຳຫຼວດ",
+   home_hero_tag:"ທາດ ແລະ ໂມເລກຸນ", home_hero_sub:"ຄິດໄລ່ຈາກມວນໂມລ ແລະ ອອກຕາວ",
+   home_sess_proto:"ເສັ້ນທາງສຸຂະພາບ", home_sess_pulse:"ຍຶດໝັ້ນ · ຕາມຈັງຫວະ", home_sess_bin:"ສະມາທິ · ຕ້ອງໃຊ້ຫູຟັງ", home_sess_fav:"ລຳດັບຂອງຂ້ອຍ",
+   home_expl_note:"ພື້ນທີ່ໄຕ່ຕອງ, ແຍກຈາກຫົວໃຈຄວາມຖີ່.",
+   home_method_t:"ວິທີການ", home_method_s:"ເຫດຜົນເບື້ອງຫຼັງແຕ່ລະຄວາມຖີ່"
+  };
+  function t(k){ if(lang==="lo")return LO[k]||(T[k]&&(T[k].en||T[k].fr))||k; return (T[k]&&(T[k][lang]||T[k].fr))||k; }
   function pname(p){ return p[lang]||p.fr; }
   // Traduction des noms de contenu (chakras, figures, planètes, couleurs, ratios). Clé = français.
   var TN={
@@ -891,8 +929,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   };
   var TN_SUF=[["Octave Cosmique",{en:"Cosmic Octave",es:"Octava Cósmica"}],["lumière octaviée",{en:"octaved light",es:"luz octavada"}]];
   function tn(s){ if(!s||lang==="fr")return s;
-    if(TN[s])return TN[s][lang]||s;
-    for(var i=0;i<TN_SUF.length;i++){ if(s.indexOf(TN_SUF[i][0])>=0)return s.replace(TN_SUF[i][0],TN_SUF[i][1][lang]||TN_SUF[i][0]); }
+    if(TN[s])return TN[s][lang]||(lang==="lo"&&TN[s].en)||s;
+    for(var i=0;i<TN_SUF.length;i++){ if(s.indexOf(TN_SUF[i][0])>=0)return s.replace(TN_SUF[i][0],TN_SUF[i][1][lang]||(lang==="lo"&&TN_SUF[i][1].en)||TN_SUF[i][0]); }
     return s; }
 
   var CATS=["Toutes","Endogène","Phyto","Huiles ess.","Élément"];
