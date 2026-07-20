@@ -43,6 +43,7 @@
   .langbtn{background:transparent; border:1px solid var(--mauve); color:var(--mauve); border-radius:50%; width:34px; height:34px; font-size:1.05rem; line-height:1; cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center}
   .langbtn:active{background:rgba(185,143,224,.15)}
   .langmenu{position:absolute; top:calc(100% + 8px); right:0; z-index:40; min-width:168px; background:var(--pan2); border:1px solid var(--line2); border-radius:14px; padding:6px; box-shadow:0 14px 34px -8px rgba(0,0,0,.65); display:flex; flex-direction:column; gap:3px; animation:langIn .16s ease both}
+  .langmenu[hidden]{display:none}
   @keyframes langIn{from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:none}}
   .langlist{display:flex; flex-direction:column; gap:7px}
   .langopt{display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:var(--pan); border:1px solid var(--line); border-radius:11px; color:var(--txt); font:inherit; font-size:.9rem; padding:11px 13px; cursor:pointer; transition:border-color .12s ease, color .12s ease}
