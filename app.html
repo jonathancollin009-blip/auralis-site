@@ -1511,7 +1511,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     gp.echoFilter=ctx.createBiquadFilter(); gp.echoFilter.type="lowpass"; gp.echoFilter.frequency.setValueAtTime(3200,t); gp.echoFilter.Q.value=0.4;
     gp.echoWet=ctx.createGain(); gp.echoWet.gain.setValueAtTime(gp.echoAmt>0?0.5:0.0001,t);
     gp.master.connect(gp.delayNode); gp.delayNode.connect(gp.echoFilter); gp.echoFilter.connect(gp.feedback); gp.feedback.connect(gp.delayNode); gp.delayNode.connect(gp.echoWet); gp.echoWet.connect(ctx.destination);
-    gp.drones=[]; gp.fig.drone.forEach(function(dr){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(noteFreq(dr[0]),t); var g=ctx.createGain();g.gain.setValueAtTime(dr[1],t); o.connect(g);g.connect(gp.master);o.start(t);gp.drones.push(o); });
+    gp.drones=[]; gp.fig.drone.forEach(function(dr){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(noteFreq(dr[0]),t); var g=ctx.createGain();g.gain.setValueAtTime(dr[1]*0.3,t); o.connect(g);g.connect(gp.master);o.start(t);gp.drones.push(o); });
     gp.cycleStart=t; gScheduleCycle(t); gp.playing=true; gSetBtn(true);
     var cl=gp.fig.notes.length*gp.dur;
     if(gp.loop){ gp.timer=setInterval(function(){ gp.cycleStart=ctx.currentTime; gScheduleCycle(gp.cycleStart); }, cl*1000); }
