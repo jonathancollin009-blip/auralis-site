@@ -758,7 +758,7 @@ var T={
  bin_step2:{fr:"Entrez la fréquence No.2",en:"Enter frequency No.2",es:"Introduzca la frecuencia N.º2"},
  bin_f1:{fr:"Fréquence No.1 :",en:"Frequency No.1 :",es:"Frecuencia N.º1 :"},
  bin_f2:{fr:"Fréquence No.2 :",en:"Frequency No.2 :",es:"Frecuencia N.º2 :"},
- bin_maxgap:{fr:"Écart maximum : 20 Hz",en:"Maximum gap: 20 Hz",es:"Diferencia máxima: 20 Hz"},
+ bin_maxgap:{fr:"Écart maximum : 30 Hz",en:"Maximum gap: 30 Hz",es:"Diferencia máxima: 30 Hz"},
  bin_err_title:{fr:"Erreur",en:"Error",es:"Error"},
  bin_diff:{fr:"Différence saisie",en:"Entered difference",es:"Diferencia introducida"},
  bin_retry:{fr:"Recommencer",en:"Retry",es:"Reiniciar"},
@@ -1433,7 +1433,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function binOk(){
     var v=parseFloat(bin.kb); if(!bin.kb||isNaN(v)||v<=0)return;
     if(bin.step===1){ bin.f1=v; bin.kb=""; bin.step=2; renderBinInput(); }
-    else{ bin.f2=v; if(Math.abs(bin.f1-bin.f2)>20){ showBinError(); } else{ openBinPlay(); } }
+    else{ bin.f2=v; if(Math.abs(bin.f1-bin.f2)>30){ showBinError(); } else{ openBinPlay(); } }
   }
   Array.prototype.forEach.call(document.querySelectorAll("#binKeypad button[data-k]"),function(b){
     b.addEventListener("click",function(){ var k=b.getAttribute("data-k"); if(k==="back")binBack(); else binDigit(k); });
