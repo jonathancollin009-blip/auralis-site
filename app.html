@@ -798,7 +798,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 (function(){
   "use strict";
   var $=function(id){return document.getElementById(id);};
-  var LANGS=["fr","en","es","de","lo","hi","zh","zht"], LANG_NAMES={fr:"Français",en:"English",es:"Español",de:"Deutsch",lo:"ລາວ",hi:"हिन्दी",zh:"简体中文",zht:"繁體中文"};
+  var LANGS=["fr","en","es","de","it","lo","hi","zh","zht"], LANG_NAMES={fr:"Français",en:"English",es:"Español",de:"Deutsch",it:"Italiano",lo:"ລາວ",hi:"हिन्दी",zh:"简体中文",zht:"繁體中文"};
   function detectLang(){
     var navs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||navigator.userLanguage||"en"];
     for(var i=0;i<navs.length;i++){ var l=(navs[i]||"").toLowerCase();
@@ -997,7 +997,45 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_expl_note:"Ein kontemplativer Raum, getrennt vom Frequenzkern.",
    home_method_t:"Die Methode", home_method_s:"Die Logik hinter jeder Frequenz"
   };
-  var XTRA={de:DE,lo:LO,hi:HI,zh:ZH,zht:ZHT};
+  // Italien. Textes longs → anglais en fallback.
+  var IT={
+   search_ph:"Cerca una frequenza…", f_Toutes:"Tutte", f_Phyto:"Fito",
+   manual_btn:"⌨  Inserisci una frequenza manualmente", none_freq:"Nessuna frequenza.", hz_label:"Frequenza (Hz)",
+   volume:"Volume", timer_label:"Timer", remaining:"rimanente", done:"Fatto",
+   play:"▶  Ascolta", stop:"■  Ferma",
+   disc_single:"Benessere e relax — non è un uso medico. Inizia a basso volume.",
+   manual_title:"Frequenza manuale", manual_cat:"Inserimento preciso",
+   protos_head:"Protocolli benessere", steps:"passi", seq_done:"Fatto ✓", seq_start:"▶  Avvia",
+   disc_seq:"Benessere e relax — non è un uso medico. Ascolta con cuffie o altoparlanti.",
+   tab_freq:"Frequenze", tab_proto:"Protocolli", tab_geo:"Geometria",
+   geo_head:"Geometria sacra e cerchi nel grano", tempo:"Tempo", loop_inf:"Ciclo ∞", loop_once:"Una volta",
+   instr_label:"Strumento", reverb_label:"Riverbero 🏛️", echo_label:"Eco", delay_label:"Delay",
+   home_pulse:"432 Hz Pulsato @ 72 bpm", pulse_base:"432 Hz Pulsato",
+   fav_title:"Preferiti", fav_new:"+ Nuovo", fav_default_name:"Preferito",
+   fav_pick_title:"Scegli una frequenza — Preferito", fav_dur_title:"Durata di riproduzione", fav_dur_hint:"Da 1 a 60 minuti", fav_dur_err:"Solo da 1 a 60 min",
+   fav_next_title:"Aggiunta alla sequenza", fav_count_one:"frequenza programmata", fav_count_many:"frequenze programmate", fav_last_added:"Ultima aggiunta",
+   fav_add_more:"+ Aggiungi una frequenza", fav_play_sel:"Riproduci selezione", fav_cancel:"Annulla", fav_recap_title:"Riepilogo",
+   fav_add:"+ Aggiungi", fav_save:"Salva", fav_name_title:"Nome del protocollo", fav_name_ph:"Es. La mia routine serale",
+   fav_max_steps:"Massimo 8 frequenze per preferito", chain_btn:"🔗  Concatena frequenze",
+   chain_pick_title:"Scegli una frequenza — Sequenza", chain_temp_name:"Sequenza personalizzata",
+   fav_play_now:"▶  Riproduci ora", fav_save_as_fav:"⭐  Salva nei preferiti", fav_no_slot:"Nessuno slot preferito libero",
+   set_title:"Impostazioni", set_anim:"Animazioni ambientali", set_anim_full:"Completo", set_anim_reduced:"Ridotto", set_anim_off:"Disattivato",
+   set_lang:"Lingua", set_vol:"Volume predefinito", set_about:"Informazioni", set_version:"Versione",
+   geo_filter_crop:"Cerchio nel grano", geo_filter_sacred:"Geometria sacra", geo_filter_snowflake:"Fiocco di neve", geo_filter_color:"Colore", geo_filter_planet:"Pianeta",
+   geo_empty_cat:"Ancora nessuna figura.",
+   disc_pulse:"Benessere e relax — non è un uso medico. Il volume pulsa al ritmo scelto, come un battito.",
+   home_bin:"Binaurale", bin_step1:"Inserisci la frequenza N.1", bin_step2:"Inserisci la frequenza N.2",
+   bin_f1:"Frequenza N.1 :", bin_f2:"Frequenza N.2 :", bin_maxgap:"Differenza massima : 30 Hz",
+   bin_err_title:"Errore", bin_diff:"Differenza inserita", bin_retry:"Riprova", bin_playing:"Binaurale in riproduzione", bin_beat:"Battimento",
+   disc_bin:"Benessere e relax — non è un uso medico. La modalità binaurale richiede le cuffie.",
+   bin_presets_label:"Onde predefinite", bin_delta:"Delta", bin_theta:"Theta", bin_alpha:"Alpha", bin_beta:"Beta",
+   home_eb_freq:"Frequenze · il cuore", home_eb_sess:"Sessioni", home_eb_expl:"Esplorazione",
+   home_hero_tag:"Elementi e molecole", home_hero_sub:"Calcolate da massa molare e ottava",
+   home_sess_proto:"Percorsi benessere", home_sess_pulse:"Radicamento · a tempo", home_sess_bin:"Concentrazione · cuffie richieste", home_sess_fav:"Le mie sequenze",
+   home_expl_note:"Uno spazio contemplativo, distinto dal cuore delle frequenze.",
+   home_method_t:"Il metodo", home_method_s:"La logica dietro ogni frequenza"
+  };
+  var XTRA={de:DE,it:IT,lo:LO,hi:HI,zh:ZH,zht:ZHT};
   function t(k){ var x=XTRA[lang]; if(x)return x[k]||(T[k]&&(T[k].en||T[k].fr))||k; return (T[k]&&(T[k][lang]||T[k].fr))||k; }
   function pname(p){ return p[lang]||p.fr; }
   // Traduction des noms de contenu (chakras, figures, planètes, couleurs, ratios). Clé = français.
