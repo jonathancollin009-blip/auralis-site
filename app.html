@@ -798,7 +798,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 (function(){
   "use strict";
   var $=function(id){return document.getElementById(id);};
-  var LANGS=["fr","en","es","lo","hi","zh"], LANG_NAMES={fr:"Français",en:"English",es:"Español",lo:"ລາວ",hi:"हिन्दी",zh:"简体中文"};
+  var LANGS=["fr","en","es","lo","hi","zh","zht"], LANG_NAMES={fr:"Français",en:"English",es:"Español",lo:"ລາວ",hi:"हिन्दी",zh:"简体中文",zht:"繁體中文"};
   function detectLang(){
     var navs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||navigator.userLanguage||"en"];
     for(var i=0;i<navs.length;i++){ var l=(navs[i]||"").toLowerCase();
@@ -921,7 +921,45 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_expl_note:"一个沉思的空间，独立于频率核心。",
    home_method_t:"方法", home_method_s:"每个频率背后的逻辑"
   };
-  var XTRA={lo:LO,hi:HI,zh:ZH};
+  // Chinois traditionnel (繁體, vocabulaire Taïwan). Textes longs → anglais en fallback.
+  var ZHT={
+   search_ph:"搜尋頻率…", f_Toutes:"全部", f_Phyto:"植物",
+   manual_btn:"⌨  手動輸入頻率", none_freq:"無頻率。", hz_label:"頻率 (Hz)",
+   volume:"音量", timer_label:"計時器", remaining:"剩餘", done:"完成",
+   play:"▶  播放", stop:"■  停止",
+   disc_single:"健康與放鬆 — 非醫療用途。請從低音量開始。",
+   manual_title:"手動頻率", manual_cat:"精確輸入",
+   protos_head:"健康方案", steps:"步驟", seq_done:"完成 ✓", seq_start:"▶  開始",
+   disc_seq:"健康與放鬆 — 非醫療用途。請用耳機或音箱聆聽。",
+   tab_freq:"頻率", tab_proto:"方案", tab_geo:"幾何",
+   geo_head:"神聖幾何與麥田圈", tempo:"節奏", loop_inf:"循環 ∞", loop_once:"一次",
+   instr_label:"樂器", reverb_label:"混響 🏛️", echo_label:"回聲", delay_label:"延遲",
+   home_pulse:"432 Hz 脈動 @ 72 bpm", pulse_base:"432 Hz 脈動",
+   fav_title:"收藏", fav_new:"+ 新增", fav_default_name:"收藏",
+   fav_pick_title:"選擇頻率 — 收藏", fav_dur_title:"播放時長", fav_dur_hint:"1 至 60 分鐘", fav_dur_err:"僅限 1 至 60 分鐘",
+   fav_next_title:"已加入序列", fav_count_one:"個已設頻率", fav_count_many:"個已設頻率", fav_last_added:"最近新增",
+   fav_add_more:"+ 新增頻率", fav_play_sel:"播放所選", fav_cancel:"取消", fav_recap_title:"概要",
+   fav_add:"+ 新增", fav_save:"儲存", fav_name_title:"方案名稱", fav_name_ph:"例如：我的晚間慣例",
+   fav_max_steps:"每個收藏最多 8 個頻率", chain_btn:"🔗  串聯頻率",
+   chain_pick_title:"選擇頻率 — 序列", chain_temp_name:"自訂序列",
+   fav_play_now:"▶  立即播放", fav_save_as_fav:"⭐  儲存為收藏", fav_no_slot:"沒有空閒的收藏位",
+   set_title:"設定", set_anim:"環境動畫", set_anim_full:"完整", set_anim_reduced:"減弱", set_anim_off:"關閉",
+   set_lang:"語言", set_vol:"預設音量", set_about:"關於", set_version:"版本",
+   geo_filter_crop:"麥田圈", geo_filter_sacred:"神聖幾何", geo_filter_snowflake:"雪花", geo_filter_color:"顏色", geo_filter_planet:"行星",
+   geo_empty_cat:"暫無圖形。",
+   disc_pulse:"健康與放鬆 — 非醫療用途。音量按所選節奏脈動，如同心跳。",
+   home_bin:"雙耳節拍", bin_step1:"輸入頻率 No.1", bin_step2:"輸入頻率 No.2",
+   bin_f1:"頻率 No.1 :", bin_f2:"頻率 No.2 :", bin_maxgap:"最大差值 : 30 Hz",
+   bin_err_title:"錯誤", bin_diff:"輸入差值", bin_retry:"重試", bin_playing:"雙耳節拍播放中", bin_beat:"節拍",
+   disc_bin:"健康與放鬆 — 非醫療用途。雙耳模式需要耳機。",
+   bin_presets_label:"預設腦波", bin_delta:"Delta", bin_theta:"Theta", bin_alpha:"Alpha", bin_beta:"Beta",
+   home_eb_freq:"頻率 · 核心", home_eb_sess:"體驗", home_eb_expl:"探索",
+   home_hero_tag:"元素與分子", home_hero_sub:"由摩爾質量與八度音程計算",
+   home_sess_proto:"健康旅程", home_sess_pulse:"扎根 · 隨節奏", home_sess_bin:"專注 · 需要耳機", home_sess_fav:"我的序列",
+   home_expl_note:"一個沉思的空間，獨立於頻率核心。",
+   home_method_t:"方法", home_method_s:"每個頻率背後的邏輯"
+  };
+  var XTRA={lo:LO,hi:HI,zh:ZH,zht:ZHT};
   function t(k){ var x=XTRA[lang]; if(x)return x[k]||(T[k]&&(T[k].en||T[k].fr))||k; return (T[k]&&(T[k][lang]||T[k].fr))||k; }
   function pname(p){ return p[lang]||p.fr; }
   // Traduction des noms de contenu (chakras, figures, planètes, couleurs, ratios). Clé = français.
