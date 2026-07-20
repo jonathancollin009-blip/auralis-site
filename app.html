@@ -798,7 +798,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 (function(){
   "use strict";
   var $=function(id){return document.getElementById(id);};
-  var LANGS=["fr","en","es","lo","hi","zh","zht"], LANG_NAMES={fr:"Français",en:"English",es:"Español",lo:"ລາວ",hi:"हिन्दी",zh:"简体中文",zht:"繁體中文"};
+  var LANGS=["fr","en","es","de","lo","hi","zh","zht"], LANG_NAMES={fr:"Français",en:"English",es:"Español",de:"Deutsch",lo:"ລາວ",hi:"हिन्दी",zh:"简体中文",zht:"繁體中文"};
   function detectLang(){
     var navs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||navigator.userLanguage||"en"];
     for(var i=0;i<navs.length;i++){ var l=(navs[i]||"").toLowerCase();
@@ -959,7 +959,45 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_expl_note:"一個沉思的空間，獨立於頻率核心。",
    home_method_t:"方法", home_method_s:"每個頻率背後的邏輯"
   };
-  var XTRA={lo:LO,hi:HI,zh:ZH,zht:ZHT};
+  // Allemand. Textes longs → anglais en fallback.
+  var DE={
+   search_ph:"Frequenz suchen…", f_Toutes:"Alle", f_Phyto:"Phyto",
+   manual_btn:"⌨  Frequenz manuell eingeben", none_freq:"Keine Frequenz.", hz_label:"Frequenz (Hz)",
+   volume:"Lautstärke", timer_label:"Timer", remaining:"verbleibend", done:"Fertig",
+   play:"▶  Abspielen", stop:"■  Stopp",
+   disc_single:"Wohlbefinden und Entspannung — keine medizinische Anwendung. Mit niedriger Lautstärke beginnen.",
+   manual_title:"Manuelle Frequenz", manual_cat:"Präzise Eingabe",
+   protos_head:"Wellness-Protokolle", steps:"Schritte", seq_done:"Fertig ✓", seq_start:"▶  Start",
+   disc_seq:"Wohlbefinden und Entspannung — keine medizinische Anwendung. Mit Kopfhörern oder Lautsprechern hören.",
+   tab_freq:"Frequenzen", tab_proto:"Protokolle", tab_geo:"Geometrie",
+   geo_head:"Heilige Geometrie & Kornkreise", tempo:"Tempo", loop_inf:"Schleife ∞", loop_once:"Einmal",
+   instr_label:"Instrument", reverb_label:"Hall 🏛️", echo_label:"Echo", delay_label:"Delay",
+   home_pulse:"432 Hz Pulsierend @ 72 bpm", pulse_base:"432 Hz Pulsierend",
+   fav_title:"Favoriten", fav_new:"+ Neu", fav_default_name:"Favorit",
+   fav_pick_title:"Frequenz wählen — Favorit", fav_dur_title:"Wiedergabedauer", fav_dur_hint:"1 bis 60 Minuten", fav_dur_err:"Nur 1 bis 60 Min.",
+   fav_next_title:"Zur Sequenz hinzugefügt", fav_count_one:"Frequenz programmiert", fav_count_many:"Frequenzen programmiert", fav_last_added:"Zuletzt hinzugefügt",
+   fav_add_more:"+ Frequenz hinzufügen", fav_play_sel:"Auswahl abspielen", fav_cancel:"Abbrechen", fav_recap_title:"Übersicht",
+   fav_add:"+ Hinzufügen", fav_save:"Speichern", fav_name_title:"Protokollname", fav_name_ph:"z. B. Meine Abendroutine",
+   fav_max_steps:"Maximal 8 Frequenzen pro Favorit", chain_btn:"🔗  Frequenzen verketten",
+   chain_pick_title:"Frequenz wählen — Sequenz", chain_temp_name:"Eigene Sequenz",
+   fav_play_now:"▶  Jetzt abspielen", fav_save_as_fav:"⭐  Als Favorit speichern", fav_no_slot:"Kein freier Favoritenplatz",
+   set_title:"Einstellungen", set_anim:"Umgebungsanimationen", set_anim_full:"Voll", set_anim_reduced:"Reduziert", set_anim_off:"Aus",
+   set_lang:"Sprache", set_vol:"Standardlautstärke", set_about:"Über", set_version:"Version",
+   geo_filter_crop:"Kornkreis", geo_filter_sacred:"Heilige Geometrie", geo_filter_snowflake:"Schneeflocke", geo_filter_color:"Farbe", geo_filter_planet:"Planet",
+   geo_empty_cat:"Noch keine Figuren.",
+   disc_pulse:"Wohlbefinden und Entspannung — keine medizinische Anwendung. Die Lautstärke pulsiert im gewählten Tempo, wie ein Herzschlag.",
+   home_bin:"Binaural", bin_step1:"Frequenz Nr. 1 eingeben", bin_step2:"Frequenz Nr. 2 eingeben",
+   bin_f1:"Frequenz Nr. 1 :", bin_f2:"Frequenz Nr. 2 :", bin_maxgap:"Maximaler Abstand : 30 Hz",
+   bin_err_title:"Fehler", bin_diff:"Eingegebene Differenz", bin_retry:"Erneut", bin_playing:"Binaural läuft", bin_beat:"Schwebung",
+   disc_bin:"Wohlbefinden und Entspannung — keine medizinische Anwendung. Der Binaural-Modus erfordert Kopfhörer.",
+   bin_presets_label:"Voreingestellte Wellen", bin_delta:"Delta", bin_theta:"Theta", bin_alpha:"Alpha", bin_beta:"Beta",
+   home_eb_freq:"Frequenzen · das Herz", home_eb_sess:"Sitzungen", home_eb_expl:"Entdecken",
+   home_hero_tag:"Elemente & Moleküle", home_hero_sub:"Berechnet aus Molmasse und Oktave",
+   home_sess_proto:"Wellness-Reisen", home_sess_pulse:"Erdung · im Tempo", home_sess_bin:"Fokus · Kopfhörer nötig", home_sess_fav:"Meine Sequenzen",
+   home_expl_note:"Ein kontemplativer Raum, getrennt vom Frequenzkern.",
+   home_method_t:"Die Methode", home_method_s:"Die Logik hinter jeder Frequenz"
+  };
+  var XTRA={de:DE,lo:LO,hi:HI,zh:ZH,zht:ZHT};
   function t(k){ var x=XTRA[lang]; if(x)return x[k]||(T[k]&&(T[k].en||T[k].fr))||k; return (T[k]&&(T[k][lang]||T[k].fr))||k; }
   function pname(p){ return p[lang]||p.fr; }
   // Traduction des noms de contenu (chakras, figures, planètes, couleurs, ratios). Clé = français.
