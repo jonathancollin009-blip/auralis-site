@@ -798,7 +798,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 (function(){
   "use strict";
   var $=function(id){return document.getElementById(id);};
-  var LANGS=["fr","en","es","lo"], LANG_NAMES={fr:"Français",en:"English",es:"Español",lo:"ລາວ"};
+  var LANGS=["fr","en","es","lo","hi"], LANG_NAMES={fr:"Français",en:"English",es:"Español",lo:"ລາວ",hi:"हिन्दी"};
   function detectLang(){
     var navs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||navigator.userLanguage||"en"];
     for(var i=0;i<navs.length;i++){ var l=(navs[i]||"").toLowerCase();
@@ -845,7 +845,46 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_expl_note:"ພື້ນທີ່ໄຕ່ຕອງ, ແຍກຈາກຫົວໃຈຄວາມຖີ່.",
    home_method_t:"ວິທີການ", home_method_s:"ເຫດຜົນເບື້ອງຫຼັງແຕ່ລະຄວາມຖີ່"
   };
-  function t(k){ if(lang==="lo")return LO[k]||(T[k]&&(T[k].en||T[k].fr))||k; return (T[k]&&(T[k][lang]||T[k].fr))||k; }
+  // Hindi (brouillon à faire vérifier). Textes longs (méthode, à-propos, disclaimer géométrie) retombent sur l'anglais.
+  var HI={
+   search_ph:"आवृत्ति खोजें…", f_Toutes:"सभी", f_Phyto:"फाइटो",
+   manual_btn:"⌨  आवृत्ति मैन्युअल रूप से दर्ज करें", none_freq:"कोई आवृत्ति नहीं।", hz_label:"आवृत्ति (Hz)",
+   volume:"आवाज़", timer_label:"टाइमर", remaining:"शेष", done:"पूर्ण",
+   play:"▶  सुनें", stop:"■  रोकें",
+   disc_single:"स्वास्थ्य और विश्राम — चिकित्सा उपयोग नहीं। कम आवाज़ पर शुरू करें।",
+   manual_title:"मैन्युअल आवृत्ति", manual_cat:"सटीक इनपुट",
+   protos_head:"कल्याण प्रोटोकॉल", steps:"चरण", seq_done:"पूर्ण ✓", seq_start:"▶  शुरू करें",
+   disc_seq:"स्वास्थ्य और विश्राम — चिकित्सा उपयोग नहीं। हेडफ़ोन या स्पीकर पर सुनें।",
+   tab_freq:"आवृत्तियाँ", tab_proto:"प्रोटोकॉल", tab_geo:"ज्यामिति",
+   geo_head:"पवित्र ज्यामिति और क्रॉप सर्कल", tempo:"गति", loop_inf:"लूप ∞", loop_once:"एक बार",
+   instr_label:"वाद्य", reverb_label:"रीवर्ब 🏛️", echo_label:"प्रतिध्वनि", delay_label:"डिले",
+   home_pulse:"432 Hz स्पंदित @ 72 bpm", pulse_base:"432 Hz स्पंदित",
+   fav_title:"पसंदीदा", fav_new:"+ नया", fav_default_name:"पसंदीदा",
+   fav_pick_title:"आवृत्ति चुनें — पसंदीदा", fav_dur_title:"प्लेबैक अवधि", fav_dur_hint:"1 से 60 मिनट", fav_dur_err:"केवल 1 से 60 मिनट",
+   fav_next_title:"अनुक्रम में जोड़ा गया", fav_count_one:"आवृत्ति निर्धारित", fav_count_many:"आवृत्तियाँ निर्धारित", fav_last_added:"अंतिम जोड़",
+   fav_add_more:"+ आवृत्ति जोड़ें", fav_play_sel:"चयन चलाएँ", fav_cancel:"रद्द करें", fav_recap_title:"सारांश",
+   fav_add:"+ जोड़ें", fav_save:"सहेजें", fav_name_title:"प्रोटोकॉल का नाम", fav_name_ph:"उदा. मेरी शाम की दिनचर्या",
+   fav_max_steps:"प्रति पसंदीदा अधिकतम 8 आवृत्तियाँ", chain_btn:"🔗  आवृत्तियाँ क्रम में जोड़ें",
+   chain_pick_title:"आवृत्ति चुनें — अनुक्रम", chain_temp_name:"कस्टम अनुक्रम",
+   fav_play_now:"▶  अभी चलाएँ", fav_save_as_fav:"⭐  पसंदीदा में सहेजें", fav_no_slot:"कोई खाली पसंदीदा स्लॉट नहीं",
+   set_title:"सेटिंग्स", set_anim:"परिवेश एनिमेशन", set_anim_full:"पूर्ण", set_anim_reduced:"कम", set_anim_off:"बंद",
+   set_lang:"भाषा", set_vol:"डिफ़ॉल्ट आवाज़", set_about:"परिचय", set_version:"संस्करण",
+   geo_filter_crop:"क्रॉप सर्कल", geo_filter_sacred:"पवित्र ज्यामिति", geo_filter_snowflake:"हिमकण", geo_filter_color:"रंग", geo_filter_planet:"ग्रह",
+   geo_empty_cat:"अभी कोई आकृति नहीं।",
+   disc_pulse:"स्वास्थ्य और विश्राम — चिकित्सा उपयोग नहीं। आवाज़ चुनी गई गति पर स्पंदित होती है, धड़कन की तरह।",
+   home_bin:"बाइनॉरल", bin_step1:"आवृत्ति No.1 दर्ज करें", bin_step2:"आवृत्ति No.2 दर्ज करें",
+   bin_f1:"आवृत्ति No.1 :", bin_f2:"आवृत्ति No.2 :", bin_maxgap:"अधिकतम अंतर : 30 Hz",
+   bin_err_title:"त्रुटि", bin_diff:"दर्ज अंतर", bin_retry:"पुनः प्रयास", bin_playing:"बाइनॉरल चल रहा है", bin_beat:"बीट",
+   disc_bin:"स्वास्थ्य और विश्राम — चिकित्सा उपयोग नहीं। बाइनॉरल मोड के लिए हेडफ़ोन आवश्यक हैं।",
+   bin_presets_label:"पूर्वनिर्धारित तरंगें", bin_delta:"Delta", bin_theta:"Theta", bin_alpha:"Alpha", bin_beta:"Beta",
+   home_eb_freq:"आवृत्तियाँ · केंद्र", home_eb_sess:"सत्र", home_eb_expl:"अन्वेषण",
+   home_hero_tag:"तत्व और अणु", home_hero_sub:"मोलर द्रव्यमान और सप्तक से गणना",
+   home_sess_proto:"कल्याण यात्राएँ", home_sess_pulse:"स्थिरता · गति पर", home_sess_bin:"एकाग्रता · हेडफ़ोन आवश्यक", home_sess_fav:"मेरे अनुक्रम",
+   home_expl_note:"एक चिंतनशील स्थान, आवृत्ति केंद्र से अलग।",
+   home_method_t:"विधि", home_method_s:"हर आवृत्ति के पीछे का तर्क"
+  };
+  var XTRA={lo:LO,hi:HI};
+  function t(k){ var x=XTRA[lang]; if(x)return x[k]||(T[k]&&(T[k].en||T[k].fr))||k; return (T[k]&&(T[k][lang]||T[k].fr))||k; }
   function pname(p){ return p[lang]||p.fr; }
   // Traduction des noms de contenu (chakras, figures, planètes, couleurs, ratios). Clé = français.
   var TN={
@@ -929,8 +968,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   };
   var TN_SUF=[["Octave Cosmique",{en:"Cosmic Octave",es:"Octava Cósmica"}],["lumière octaviée",{en:"octaved light",es:"luz octavada"}]];
   function tn(s){ if(!s||lang==="fr")return s;
-    if(TN[s])return TN[s][lang]||(lang==="lo"&&TN[s].en)||s;
-    for(var i=0;i<TN_SUF.length;i++){ if(s.indexOf(TN_SUF[i][0])>=0)return s.replace(TN_SUF[i][0],TN_SUF[i][1][lang]||(lang==="lo"&&TN_SUF[i][1].en)||TN_SUF[i][0]); }
+    if(TN[s])return TN[s][lang]||(XTRA[lang]&&TN[s].en)||s;
+    for(var i=0;i<TN_SUF.length;i++){ if(s.indexOf(TN_SUF[i][0])>=0)return s.replace(TN_SUF[i][0],TN_SUF[i][1][lang]||(XTRA[lang]&&TN_SUF[i][1].en)||TN_SUF[i][0]); }
     return s; }
 
   var CATS=["Toutes","Endogène","Phyto","Huiles ess.","Élément"];
