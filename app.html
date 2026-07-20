@@ -1430,11 +1430,11 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   var GORDER=["sine","piano","guitar","violin","sax"], _waves={};
 
   var CHROM4=[[261.63,"C4.wav"],[277.18,"Cs4.wav"],[293.66,"D4.wav"],[311.13,"Ds4.wav"],[329.63,"E4.wav"],[349.23,"F4.wav"],[369.99,"Fs4.wav"],[392.00,"G4.wav"],[415.30,"Gs4.wav"],[440.00,"A4.wav"],[466.16,"As4.wav"],[493.88,"B4.wav"]];
-  // Piano : plage élargie C3→C5 (grave/aigu en mp3, octave médium en wav existant) pour minimiser le pitch-shift = son plus propre sur les notes graves (planètes/couleurs).
-  var PIANO_MAP=[[130.81,"C3.mp3"],[138.59,"Cs3.mp3"],[146.83,"D3.mp3"],[155.56,"Ds3.mp3"],[164.81,"E3.mp3"],[174.61,"F3.mp3"],[185.00,"Fs3.mp3"],[196.00,"G3.mp3"],[207.65,"Gs3.mp3"],[220.00,"A3.mp3"],[233.08,"As3.mp3"],[246.94,"B3.mp3"],[261.63,"C4.wav"],[277.18,"Cs4.wav"],[293.66,"D4.wav"],[311.13,"Ds4.wav"],[329.63,"E4.wav"],[349.23,"F4.wav"],[369.99,"Fs4.wav"],[392.00,"G4.wav"],[415.30,"Gs4.wav"],[440.00,"A4.wav"],[466.16,"As4.wav"],[493.88,"B4.wav"],[523.25,"C5.mp3"]];
+  // Plage élargie C3→C5 (grave/aigu en mp3, octave médium en wav existant) — partagée piano+guitare — pour minimiser le pitch-shift = son plus propre sur les notes graves (planètes/couleurs).
+  var WIDE_MAP=[[130.81,"C3.mp3"],[138.59,"Cs3.mp3"],[146.83,"D3.mp3"],[155.56,"Ds3.mp3"],[164.81,"E3.mp3"],[174.61,"F3.mp3"],[185.00,"Fs3.mp3"],[196.00,"G3.mp3"],[207.65,"Gs3.mp3"],[220.00,"A3.mp3"],[233.08,"As3.mp3"],[246.94,"B3.mp3"],[261.63,"C4.wav"],[277.18,"Cs4.wav"],[293.66,"D4.wav"],[311.13,"Ds4.wav"],[329.63,"E4.wav"],[349.23,"F4.wav"],[369.99,"Fs4.wav"],[392.00,"G4.wav"],[415.30,"Gs4.wav"],[440.00,"A4.wav"],[466.16,"As4.wav"],[493.88,"B4.wav"],[523.25,"C5.mp3"]];
   var SAMPLES={
-   piano:{base:"app-sounds/piano/",map:PIANO_MAP,buffers:null,loading:false},
-   guitar:{base:"app-sounds/guitar/",map:CHROM4,buffers:null,loading:false},
+   piano:{base:"app-sounds/piano/",map:WIDE_MAP,buffers:null,loading:false},
+   guitar:{base:"app-sounds/guitar/",map:WIDE_MAP,buffers:null,loading:false},
    violin:{base:"app-sounds/violin/",map:[[261.63,"C4.wav"],[329.63,"E4.wav"],[392.00,"G4.wav"],[440.00,"A4.wav"],[523.25,"C5.wav"]],buffers:null,loading:false},
    sax:{base:"app-sounds/sax/",map:CHROM4,buffers:null,loading:false}
   };
