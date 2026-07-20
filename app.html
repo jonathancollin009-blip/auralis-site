@@ -140,12 +140,12 @@
   .item.mol .desc{margin:2px 0 0; padding-left:21px; font-size:.8rem; font-weight:400; color:var(--dim); line-height:1.45; white-space:normal}
   .empty{text-align:center; color:var(--dimmer); padding:40px 20px; font-size:.9rem}
 
-  .pcard{display:flex; align-items:center; gap:14px; width:100%; text-align:left; background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:11px; cursor:pointer; color:var(--txt); font:inherit; transition:transform .12s ease, box-shadow .22s ease, background .12s ease, border-color .22s ease}
+  .pcard{display:flex; align-items:center; gap:14px; width:100%; text-align:left; background:rgba(17,26,51,.5); border:1px solid var(--line); border-radius:14px; padding:11px 14px; margin-bottom:8px; cursor:pointer; color:var(--txt); font:inherit; transition:transform .12s ease, box-shadow .22s ease, background .12s ease, border-color .22s ease}
   .pcard:active{background:var(--pan2); transform:scale(.985); border-color:rgba(185,143,224,.5); box-shadow:0 0 20px rgba(185,143,224,.24)}
   .pcard .ico{flex:0 0 auto; width:44px; height:44px; border-radius:12px; background:var(--pan2); display:flex; align-items:center; justify-content:center; font-size:1.4rem}
   .pcard .pcphoto{flex:0 0 auto; width:44px; height:44px; border-radius:12px; object-fit:cover; filter:grayscale(1) contrast(1.1) brightness(0.9); border:1px solid var(--line)}
   .gstagephoto{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:192px; height:192px; border-radius:50%; object-fit:cover; background:#05070f; filter:grayscale(1) contrast(1.15); z-index:0}
-  .pcard .pt{flex:1; min-width:0} .pcard .pt b{font-size:1.05rem; font-weight:700} .pcard .pt span{display:block; font-size:.78rem; color:var(--dim); margin-top:2px}
+  .pcard .pt{flex:1; min-width:0} .pcard .pt b{font-size:1rem; font-weight:700} .pcard .pt span{display:block; font-size:.74rem; color:var(--dim); margin-top:1px}
   .pcard .go{color:var(--mauve); font-size:1.2rem}
 
   .player{flex:1; display:flex; flex-direction:column; padding:4px 20px 14px}
@@ -1020,7 +1020,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function renderProtos(){ var el=$("protoList"); el.innerHTML="";
     PROTOS.forEach(function(p,i){ var tot=p.s.reduce(function(a,x){return a+x.m;},0);
       var b=document.createElement("button"); b.className="pcard";
-      b.innerHTML='<span class="ico">'+p.ic+'</span><span class="pt"><b>'+pname(p)+'</b><span>'+p.s.length+' '+t("steps")+' · '+tot+' min</span></span><span class="go">›</span>';
+      b.innerHTML='<span class="pt"><b>'+pname(p)+'</b><span>'+p.s.length+' '+t("steps")+' · '+tot+' min</span></span><span class="go">›</span>';
       b.addEventListener("click",function(){ openSeq(i,"protos"); }); el.appendChild(b); }); }
   var seq={p:null,idx:0,protoIdx:null,remain:0,timer:null,master:null,osc:null,playing:false,total:0,elapsed:0};
   function openSeq(source, from){ stopSeq(true); returnTo=from||"protos";
