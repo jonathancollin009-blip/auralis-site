@@ -146,9 +146,10 @@
   .item .fav{color:var(--gold); font-size:.9rem}
   .item .rm{flex:0 0 auto; color:var(--dimmer); font-size:1.05rem; padding:4px 6px; cursor:pointer}
   .item .rm:active{color:#e8836f}
-  .item.mol{flex-direction:column; align-items:stretch; gap:2px}
+  .item.mol{flex-direction:column; align-items:stretch; gap:2px; overflow:hidden}
   .item.mol .mhead{display:flex; align-items:center; gap:12px; width:100%}
   .item.mol .desc{margin:2px 0 0; padding-left:21px; font-size:.8rem; font-weight:400; color:var(--dim); line-height:1.45; white-space:normal}
+  .item.mol .itembg{display:block; width:calc(100% + 28px); height:100px; object-fit:cover; margin:12px -14px -13px -14px}
   .empty{text-align:center; color:var(--dimmer); padding:40px 20px; font-size:.9rem}
 
   .pcard{display:flex; align-items:center; gap:14px; width:100%; text-align:left; background:rgba(17,26,51,.5); border:1px solid var(--line); border-radius:14px; padding:11px 14px; margin-bottom:8px; cursor:pointer; color:var(--txt); font:inherit; transition:transform .12s ease, box-shadow .22s ease, background .12s ease, border-color .22s ease}
@@ -1232,13 +1233,14 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("search").addEventListener("input",function(){ state.q=this.value.toLowerCase(); renderLib(); });
   function matches(m){ if(state.filter!=="Toutes"&&m.c!==state.filter)return false; if(state.q&&m.n.toLowerCase().indexOf(state.q)<0)return false; return true; }
   function catShort(c){ return c==="Huiles ess."?"Huiles":c; }
+  var LIBBG=["182.webp","183.webp","184.webp","185.webp","186.webp"];
   function renderLib(){
     var list=$("list"); list.innerHTML=""; var arr=LIB.filter(matches);
     $("count").textContent=arr.length+" / "+LIB.length;
     if(!arr.length){ list.innerHTML='<p class="empty">'+t("none_freq")+'</p>'; return; }
-    arr.forEach(function(m){ var b=document.createElement("button"); b.className="item mol";
+    arr.forEach(function(m,i){ var b=document.createElement("button"); b.className="item mol";
       var d=MOLDESC[m.n], descHtml=d?('<p class="desc">'+(d[lang]||d.fr)+'</p>'):'';
-      b.innerHTML='<div class="mhead"><span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span><span class="hz">'+m.f.toFixed(2)+' Hz</span></div>'+descHtml;
+      b.innerHTML='<div class="mhead"><span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span><span class="hz">'+m.f.toFixed(2)+' Hz</span></div>'+descHtml+'<img class="itembg" src="app-images/'+LIBBG[i%5]+'" alt="">';
       b.addEventListener("click",function(){ if(favBuild)favPickFreq(m); else openPlayer(m,"lib"); }); list.appendChild(b); });
   }
   $("back").addEventListener("click",function(){ stopSingle(false); show(returnTo); });
