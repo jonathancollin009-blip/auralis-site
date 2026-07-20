@@ -315,6 +315,7 @@
         <button class="hxcard" data-gocat="crop"><img src="app-images/139.webp" alt=""><span class="hscrim"></span><b id="hxCrop">—</b></button>
         <button class="hxcard" data-gocat="planet"><img src="app-images/163.webp" alt=""><span class="hscrim"></span><b id="hxPlanet">—</b></button>
         <button class="hxcard" data-gocat="color"><img src="app-images/166.webp" alt=""><span class="hscrim"></span><b id="hxColor">—</b></button>
+        <button class="hxcard" data-gocat="snowflake"><img src="app-images/stellaire.webp" alt=""><span class="hscrim"></span><b id="hxFlocon">—</b></button>
       </div>
 
       <button class="hmethod" id="hMethodBtn">
@@ -825,6 +826,16 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    "Spirale d'Or":{en:"Golden Spiral",es:"Espiral Áurea"},
    "Cube":{en:"Cube",es:"Cubo"},
    "Cube de Platon":{en:"Plato's Cube",es:"Cubo de Platón"},
+   "Stellaire":{en:"Stellar",es:"Estelar"},
+   "Dendritique":{en:"Dendritic",es:"Dendrítico"},
+   "Étoile Spectaculaire":{en:"Spectacular Star",es:"Estrella Espectacular"},
+   "Plaque Hexagonale":{en:"Hexagonal Plate",es:"Placa Hexagonal"},
+   "Plaque Sectorisée":{en:"Sectored Plate",es:"Placa Sectorizada"},
+   "Plaque Creuse":{en:"Hollow Plate",es:"Placa Hueca"},
+   "Colonne":{en:"Column",es:"Columna"},
+   "Aiguille":{en:"Needle",es:"Aguja"},
+   "Colonne avec Plaques":{en:"Capped Column",es:"Columna con Placas"},
+   "Dendrite en Fougère":{en:"Fernlike Dendrite",es:"Dendrita en Helecho"},
    "Spirale Double":{en:"Double Spiral",es:"Espiral Doble"},
    "Rosace Solaire":{en:"Solar Rosette",es:"Rosetón Solar"},
    "Amas de Bulles":{en:"Bubble Cluster",es:"Racimo de Burbujas"},
@@ -946,7 +957,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("hHeroTag").textContent=t("home_hero_tag"); $("hHeroSub").textContent=t("home_hero_sub");
     $("hProtoSub").textContent=t("home_sess_proto"); $("hPulseSub").textContent=t("home_sess_pulse"); $("hBinSub").textContent=t("home_sess_bin"); $("hFavSub").textContent=t("home_sess_fav");
     $("hExplNote").textContent=t("home_expl_note");
-    $("hxSacred").textContent=t("geo_filter_sacred"); $("hxCrop").textContent=t("geo_filter_crop"); $("hxPlanet").textContent=t("geo_filter_planet"); $("hxColor").textContent=t("geo_filter_color");
+    $("hxSacred").textContent=t("geo_filter_sacred"); $("hxCrop").textContent=t("geo_filter_crop"); $("hxPlanet").textContent=t("geo_filter_planet"); $("hxColor").textContent=t("geo_filter_color"); $("hxFlocon").textContent=t("geo_filter_snowflake");
     $("hMethodT").textContent=t("home_method_t"); $("hMethodS").textContent=t("home_method_s");
     $("methTitle").textContent=t("home_method_t"); $("methBody").innerHTML=t("home_method_body");
     $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); pulseUpdTitle();
@@ -1100,6 +1111,16 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    {name:"Noyau et Satellites",ic:"⚛️",shape:"nucleus3",cat:"crop",photo:"121.jpg",sym:{fr:"Noyau et 3 satellites · orbite",en:"Nucleus and 3 satellites · orbit",es:"Núcleo y 3 satélites · órbita"},ratios:"triade orbitale",notes:["Do","Mi","Do","Sol","Do","La","Do"],drone:[["Do",0.32]]},
    {name:"Nautile Doré",ic:"🐚",shape:"nautilus",cat:"crop",photo:"122.jpg",sym:{fr:"Spirale logarithmique · nombre d'or",en:"Logarithmic spiral · golden ratio",es:"Espiral logarítmica · número áureo"},ratios:"φ ≈ 1.618",notes:["Do′","Si","La","Sol","Fa","Mi","Ré","Do"],drone:[["Do",0.3],["Sol",0.15]]},
    {name:"Modèle Atomique",ic:"🪐",shape:"atom2",cat:"crop",photo:"123.jpg",sym:{fr:"Noyau et 2 satellites · orbite double",en:"Nucleus and 2 satellites · double orbit",es:"Núcleo y 2 satélites · órbita doble"},ratios:"dyade orbitale",notes:["Do","Sol","Do","La","Do","Sol","Do","La"],drone:[["Do",0.32]]},
+   {name:"Stellaire",ic:"❄",shape:"lattice",cat:"snowflake",photo:"stellaire.webp",sym:{fr:"Symétrie 6 · l'étoile de glace",en:"6-fold · the ice star",es:"Simetría 6 · la estrella de hielo"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Dendritique",ic:"❆",shape:"lattice",cat:"snowflake",photo:"dendritique.webp",sym:{fr:"Symétrie 6 · branches ramifiées",en:"6-fold · branching arms",es:"Simetría 6 · ramas ramificadas"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′","La","Sol"],drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Étoile Spectaculaire",ic:"✶",shape:"lattice",cat:"snowflake",photo:"etoilespec.webp",sym:{fr:"12 pointes · étoile rayonnante",en:"12 points · radiant star",es:"12 puntas · estrella radiante"},ratios:"accord majeur rayonnant",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],drone:[["Do",0.28],["Sol",0.18]]},
+   {name:"Plaque Hexagonale",ic:"⬡",shape:"lattice",cat:"snowflake",photo:"plaquehex.webp",sym:{fr:"Symétrie 6 · plaque pleine",en:"6-fold · solid plate",es:"Simetría 6 · placa maciza"},ratios:"accord majeur + sixte",notes:["Do","Mi","Sol","La","Do′","Sol"],drone:[["Do",0.3],["Mi",0.13],["Sol",0.15]]},
+   {name:"Plaque Sectorisée",ic:"❋",shape:"lattice",cat:"snowflake",photo:"plaquesect.webp",sym:{fr:"6 secteurs · plaque étoilée",en:"6 sectors · sectored plate",es:"6 sectores · placa sectorizada"},ratios:"pentatonique",notes:["Do","Mi","Sol","Do′","La","Fa"],drone:[["Do",0.3],["Sol",0.15]]},
+   {name:"Plaque Creuse",ic:"⬡",shape:"lattice",cat:"snowflake",photo:"plaquecreuse.webp",sym:{fr:"Symétrie 6 · larges branches",en:"6-fold · broad branches",es:"Simetría 6 · ramas anchas"},ratios:"4:3",notes:["Do","Fa","La","Do′","La","Fa"],drone:[["Do",0.3],["Fa",0.18]]},
+   {name:"Colonne",ic:"❄",shape:"lattice",cat:"snowflake",photo:"colonne.webp",sym:{fr:"Symétrie 6 · colonne étoilée",en:"6-fold · capped column",es:"Simetría 6 · columna estrellada"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Aiguille",ic:"✳",shape:"lattice",cat:"snowflake",photo:"aiguille.webp",sym:{fr:"Aiguilles rayonnantes · rosette",en:"Radiating needles · rosette",es:"Agujas radiantes · roseta"},ratios:"gamme ascendante",notes:["Do","Ré","Mi","Fa","Sol","La"],drone:[["Do",0.3],["Sol",0.15]]},
+   {name:"Colonne avec Plaques",ic:"❆",shape:"lattice",cat:"snowflake",photo:"colonneplaques.webp",sym:{fr:"Branches à plaques hexagonales",en:"Arms with hexagonal plates",es:"Ramas con placas hexagonales"},ratios:"accord majeur",notes:["Do","Mi","Sol","Do′"],drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Dendrite en Fougère",ic:"❋",shape:"lattice",cat:"snowflake",photo:"dendritefougere.webp",sym:{fr:"Symétrie 6 · fougère de givre",en:"6-fold · frost fern",es:"Simetría 6 · helecho de escarcha"},ratios:"suite de Fibonacci",notes:["Do","Ré","Mi","Sol","La","Do′","Mi","Ré"],drone:[["Do",0.3],["Sol",0.15]]},
    {name:"Soleil",ic:"☀️",shape:"psun",cat:"planet",photo:"167.webp",sym:{fr:"Fréquence fondamentale du Soleil",en:"Fundamental frequency of the Sun",es:"Frecuencia fundamental del Sol"},ratios:"126.22 Hz · Octave Cosmique",notes:[126.22],drone:[[126.22,0.3]]},
    {name:"Lune",ic:"🌙",shape:"pmoon",cat:"planet",photo:"169.webp",sym:{fr:"Mois synodique octavié",en:"Octaved synodic month",es:"Mes sinódico octavado"},ratios:"210.42 Hz · Octave Cosmique",notes:[210.42],drone:[[210.42,0.3]]},
    {name:"Mercure",ic:"☿",shape:"planet1",cat:"planet",photo:"mercure.webp",sym:{fr:"Période orbitale octaviée (2³⁰)",en:"Octaved orbital period (2³⁰)",es:"Período orbital octavado (2³⁰)"},ratios:"141.27 Hz · Octave Cosmique",notes:[141.27],drone:[[141.27,0.3]]},
@@ -1180,12 +1201,12 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var arr=GEO.filter(function(fig){ return geoState.filter==="all"||fig.cat===geoState.filter; });
     if(!arr.length){ el.innerHTML='<p class="empty">'+t("geo_empty_cat")+'</p>'; return; }
     arr.forEach(function(fig){ var i=GEO.indexOf(fig); var b=document.createElement("button"); b.className="gtile";
-      var vis=fig.photo?('<img class="'+((fig.cat==="planet"||fig.cat==="color"||fig.cat==="sacred")?"incolor":"")+'" src="app-images/'+fig.photo+'" alt="">'):('<span class="gtico">'+fig.ic+'</span>');
+      var vis=fig.photo?('<img class="'+((fig.cat==="planet"||fig.cat==="color"||fig.cat==="sacred"||fig.cat==="snowflake")?"incolor":"")+'" src="app-images/'+fig.photo+'" alt="">'):('<span class="gtico">'+fig.ic+'</span>');
       b.innerHTML='<span class="gtvis">'+vis+'</span><span class="gtname">'+tn(fig.name)+'</span>';
       b.addEventListener("click",function(){ gOpen(i,"geo"); }); el.appendChild(b); }); }
   function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); } loadRealIR();
     $("gTitle").textContent=tn(gp.fig.name); $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=tn(gp.fig.ratios);
-    var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); $("gViz").style.visibility="visible"; }
+    var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); $("gViz").style.visibility="visible"; }
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+noteLabel(nn)+"</b>"; row.appendChild(d); });
     var n0=gp.fig.notes[0]; $("gNowN").textContent=noteLabel(n0); $("gNowF").textContent=noteFreq(n0).toFixed(2)+" Hz";
