@@ -445,7 +445,6 @@
       <div class="ctl"><div class="row"><span class="label" id="gTempoLabel"></span><span class="v" id="gDurLbl">72 bpm · 0.83 s</span></div><input type="range" id="gDur" min="50" max="120" step="1" value="72"></div>
       <div class="ctl"><div class="row"><span class="label" id="gVolLabel"></span><span class="v"><span id="gVolLbl">50</span> %</span></div><input type="range" id="gVol" min="0" max="100" step="1" value="50"></div>
       <div class="ctl"><div class="row"><span class="label" id="gReverbLabel"></span><span class="v"><span id="gReverbVal">0</span> %</span></div><input type="range" id="gReverb" min="0" max="100" step="1" value="0"></div>
-      <div class="ctl"><div class="row"><span class="label" id="gEchoLabel"></span><span class="v"><span id="gEchoVal">0</span> %</span></div><input type="range" id="gEcho" min="0" max="100" step="1" value="0"></div>
       <div class="actions"><button class="play" id="gPlay"></button></div>
       <p class="disc" id="discGeo"></p>
     </div>
@@ -1205,7 +1204,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); pulseUpdTitle();
     $("gLoopOn").textContent=t("loop_inf"); $("gLoopOff").textContent=t("loop_once");
     $("gTempoLabel").textContent=t("tempo"); $("pTempoLabel").textContent=t("tempo"); $("gInstrLabel").textContent=t("instr_label");
-    $("gReverbLabel").textContent=t("reverb_label"); $("gEchoLabel").textContent=t("echo_label");
+    $("gReverbLabel").textContent=t("reverb_label");
     $("binLbl1").textContent=t("bin_f1"); $("binLbl2").textContent=t("bin_f2"); $("binMaxgap").textContent=t("bin_maxgap"); $("binMaxgap2").textContent=t("bin_maxgap");
     $("binErrTitle").textContent=t("bin_err_title"); $("binRetry").textContent=t("bin_retry"); $("binPlayTitle").textContent=t("bin_playing"); $("binStop").textContent=t("stop");
     $("binPresetsLabel").textContent=t("bin_presets_label");
@@ -1467,7 +1466,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("gBack").addEventListener("click",function(){ gStop(false); show(returnTo); });
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
   $("gReverb").addEventListener("input",function(){ var v=parseInt(this.value,10); $("gReverbVal").textContent=v; gSetReverbAmt(v/100); });
-  $("gEcho").addEventListener("input",function(){ var v=parseInt(this.value,10); $("gEchoVal").textContent=v; gSetEchoAmt(v/100); });
   function gSetLoop(v){ gp.loop=v; $("gLoopOn").setAttribute("aria-pressed",v?"true":"false"); $("gLoopOff").setAttribute("aria-pressed",v?"false":"true"); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }
   $("gDur").addEventListener("input",function(){ var bpm=parseInt(this.value,10); gp.dur=60/bpm; $("gDurLbl").textContent=bpm+" bpm · "+gp.dur.toFixed(2)+" s"; if(gp.playing){ gStop(true); setTimeout(gPlay,60); } });
   $("gVol").addEventListener("input",function(){ gp.vol=parseInt(this.value,10)/100; $("gVolLbl").textContent=this.value; if(gp.master&&ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02); });
@@ -1504,11 +1502,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     gp.master=ctx.createGain(); gp.master.gain.setValueAtTime(0.0001,t); gp.master.gain.linearRampToValueAtTime(gp.vol,t+0.05);
     gp.dry=ctx.createGain(); gp.dry.gain.value=1; gp.master.connect(gp.dry); gp.dry.connect(ctx.destination);
     gp.conv=ctx.createConvolver(); gp.conv.buffer=getReverbIR(); gp.wet=ctx.createGain(); gp.wet.gain.setValueAtTime(gp.reverbAmt*0.7,t); gp.master.connect(gp.conv); gp.conv.connect(gp.wet); gp.wet.connect(ctx.destination);
-    gp.delayNode=ctx.createDelay(1.0); gp.delayNode.delayTime.setValueAtTime(gp.delayMs/1000,t);
-    gp.feedback=ctx.createGain(); gp.feedback.gain.setValueAtTime(gp.echoAmt*0.55,t);
-    gp.echoFilter=ctx.createBiquadFilter(); gp.echoFilter.type="lowpass"; gp.echoFilter.frequency.setValueAtTime(3200,t); gp.echoFilter.Q.value=0.4;
-    gp.echoWet=ctx.createGain(); gp.echoWet.gain.setValueAtTime(gp.echoAmt>0?0.5:0.0001,t);
-    gp.master.connect(gp.delayNode); gp.delayNode.connect(gp.echoFilter); gp.echoFilter.connect(gp.feedback); gp.feedback.connect(gp.delayNode); gp.delayNode.connect(gp.echoWet); gp.echoWet.connect(ctx.destination);
+    // écho retiré (2026-07-20) — ne reste que la réverb
     gp.drones=[]; gp.fig.drone.forEach(function(dr){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(noteFreq(dr[0]),t); var g=ctx.createGain();g.gain.setValueAtTime(dr[1]*0.3,t); o.connect(g);g.connect(gp.master);o.start(t);gp.drones.push(o); });
     gp.cycleStart=t; gScheduleCycle(t); gp.playing=true; gSetBtn(true);
     var cl=gp.fig.notes.length*gp.dur;
