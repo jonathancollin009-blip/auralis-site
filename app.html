@@ -457,8 +457,9 @@
       <div class="grow" id="gRow"></div>
       <p class="label" id="gInstrLabel" style="margin:5px 0 4px"></p>
       <div class="filters" id="gInstr"></div>
-      <div class="seg" role="group" aria-label="Boucle"><button id="gLoopOn" aria-pressed="true"></button><button id="gLoopOff" aria-pressed="false"></button></div>
-      <div class="ctl"><div class="row"><span class="label" id="gTempoLabel"></span><span class="v" id="gDurLbl">72 bpm · 0.83 s</span></div><input type="range" id="gDur" min="50" max="120" step="1" value="72"></div>
+      <div class="seg" id="gModeSeg" role="group" aria-label="Mode" hidden><button id="gModePulsed" aria-pressed="true"></button><button id="gModePure" aria-pressed="false"></button></div>
+      <div class="seg" id="gLoopSeg" role="group" aria-label="Boucle"><button id="gLoopOn" aria-pressed="true"></button><button id="gLoopOff" aria-pressed="false"></button></div>
+      <div class="ctl" id="gTempoCtl"><div class="row"><span class="label" id="gTempoLabel"></span><span class="v" id="gDurLbl">72 bpm · 0.83 s</span></div><input type="range" id="gDur" min="50" max="120" step="1" value="72"></div>
       <div class="ctl"><div class="row"><span class="label" id="gVolLabel"></span><span class="v"><span id="gVolLbl">50</span> %</span></div><input type="range" id="gVol" min="0" max="100" step="1" value="50"></div>
       <div class="ctl"><div class="row"><span class="label" id="gReverbLabel"></span><span class="v"><span id="gReverbVal">0</span> %</span></div><input type="range" id="gReverb" min="0" max="100" step="1" value="0"></div>
       <div class="actions"><button class="play" id="gPlay"></button></div>
@@ -714,6 +715,8 @@ var T={
  geo_head:{fr:"Géométrie sacrée & agroglyphes",en:"Sacred geometry & crop circles",es:"Geometría sagrada y agroglifos"},
  tempo:{fr:"Tempo",en:"Tempo",es:"Tempo"},
  loop_inf:{fr:"Boucle ∞",en:"Loop ∞",es:"Bucle ∞"},
+ mode_pulsed:{fr:"Pulsé",en:"Pulsed",es:"Pulsado"},
+ mode_pure:{fr:"Pur",en:"Pure",es:"Puro"},
  loop_once:{fr:"Une fois",en:"Once",es:"Una vez"},
  disc_geo:{fr:"Sonification de la géométrie — exploration sonore, sans allégation. Sons : Salamander Grand (CC-BY), tonejs-instruments, réverb Voxengo (St Nicolaes Church).",en:"Sonification of geometry — sound exploration, no claim. Sounds: Salamander Grand (CC-BY), tonejs-instruments, Voxengo reverb (St Nicolaes Church).",es:"Sonificación de la geometría — exploración sonora, sin afirmaciones. Sonidos: Salamander Grand (CC-BY), tonejs-instruments, reverb Voxengo (St Nicolaes Church)."},
  instr_label:{fr:"Instrument",en:"Instrument",es:"Instrumento"},
@@ -1203,6 +1206,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("methTitle").textContent=t("home_method_t"); $("methBody").innerHTML=t("home_method_body");
     $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); pulseUpdTitle();
     $("gLoopOn").textContent=t("loop_inf"); $("gLoopOff").textContent=t("loop_once");
+    $("gModePulsed").textContent=t("mode_pulsed"); $("gModePure").textContent=t("mode_pure");
     $("gTempoLabel").textContent=t("tempo"); $("pTempoLabel").textContent=t("tempo"); $("gInstrLabel").textContent=t("instr_label");
     $("gReverbLabel").textContent=t("reverb_label");
     $("binMaxgap2").textContent=t("bin_maxgap");
@@ -1402,7 +1406,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     Array.prototype.forEach.call(gfEl.children,function(x){ x.setAttribute("aria-pressed", x.getAttribute("data-k")===cat?"true":"false"); });
     gRenderList(); show("geo"); }
 
-  var gp={fig:null,figIdx:null,dur:60/72,loop:true,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0,instr:"sine",
+  var gp={fig:null,figIdx:null,dur:60/72,loop:true,pulsed:true,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0,instr:"sine",
     reverbAmt:0,echoAmt:0,delayMs:250,
     dry:null,wet:null,conv:null,delayNode:null,feedback:null,echoWet:null,echoFilter:null}, gPhase=0;
   var _ir=null,_realIR=null,_realIRLoading=false;
@@ -1461,11 +1465,18 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+noteLabel(nn)+"</b>"; row.appendChild(d); });
     var n0=gp.fig.notes[0]; $("gNowN").textContent=noteLabel(n0); $("gNowF").textContent=noteFreq(n0).toFixed(2)+" Hz";
-    gSetBtn(false); show("geoPlay"); }
+    gUpdateModeUI(); gSetBtn(false); show("geoPlay"); }
   $("gBack").addEventListener("click",function(){ gStop(false); show(returnTo); });
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
   $("gReverb").addEventListener("input",function(){ var v=parseInt(this.value,10); $("gReverbVal").textContent=v; gSetReverbAmt(v/100); });
   function gSetLoop(v){ gp.loop=v; $("gLoopOn").setAttribute("aria-pressed",v?"true":"false"); $("gLoopOff").setAttribute("aria-pressed",v?"false":"true"); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }
+  function gUpdateModeUI(){ var single=gp.fig&&gp.fig.notes.length===1, pure=single&&!gp.pulsed;
+    $("gModeSeg").hidden=!single;
+    $("gModePulsed").setAttribute("aria-pressed",gp.pulsed?"true":"false"); $("gModePure").setAttribute("aria-pressed",gp.pulsed?"false":"true");
+    $("gTempoCtl").hidden=pure; $("gLoopSeg").hidden=pure; }
+  function gSetPulsed(v){ gp.pulsed=v; gUpdateModeUI(); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }
+  $("gModePulsed").addEventListener("click",function(){ gSetPulsed(true); });
+  $("gModePure").addEventListener("click",function(){ gSetPulsed(false); });
   $("gDur").addEventListener("input",function(){ var bpm=parseInt(this.value,10); gp.dur=60/bpm; $("gDurLbl").textContent=bpm+" bpm · "+gp.dur.toFixed(2)+" s"; if(gp.playing){ gStop(true); setTimeout(gPlay,60); } });
   $("gVol").addEventListener("input",function(){ gp.vol=parseInt(this.value,10)/100; $("gVolLbl").textContent=this.value; if(gp.master&&ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02); });
   $("gPlay").addEventListener("click",function(){ if(gp.playing)gStop(false); else gPlay(); });
@@ -1503,10 +1514,20 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     gp.conv=ctx.createConvolver(); gp.conv.buffer=getReverbIR(); gp.wet=ctx.createGain(); gp.wet.gain.setValueAtTime(gp.reverbAmt*0.7,t); gp.master.connect(gp.conv); gp.conv.connect(gp.wet); gp.wet.connect(ctx.destination);
     // écho retiré (2026-07-20) — ne reste que la réverb
     gp.drones=[]; gp.fig.drone.forEach(function(dr){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(noteFreq(dr[0]),t); var g=ctx.createGain();g.gain.setValueAtTime(dr[1]*0.3,t); o.connect(g);g.connect(gp.master);o.start(t);gp.drones.push(o); });
-    gp.cycleStart=t; gScheduleCycle(t); gp.playing=true; gSetBtn(true);
-    var cl=gp.fig.notes.length*gp.dur;
-    if(gp.loop){ gp.timer=setInterval(function(){ gp.cycleStart=ctx.currentTime; gScheduleCycle(gp.cycleStart); }, cl*1000); }
-    else { gp.timer=setTimeout(function(){ if(gp.playing)gStop(false); }, cl*1000+120); } }
+    gp.cycleStart=t;
+    if(gp.fig.notes.length===1 && !gp.pulsed){
+      var pf=noteFreq(gp.fig.notes[0]), pins=INSTR[gp.instr];
+      var po=ctx.createOscillator(); if(pins&&pins.partials){ po.setPeriodicWave(getWave(gp.instr)); } else { po.type="sine"; }
+      po.frequency.setValueAtTime(pf,t);
+      var pg=ctx.createGain(); pg.gain.setValueAtTime(0.0001,t); pg.gain.linearRampToValueAtTime(0.85,t+0.1);
+      po.connect(pg); pg.connect(gp.master); po.start(t); gp.drones.push(po);
+      gp.playing=true; gSetBtn(true);
+    } else {
+      gScheduleCycle(t); gp.playing=true; gSetBtn(true);
+      var cl=gp.fig.notes.length*gp.dur;
+      if(gp.loop){ gp.timer=setInterval(function(){ gp.cycleStart=ctx.currentTime; gScheduleCycle(gp.cycleStart); }, cl*1000); }
+      else { gp.timer=setTimeout(function(){ if(gp.playing)gStop(false); }, cl*1000+120); }
+    } }
   function gStop(immediate){ if(gp.timer){ clearInterval(gp.timer); clearTimeout(gp.timer); gp.timer=null; }
     if(ctx&&gp.master){ var t=ctx.currentTime,m=gp.master,ds=gp.drones,dy=gp.dry,wt=gp.wet,cv=gp.conv,dl=gp.delayNode,fb=gp.feedback,ew=gp.echoWet,ef=gp.echoFilter;
       try{m.gain.cancelScheduledValues(t);m.gain.setValueAtTime(m.gain.value,t);m.gain.linearRampToValueAtTime(0.0001,t+(immediate?0.02:0.12));}catch(e){}
