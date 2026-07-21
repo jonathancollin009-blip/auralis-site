@@ -1801,7 +1801,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     setTimeout(function(){ [a,b].forEach(function(o){try{o.stop();o.disconnect();}catch(e){}}); try{m.disconnect();}catch(e){} }, immediate?40:120);
     bin.master=null; bin.oscA=null; bin.oscB=null; bin.playing=false; setBg(false); }
   $("binVol").addEventListener("input",function(){ bin.vol=parseInt(this.value,10)/100; $("binVolLbl").textContent=this.value; if(bin.master&&ctx)bin.master.gain.setTargetAtTime(bin.playing?bin.vol:0,ctx.currentTime,0.02); });
-  $("binStop").addEventListener("click",function(){ binStop(false); show("home"); });
+  $("binStop").addEventListener("click",function(){ binStop(false); openBinInput(); });
 
   // ---------- favoris = constructeur de séquence (façon boîtier) ----------
   var favJustSaved=-1;
