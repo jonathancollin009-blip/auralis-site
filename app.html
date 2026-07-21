@@ -215,16 +215,21 @@
   .keypad button{background:var(--pan); border:1px solid var(--line); color:var(--txt); font:inherit; font-size:1.25rem; font-weight:700; padding:8px 0; border-radius:10px; cursor:pointer}
   .keypad button:active{background:var(--pan2)}
   .keypad button.ok{grid-column:span 3; margin-top:2px; border:0; color:#04101f; font-size:1.05rem; font-weight:800; background:linear-gradient(96deg,var(--cyan),var(--mauve))}
-  .binpresets{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
-  .binpresets button{background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:16px 8px; color:var(--txt); font:inherit; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; transition:transform .12s ease, border-color .12s ease, box-shadow .22s ease}
-  .binpresets button:active{background:var(--pan2); transform:scale(.97); border-color:rgba(127,216,240,.5); box-shadow:0 0 18px rgba(127,216,240,.22)}
-  .binpresets button b{font-size:1.6rem; font-weight:800; color:var(--cyan); font-variant-numeric:tabular-nums}
-  .binpresets button span{font-size:.84rem; font-weight:600; color:var(--dim)}
+  .binintents{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; width:100%}
+  .binintents button{background:transparent; border:0; padding:8px 6px; color:var(--txt); font:inherit; cursor:pointer; display:flex; flex-direction:column; align-items:center; text-align:center; gap:9px; transition:transform .12s ease}
+  .binintents button:active{transform:scale(.96)}
+  .bibadge{width:96px; height:96px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:box-shadow .22s ease}
+  .binintents button:active .bibadge{box-shadow:0 0 26px -4px currentColor}
+  .bibadge svg{width:44px; height:44px}
+  .bititle{display:flex; align-items:center; gap:5px; font-size:1.18rem; font-weight:700}
+  .bititle .chev{color:var(--dim); font-weight:400; font-size:1rem}
+  .bidesc{font-size:.82rem; color:var(--dim); line-height:1.32; max-width:14ch}
   .binerr{color:#e8836f; font-size:1.4rem; font-weight:800}
   .binerrsub{color:var(--dimmer); font-size:.9rem; margin-top:8px}
   .binplay{position:relative; align-items:center; justify-content:center}
   .starfield{position:absolute; inset:0; width:100%; height:100%; pointer-events:none}
   .binplay-content{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:10px; width:100%}
+  .binintenttag{font-size:.9rem; font-weight:600; color:var(--dim); letter-spacing:.02em; margin:0 0 6px; text-transform:uppercase}
   .binplay .f1{color:var(--cyan); font-size:1.05rem; font-weight:700; margin:0}
   .binplay .f2{color:var(--mauve); font-size:1.05rem; font-weight:700; margin:0}
   .binplay .beat{color:var(--gold); font-size:2rem; font-weight:800; margin:6px 0 14px}
@@ -482,8 +487,8 @@
   <section class="view" id="vBinInput">
     <div class="bar"><button class="backbtn" id="binBack" aria-label="Retour">‹</button><h2 id="binStepTitle">—</h2></div>
     <div class="player">
-      <p class="binhint" id="binPickHint" style="margin:8px 0 16px"></p>
-      <div class="binpresets" id="binPresets"></div>
+      <p class="binhint" id="binPickHint" style="margin:8px 0 22px"></p>
+      <div class="binintents" id="binPresets"></div>
     </div>
   </section>
 
@@ -502,6 +507,7 @@
       <canvas id="binStars" class="starfield" width="480" height="600" aria-hidden="true"></canvas>
       <span class="binring r1" aria-hidden="true"></span><span class="binring r2" aria-hidden="true"></span>
       <div class="binplay-content">
+        <p class="binintenttag" id="binIntentTag"></p>
         <p class="f1" id="binF1Lbl"></p>
         <p class="f2" id="binF2Lbl"></p>
         <p class="beat" id="binBeatLbl"></p>
@@ -781,7 +787,16 @@ var T={
  bin_beat:{fr:"Battement",en:"Beat",es:"Batido"},
  disc_bin:{fr:"Bien-être et relaxation — pas un usage médical. Le mode binaural nécessite un casque.",en:"Wellness and relaxation — not medical use. Binaural mode requires headphones.",es:"Bienestar y relajación — no es un uso médico. El modo binaural requiere auriculares."},
  bin_presets_label:{fr:"Ondes prédéfinies",en:"Preset waves",es:"Ondas predefinidas"},
- bin_pick_hint:{fr:"Choisis une onde — 🎧 casque recommandé",en:"Pick a wave — 🎧 headphones recommended",es:"Elige una onda — 🎧 auriculares recomendados"},
+ bin_tune_title:{fr:"Accorde ton cerveau",en:"Tune your brain",es:"Sintoniza tu mente"},
+ bin_pick_hint:{fr:"Choisis ton intention — 🎧 casque recommandé",en:"Choose your intent — 🎧 headphones recommended",es:"Elige tu intención — 🎧 auriculares recomendados"},
+ bin_int_sleep:{fr:"Sommeil",en:"Sleep",es:"Dormir"},
+ bin_int_sleep_d:{fr:"Sommeil profond et récupération",en:"Deep sleep for regeneration",es:"Sueño profundo y recuperación"},
+ bin_int_focus:{fr:"Concentration",en:"Focus",es:"Concentración"},
+ bin_int_focus_d:{fr:"Se concentrer et être productif",en:"Concentrate and be productive",es:"Concentrarse y ser productivo"},
+ bin_int_relax:{fr:"Détente",en:"Relax",es:"Relajarse"},
+ bin_int_relax_d:{fr:"Réduire le stress et l'anxiété",en:"Reduce stress and anxiety",es:"Reducir el estrés y la ansiedad"},
+ bin_int_meditate:{fr:"Méditation",en:"Meditate",es:"Meditar"},
+ bin_int_meditate_d:{fr:"Se recentrer et se ressourcer",en:"Recharge and recenter",es:"Recargar y reconectar"},
  bin_delta:{fr:"Delta",en:"Delta",es:"Delta"},
  bin_theta:{fr:"Thêta",en:"Theta",es:"Theta"},
  bin_alpha:{fr:"Alpha",en:"Alpha",es:"Alfa"},
@@ -997,6 +1012,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_bin:"Binaural", bin_step1:"Frequenz Nr. 1 eingeben", bin_step2:"Frequenz Nr. 2 eingeben",
    bin_f1:"Frequenz Nr. 1 :", bin_f2:"Frequenz Nr. 2 :", bin_maxgap:"Maximaler Abstand : 30 Hz",
    bin_err_title:"Fehler", bin_diff:"Eingegebene Differenz", bin_retry:"Erneut", bin_playing:"Binaural läuft", bin_beat:"Schwebung",
+   bin_tune_title:"Stimme dein Gehirn", bin_pick_hint:"Wähle deine Absicht — 🎧 Kopfhörer empfohlen",
+   bin_int_sleep:"Schlaf", bin_int_sleep_d:"Tiefschlaf zur Regeneration", bin_int_focus:"Fokus", bin_int_focus_d:"Konzentriert und produktiv",
+   bin_int_relax:"Entspannen", bin_int_relax_d:"Stress und Angst abbauen", bin_int_meditate:"Meditieren", bin_int_meditate_d:"Aufladen und zentrieren",
    disc_bin:"Wohlbefinden und Entspannung — keine medizinische Anwendung. Der Binaural-Modus erfordert Kopfhörer.",
    bin_presets_label:"Voreingestellte Wellen", bin_delta:"Delta", bin_theta:"Theta", bin_alpha:"Alpha", bin_beta:"Beta",
    home_eb_freq:"Frequenzen · das Herz", home_eb_sess:"Sitzungen", home_eb_expl:"Entdecken",
@@ -1035,6 +1053,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_bin:"Binaurale", bin_step1:"Inserisci la frequenza N.1", bin_step2:"Inserisci la frequenza N.2",
    bin_f1:"Frequenza N.1 :", bin_f2:"Frequenza N.2 :", bin_maxgap:"Differenza massima : 30 Hz",
    bin_err_title:"Errore", bin_diff:"Differenza inserita", bin_retry:"Riprova", bin_playing:"Binaurale in riproduzione", bin_beat:"Battimento",
+   bin_tune_title:"Sintonizza il cervello", bin_pick_hint:"Scegli la tua intenzione — 🎧 cuffie consigliate",
+   bin_int_sleep:"Sonno", bin_int_sleep_d:"Sonno profondo e recupero", bin_int_focus:"Concentrazione", bin_int_focus_d:"Concentrarsi ed essere produttivi",
+   bin_int_relax:"Relax", bin_int_relax_d:"Ridurre stress e ansia", bin_int_meditate:"Meditare", bin_int_meditate_d:"Ricaricarsi e ritrovarsi",
    disc_bin:"Benessere e relax — non è un uso medico. La modalità binaurale richiede le cuffie.",
    bin_presets_label:"Onde predefinite", bin_delta:"Delta", bin_theta:"Theta", bin_alpha:"Alpha", bin_beta:"Beta",
    home_eb_freq:"Frequenze · il cuore", home_eb_sess:"Sessioni", home_eb_expl:"Esplorazione",
@@ -1211,7 +1232,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("gReverbLabel").textContent=t("reverb_label");
     $("binMaxgap2").textContent=t("bin_maxgap");
     $("binErrTitle").textContent=t("bin_err_title"); $("binRetry").textContent=t("bin_retry"); $("binPlayTitle").textContent=t("bin_playing"); $("binStop").textContent=t("stop");
-    if($("binPresets")){ $("binStepTitle").textContent=t("home_bin"); $("binPickHint").textContent=t("bin_pick_hint"); renderBinPresets(); }
+    if($("binPresets")){ $("binStepTitle").textContent=t("bin_tune_title"); $("binPickHint").textContent=t("bin_pick_hint"); renderBinPresets(); }
     $("favAddMore").textContent=t("fav_add_more"); $("favPlaySel").textContent=t("fav_play_sel"); $("favNextCancel").textContent=t("fav_cancel");
     $("favRecapAdd").textContent=t("fav_add"); $("favRecapPlay").textContent=t("fav_play_now"); $("favRecapSave").textContent=t("fav_save_as_fav"); $("favRecapCancel").textContent=t("fav_cancel");
     $("favNameSave").textContent=t("fav_save"); $("favNameInput").placeholder=t("fav_name_ph");
@@ -1726,17 +1747,30 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("pPlay").addEventListener("click",function(){ unlockAudio(); if(pulse.playing)pulseStop(false); else pulseStart(); });
 
   // ================= BINAURAUX (façon boîtier) =================
-  var bin={step:1,f1:0,f2:0,kb:"",vol:0.5,playing:false,master:null,oscA:null,oscB:null};
-  function binReset(){ bin.step=1; bin.f1=0; bin.f2=0; bin.kb=""; }
-  function openBinInput(){ binStop(true); binReset(); returnTo="home"; $("binStepTitle").textContent=t("home_bin"); $("binPickHint").textContent=t("bin_pick_hint"); renderBinPresets(); show("binInput"); }
+  var bin={step:1,f1:0,f2:0,kb:"",vol:0.5,playing:false,master:null,oscA:null,oscB:null,intent:null};
+  function binReset(){ bin.step=1; bin.f1=0; bin.f2=0; bin.kb=""; bin.intent=null; }
+  function openBinInput(){ binStop(true); binReset(); returnTo="home"; $("binStepTitle").textContent=t("bin_tune_title"); $("binPickHint").textContent=t("bin_pick_hint"); renderBinPresets(); show("binInput"); }
   $("binBack").addEventListener("click",function(){ binStop(true); show("home"); });
 
-  var BIN_PRESETS=[{beat:2,band:"bin_delta"},{beat:4,band:"bin_theta"},{beat:6,band:"bin_theta"},{beat:8,band:"bin_alpha"},{beat:10,band:"bin_alpha"},{beat:14,band:"bin_beta"},{beat:18,band:"bin_beta"},{beat:20,band:"bin_beta"}];
-  var BIN_SYM={bin_delta:"Δ",bin_theta:"θ",bin_alpha:"α",bin_beta:"β"};
+  // Cartes d'intention (façon « Tune your brain ») — chaque intention = un battement + une bande cérébrale.
+  var BIN_ICON={
+    sleep:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 2a8.5 8.5 0 1 0 6.3 14.2 6.8 6.8 0 0 1-6.3-9.6A8.6 8.6 0 0 1 15.5 2z"/><path d="M18 3l.7 1.6L20.3 5l-1.6.7L18 7.3l-.7-1.6L15.7 5l1.6-.7z"/><path d="M20.5 8l.45 1.05L22 9.5l-1.05.45L20.5 11l-.45-1.05L19 9.5l1.05-.45z"/></svg>',
+    focus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="13" r="8.5"/><circle cx="11" cy="13" r="4.5"/><circle cx="11" cy="13" r="1.2" fill="currentColor" stroke="none"/><path d="M13.5 10.5l6-6"/><path d="M16.5 4h4v4"/></svg>',
+    relax:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8c2.4-3 4.8 3 7.2 0S15 5 17.4 8 21 8 21 8"/><path d="M3 13.5c2.4-3 4.8 3 7.2 0s2.4-3 4.8 0 3.6 0 3.6 0"/></svg>',
+    meditate:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5c1.7 2.4 1.7 5.6 0 9-1.7-3.4-1.7-6.6 0-9z"/><path d="M12 12.5c-2.3-1.3-4.7-1.4-7 0 1.2 3 4 4.5 7 4.5z" opacity=".92"/><path d="M12 12.5c2.3-1.3 4.7-1.4 7 0-1.2 3-4 4.5-7 4.5z" opacity=".92"/><path d="M6 8.5c-1.6 1-3 2.6-3.3 4.8 2.4.7 4.7 0 6.3-2z" opacity=".78"/><path d="M18 8.5c1.6 1 3 2.6 3.3 4.8-2.4.7-4.7 0-6.3-2z" opacity=".78"/></svg>'
+  };
+  var BIN_INTENTS=[
+    {key:"sleep",    beat:2,  band:"bin_delta", col:"#7fd8f0"},
+    {key:"focus",    beat:18, band:"bin_beta",  col:"#b98fe0"},
+    {key:"relax",    beat:10, band:"bin_alpha", col:"#6fb6e8"},
+    {key:"meditate", beat:6,  band:"bin_theta", col:"#c6a0ec"}
+  ];
   function renderBinPresets(){ var el=$("binPresets"); if(!el)return; el.innerHTML="";
-    BIN_PRESETS.forEach(function(p){ var b=document.createElement("button");
-      b.innerHTML="<b>"+p.beat+" Hz</b><span>"+BIN_SYM[p.band]+" "+t(p.band)+"</span>";
-      b.addEventListener("click",function(){ bin.f1=108-p.beat/2; bin.f2=108+p.beat/2; bin.kb=""; openBinPlay(); }); el.appendChild(b);
+    BIN_INTENTS.forEach(function(p){ var b=document.createElement("button");
+      b.innerHTML='<span class="bibadge" style="background:'+p.col+'22; color:'+p.col+'">'+BIN_ICON[p.key]+'</span>'+
+        '<span class="bititle">'+t("bin_int_"+p.key)+'<span class="chev">›</span></span>'+
+        '<span class="bidesc">'+t("bin_int_"+p.key+"_d")+'</span>';
+      b.addEventListener("click",function(){ bin.f1=108-p.beat/2; bin.f2=108+p.beat/2; bin.kb=""; bin.intent=p; openBinPlay(); }); el.appendChild(b);
     }); }
 
   function showBinError(){ $("binDiff").textContent=t("bin_diff")+" : "+Math.abs(bin.f1-bin.f2).toFixed(2)+" Hz"; show("binError"); }
@@ -1747,6 +1781,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     for(var i=0;i<80;i++){ var x=Math.random()*W,y=Math.random()*H,r=(i%3===0)?1.6:1;
       g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fillStyle=(i%4===0)?"rgba(127,216,240,.9)":"rgba(147,162,194,.7)"; g.fill(); } }
   function openBinPlay(){
+    if(bin.intent){ $("binPlayTitle").textContent=t("bin_int_"+bin.intent.key); $("binIntentTag").textContent=t("bin_int_"+bin.intent.key+"_d"); }
+    else { $("binPlayTitle").textContent=t("bin_playing"); $("binIntentTag").textContent=""; }
     $("binF1Lbl").textContent=t("bin_f1")+" "+bin.f1.toFixed(4)+" Hz";
     $("binF2Lbl").textContent=t("bin_f2")+" "+bin.f2.toFixed(4)+" Hz";
     $("binBeatLbl").textContent=t("bin_beat")+" : "+Math.abs(bin.f1-bin.f2).toFixed(2)+" Hz";
@@ -1961,6 +1997,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   applyLang(); show("home");
 })();
 </script>
+
 </body>
 </html>
-
