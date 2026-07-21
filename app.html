@@ -72,7 +72,7 @@
 
   .hhero,.hscard,.hxcard{position:relative; display:block; text-align:left; padding:0; overflow:hidden; cursor:pointer; color:var(--txt); font:inherit; border:1px solid var(--line); border-radius:20px; transition:transform .12s ease, box-shadow .22s ease, border-color .22s ease}
   .hhero > img,.hscard > img,.hxcard > img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
-  .hscrim{position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,13,28,.12) 0%, rgba(7,13,28,.4) 46%, rgba(5,7,15,.9) 100%)}
+  .hscrim{position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,13,28,.05) 0%, rgba(7,13,28,.18) 52%, rgba(5,7,15,.48) 100%)}
   .hhero:active,.hscard:active,.hxcard:active,.hmethod:active{transform:scale(.98)}
 
   .hring{position:absolute; border-radius:50%; border:2px solid rgba(255,255,255,.9); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#fff; font-weight:700; text-shadow:0 1px 10px rgba(0,0,0,.55); box-shadow:0 0 30px rgba(127,216,240,.5), inset 0 0 24px rgba(127,216,240,.2)}
@@ -81,24 +81,24 @@
   .hhero .hring{width:150px; height:150px; top:40px; left:50%; transform:translateX(-50%); font-size:1.6rem; font-variant-numeric:tabular-nums}
   .hhero .hring i{font-style:normal; font-size:.6rem; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.72); margin-top:3px}
   .hherobody{position:absolute; left:0; right:0; bottom:0; padding:16px 78px 16px 16px}
-  .htag{display:block; font-size:.62rem; letter-spacing:.13em; text-transform:uppercase; color:var(--cyan); font-weight:700; margin-bottom:6px}
-  .hh2{display:block; font-size:1.25rem; font-weight:700}
-  .hsub{display:block; font-size:.76rem; color:var(--dim); margin-top:3px}
+  .htag{display:block; font-size:.62rem; letter-spacing:.13em; text-transform:uppercase; color:var(--cyan); font-weight:700; margin-bottom:6px; text-shadow:0 1px 8px rgba(0,0,0,.75)}
+  .hh2{display:block; font-size:1.25rem; font-weight:700; text-shadow:0 1px 8px rgba(0,0,0,.8), 0 0 18px rgba(0,0,0,.5)}
+  .hsub{display:block; font-size:.76rem; color:#d7e0f2; margin-top:3px; text-shadow:0 1px 6px rgba(0,0,0,.8)}
   .hplay{position:absolute; right:16px; bottom:18px; width:48px; height:48px; border-radius:50%; background:var(--cyan); color:#04121a; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 8px 22px -6px rgba(127,216,240,.6)}
 
   .hsgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
   .hsgrid .hscard:nth-child(3):last-child{grid-column:1/-1}
   .hscard{height:150px}
   .hsbody{position:absolute; left:0; right:0; bottom:0; padding:10px 12px}
-  .hsbody b{display:block; font-size:.95rem; font-weight:700}
-  .hsbody i{display:block; font-style:normal; font-size:.68rem; color:var(--dim); margin-top:2px}
+  .hsbody b{display:block; font-size:.95rem; font-weight:700; text-shadow:0 1px 8px rgba(0,0,0,.85), 0 0 16px rgba(0,0,0,.5)}
+  .hsbody i{display:block; font-style:normal; font-size:.68rem; color:#d7e0f2; margin-top:2px; text-shadow:0 1px 6px rgba(0,0,0,.85)}
   .hstar{position:absolute; top:9px; right:11px; z-index:2; color:var(--gold); font-size:.9rem; text-shadow:0 1px 6px rgba(0,0,0,.6)}
 
   .hexplain{margin:0 2px 10px; font-size:.72rem; line-height:1.5; color:var(--dimmer)}
   .hxrail{display:flex; gap:10px; overflow-x:auto; padding:0 16px 6px; margin:0 -16px; scrollbar-width:none}
   .hxrail::-webkit-scrollbar{display:none}
   .hxcard{flex:0 0 auto; width:120px; height:145px; border-radius:16px; border-color:rgba(185,143,224,.2)}
-  .hxcard b{position:absolute; left:0; right:0; bottom:0; padding:9px 10px; font-size:.78rem; font-weight:700; z-index:2}
+  .hxcard b{position:absolute; left:0; right:0; bottom:0; padding:9px 10px; font-size:.78rem; font-weight:700; z-index:2; text-shadow:0 1px 8px rgba(0,0,0,.85), 0 0 16px rgba(0,0,0,.5)}
 
   .hmethod{display:flex; align-items:center; gap:12px; width:100%; margin-top:16px; padding:13px 14px; border:1px solid var(--line); border-radius:15px; background:linear-gradient(120deg, rgba(127,216,240,.08), rgba(17,26,51,.5)); color:var(--txt); font:inherit; cursor:pointer; text-align:left; transition:transform .12s ease}
   .hmic{flex:0 0 auto; width:34px; height:34px; border-radius:10px; background:rgba(127,216,240,.14); color:var(--cyan); display:flex; align-items:center; justify-content:center; font-size:1.05rem}
