@@ -214,12 +214,11 @@
   .keypad button{background:var(--pan); border:1px solid var(--line); color:var(--txt); font:inherit; font-size:1.25rem; font-weight:700; padding:8px 0; border-radius:10px; cursor:pointer}
   .keypad button:active{background:var(--pan2)}
   .keypad button.ok{grid-column:span 3; margin-top:2px; border:0; color:#04101f; font-size:1.05rem; font-weight:800; background:linear-gradient(96deg,var(--cyan),var(--mauve))}
-  .binpresets{display:grid; grid-template-columns:repeat(4,1fr); gap:7px}
-  .binpresets button{background:var(--pan); border:1px solid var(--line); border-radius:11px; padding:8px 2px; color:var(--txt); font:inherit; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:1px}
-  .binpresets button:active{background:var(--pan2)}
-  .binpresets button b{font-size:1.3rem; font-weight:700; color:var(--cyan)}
-  .binpresets button span{font-size:.7rem; font-weight:600}
-  .binpresets button small{font-size:.62rem; color:var(--dimmer); font-variant-numeric:tabular-nums}
+  .binpresets{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+  .binpresets button{background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:16px 8px; color:var(--txt); font:inherit; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; transition:transform .12s ease, border-color .12s ease, box-shadow .22s ease}
+  .binpresets button:active{background:var(--pan2); transform:scale(.97); border-color:rgba(127,216,240,.5); box-shadow:0 0 18px rgba(127,216,240,.22)}
+  .binpresets button b{font-size:1.6rem; font-weight:800; color:var(--cyan); font-variant-numeric:tabular-nums}
+  .binpresets button span{font-size:.84rem; font-weight:600; color:var(--dim)}
   .binerr{color:#e8836f; font-size:1.4rem; font-weight:800}
   .binerrsub{color:var(--dimmer); font-size:.9rem; margin-top:8px}
   .binplay{position:relative; align-items:center; justify-content:center}
@@ -482,25 +481,8 @@
   <section class="view" id="vBinInput">
     <div class="bar"><button class="backbtn" id="binBack" aria-label="Retour">‹</button><h2 id="binStepTitle">—</h2></div>
     <div class="player">
-      <div class="binpanel">
-        <div class="binrow"><p class="label" id="binLbl1"></p><p class="val" id="binVal1">—.— Hz</p></div>
-        <div class="binrow"><p class="label" id="binLbl2"></p><p class="val" id="binVal2">—.— Hz</p></div>
-        <p class="binhint" id="binMaxgap"></p>
-      </div>
-      <div class="keypad" id="binKeypad">
-        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
-        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
-        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
-        <button data-k=".">.</button><button data-k="0">0</button><button data-k="back">⌫</button>
-        <button class="ok" id="binOk">OK</button>
-      </div>
-      <p class="label" id="binPresetsLabel" style="margin:9px 0 6px"></p>
-      <div class="binpresets" id="binPresets">
-        <button data-p="delta"><b>Δ</b><span id="binPDelta"></span><small>107/109</small></button>
-        <button data-p="theta"><b>θ</b><span id="binPTheta"></span><small>105/111</small></button>
-        <button data-p="alpha"><b>α</b><span id="binPAlpha"></span><small>102/114</small></button>
-        <button data-p="beta"><b>β</b><span id="binPBeta"></span><small>99/117</small></button>
-      </div>
+      <p class="binhint" id="binPickHint" style="margin:8px 0 16px"></p>
+      <div class="binpresets" id="binPresets"></div>
     </div>
   </section>
 
@@ -796,6 +778,7 @@ var T={
  bin_beat:{fr:"Battement",en:"Beat",es:"Batido"},
  disc_bin:{fr:"Bien-être et relaxation — pas un usage médical. Le mode binaural nécessite un casque.",en:"Wellness and relaxation — not medical use. Binaural mode requires headphones.",es:"Bienestar y relajación — no es un uso médico. El modo binaural requiere auriculares."},
  bin_presets_label:{fr:"Ondes prédéfinies",en:"Preset waves",es:"Ondas predefinidas"},
+ bin_pick_hint:{fr:"Choisis une onde — 🎧 casque recommandé",en:"Pick a wave — 🎧 headphones recommended",es:"Elige una onda — 🎧 auriculares recomendados"},
  bin_delta:{fr:"Delta",en:"Delta",es:"Delta"},
  bin_theta:{fr:"Thêta",en:"Theta",es:"Theta"},
  bin_alpha:{fr:"Alpha",en:"Alpha",es:"Alfa"},
@@ -1222,10 +1205,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("gLoopOn").textContent=t("loop_inf"); $("gLoopOff").textContent=t("loop_once");
     $("gTempoLabel").textContent=t("tempo"); $("pTempoLabel").textContent=t("tempo"); $("gInstrLabel").textContent=t("instr_label");
     $("gReverbLabel").textContent=t("reverb_label");
-    $("binLbl1").textContent=t("bin_f1"); $("binLbl2").textContent=t("bin_f2"); $("binMaxgap").textContent=t("bin_maxgap"); $("binMaxgap2").textContent=t("bin_maxgap");
+    $("binMaxgap2").textContent=t("bin_maxgap");
     $("binErrTitle").textContent=t("bin_err_title"); $("binRetry").textContent=t("bin_retry"); $("binPlayTitle").textContent=t("bin_playing"); $("binStop").textContent=t("stop");
-    $("binPresetsLabel").textContent=t("bin_presets_label");
-    $("binPDelta").textContent=t("bin_delta"); $("binPTheta").textContent=t("bin_theta"); $("binPAlpha").textContent=t("bin_alpha"); $("binPBeta").textContent=t("bin_beta");
+    if($("binPresets")){ $("binStepTitle").textContent=t("home_bin"); $("binPickHint").textContent=t("bin_pick_hint"); renderBinPresets(); }
     $("favAddMore").textContent=t("fav_add_more"); $("favPlaySel").textContent=t("fav_play_sel"); $("favNextCancel").textContent=t("fav_cancel");
     $("favRecapAdd").textContent=t("fav_add"); $("favRecapPlay").textContent=t("fav_play_now"); $("favRecapSave").textContent=t("fav_save_as_fav"); $("favRecapCancel").textContent=t("fav_cancel");
     $("favNameSave").textContent=t("fav_save"); $("favNameInput").placeholder=t("fav_name_ph");
@@ -1234,7 +1216,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("setLangLbl").textContent=t("set_lang"); $("setVolLbl").textContent=t("set_vol");
     $("setAboutLbl").textContent=t("set_about"); $("setAbout").innerHTML=t("set_about_txt")+'<br><span style="color:var(--dimmer)">'+t("set_version")+' '+APP_VERSION+'</span>';
     setBtn(state.playing); gSetBtn(gp.playing); pulseSetBtn(pulse.playing); setSeqBtn(seq.playing);
-    renderLib(); renderProtos(); gRenderList(); buildInstr(); renderFavList(); renderBinInput();
+    renderLib(); renderProtos(); gRenderList(); buildInstr(); renderFavList();
   }
   function selectLang(code){ if(LANGS.indexOf(code)<0)return; lang=code; try{localStorage.setItem("auralis_lang",lang);}catch(e){} applyLang(); }
   function fillLangList(el){ if(!el)return; el.innerHTML=""; LANGS.forEach(function(code){
@@ -1722,32 +1704,19 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   // ================= BINAURAUX (façon boîtier) =================
   var bin={step:1,f1:0,f2:0,kb:"",vol:0.5,playing:false,master:null,oscA:null,oscB:null};
   function binReset(){ bin.step=1; bin.f1=0; bin.f2=0; bin.kb=""; }
-  function renderBinInput(){
-    $("binStepTitle").textContent = bin.step===1?t("bin_step1"):t("bin_step2");
-    $("binVal1").textContent=(bin.step===1?(bin.kb||"—.—"):bin.f1.toFixed(4))+" Hz";
-    $("binVal2").textContent=(bin.step===2?(bin.kb||"—.—"):(bin.f2>0?bin.f2.toFixed(4):"—.—"))+" Hz";
-  }
-  function openBinInput(){ binStop(true); binReset(); returnTo="home"; renderBinInput(); show("binInput"); }
-  function binDigit(d){ if(bin.kb.length>=9)return; if(d==="."&&bin.kb.indexOf(".")>=0)return; bin.kb+=d; renderBinInput(); }
-  function binBack(){ bin.kb=bin.kb.slice(0,-1); renderBinInput(); }
-  function binOk(){
-    var v=parseFloat(bin.kb); if(!bin.kb||isNaN(v)||v<=0)return;
-    if(bin.step===1){ bin.f1=v; bin.kb=""; bin.step=2; renderBinInput(); }
-    else{ bin.f2=v; if(Math.abs(bin.f1-bin.f2)>30){ showBinError(); } else{ openBinPlay(); } }
-  }
-  Array.prototype.forEach.call(document.querySelectorAll("#binKeypad button[data-k]"),function(b){
-    b.addEventListener("click",function(){ var k=b.getAttribute("data-k"); if(k==="back")binBack(); else binDigit(k); });
-  });
-  $("binOk").addEventListener("click",binOk);
+  function openBinInput(){ binStop(true); binReset(); returnTo="home"; $("binStepTitle").textContent=t("home_bin"); $("binPickHint").textContent=t("bin_pick_hint"); renderBinPresets(); show("binInput"); }
   $("binBack").addEventListener("click",function(){ binStop(true); show("home"); });
 
-  var BIN_PRESETS={delta:{f1:107,f2:109},theta:{f1:105,f2:111},alpha:{f1:102,f2:114},beta:{f1:99,f2:117}};
-  Array.prototype.forEach.call(document.querySelectorAll("#binPresets button[data-p]"),function(b){
-    b.addEventListener("click",function(){ var p=BIN_PRESETS[b.getAttribute("data-p")]; bin.f1=p.f1; bin.f2=p.f2; bin.kb=""; openBinPlay(); });
-  });
+  var BIN_PRESETS=[{beat:2,band:"bin_delta"},{beat:4,band:"bin_theta"},{beat:6,band:"bin_theta"},{beat:8,band:"bin_alpha"},{beat:10,band:"bin_alpha"},{beat:14,band:"bin_beta"},{beat:18,band:"bin_beta"},{beat:20,band:"bin_beta"}];
+  var BIN_SYM={bin_delta:"Δ",bin_theta:"θ",bin_alpha:"α",bin_beta:"β"};
+  function renderBinPresets(){ var el=$("binPresets"); if(!el)return; el.innerHTML="";
+    BIN_PRESETS.forEach(function(p){ var b=document.createElement("button");
+      b.innerHTML="<b>"+p.beat+" Hz</b><span>"+BIN_SYM[p.band]+" "+t(p.band)+"</span>";
+      b.addEventListener("click",function(){ bin.f1=108-p.beat/2; bin.f2=108+p.beat/2; bin.kb=""; openBinPlay(); }); el.appendChild(b);
+    }); }
 
   function showBinError(){ $("binDiff").textContent=t("bin_diff")+" : "+Math.abs(bin.f1-bin.f2).toFixed(2)+" Hz"; show("binError"); }
-  $("binRetry").addEventListener("click",function(){ binReset(); renderBinInput(); show("binInput"); });
+  $("binRetry").addEventListener("click",function(){ binReset(); renderBinPresets(); show("binInput"); });
   $("binErrBack").addEventListener("click",function(){ binReset(); show("home"); });
 
   function drawStars(cvId){ var c=$(cvId),g=c.getContext("2d"),W=c.width,H=c.height; g.clearRect(0,0,W,H);
