@@ -87,6 +87,7 @@
   .hplay{position:absolute; right:16px; bottom:18px; width:48px; height:48px; border-radius:50%; background:var(--cyan); color:#04121a; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 8px 22px -6px rgba(127,216,240,.6)}
 
   .hsgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .hsgrid .hscard:nth-child(3):last-child{grid-column:1/-1}
   .hscard{height:150px}
   .hsbody{position:absolute; left:0; right:0; bottom:0; padding:10px 12px}
   .hsbody b{display:block; font-size:.95rem; font-weight:700}
@@ -337,7 +338,6 @@
       <p class="heyebrow"><span class="het" id="hebSess">—</span><span class="hel"></span></p>
       <div class="hsgrid">
         <button class="hscard" data-go="protos"><img src="app-images/144.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
-        <button class="hscard" data-go="pulse"><img src="app-images/145.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hPulse">—</b><i id="hPulseSub">—</i></span></button>
         <button class="hscard" data-go="bin"><img src="app-images/146.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
         <button class="hscard" data-go="favList"><span class="hstar" aria-hidden="true">★</span><img src="app-images/147.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hFav">—</b><i id="hFavSub">—</i></span></button>
       </div>
@@ -1170,7 +1170,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-go]"),function(b){
     b.addEventListener("click",function(){ var g=b.getAttribute("data-go");
-      if(g==="pulse")openPulse(); else if(g==="bin")openBinInput(); else if(g==="favList"){ renderFavList(); show("favList"); } else show(g); });
+      if(g==="bin")openBinInput(); else if(g==="favList"){ renderFavList(); show("favList"); } else show(g); });
   });
   Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-gocat]"),function(b){
     b.addEventListener("click",function(){ openGeoCat(b.getAttribute("data-gocat")); });
@@ -1196,10 +1196,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("discSingle").textContent=t("disc_single"); $("discSeq").textContent=t("disc_seq"); $("discGeo").textContent=t("disc_geo"); $("discPulse").textContent=t("disc_pulse"); $("discBin").textContent=t("disc_bin");
     Array.prototype.forEach.call(fEl.children,function(b){ b.textContent=t("f_"+b.getAttribute("data-c")); });
     Array.prototype.forEach.call(gfEl.children,function(b){ b.textContent=t(b.getAttribute("data-l")); });
-    $("hFreq").textContent=t("tab_freq"); $("hProto").textContent=t("tab_proto"); $("hPulse").textContent=t("home_pulse"); $("hBin").textContent=t("home_bin"); $("hFav").textContent=t("fav_title");
+    $("hFreq").textContent=t("tab_freq"); $("hProto").textContent=t("tab_proto"); $("hBin").textContent=t("home_bin"); $("hFav").textContent=t("fav_title");
     $("hebFreq").textContent=t("home_eb_freq"); $("hebSess").textContent=t("home_eb_sess"); $("hebExpl").textContent=t("home_eb_expl");
     $("hHeroTag").textContent=t("home_hero_tag"); $("hHeroSub").textContent=t("home_hero_sub");
-    $("hProtoSub").textContent=t("home_sess_proto"); $("hPulseSub").textContent=t("home_sess_pulse"); $("hBinSub").textContent=t("home_sess_bin"); $("hFavSub").textContent=t("home_sess_fav");
+    $("hProtoSub").textContent=t("home_sess_proto"); $("hBinSub").textContent=t("home_sess_bin"); $("hFavSub").textContent=t("home_sess_fav");
     $("hExplNote").textContent=t("home_expl_note");
     $("hxSacred").textContent=t("geo_filter_sacred"); $("hxCrop").textContent=t("geo_filter_crop"); $("hxPlanet").textContent=t("geo_filter_planet"); $("hxColor").textContent=t("geo_filter_color"); $("hxFlocon").textContent=t("geo_filter_snowflake");
     $("hMethodT").textContent=t("home_method_t"); $("hMethodS").textContent=t("home_method_s");
@@ -1294,7 +1294,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     PROTOS.forEach(function(p,i){ var tot=p.s.reduce(function(a,x){return a+x.m;},0);
       var b=document.createElement("button"); b.className="pcard";
       b.innerHTML='<span class="pt"><b>'+pname(p)+'</b><span>'+p.s.length+' '+t("steps")+' · '+tot+' min</span></span><span class="go">›</span>';
-      b.addEventListener("click",function(){ openSeq(i,"protos"); }); el.appendChild(b); }); }
+      b.addEventListener("click",function(){ openSeq(i,"protos"); }); el.appendChild(b); });
+    var pb=document.createElement("button"); pb.className="pcard";
+    pb.innerHTML='<span class="pt"><b>'+t("pulse_base")+'</b><span>'+t("home_sess_pulse")+'</span></span><span class="go">›</span>';
+    pb.addEventListener("click",function(){ openPulse("protos"); }); el.appendChild(pb); }
   var seq={p:null,idx:0,protoIdx:null,remain:0,timer:null,master:null,osc:null,playing:false,total:0,elapsed:0};
   function openSeq(source, from){ stopSeq(true); returnTo=from||"protos";
     seq.p=(typeof source==="number")?PROTOS[source]:source; seq.protoIdx=(typeof source==="number")?source:null;
@@ -1960,3 +1963,4 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 </script>
 </body>
 </html>
+
