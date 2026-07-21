@@ -294,6 +294,23 @@
   .gnote b{display:block; font-size:.95rem; font-weight:800}
   .gratios{text-align:center; color:var(--gold); font-size:.8rem; font-variant-numeric:tabular-nums; margin:2px 0 0}
   .gsym{text-align:center; color:var(--dim); font-size:.78rem; margin:2px 0 6px}
+  /* Lecteur Géométrie compacté — tout sur un écran, sans scroll (n'affecte que #vGeoPlay) */
+  #vGeoPlay .player{padding:2px 20px 8px}
+  #vGeoPlay .stage{margin:2px 0}
+  #vGeoPlay .stage::before{width:150px; height:150px}
+  #vGeoPlay #gViz{width:140px; height:140px}
+  #vGeoPlay .gstagephoto{width:130px; height:130px}
+  #vGeoPlay .gnow .gn{font-size:1.5rem}
+  #vGeoPlay .gnow .gf{font-size:.72rem; margin-top:2px}
+  #vGeoPlay .gsym{margin:5px 0 1px}
+  #vGeoPlay .gratios{margin:0}
+  #vGeoPlay .grow{margin:8px 0 2px}
+  #vGeoPlay .gnote{padding:6px 5px; min-width:42px}
+  #vGeoPlay .filters{padding-bottom:6px}
+  #vGeoPlay .seg{margin:8px 0 8px}
+  #vGeoPlay .ctl{margin-bottom:6px}
+  #vGeoPlay .actions{margin-top:10px}
+  #vGeoPlay .disc{margin-top:8px; font-size:.62rem; line-height:1.35}
 
   .flashmsg{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); background:var(--pan2); border:1px solid var(--gold); color:var(--gold); font-size:.82rem; font-weight:600; padding:10px 18px; border-radius:12px; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:20; max-width:80%; text-align:center}
   .flashmsg.show{opacity:1; transform:translateX(-50%) translateY(0)}
@@ -439,7 +456,7 @@
       <p class="gsym" id="gSym"></p>
       <p class="gratios" id="gRatios"></p>
       <div class="grow" id="gRow"></div>
-      <p class="label" id="gInstrLabel" style="margin:10px 0 8px"></p>
+      <p class="label" id="gInstrLabel" style="margin:5px 0 4px"></p>
       <div class="filters" id="gInstr"></div>
       <div class="seg" role="group" aria-label="Boucle"><button id="gLoopOn" aria-pressed="true"></button><button id="gLoopOff" aria-pressed="false"></button></div>
       <div class="ctl"><div class="row"><span class="label" id="gTempoLabel"></span><span class="v" id="gDurLbl">72 bpm · 0.83 s</span></div><input type="range" id="gDur" min="50" max="120" step="1" value="72"></div>
