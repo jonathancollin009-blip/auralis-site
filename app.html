@@ -345,6 +345,7 @@
         <button class="hscard" data-go="protos"><img src="app-images/144.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
         <button class="hscard" data-go="bin"><img src="app-images/146.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
         <button class="hscard" data-go="favList"><span class="hstar" aria-hidden="true">★</span><img src="app-images/147.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hFav">—</b><i id="hFavSub">—</i></span></button>
+        <button class="hscard" data-go="mixbuild"><img src="app-images/148.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hMix">—</b><i id="hMixSub">—</i></span></button>
       </div>
 
       <p class="heyebrow mv"><span class="het" id="hebExpl">—</span><span class="hel"></span></p>
@@ -810,6 +811,9 @@ var T={
  home_sess_pulse:{fr:"Ancrage · au tempo",en:"Grounding · by tempo",es:"Anclaje · por tempo"},
  home_sess_bin:{fr:"Focus · casque requis",en:"Focus · headphones",es:"Enfoque · auriculares"},
  home_sess_fav:{fr:"Mes séquences",en:"My sequences",es:"Mis secuencias"},
+ home_mix:{fr:"Construis ta musique de méditation",en:"Build your meditation music",es:"Crea tu música de meditación"},
+ home_sess_mix:{fr:"Musique + fréquences · bientôt",en:"Music + frequencies · soon",es:"Música + frecuencias · pronto"},
+ mix_soon:{fr:"Bientôt disponible — en cours de création",en:"Coming soon — in the works",es:"Próximamente — en desarrollo"},
  home_expl_note:{fr:"Un espace contemplatif, distinct du cœur fréquences.",en:"A contemplative space, separate from the frequency core.",es:"Un espacio contemplativo, aparte del núcleo de frecuencias."},
  home_method_t:{fr:"La méthode",en:"The method",es:"El método"},
  home_method_s:{fr:"La logique derrière chaque fréquence",en:"The logic behind each frequency",es:"La lógica detrás de cada frecuencia"},
@@ -1004,6 +1008,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    fav_max_steps:"Maximal 8 Frequenzen pro Favorit", chain_btn:"🔗  Frequenzen verketten",
    chain_pick_title:"Frequenz wählen — Sequenz", chain_temp_name:"Eigene Sequenz",
    fav_play_now:"▶  Jetzt abspielen", fav_save_as_fav:"⭐  Als Favorit speichern", fav_no_slot:"Kein freier Favoritenplatz",
+   home_mix:"Erstelle deine Meditationsmusik", home_sess_mix:"Musik + Frequenzen · bald", mix_soon:"Bald verfügbar — in Arbeit",
    set_title:"Einstellungen", set_anim:"Umgebungsanimationen", set_anim_full:"Voll", set_anim_reduced:"Reduziert", set_anim_off:"Aus",
    set_lang:"Sprache", set_vol:"Standardlautstärke", set_about:"Über", set_version:"Version",
    geo_filter_crop:"Kornkreis", geo_filter_sacred:"Heilige Geometrie", geo_filter_snowflake:"Schneeflocke", geo_filter_color:"Farbe", geo_filter_planet:"Planet",
@@ -1045,6 +1050,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    fav_max_steps:"Massimo 8 frequenze per preferito", chain_btn:"🔗  Concatena frequenze",
    chain_pick_title:"Scegli una frequenza — Sequenza", chain_temp_name:"Sequenza personalizzata",
    fav_play_now:"▶  Riproduci ora", fav_save_as_fav:"⭐  Salva nei preferiti", fav_no_slot:"Nessuno slot preferito libero",
+   home_mix:"Crea la tua musica di meditazione", home_sess_mix:"Musica + frequenze · presto", mix_soon:"Presto disponibile — in lavorazione",
    set_title:"Impostazioni", set_anim:"Animazioni ambientali", set_anim_full:"Completo", set_anim_reduced:"Ridotto", set_anim_off:"Disattivato",
    set_lang:"Lingua", set_vol:"Volume predefinito", set_about:"Informazioni", set_version:"Versione",
    geo_filter_crop:"Cerchio nel grano", geo_filter_sacred:"Geometria sacra", geo_filter_snowflake:"Fiocco di neve", geo_filter_color:"Colore", geo_filter_planet:"Pianeta",
@@ -1191,7 +1197,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-go]"),function(b){
     b.addEventListener("click",function(){ var g=b.getAttribute("data-go");
-      if(g==="bin")openBinInput(); else if(g==="favList"){ renderFavList(); show("favList"); } else show(g); });
+      if(g==="bin")openBinInput(); else if(g==="favList"){ renderFavList(); show("favList"); } else if(g==="mixbuild"){ flashMsg(t("mix_soon")); } else show(g); });
   });
   Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-gocat]"),function(b){
     b.addEventListener("click",function(){ openGeoCat(b.getAttribute("data-gocat")); });
@@ -1221,6 +1227,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("hebFreq").textContent=t("home_eb_freq"); $("hebSess").textContent=t("home_eb_sess"); $("hebExpl").textContent=t("home_eb_expl");
     $("hHeroTag").textContent=t("home_hero_tag"); $("hHeroSub").textContent=t("home_hero_sub");
     $("hProtoSub").textContent=t("home_sess_proto"); $("hBinSub").textContent=t("home_sess_bin"); $("hFavSub").textContent=t("home_sess_fav");
+    $("hMix").textContent=t("home_mix"); $("hMixSub").textContent=t("home_sess_mix");
     $("hExplNote").textContent=t("home_expl_note");
     $("hxSacred").textContent=t("geo_filter_sacred"); $("hxCrop").textContent=t("geo_filter_crop"); $("hxPlanet").textContent=t("geo_filter_planet"); $("hxColor").textContent=t("geo_filter_color"); $("hxFlocon").textContent=t("geo_filter_snowflake");
     $("hMethodT").textContent=t("home_method_t"); $("hMethodS").textContent=t("home_method_s");
