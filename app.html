@@ -1487,8 +1487,12 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var arr=GEO.filter(function(fig){ return geoState.filter==="all"||fig.cat===geoState.filter; });
     if(!arr.length){ el.innerHTML='<p class="empty">'+t("geo_empty_cat")+'</p>'; return; }
     arr.forEach(function(fig){ var i=GEO.indexOf(fig); var b=document.createElement("button"); b.className="gtile";
-      var vis=fig.photo?('<img class="'+((fig.cat==="planet"||fig.cat==="color"||fig.cat==="sacred"||fig.cat==="snowflake")?"incolor":"")+'" src="app-images/'+fig.photo+'" alt="">'):('<span class="gtico">'+fig.ic+'</span>');
-      b.innerHTML='<span class="gtvis">'+vis+'</span><span class="gtname">'+tn(fig.name)+'</span>';
+      var isColor=fig.cat==="color"&&fig.color;
+      var vis, gtvisAttr="";
+      if(isColor){ gtvisAttr=' style="background:radial-gradient(circle at 50% 42%, '+fig.color+', '+fig.color+' 48%, rgba(0,0,0,.45))"'; vis=""; }
+      else if(fig.photo){ vis='<img class="'+((fig.cat==="planet"||fig.cat==="color"||fig.cat==="sacred"||fig.cat==="snowflake")?"incolor":"")+'" src="app-images/'+fig.photo+'" alt="">'; }
+      else { vis='<span class="gtico">'+fig.ic+'</span>'; }
+      b.innerHTML='<span class="gtvis"'+gtvisAttr+'>'+vis+'</span><span class="gtname">'+tn(fig.name)+'</span>';
       b.addEventListener("click",function(){ gOpen(i,"geo"); }); el.appendChild(b); }); }
   function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); } loadRealIR();
     $("gTitle").textContent=tn(gp.fig.name); $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=tn(gp.fig.ratios);
