@@ -325,7 +325,7 @@
 <canvas class="pbg" id="pbg" aria-hidden="true"></canvas>
 <div class="app">
   <section class="view on" id="vHome">
-    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><button class="iconbtn" id="setBtn" aria-label="Paramètres">⚙</button></div>
+    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><div class="langwrap"><button class="langbtn" id="langBtn" aria-label="Langue" aria-haspopup="listbox" aria-expanded="false">🌐</button><div class="langmenu" id="langMenu" role="listbox" hidden></div></div><button class="iconbtn" id="setBtn" aria-label="Paramètres">⚙</button></div>
     <div class="home in" id="homeScroll">
       <p class="heyebrow cy"><span class="het" id="hebFreq">—</span><span class="hel"></span></p>
       <button class="hhero" data-go="lib">
@@ -376,10 +376,6 @@
           <button data-v="reduced" id="setAnimReduced">—</button>
           <button data-v="off" id="setAnimOff">—</button>
         </div>
-      </div>
-      <div class="setsec">
-        <p class="setlbl" id="setLangLbl">—</p>
-        <div class="langlist" id="setLang"></div>
       </div>
       <div class="setsec">
         <p class="setlbl"><span id="setVolLbl">—</span> : <span id="setVolVal">50</span> %</p>
@@ -1214,7 +1210,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 
   // ---------- langue ----------
   function applyLang(){
-    fillLangList($("setLang"));
     $("search").placeholder=t("search_ph");
     $("manualBtn").textContent=t("manual_btn"); $("chainBtn").textContent=t("chain_btn");
     $("hzLabel").textContent=t("hz_label");
@@ -1245,7 +1240,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("favNameSave").textContent=t("fav_save"); $("favNameInput").placeholder=t("fav_name_ph");
     $("setTitle").textContent=t("set_title"); $("setAnimLbl").textContent=t("set_anim");
     $("setAnimFull").textContent=t("set_anim_full"); $("setAnimReduced").textContent=t("set_anim_reduced"); $("setAnimOff").textContent=t("set_anim_off");
-    $("setLangLbl").textContent=t("set_lang"); $("setVolLbl").textContent=t("set_vol");
+    $("setVolLbl").textContent=t("set_vol");
     $("setAboutLbl").textContent=t("set_about"); $("setAbout").innerHTML=t("set_about_txt")+'<br><span style="color:var(--dimmer)">'+t("set_version")+' '+APP_VERSION+'</span>';
     setBtn(state.playing); gSetBtn(gp.playing); pulseSetBtn(pulse.playing); setSeqBtn(seq.playing);
     renderLib(); renderProtos(); gRenderList(); buildInstr(); renderFavList();
@@ -1256,7 +1251,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     b.innerHTML="<span>"+LANG_NAMES[code]+"</span>"+(code===lang?'<span class="ck">✓</span>':"");
     b.addEventListener("click",function(){ selectLang(code); closeLangMenu(); }); el.appendChild(b);
   }); }
+  function openLangMenu(){ fillLangList($("langMenu")); $("langMenu").hidden=false; $("langBtn").setAttribute("aria-expanded","true"); }
   function closeLangMenu(){ var m=$("langMenu"); if(m)m.hidden=true; var b=$("langBtn"); if(b)b.setAttribute("aria-expanded","false"); }
+  $("langBtn").addEventListener("click",function(e){ e.stopPropagation(); if($("langMenu").hidden)openLangMenu(); else closeLangMenu(); });
+  document.addEventListener("click",function(e){ var w=document.querySelector(".langwrap"); if(w&&!w.contains(e.target))closeLangMenu(); });
 
   // ---------- bibliothèque ----------
   var fEl=$("filters");
@@ -1989,7 +1987,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     [["vol","volLbl"],["sVol","sVolLbl"],["gVol","gVolLbl"],["pVol","pVolLbl"],["binVol","binVolLbl"]].forEach(function(p){ var s=$(p[0]),l=$(p[1]); if(s)s.value=pct; if(l)l.textContent=pct; }); }
   function renderSettings(){
     Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.setAttribute("aria-pressed", b.getAttribute("data-v")===settings.anim?"true":"false"); });
-    fillLangList($("setLang"));
     $("setVol").value=settings.vol; $("setVolVal").textContent=settings.vol; }
   $("setBtn").addEventListener("click",function(){ show("settings"); renderSettings(); });
   $("setBack").addEventListener("click",function(){ show("home"); });
