@@ -1268,14 +1268,14 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("search").addEventListener("input",function(){ state.q=this.value.toLowerCase(); renderLib(); });
   function matches(m){ if(state.filter!=="Toutes"&&m.c!==state.filter)return false; if(state.q&&m.n.toLowerCase().indexOf(state.q)<0)return false; return true; }
   function catShort(c){ return c==="Huiles ess."?"Huiles":c; }
-  var LIBBG=["182.webp","183.webp","184.webp","185.webp","186.webp"];
+  var LIBBG={"Endogène":"184.webp","Phyto":"186.webp","Huiles ess.":"185.webp","Élément":"182.webp"};
   function renderLib(){
     var list=$("list"); list.innerHTML=""; var arr=LIB.filter(matches);
     $("count").textContent=arr.length+" / "+LIB.length;
     if(!arr.length){ list.innerHTML='<p class="empty">'+t("none_freq")+'</p>'; return; }
     arr.forEach(function(m,i){ var b=document.createElement("button"); b.className="item mol";
       var d=MOLDESC[m.n], descHtml=d?('<p class="desc">'+(d[lang]||d.fr)+'</p>'):'';
-      b.innerHTML='<div class="mhead"><span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span><span class="hz">'+m.f.toFixed(2)+' Hz</span></div>'+descHtml+'<img class="itembg" src="app-images/'+LIBBG[i%5]+'" alt="">';
+      b.innerHTML='<div class="mhead"><span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span><span class="hz">'+m.f.toFixed(2)+' Hz</span></div>'+descHtml+'<img class="itembg" src="app-images/'+(LIBBG[m.c]||"186.webp")+'" alt="">';
       b.addEventListener("click",function(){ if(favBuild)favPickFreq(m); else openPlayer(m,"lib"); }); list.appendChild(b); });
   }
   $("back").addEventListener("click",function(){ stopSingle(false); show(returnTo); });
