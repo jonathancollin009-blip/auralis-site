@@ -325,7 +325,7 @@
 <canvas class="pbg" id="pbg" aria-hidden="true"></canvas>
 <div class="app">
   <section class="view on" id="vHome">
-    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><div class="langwrap"><button class="langbtn" id="langBtn" aria-label="Langue" aria-haspopup="listbox" aria-expanded="false">🌐</button><div class="langmenu" id="langMenu" role="listbox" hidden></div></div><button class="iconbtn" id="setBtn" aria-label="Paramètres">⚙</button></div>
+    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><button class="iconbtn" id="setBtn" aria-label="Paramètres">⚙</button></div>
     <div class="home in" id="homeScroll">
       <p class="heyebrow cy"><span class="het" id="hebFreq">—</span><span class="hel"></span></p>
       <button class="hhero" data-go="lib">
@@ -1256,10 +1256,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     b.innerHTML="<span>"+LANG_NAMES[code]+"</span>"+(code===lang?'<span class="ck">✓</span>':"");
     b.addEventListener("click",function(){ selectLang(code); closeLangMenu(); }); el.appendChild(b);
   }); }
-  function openLangMenu(){ fillLangList($("langMenu")); $("langMenu").hidden=false; $("langBtn").setAttribute("aria-expanded","true"); }
   function closeLangMenu(){ var m=$("langMenu"); if(m)m.hidden=true; var b=$("langBtn"); if(b)b.setAttribute("aria-expanded","false"); }
-  $("langBtn").addEventListener("click",function(e){ e.stopPropagation(); if($("langMenu").hidden)openLangMenu(); else closeLangMenu(); });
-  document.addEventListener("click",function(e){ var w=document.querySelector(".langwrap"); if(w&&!w.contains(e.target))closeLangMenu(); });
 
   // ---------- bibliothèque ----------
   var fEl=$("filters");
