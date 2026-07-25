@@ -1,0 +1,6 @@
+# Fichiers a NE PAS servir comme assets statiques Cloudflare Workers.
+# La directory des assets = "." (racine du repo), donc sans ceci le dossier .git
+# (dont le packfile a depasse la limite de 25 Mio) est scanne et fait echouer le deploy.
+.git
+.gitignore
+.assetsignore
