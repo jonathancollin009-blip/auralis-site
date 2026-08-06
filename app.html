@@ -343,6 +343,14 @@
   .mixtrack input[type=range]::-webkit-slider-thumb{border-color:var(--tc)}
   .mixtrack input[type=range]::-moz-range-thumb{border-color:var(--tc)}
   .mixnote{font-size:.68rem; color:var(--dimmer); text-align:center; margin-top:14px; line-height:1.4}
+
+  /* ---- Photo agrandie + effet de vague (ecran de lecture geometrie) ---- */
+  #gWave{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; z-index:1; display:block; width:130px; height:130px; pointer-events:none}
+  #vGeoPlay .stage.photobig{--ph:min(30vh,64vw)}
+  #vGeoPlay .stage.photobig .gstagephoto,
+  #vGeoPlay .stage.photobig #gWave,
+  #vGeoPlay .stage.photobig #gViz{width:var(--ph); height:var(--ph)}
+  #vGeoPlay .stage.photobig::before{width:calc(var(--ph) + 20px); height:calc(var(--ph) + 20px)}
 </style>
 
 <div class="appbg" id="appbg" aria-hidden="true"></div>
@@ -477,7 +485,7 @@
   <section class="view" id="vGeoPlay">
     <div class="bar"><button class="backbtn" id="gBack" aria-label="Retour">‹</button><h2 id="gTitle">—</h2></div>
     <div class="player">
-      <div class="stage"><img class="gstagephoto" id="gPhoto" hidden alt=""><canvas id="gViz" width="400" height="400" aria-hidden="true"></canvas>
+      <div class="stage"><img class="gstagephoto" id="gPhoto" hidden alt=""><canvas id="gWave" hidden aria-hidden="true"></canvas><canvas id="gViz" width="400" height="400" aria-hidden="true"></canvas>
         <div class="gnow"><div class="gn" id="gNowN">—</div><div class="gf" id="gNowF"></div></div></div>
       <p class="gsym" id="gSym"></p>
       <p class="gratios" id="gRatios"></p>
@@ -1437,11 +1445,12 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); } loadRealIR();
     $("gTitle").textContent=tn(gp.fig.name); $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=tn(gp.fig.ratios);
     var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); $("gViz").style.visibility="visible"; }
+    if(ph.parentNode) ph.parentNode.classList.toggle("photobig", !!gp.fig.photo);
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+noteLabel(nn)+"</b>"; row.appendChild(d); });
     var n0=gp.fig.notes[0]; $("gNowN").textContent=noteLabel(n0); $("gNowF").textContent=noteFreq(n0).toFixed(2)+" Hz";
-    gUpdateModeUI(); gSetBtn(false); show("geoPlay"); }
-  $("gBack").addEventListener("click",function(){ gStop(false); show(returnTo); });
+    gUpdateModeUI(); gSetBtn(false); show("geoPlay"); gWaveStart(); }
+  $("gBack").addEventListener("click",function(){ gStop(false); gWaveStop(); show(returnTo); });
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
   $("gReverb").addEventListener("input",function(){ var v=parseInt(this.value,10); $("gReverbVal").textContent=v; gSetReverbAmt(v/100); });
   function gSetLoop(v){ gp.loop=v; $("gLoopOn").setAttribute("aria-pressed",v?"true":"false"); $("gLoopOff").setAttribute("aria-pressed",v?"false":"true"); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }
@@ -1938,6 +1947,68 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.addEventListener("click",function(){ settings.anim=b.getAttribute("data-v"); saveSettings(); if(Particles)Particles.setLevel(settings.anim); renderSettings(); }); });
   // sélecteur de langue des Réglages : peuplé par fillLangList (clics câblés à la création)
   $("setVol").addEventListener("input",function(){ settings.vol=parseInt(this.value,10); $("setVolVal").textContent=settings.vol; applyDefaultVolume(settings.vol); saveSettings(); });
+
+  /* ===== Effet « vague liquide » sur la photo de l'écran de lecture ===== */
+  /* Bandes horizontales décalées par deux sinus lents : l'onde traverse l'image
+     du haut vers le bas, comme vue à travers l'eau. Amplitude faible, cycle lent,
+     coupé si les animations sont réduites/désactivées (design system Auralis). */
+  var gwave={raf:0,on:false,ctx:null,off:null,A:0,W:0,H:0,t0:0};
+  function gWaveReduced(){
+    try{ return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; }
+  }
+  function gWaveStop(){
+    if(gwave.raf){ cancelAnimationFrame(gwave.raf); gwave.raf=0; }
+    gwave.on=false;
+    var cv=$("gWave"), img=$("gPhoto");
+    if(cv) cv.hidden=true;
+    if(img) img.style.visibility="";
+  }
+  function gWaveFrame(now){
+    if(!gwave.on) return;
+    if(settings.anim==="off"){ gWaveStop(); return; }
+    var ctx=gwave.ctx, off=gwave.off, A=gwave.A, W=gwave.W, H=gwave.H;
+    var t=(now-gwave.t0)/1000;
+    var soft=(settings.anim==="reduced")?0.45:1;      // niveau « réduit » = plus discret
+    var amp=A*soft, spd=soft;
+    var S=Math.max(2,Math.round(gwave.dpr*2));         // hauteur d'une bande
+    ctx.clearRect(0,0,W,H);
+    for(var y=0;y<H;y+=S){
+      var p=y/H, TAU=6.2831853;
+      var dx=amp*(0.62*Math.sin(p*TAU*1.5+t*0.52*spd)+0.38*Math.sin(p*TAU*2.9-t*0.31*spd));
+      var sh=Math.min(S,H-y);
+      ctx.drawImage(off, A-dx, A+y, W, sh, 0, y, W, sh);
+    }
+    gwave.raf=requestAnimationFrame(gWaveFrame);
+  }
+  function gWaveStart(){
+    var img=$("gPhoto"), cv=$("gWave");
+    if(!img||!cv||img.hidden||settings.anim==="off"||gWaveReduced()){ gWaveStop(); return; }
+    var build=function(){
+      if(!img.naturalWidth) return;
+      var r=img.getBoundingClientRect(), w=Math.round(r.width), hh=Math.round(r.height);
+      if(!w||!hh){ gWaveStop(); return; }
+      var dpr=Math.min(window.devicePixelRatio||1,2);
+      cv.style.width=w+"px"; cv.style.height=hh+"px";
+      cv.width=Math.round(w*dpr); cv.height=Math.round(hh*dpr);
+      var A=Math.max(3,Math.round(w*0.02))*dpr;        // ~2 % de la largeur : subtil
+      // tampon élargi de A de chaque côté : le décalage ne découvre jamais de vide
+      var off=document.createElement("canvas");
+      off.width=cv.width+2*A; off.height=cv.height+2*A;
+      off.getContext("2d").drawImage(img,0,0,off.width,off.height);
+      gwave.ctx=cv.getContext("2d"); gwave.off=off; gwave.A=A;
+      gwave.W=cv.width; gwave.H=cv.height; gwave.dpr=dpr;
+      gwave.t0=performance.now(); gwave.on=true;
+      img.style.visibility="hidden"; cv.hidden=false;
+      if(gwave.raf) cancelAnimationFrame(gwave.raf);
+      gwave.raf=requestAnimationFrame(gWaveFrame);
+    };
+    if(img.complete&&img.naturalWidth) build(); else img.addEventListener("load",build,{once:true});
+  }
+  window.addEventListener("resize",function(){ if(gwave.on){ gWaveStop(); gWaveStart(); } });
+  document.addEventListener("visibilitychange",function(){
+    if(document.hidden) gWaveStop();
+    else if(curView==="geoPlay") gWaveStart();
+  });
 
   /* ===== Construis ta musique de méditation (version d'essai) ===== */
   var MIXSOUNDS=[
