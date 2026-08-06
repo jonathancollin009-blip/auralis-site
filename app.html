@@ -1970,18 +1970,38 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var t=(now-gwave.t0)/1000;
     var soft=(settings.anim==="reduced")?0.5:1;       // niveau « réduit » = plus lent
     var spd=soft;
-    // L'image entière dérive lentement (comme Moongate) : ce sont les bandes
-    // ondulées de la photo qui, en défilant, donnent l'impression de vagues qui
-    // montent. Aucune déformation locale — un simple travelling très lent.
-    // Deux périodes premières entre elles -> le mouvement ne se répète jamais.
-    var TAU=6.2831853;
-    var mx=(off.width-W)/2, my=(off.height-H)/2;       // marge de débattement
-    var dx=mx*0.72*Math.sin(t*TAU/(14/spd));
-    var dy=my*0.80*Math.sin(t*TAU/(9/spd));            // + = le contenu monte
-    var br=1+0.010*Math.sin(t*TAU/(23/spd));           // respiration très lente
-    var zw=W/br, zh=H/br;
+    // « Living Image v1 » : l'image reste EN PLACE. Ce qui traverse, c'est une
+    // onde — réfraction de quelques pixels seulement — accompagnée d'une bande
+    // lumineuse qui rehausse luminosité/contraste sur son passage. C'est cette
+    // bande qui donne l'impression qu'une vague circule SOUS l'image.
+    var M=gwave.M, dpr=gwave.dpr;
+    var T=10/spd;                                      // cycle 8-12 s
+    var pos=1.25-((t%T)/T)*1.62;                       // la vague monte : bas -> haut
+    var wd=0.15;                                       // largeur ~30 %
+    var R=3*dpr;                                       // réfraction 3 px
+    var N=1.5*dpr;                                     // bruit organique 1,5 px
+    var S=Math.max(2,Math.round(dpr*2));
     ctx.clearRect(0,0,W,H);
-    ctx.drawImage(off, mx+dx+(W-zw)/2, my+dy+(H-zh)/2, zw, zh, 0, 0, W, H);
+    for(var y=0;y<H;y+=S){
+      var p=y/H, u=(p-pos)/wd;
+      // dérivée de gaussienne = réfraction (l'image se courbe au passage de l'onde)
+      var dy=R*1.65*u*Math.exp(-0.5*u*u);
+      // deux sinus de fréquences non harmoniques = flux organique permanent
+      var dx=N*(Math.sin(y*0.09/dpr+t*0.8*spd)+0.5*Math.sin(y*0.031/dpr-t*0.5*spd))/1.5;
+      var sh=Math.min(S,H-y);
+      ctx.drawImage(off, M+dx, M+y-dy, W, sh, 0, y, W, sh);
+    }
+    // bande lumineuse diagonale qui accompagne l'onde (+ luminosité, + contraste)
+    var yc=pos*H, sp=wd*H*1.9;
+    var g=ctx.createLinearGradient(W*0.2, yc+H*0.10-sp, W*0.8, yc-H*0.10+sp);
+    g.addColorStop(0,"rgba(255,255,255,0)");
+    g.addColorStop(0.5,"rgba(255,255,255,0.20)");
+    g.addColorStop(1,"rgba(255,255,255,0)");
+    ctx.globalCompositeOperation="soft-light";
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation="lighter";
+    ctx.globalAlpha=0.05; ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    ctx.globalAlpha=1; ctx.globalCompositeOperation="source-over";
     gwave.raf=requestAnimationFrame(gWaveFrame);
   }
   function gWaveStart(){
@@ -1994,13 +2014,13 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       var dpr=Math.min(window.devicePixelRatio||1,2);
       cv.style.width=w+"px"; cv.style.height=hh+"px";
       cv.width=Math.round(w*dpr); cv.height=Math.round(hh*dpr);
-      // Image dessinée 26 % plus grande : cette marge est le débattement de la
-      // dérive, si bien qu'aucun bord vide n'apparaît jamais.
-      var Z=1.26;
+      // Marge de quelques pixels autour de l'image : les déplacements de
+      // réfraction (2-4 px) ne découvrent ainsi jamais de bord vide.
+      var M=Math.round(10*dpr);
       var off=document.createElement("canvas");
-      off.width=Math.round(cv.width*Z); off.height=Math.round(cv.height*Z);
+      off.width=cv.width+2*M; off.height=cv.height+2*M;
       off.getContext("2d").drawImage(img,0,0,off.width,off.height);
-      gwave.ctx=cv.getContext("2d"); gwave.off=off;
+      gwave.ctx=cv.getContext("2d"); gwave.off=off; gwave.M=M;
       gwave.W=cv.width; gwave.H=cv.height; gwave.dpr=dpr;
       gwave.t0=performance.now(); gwave.on=true;
       img.style.visibility="hidden"; cv.hidden=false;
