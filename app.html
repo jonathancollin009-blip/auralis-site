@@ -1970,18 +1970,25 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var t=(now-gwave.t0)/1000;
     var soft=(settings.anim==="reduced")?0.45:1;      // niveau « réduit » = plus discret
     var amp=A*soft, spd=soft;
-    var S=Math.max(2,Math.round(gwave.dpr*2));         // largeur d'une bande
-    var TAU=6.2831853;
-    // respiration : zoom très lent superposé (~0,2 %/s, comme Moongate)
-    var br=1+0.012*Math.sin(t*0.28*spd);
+    var S=Math.max(2,Math.round(gwave.dpr*2));         // hauteur d'une bande
+    // Une houle localisée entre par le BAS et remonte vers le HAUT.
+    // Enveloppe = dérivée de gaussienne : une crête suivie d'un creux, comme un
+    // vrai rouleau qui traverse l'image (et non une ondulation uniforme partout).
+    var T=9/spd;                                       // durée d'un passage
+    var ph=(t%T)/T;
+    // course élargie (1.6 -> -0.6) : au moment où la houle boucle, son enveloppe
+    // est déjà quasi nulle hors cadre -> aucune couture visible à la répétition
+    var pos1=1.6-ph*2.2;
+    var pos2=1.6-((ph+0.5)%1)*2.2;                     // 2ᵉ houle décalée : train continu
+    var wd=0.20;                                       // largeur de la houle
+    var br=1+0.012*Math.sin(t*0.28*spd);               // respiration lente
     ctx.clearRect(0,0,W,H);
-    for(var x=0;x<W;x+=S){
-      var q=x/W;
-      // deux ondes de périodes différentes -> houle organique, jamais métronomique
-      var dy=amp*(0.62*Math.sin(q*TAU*1.3+t*1.55*spd)+0.38*Math.sin(q*TAU*2.6-t*1.02*spd));
-      var sw=Math.min(S,W-x);
-      var sh=H/br, sy=A+(H-sh)/2-dy, sx=A+x+(sw-sw/br)/2;
-      ctx.drawImage(off, sx, sy, sw/br, sh, x, 0, sw, H);
+    for(var y=0;y<H;y+=S){
+      var p=y/H, u=(p-pos1)/wd, u2=(p-pos2)/wd;
+      var dy=amp*1.65*(u*Math.exp(-0.5*u*u)+0.7*u2*Math.exp(-0.5*u2*u2));
+      var sh=Math.min(S,H-y);
+      var zh=sh/br, zw=W/br;
+      ctx.drawImage(off, A+(W-zw)/2, A+(y-dy)+(sh-zh)/2, zw, zh, 0, y, W, sh);
     }
     gwave.raf=requestAnimationFrame(gWaveFrame);
   }
