@@ -1966,30 +1966,22 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function gWaveFrame(now){
     if(!gwave.on) return;
     if(settings.anim==="off"){ gWaveStop(); return; }
-    var ctx=gwave.ctx, off=gwave.off, A=gwave.A, W=gwave.W, H=gwave.H;
+    var ctx=gwave.ctx, off=gwave.off, W=gwave.W, H=gwave.H;
     var t=(now-gwave.t0)/1000;
-    var soft=(settings.anim==="reduced")?0.45:1;      // niveau « réduit » = plus discret
-    var amp=A*soft, spd=soft;
-    var S=Math.max(2,Math.round(gwave.dpr*2));         // hauteur d'une bande
-    // Une houle localisée entre par le BAS et remonte vers le HAUT.
-    // Enveloppe = dérivée de gaussienne : une crête suivie d'un creux, comme un
-    // vrai rouleau qui traverse l'image (et non une ondulation uniforme partout).
-    var T=9/spd;                                       // durée d'un passage
-    var ph=(t%T)/T;
-    // course élargie (1.6 -> -0.6) : au moment où la houle boucle, son enveloppe
-    // est déjà quasi nulle hors cadre -> aucune couture visible à la répétition
-    var pos1=1.6-ph*2.2;
-    var pos2=1.6-((ph+0.5)%1)*2.2;                     // 2ᵉ houle décalée : train continu
-    var wd=0.20;                                       // largeur de la houle
-    var br=1+0.012*Math.sin(t*0.28*spd);               // respiration lente
+    var soft=(settings.anim==="reduced")?0.5:1;       // niveau « réduit » = plus lent
+    var spd=soft;
+    // L'image entière dérive lentement (comme Moongate) : ce sont les bandes
+    // ondulées de la photo qui, en défilant, donnent l'impression de vagues qui
+    // montent. Aucune déformation locale — un simple travelling très lent.
+    // Deux périodes premières entre elles -> le mouvement ne se répète jamais.
+    var TAU=6.2831853;
+    var mx=(off.width-W)/2, my=(off.height-H)/2;       // marge de débattement
+    var dx=mx*0.72*Math.sin(t*TAU/(14/spd));
+    var dy=my*0.80*Math.sin(t*TAU/(9/spd));            // + = le contenu monte
+    var br=1+0.010*Math.sin(t*TAU/(23/spd));           // respiration très lente
+    var zw=W/br, zh=H/br;
     ctx.clearRect(0,0,W,H);
-    for(var y=0;y<H;y+=S){
-      var p=y/H, u=(p-pos1)/wd, u2=(p-pos2)/wd;
-      var dy=amp*1.65*(u*Math.exp(-0.5*u*u)+0.7*u2*Math.exp(-0.5*u2*u2));
-      var sh=Math.min(S,H-y);
-      var zh=sh/br, zw=W/br;
-      ctx.drawImage(off, A+(W-zw)/2, A+(y-dy)+(sh-zh)/2, zw, zh, 0, y, W, sh);
-    }
+    ctx.drawImage(off, mx+dx+(W-zw)/2, my+dy+(H-zh)/2, zw, zh, 0, 0, W, H);
     gwave.raf=requestAnimationFrame(gWaveFrame);
   }
   function gWaveStart(){
@@ -2002,12 +1994,13 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       var dpr=Math.min(window.devicePixelRatio||1,2);
       cv.style.width=w+"px"; cv.style.height=hh+"px";
       cv.width=Math.round(w*dpr); cv.height=Math.round(hh*dpr);
-      var A=Math.max(5,Math.round(hh*0.035))*dpr;      // ~3,5 % de la hauteur (mesuré sur Moongate)
-      // tampon élargi de A de chaque côté : le décalage ne découvre jamais de vide
+      // Image dessinée 26 % plus grande : cette marge est le débattement de la
+      // dérive, si bien qu'aucun bord vide n'apparaît jamais.
+      var Z=1.26;
       var off=document.createElement("canvas");
-      off.width=cv.width+2*A; off.height=cv.height+2*A;
+      off.width=Math.round(cv.width*Z); off.height=Math.round(cv.height*Z);
       off.getContext("2d").drawImage(img,0,0,off.width,off.height);
-      gwave.ctx=cv.getContext("2d"); gwave.off=off; gwave.A=A;
+      gwave.ctx=cv.getContext("2d"); gwave.off=off;
       gwave.W=cv.width; gwave.H=cv.height; gwave.dpr=dpr;
       gwave.t0=performance.now(); gwave.on=true;
       img.style.visibility="hidden"; cv.hidden=false;
