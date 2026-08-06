@@ -1975,33 +1975,45 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     // lumineuse qui rehausse luminosité/contraste sur son passage. C'est cette
     // bande qui donne l'impression qu'une vague circule SOUS l'image.
     var M=gwave.M, dpr=gwave.dpr;
-    var T=10/spd;                                      // cycle 8-12 s
-    var pos=1.25-((t%T)/T)*1.62;                       // la vague monte : bas -> haut
+    var T=10/spd;                                      // durée de traversée (8-12 s)
+    // Une nouvelle vague démarre quand la précédente est à 90 % de son trajet :
+    // les deux se chevauchent brièvement, donc plus aucun temps mort ni « redémarrage ».
+    var Tp=T*0.9, n=Math.floor(t/Tp);
+    var pr1=(t-n*Tp)/T, pr2=(t-(n-1)*Tp)/T;
+    var waves=[1.25-pr1*1.62];
+    if(pr2<=1) waves.push(1.25-pr2*1.62);              // la précédente, encore en vue
     var wd=0.15;                                       // largeur ~30 %
     var R=3.6*dpr;                                     // réfraction 3,6 px (+20 %)
     var N=1.5*dpr;                                     // bruit organique 1,5 px
     var S=Math.max(2,Math.round(dpr*2));
     ctx.clearRect(0,0,W,H);
     for(var y=0;y<H;y+=S){
-      var p=y/H, u=(p-pos)/wd;
+      var p=y/H, dy=0;
       // dérivée de gaussienne = réfraction (l'image se courbe au passage de l'onde)
-      var dy=R*1.65*u*Math.exp(-0.5*u*u);
+      for(var wi=0;wi<waves.length;wi++){
+        var u=(p-waves[wi])/wd;
+        dy+=R*1.65*u*Math.exp(-0.5*u*u);
+      }
       // deux sinus de fréquences non harmoniques = flux organique permanent
       var dx=N*(Math.sin(y*0.09/dpr+t*0.8*spd)+0.5*Math.sin(y*0.031/dpr-t*0.5*spd))/1.5;
       var sh=Math.min(S,H-y);
       ctx.drawImage(off, M+dx, M+y-dy, W, sh, 0, y, W, sh);
     }
-    // bande lumineuse diagonale qui accompagne l'onde (+ luminosité, + contraste)
-    var yc=pos*H, sp=wd*H*1.9;
-    var g=ctx.createLinearGradient(W*0.2, yc+H*0.10-sp, W*0.8, yc-H*0.10+sp);
-    g.addColorStop(0,"rgba(255,255,255,0)");
-    g.addColorStop(0.5,"rgba(255,255,255,0.24)");
-    g.addColorStop(1,"rgba(255,255,255,0)");
-    ctx.globalCompositeOperation="soft-light";
-    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-    ctx.globalCompositeOperation="lighter";
-    ctx.globalAlpha=0.06; ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-    ctx.globalAlpha=1; ctx.globalCompositeOperation="source-over";
+    // bande lumineuse diagonale qui accompagne chaque onde (+ luminosité, + contraste)
+    var sp=wd*H*1.9;
+    for(var wi=0;wi<waves.length;wi++){
+      var yc=waves[wi]*H;
+      var g=ctx.createLinearGradient(W*0.2, yc+H*0.10-sp, W*0.8, yc-H*0.10+sp);
+      g.addColorStop(0,"rgba(255,255,255,0)");
+      g.addColorStop(0.5,"rgba(255,255,255,0.24)");
+      g.addColorStop(1,"rgba(255,255,255,0)");
+      ctx.globalCompositeOperation="soft-light";
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+      ctx.globalCompositeOperation="lighter";
+      ctx.globalAlpha=0.06; ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+      ctx.globalAlpha=1;
+    }
+    ctx.globalCompositeOperation="source-over";
     gwave.raf=requestAnimationFrame(gWaveFrame);
   }
   function gWaveStart(){
