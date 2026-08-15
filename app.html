@@ -24,6 +24,10 @@
     --onaccent:#071223;
     --veil:rgba(255,255,255,.06);
     --bgimg:url("app-images/bg.webp");
+    /* Indispensable : sans color-scheme, Android/Chrome applique son propre
+       assombrissement automatique (force-dark) quand le telephone est en
+       theme sombre, et le fond creme vire au gris-brun. */
+    color-scheme:dark;
   }
   :root[data-theme="light"]{
     --bg:#faf3ea; --pan:#fffdfa; --pan2:#fff8f0; --line:#e8dfd3; --line2:#d8ccbc;
@@ -36,6 +40,7 @@
     --onaccent:#ffffff;
     --veil:rgba(20,32,58,.05);
     --bgimg:url("app-images/bg-light.webp");
+    color-scheme:light;
   }
   /* Le voile du mode sombre assombrit l'image pour la lisibilite ; en clair
      l'image est deja pale, un voile aussi dense l'effacerait. */
