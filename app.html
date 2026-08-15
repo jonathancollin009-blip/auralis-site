@@ -17,14 +17,36 @@
     --cyan:#7fd8f0; --mauve:#b98fe0; --gold:#e9c96a;
     --txt:#e8edf8; --dim:#93a2c2; --dimmer:#63719a;
     --endo:#7fd8f0; --phyto:#8fe0a8; --he:#e6b866; --elem:#b98fe0;
+    /* derives du fond, pour les rgba() : voir --bg */
+    --bg-rgb:7,13,28;
+    --scrim:rgba(0,0,0,.85);
+    --shadow:rgba(0,0,0,.65);
+    --onaccent:#071223;
+    --veil:rgba(255,255,255,.06);
+    --bgimg:url("app-images/bg.webp");
   }
+  :root[data-theme="light"]{
+    --bg:#faf3ea; --pan:#fffdfa; --pan2:#fff8f0; --line:#e8dfd3; --line2:#d8ccbc;
+    --cyan:#3fa9be; --mauve:#a283c9; --gold:#c9a43f;
+    --txt:#14203a; --dim:#5a6880; --dimmer:#8b96ac;
+    --endo:#3fa9be; --phyto:#4aa86a; --he:#b8873a; --elem:#a283c9;
+    --bg-rgb:250,243,234;
+    --scrim:rgba(20,32,58,.5);
+    --shadow:rgba(120,100,80,.22);
+    --onaccent:#ffffff;
+    --veil:rgba(20,32,58,.05);
+    --bgimg:url("app-images/bg-light.webp");
+  }
+  /* Le voile du mode sombre assombrit l'image pour la lisibilite ; en clair
+     l'image est deja pale, un voile aussi dense l'effacerait. */
+  :root[data-theme="light"] .appbg::after{background:linear-gradient(180deg, rgba(var(--bg-rgb),.05), rgba(var(--bg-rgb),.12) 55%, rgba(var(--bg-rgb),.22))}
   *{box-sizing:border-box}
   html,body{margin:0; height:100%}
   body{background:var(--bg);
     color:var(--txt); font:16px/1.5 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; display:flex; justify-content:center}
-  .appbg{position:fixed; inset:0; z-index:0; background:var(--bg) url("app-images/bg.webp") center center / cover no-repeat; pointer-events:none; transition:opacity .6s ease}
+  .appbg{position:fixed; inset:0; z-index:0; background:var(--bg) var(--bgimg) center center / cover no-repeat; pointer-events:none; transition:opacity .6s ease}
   .appbg.off{opacity:0}
-  .appbg::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,13,28,.18), rgba(7,13,28,.3) 55%, rgba(7,13,28,.42))}
+  .appbg::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(var(--bg-rgb),.18), rgba(var(--bg-rgb),.3) 55%, rgba(var(--bg-rgb),.42))}
   .pbg{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
   .app{width:100%; max-width:520px; min-height:100%; display:flex; flex-direction:column; position:relative; z-index:1}
   .view{display:none; flex-direction:column; flex:1}
@@ -35,14 +57,14 @@
   @keyframes viewInBack{from{opacity:0; transform:translateX(-30px)} to{opacity:1; transform:none}}
 
   .bar{position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:12px; padding:16px 18px 12px;
-       background:linear-gradient(180deg,var(--bg),rgba(7,13,28,.86)); backdrop-filter:blur(8px)}
+       background:linear-gradient(180deg,var(--bg),rgba(var(--bg-rgb),.86)); backdrop-filter:blur(8px)}
   .bar .logo{font-size:1rem; font-weight:800; letter-spacing:.3em; margin:0}
   .bar .logo .a{color:var(--cyan)} .bar .logo .l{color:var(--mauve)}
   .bar .count{margin-left:auto; font-size:.74rem; color:var(--dimmer); font-variant-numeric:tabular-nums}
   .langwrap{position:relative; margin-left:auto}
   .langbtn{background:transparent; border:1px solid var(--mauve); color:var(--mauve); border-radius:50%; width:34px; height:34px; font-size:1.05rem; line-height:1; cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center}
   .langbtn:active{background:rgba(185,143,224,.15)}
-  .langmenu{position:absolute; top:calc(100% + 8px); right:0; z-index:40; min-width:168px; background:var(--pan2); border:1px solid var(--line2); border-radius:14px; padding:6px; box-shadow:0 14px 34px -8px rgba(0,0,0,.65); display:flex; flex-direction:column; gap:3px; animation:langIn .16s ease both}
+  .langmenu{position:absolute; top:calc(100% + 8px); right:0; z-index:40; min-width:168px; background:var(--pan2); border:1px solid var(--line2); border-radius:14px; padding:6px; box-shadow:0 14px 34px -8px var(--shadow); display:flex; flex-direction:column; gap:3px; animation:langIn .16s ease both}
   .langmenu[hidden]{display:none}
   @keyframes langIn{from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:none}}
   .langlist{display:flex; flex-direction:column; gap:7px}
@@ -353,11 +375,21 @@
   #vGeoPlay .stage.photobig::before{width:calc(var(--ph) + 20px); height:calc(var(--ph) + 20px)}
 </style>
 
+<script>
+/* Thème appliqué avant le premier rendu, sinon l'app clignote en sombre puis passe en clair. */
+(function(){
+  var t=null;
+  try{ var s=JSON.parse(localStorage.getItem("auralis_settings")||"{}"); if(s.theme==="light"||s.theme==="dark")t=s.theme; }catch(e){}
+  if(!t) t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";
+  document.documentElement.setAttribute("data-theme",t);
+})();
+</script>
+
 <div class="appbg" id="appbg" aria-hidden="true"></div>
 <canvas class="pbg" id="pbg" aria-hidden="true"></canvas>
 <div class="app">
   <section class="view on" id="vHome">
-    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><div class="langwrap"><button class="langbtn" id="langBtn" aria-label="Langue" aria-haspopup="listbox" aria-expanded="false">🌐</button><div class="langmenu" id="langMenu" role="listbox" hidden></div></div><button class="iconbtn" id="setBtn" aria-label="Paramètres">⚙</button></div>
+    <div class="bar"><p class="logo"><span class="a">AURA</span><span class="l">LIS</span></p><div class="langwrap"><button class="langbtn" id="langBtn" aria-label="Langue" aria-haspopup="listbox" aria-expanded="false">🌐</button><div class="langmenu" id="langMenu" role="listbox" hidden></div></div><button class="langbtn" id="themeBtn" aria-label="Thème clair ou sombre">☀</button><button class="iconbtn" id="setBtn" aria-label="Paramètres">⚙</button></div>
     <div class="home in" id="homeScroll">
       <p class="heyebrow cy"><span class="het" id="hebFreq">—</span><span class="hel"></span></p>
       <button class="hhero" data-go="lib">
@@ -374,20 +406,20 @@
 
       <p class="heyebrow"><span class="het" id="hebSess">—</span><span class="hel"></span></p>
       <div class="hsgrid">
-        <button class="hscard" data-go="protos"><img src="app-images/144.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
-        <button class="hscard" data-go="bin"><img src="app-images/146.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
-        <button class="hscard" data-go="favList"><span class="hstar" aria-hidden="true">★</span><img src="app-images/147.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hFav">—</b><i id="hFavSub">—</i></span></button>
+        <button class="hscard" data-go="protos"><img src="app-images/144.webp" data-light="221.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
+        <button class="hscard" data-go="bin"><img src="app-images/146.webp" data-light="222.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
+        <button class="hscard" data-go="favList"><span class="hstar" aria-hidden="true">★</span><img src="app-images/147.webp" data-light="223.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hFav">—</b><i id="hFavSub">—</i></span></button>
         <button class="hscard" data-go="mixbuild"><img src="app-images/148.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hMix">—</b><i id="hMixSub">—</i></span></button>
       </div>
 
       <p class="heyebrow mv"><span class="het" id="hebExpl">—</span><span class="hel"></span></p>
       <p class="hexplain" id="hExplNote">—</p>
       <div class="hxrail">
-        <button class="hxcard" data-gocat="sacred"><img src="app-images/141.webp" alt=""><span class="hscrim"></span><b id="hxSacred">—</b></button>
-        <button class="hxcard" data-gocat="crop"><img src="app-images/139.webp" alt=""><span class="hscrim"></span><b id="hxCrop">—</b></button>
-        <button class="hxcard" data-gocat="planet"><img src="app-images/163.webp" alt=""><span class="hscrim"></span><b id="hxPlanet">—</b></button>
+        <button class="hxcard" data-gocat="sacred"><img src="app-images/141.webp" data-light="224.webp" alt=""><span class="hscrim"></span><b id="hxSacred">—</b></button>
+        <button class="hxcard" data-gocat="crop"><img src="app-images/139.webp" data-light="225.webp" alt=""><span class="hscrim"></span><b id="hxCrop">—</b></button>
+        <button class="hxcard" data-gocat="planet"><img src="app-images/163.webp" data-light="226.webp" alt=""><span class="hscrim"></span><b id="hxPlanet">—</b></button>
         <button class="hxcard" data-gocat="color"><img src="app-images/166.webp" alt=""><span class="hscrim"></span><b id="hxColor">—</b></button>
-        <button class="hxcard" data-gocat="snowflake"><img src="app-images/stellaire.webp" alt=""><span class="hscrim"></span><b id="hxFlocon">—</b></button>
+        <button class="hxcard" data-gocat="snowflake"><img src="app-images/stellaire.webp" data-light="227.webp" alt=""><span class="hscrim"></span><b id="hxFlocon">—</b></button>
       </div>
 
       <button class="hmethod" id="hMethodBtn">
@@ -1110,9 +1142,32 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   var CATS=["Toutes","Endogène","Phyto","Huiles ess.","Élément"];
   var state={filter:"Toutes",q:"",cur:null,mode:"simple",beat:6,vol:0.5,playing:false,timerMin:0};
   var prefersReduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var settings={anim:(prefersReduce?"reduced":"full"), vol:50};
-  try{ var _rs=JSON.parse(localStorage.getItem("auralis_settings")||"{}"); if(_rs.anim)settings.anim=_rs.anim; if(typeof _rs.vol==="number")settings.vol=_rs.vol; }catch(e){}
+  var settings={anim:(prefersReduce?"reduced":"full"), vol:50, theme:null};
+  try{ var _rs=JSON.parse(localStorage.getItem("auralis_settings")||"{}"); if(_rs.anim)settings.anim=_rs.anim; if(typeof _rs.vol==="number")settings.vol=_rs.vol; if(_rs.theme==="light"||_rs.theme==="dark")settings.theme=_rs.theme; }catch(e){}
   function saveSettings(){ try{ localStorage.setItem("auralis_settings",JSON.stringify(settings)); }catch(e){} }
+
+  /* Theme : settings.theme null = suit le systeme ; "light"/"dark" = choix memorise */
+  var _sysLight=window.matchMedia?window.matchMedia("(prefers-color-scheme: light)"):null;
+  function curTheme(){ return settings.theme || ((_sysLight&&_sysLight.matches)?"light":"dark"); }
+  function applyTheme(){
+    var th=curTheme();
+    document.documentElement.setAttribute("data-theme",th);
+    var b=document.getElementById("themeBtn");
+    if(b){ b.textContent=(th==="light")?"☾":"☀"; b.setAttribute("aria-label",(th==="light")?"Passer au thème sombre":"Passer au thème clair"); }
+    /* Barre de statut du telephone : suit le theme. */
+    var mc=document.querySelector('meta[name="theme-color"]');
+    if(!mc){ mc=document.createElement("meta"); mc.setAttribute("name","theme-color"); document.head.appendChild(mc); }
+    mc.setAttribute("content",(th==="light")?"#faf3ea":"#070d1c");
+    /* Cartes d'accueil : les <img> porteuses d'un data-light basculent de fichier.
+       Le nom sombre d'origine est memorise dans data-dark au premier passage. */
+    var im=document.querySelectorAll("img[data-light]");
+    for(var i=0;i<im.length;i++){ var el=im[i];
+      if(!el.getAttribute("data-dark")) el.setAttribute("data-dark",(el.getAttribute("src")||"").replace("app-images/",""));
+      el.setAttribute("src","app-images/"+(th==="light"?el.getAttribute("data-light"):el.getAttribute("data-dark")));
+    }
+  }
+  function toggleTheme(){ settings.theme=(curTheme()==="light")?"dark":"light"; saveSettings(); applyTheme(); }
+  if(_sysLight&&_sysLight.addEventListener) _sysLight.addEventListener("change",function(){ if(!settings.theme)applyTheme(); });
   var APP_VERSION="1.1.0";
 
   var ctx=null;
@@ -1206,6 +1261,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function openLangMenu(){ fillLangList($("langMenu")); $("langMenu").hidden=false; $("langBtn").setAttribute("aria-expanded","true"); }
   function closeLangMenu(){ var m=$("langMenu"); if(m)m.hidden=true; var b=$("langBtn"); if(b)b.setAttribute("aria-expanded","false"); }
   $("langBtn").addEventListener("click",function(e){ e.stopPropagation(); if($("langMenu").hidden)openLangMenu(); else closeLangMenu(); });
+  $("themeBtn").addEventListener("click",function(e){ e.stopPropagation(); toggleTheme(); });
+  applyTheme();
   document.addEventListener("click",function(e){ var w=document.querySelector(".langwrap"); if(w&&!w.contains(e.target))closeLangMenu(); });
 
   // ---------- bibliothèque ----------
@@ -2166,6 +2223,3 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 })();
 </script>
 
-
-</body>
-</html>
