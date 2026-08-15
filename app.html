@@ -113,6 +113,9 @@
   .htag{display:block; font-size:.62rem; letter-spacing:.13em; text-transform:uppercase; color:var(--cyan); font-weight:700; margin-bottom:6px; text-shadow:0 1px 8px rgba(0,0,0,.75)}
   .hh2{display:block; font-size:1.25rem; font-weight:700; text-shadow:0 1px 8px rgba(0,0,0,.8), 0 0 18px rgba(0,0,0,.5)}
   .hsub{display:block; font-size:.76rem; color:#d7e0f2; margin-top:3px; text-shadow:0 1px 6px rgba(0,0,0,.8)}
+  /* Carte heros : tout le texte en blanc (l'eyebrow etait cyan, le sous-titre
+     bleu pale) — demande de Jonathan, meilleure lisibilite sur cette image. */
+  .hhero .htag, .hhero .hsub{color:#fff}
   .hplay{position:absolute; left:16px; bottom:18px; width:48px; height:48px; border-radius:50%; background:var(--cyan); color:#04121a; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 8px 22px -6px rgba(127,216,240,.6)}
 
   .hsgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
@@ -1254,7 +1257,11 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     Array.prototype.forEach.call(gfEl.children,function(b){ b.textContent=t(b.getAttribute("data-l")); });
     $("hFreq").textContent=t("tab_freq"); $("hProto").textContent=t("tab_proto"); $("hBin").textContent=t("home_bin"); $("hFav").textContent=t("fav_title");
     $("hebFreq").textContent=t("home_eb_freq"); $("hebSess").textContent=t("home_eb_sess"); $("hebExpl").textContent=t("home_eb_expl");
-    $("hHeroTag").textContent=t("home_hero_tag"); $("hHeroSub").textContent=t("home_hero_sub");
+    $("hHeroTag").textContent=t("home_hero_tag");
+    /* Sous-titre du heros = les 4 categories, composees a partir des libelles
+       deja traduits (f_*). Traduit dans les 9 langues sans nouvelle chaine, et
+       toujours aligne sur les puces de filtre si un libelle change. */
+    $("hHeroSub").textContent=[t("f_Endogène"),t("f_Phyto"),t("f_Huiles ess."),t("f_Élément")].join(" · ");
     $("hProtoSub").textContent=t("home_sess_proto"); $("hBinSub").textContent=t("home_sess_bin"); $("hFavSub").textContent=t("home_sess_fav");
     $("hMix").textContent=t("home_mix"); $("hMixSub").textContent=t("home_sess_mix");
     $("hExplNote").textContent=t("home_expl_note");
