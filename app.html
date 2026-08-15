@@ -107,11 +107,13 @@
   .hhero{height:300px; border-color:rgba(127,216,240,.22)}
   .hhero .hring{width:150px; height:150px; top:40px; left:50%; transform:translateX(-50%); font-size:1.6rem; font-variant-numeric:tabular-nums}
   .hhero .hring i{font-style:normal; font-size:.6rem; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.72); margin-top:3px}
-  .hherobody{position:absolute; left:0; right:0; bottom:0; padding:16px 78px 16px 16px}
+  /* Texte cale a DROITE depuis le retrait de l'anneau : le padding gauche
+     degage le bouton lecture, passe en bas a gauche. */
+  .hherobody{position:absolute; left:0; right:0; bottom:0; padding:16px 16px 16px 78px; text-align:right}
   .htag{display:block; font-size:.62rem; letter-spacing:.13em; text-transform:uppercase; color:var(--cyan); font-weight:700; margin-bottom:6px; text-shadow:0 1px 8px rgba(0,0,0,.75)}
   .hh2{display:block; font-size:1.25rem; font-weight:700; text-shadow:0 1px 8px rgba(0,0,0,.8), 0 0 18px rgba(0,0,0,.5)}
   .hsub{display:block; font-size:.76rem; color:#d7e0f2; margin-top:3px; text-shadow:0 1px 6px rgba(0,0,0,.8)}
-  .hplay{position:absolute; right:16px; bottom:18px; width:48px; height:48px; border-radius:50%; background:var(--cyan); color:#04121a; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 8px 22px -6px rgba(127,216,240,.6)}
+  .hplay{position:absolute; left:16px; bottom:18px; width:48px; height:48px; border-radius:50%; background:var(--cyan); color:#04121a; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 8px 22px -6px rgba(127,216,240,.6)}
 
   .hsgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
   .hsgrid .hscard:nth-child(3):last-child{grid-column:1/-1}
@@ -421,7 +423,6 @@
       <button class="hhero" data-go="lib">
         <img src="app-images/228.webp" alt="">
         <span class="hscrim"></span>
-        <span class="hring"><b id="hHeroHz">72.45</b><i>Magnésium</i></span>
         <span class="hherobody">
           <span class="htag" id="hHeroTag">—</span>
           <span class="hh2" id="hFreq">—</span>
