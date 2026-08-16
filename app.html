@@ -24,6 +24,7 @@
     --onaccent:#071223;
     --veil:rgba(255,255,255,.06);
     --bgimg:url("app-images/bg.webp");
+    --pagebg:#000000;
     /* Indispensable : sans color-scheme, Android/Chrome applique son propre
        assombrissement automatique (force-dark) quand le telephone est en
        theme sombre, et le fond creme vire au gris-brun. */
@@ -40,6 +41,7 @@
     --onaccent:#ffffff;
     --veil:rgba(20,32,58,.05);
     --bgimg:url("app-images/bg-light.webp");
+    --pagebg:#f7f6f2;
     color-scheme:light;
   }
   /* Le voile du mode sombre assombrit l'image pour la lisibilite ; en clair
@@ -51,6 +53,12 @@
     color:var(--txt); font:16px/1.5 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; display:flex; justify-content:center}
   .appbg{position:fixed; inset:0; z-index:0; background:var(--bg) var(--bgimg) center center / cover no-repeat; pointer-events:none; transition:opacity .6s ease}
   .appbg.off{opacity:0}
+  /* Page Frequences : aplat uni au lieu du fond ondule. Les 136 cartes sont
+     elles-memes des photos, un fond charge derriere les rendait bruyantes.
+     Sombre = vantablack (#000), clair = blanc casse (voir --pagebg). */
+  body[data-view="lib"] .appbg{background-image:none; background-color:var(--pagebg)}
+  body[data-view="lib"] .appbg::after{display:none}
+  body[data-view="lib"]{background:var(--pagebg)}
   .appbg::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(var(--bg-rgb),.18), rgba(var(--bg-rgb),.3) 55%, rgba(var(--bg-rgb),.42))}
   .pbg{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
   .app{width:100%; max-width:520px; min-height:100%; display:flex; flex-direction:column; position:relative; z-index:1}
@@ -1275,7 +1283,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     if(v==="home"){ animHomeCards(); }
     else { var back=(NAV_LEVEL[v]||0)<(NAV_LEVEL[curView]||0);
       var el=$("v"+cap(v)); if(el){ el.classList.remove("nav-fwd","nav-back"); void el.offsetWidth; el.classList.add(back?"nav-back":"nav-fwd"); } }
-    curView=v; }
+    curView=v;
+    /* Expose la vue courante au CSS : permet de neutraliser le fond d ecran
+       anime sur certaines pages (la liste Frequences veut un aplat uni). */
+    document.body.setAttribute("data-view",v); }
   function animHomeCards(){ var g=$("homeScroll"); if(!g)return; g.classList.remove("in"); void g.offsetWidth; g.classList.add("in"); }
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-go]"),function(b){
