@@ -179,7 +179,11 @@
   .search:focus{outline:none; border-color:var(--cyan)}
   .search::-webkit-search-cancel-button{display:none}
   .search::placeholder{color:var(--dimmer)} .search:focus{outline:none; border-color:var(--cyan)}
-  .filters{display:flex; gap:8px; overflow-x:auto; padding-bottom:12px; scrollbar-width:none}
+  /* Passage en 2 lignes plutot qu en defilement horizontal : la barre de
+     defilement etait masquee (scrollbar-width:none), donc rien n indiquait que
+     "Huile essentielle" et "Element" existaient. Meme probleme sur la page
+     Geometrie, qui a 6 filtres. */
+  .filters{display:flex; flex-wrap:wrap; gap:8px; padding-bottom:12px}
   .filters::-webkit-scrollbar{display:none}
   .filters button{flex:0 0 auto; background:var(--pan); border:1px solid var(--line); color:var(--dim); font:inherit; font-size:.82rem; padding:7px 13px; border-radius:20px; cursor:pointer; white-space:nowrap}
   .filters button[aria-pressed="true"]{background:rgba(127,216,240,.13); border-color:var(--cyan); color:var(--cyan)}
