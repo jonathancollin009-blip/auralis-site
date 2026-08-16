@@ -257,6 +257,16 @@
   .item.mol .mhead{display:flex; align-items:center; gap:12px; width:100%}
   .item.mol .desc{margin:2px 0 0; padding-left:21px; font-size:.8rem; font-weight:400; color:#fff; line-height:1.45; white-space:normal; position:relative; z-index:2; text-shadow:0 1px 4px rgba(0,0,0,.95), 0 0 10px rgba(0,0,0,.55)}
   .item.mol .itembg{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0}
+  /* Une meme photo etalee sur plusieurs cartes : l image est agrandie a la
+     hauteur du bloc complet (cartes + gouttieres de 9px) puis remontee, chaque
+     carte n en laissant voir que sa tranche. Les 100% de top se referent a la
+     hauteur de la carte (98px), donc -100% - 9px = une carte plus la gouttiere. */
+  .item.mol .itembg.sl{bottom:auto}
+  .item.mol .itembg.sl3{height:calc(300% + 18px)}
+  .item.mol .itembg.sl3-1{top:calc(-100% - 9px)}
+  .item.mol .itembg.sl3-2{top:calc(-200% - 18px)}
+  .item.mol .itembg.sl2{height:calc(200% + 9px)}
+  .item.mol .itembg.sl2-1{top:calc(-100% - 9px)}
   .item.mol::before{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,13,28,.18), rgba(5,7,15,.34)); z-index:1}
   .item.mol .mhead{position:relative; z-index:2}
   .item.mol .nm{color:#fff; text-shadow:0 1px 4px rgba(0,0,0,.95), 0 0 10px rgba(0,0,0,.6)}
@@ -1377,14 +1387,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("searchClear").addEventListener("click",function(){ var s=$("search"); s.value=""; state.q=""; this.hidden=true; renderLib(); s.focus(); });
   function matches(m){ if(state.filter!=="Toutes"&&m.c!==state.filter)return false; if(state.q&&m.n.toLowerCase().indexOf(state.q)<0)return false; return true; }
   function catShort(c){ return c==="Huiles ess."?"Huiles":c; }
-  /* Fond des molecules sans photo propre : un jeu d images qui tourne, propre
-     a la categorie quand elle en a un, sinon le jeu par defaut. Chaque
-     categorie a son propre compteur, donc la rotation reste reguliere meme
-     quand les categories sont melangees a l affichage. */
-  var LIBALT={
-    "Élément":["287.webp","285.webp","282.webp","281.webp","280.webp"],
-    "_default":["272.webp","274.webp"]
-  };
+  /* Fond des molecules sans photo propre : 4 grandes images verticales, chacune
+     etalee sur 3 cartes qui se suivent (1er tiers, 2e, 3e). */
+  var SLICEBG=["293.webp","288.webp","289.webp","292.webp"];
   /* Photo propre a une molecule. Les autres retombent sur l'image de categorie
      ci-dessus. Cle = nom exact dans LIB. */
   var LIBIMG={
@@ -1398,6 +1403,33 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     "Pipérine":"261.webp","Échinacoside":"262.webp",
     "L-Théanine":"263.webp","Cayenne":"264.webp"
   };
+  /* Repartition des fonds. Une molecule avec sa photo propre coupe la serie :
+     on decoupe donc la liste en suites de cartes sans photo, et chaque suite
+     est remplie par blocs de 3 (reste de 2 = image sur 2 moities, reste de 1 =
+     image entiere) pour ne jamais laisser un tiers orphelin. Un changement de
+     categorie coupe aussi, l en-tete de section separant les cartes. */
+  function planBg(arr){
+    var plan=new Array(arr.length), gi=0, run=[], lastC=null;
+    function flush(){
+      var i=0;
+      while(i<run.length){
+        var left=run.length-i;
+        /* 4 restants -> 2+2 : mieux vaut deux moities qu un tiers tout seul */
+        var n=left>=3?(left===4?2:3):left;
+        var img=SLICEBG[gi++%SLICEBG.length];
+        for(var k=0;k<n;k++) plan[run[i+k]]={img:img,n:n,k:k};
+        i+=n;
+      }
+      run=[];
+    }
+    arr.forEach(function(m,i){
+      if(m.c!==lastC){ lastC=m.c; flush(); }
+      if(LIBIMG[m.n]){ flush(); plan[i]={img:LIBIMG[m.n],n:1,k:0}; }
+      else run.push(i);
+    });
+    flush();
+    return plan;
+  }
   function renderLib(){
     var list=$("list"); list.innerHTML="";
     /* LIB n est PAS groupe par categorie (les categories reviennent par blocs :
@@ -1411,7 +1443,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     });
     $("count").textContent=arr.length+" / "+LIB.length;
     if(!arr.length){ list.innerHTML='<p class="empty">'+t("none_freq")+'</p>'; return; }
-    var lastCat=null, altN={};
+    var bgPlan=planBg(arr);
+    var lastCat=null;
     arr.forEach(function(m,i){
       /* En-tete de section : LIB est deja groupe par categorie, il suffit de
          detecter le changement. Masque quand un filtre unique est actif, le
@@ -1423,17 +1456,11 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
           list.appendChild(hd);
         }
       }
-      /* Le compteur n avance que sur les cartes sans photo propre, sinon une
-         photo personnalisee decalerait la rotation. */
-      var bg=LIBIMG[m.n];
-      if(!bg){
-        var set=LIBALT[m.c]||LIBALT._default;
-        var k=(altN[m.c]=(altN[m.c]||0)+1)-1;
-        bg=set[k%set.length];
-      }
+      var p=bgPlan[i];
+      var bgCls="itembg"+(p.n>1?" sl sl"+p.n+" sl"+p.n+"-"+p.k:"");
       var b=document.createElement("button"); b.className="item mol";
       var descHtml='';
-      b.innerHTML='<div class="mhead"><span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span><span class="hz">'+m.f.toFixed(2)+' Hz</span></div>'+descHtml+'<img class="itembg" loading="lazy" decoding="async" src="app-images/'+bg+'" alt="">';
+      b.innerHTML='<div class="mhead"><span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span><span class="hz">'+m.f.toFixed(2)+' Hz</span></div>'+descHtml+'<img class="'+bgCls+'" loading="lazy" decoding="async" src="app-images/'+p.img+'" alt="">';
       b.addEventListener("click",function(){ if(favBuild)favPickFreq(m); else openPlayer(m,"lib"); }); list.appendChild(b); });
   }
   $("back").addEventListener("click",function(){ stopSingle(false); show(returnTo); });
