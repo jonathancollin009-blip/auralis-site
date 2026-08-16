@@ -80,6 +80,16 @@
   .langmenu .langopt:active{background:var(--pan)}
   .langopt .ck{margin-left:auto; color:var(--cyan); font-weight:700}
   .backbtn{background:var(--pan); border:1px solid var(--line); color:var(--cyan); font:inherit; font-size:1.1rem; width:40px; height:40px; border-radius:11px; cursor:pointer; flex:0 0 auto}
+  /* Bandeau image en tete de la liste Frequences : l image du heros sert de fond
+     a la barre. Le voile garantit la lisibilite du titre et du compteur, quel
+     que soit le theme (l image est sombre dans les deux cas). */
+  .libbar{position:relative; overflow:hidden; padding-top:22px; padding-bottom:26px;
+    background:var(--bg) url("app-images/228.webp") center 38% / cover no-repeat; backdrop-filter:none}
+  .libbar::before{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(4,8,18,.58), rgba(4,8,18,.34) 45%, rgba(4,8,18,.72)); z-index:0}
+  .libbar > *{position:relative; z-index:1}
+  .libbar h2{color:#fff; font-size:1.15rem; text-shadow:0 1px 10px rgba(0,0,0,.8)}
+  .libbar .count{color:var(--cyan); font-weight:700; font-size:.8rem; text-shadow:0 1px 8px rgba(0,0,0,.9)}
+  .libbar .backbtn{background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.28); color:#fff; border-radius:50%; backdrop-filter:blur(4px)}
   .bar h2{font-size:1rem; font-weight:700; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
   .home{flex:1; display:flex; flex-direction:column; padding:2px 16px 22px; overflow-y:auto; -webkit-overflow-scrolling:touch}
@@ -159,12 +169,28 @@
   .hmar{color:var(--cyan); font-size:1.1rem}
 
   .pad{padding:0 18px}
-  .search{width:100%; background:var(--pan); border:1px solid var(--line); border-radius:12px; color:var(--txt); font:inherit; font-size:.95rem; padding:12px 14px; margin-bottom:12px}
+  /* La loupe et le bouton d effacement sont poses par-dessus le champ ; le
+     padding interne du champ leur reserve la place. */
+  .searchwrap{position:relative; margin-bottom:12px}
+  .searchwrap .searchicon{position:absolute; left:14px; top:50%; transform:translateY(-50%); width:18px; height:18px; color:var(--dimmer); pointer-events:none; z-index:1}
+  .searchclear{position:absolute; right:8px; top:50%; transform:translateY(-50%); width:28px; height:28px; border-radius:50%; border:0; background:var(--line); color:var(--txt); font:inherit; font-size:1rem; line-height:1; cursor:pointer; z-index:1; display:flex; align-items:center; justify-content:center}
+  .searchclear[hidden]{display:none}
+  .search{width:100%; background:var(--pan); border:1px solid var(--line); border-radius:26px; color:var(--txt); font:inherit; font-size:.95rem; padding:13px 44px 13px 42px; margin:0}
+  .search:focus{outline:none; border-color:var(--cyan)}
+  .search::-webkit-search-cancel-button{display:none}
   .search::placeholder{color:var(--dimmer)} .search:focus{outline:none; border-color:var(--cyan)}
   .filters{display:flex; gap:8px; overflow-x:auto; padding-bottom:12px; scrollbar-width:none}
   .filters::-webkit-scrollbar{display:none}
   .filters button{flex:0 0 auto; background:var(--pan); border:1px solid var(--line); color:var(--dim); font:inherit; font-size:.82rem; padding:7px 13px; border-radius:20px; cursor:pointer; white-space:nowrap}
   .filters button[aria-pressed="true"]{background:rgba(127,216,240,.13); border-color:var(--cyan); color:var(--cyan)}
+  .lsec{display:flex; align-items:center; gap:8px; margin:16px 0 9px; color:var(--cyan); font-size:.72rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase}
+  .lsec:first-child{margin-top:2px}
+  .lsec .lsecicon{width:14px; height:14px; flex:0 0 auto}
+  .lsec .lsecline{flex:1; height:1px; background:currentColor; opacity:.3}
+  .lsec.Endogène{color:var(--endo)}
+  .lsec.Phyto{color:var(--phyto)}
+  .lsec.Huiles{color:var(--he)}
+  .lsec.Élément{color:var(--elem)}
   .fbtn{display:inline-flex; align-items:center; gap:6px; padding:8px 14px 8px 10px}
   .fbtn .ficon{width:15px; height:15px; flex:0 0 auto}
   .fbtn[data-c="Phyto"][aria-pressed="true"]{background:rgba(143,224,168,.14); border-color:var(--phyto); color:var(--phyto)}
@@ -502,9 +528,13 @@
   </section>
 
   <section class="view" id="vLib">
-    <div class="bar"><button class="backbtn" id="libBack" aria-label="Retour">‹</button><h2 id="libTitle">—</h2><span class="count" id="count"></span></div>
+    <div class="bar libbar"><button class="backbtn" id="libBack" aria-label="Retour">‹</button><h2 id="libTitle">—</h2><span class="count" id="count"></span></div>
     <div class="pad">
-      <input class="search" id="search" type="search" aria-label="Rechercher">
+      <div class="searchwrap">
+        <svg class="searchicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+        <input class="search" id="search" type="search" aria-label="Rechercher">
+        <button class="searchclear" id="searchClear" type="button" aria-label="Effacer" hidden>×</button>
+      </div>
       <div class="filters" id="filters"></div>
       <div class="actrow">
         <button class="actbtn" id="manualBtn"><span class="acticon">⌨</span><span class="actlabel"></span><span class="actarrow">›</span></button>
@@ -1328,7 +1358,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   CATS.forEach(function(c){ var b=document.createElement("button"); b.className="fbtn"; b.setAttribute("data-c",c); b.setAttribute("aria-pressed",c===state.filter?"true":"false");
     b.innerHTML='<svg class="ficon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+CAT_ICON[c]+'</svg><span class="flabel"></span>';
     b.addEventListener("click",function(){ state.filter=c; Array.prototype.forEach.call(fEl.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-c")===c?"true":"false");}); renderLib(); }); fEl.appendChild(b); });
-  $("search").addEventListener("input",function(){ state.q=this.value.toLowerCase(); renderLib(); });
+  $("search").addEventListener("input",function(){ state.q=this.value.toLowerCase(); $("searchClear").hidden=!this.value; renderLib(); });
+  $("searchClear").addEventListener("click",function(){ var s=$("search"); s.value=""; state.q=""; this.hidden=true; renderLib(); s.focus(); });
   function matches(m){ if(state.filter!=="Toutes"&&m.c!==state.filter)return false; if(state.q&&m.n.toLowerCase().indexOf(state.q)<0)return false; return true; }
   function catShort(c){ return c==="Huiles ess."?"Huiles":c; }
   var LIBBG={"Endogène":"184.webp","Phyto":"186.webp","Huiles ess.":"185.webp","Élément":"182.webp"};
@@ -1348,7 +1379,19 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var list=$("list"); list.innerHTML=""; var arr=LIB.filter(matches);
     $("count").textContent=arr.length+" / "+LIB.length;
     if(!arr.length){ list.innerHTML='<p class="empty">'+t("none_freq")+'</p>'; return; }
-    arr.forEach(function(m,i){ var b=document.createElement("button"); b.className="item mol";
+    var lastCat=null;
+    arr.forEach(function(m,i){
+      /* En-tete de section : LIB est deja groupe par categorie, il suffit de
+         detecter le changement. Masque quand un filtre unique est actif, le
+         titre ferait doublon avec la pastille allumee. */
+      if(m.c!==lastCat){ lastCat=m.c;
+        if(state.filter==="Toutes"){
+          var hd=document.createElement("div"); hd.className="lsec "+catShort(m.c);
+          hd.innerHTML='<svg class="lsecicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(CAT_ICON[m.c]||"")+'</svg><span>'+t("f_"+m.c)+'</span><i class="lsecline"></i>';
+          list.appendChild(hd);
+        }
+      }
+      var b=document.createElement("button"); b.className="item mol";
       var descHtml='';
       b.innerHTML='<div class="mhead"><span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span><span class="hz">'+m.f.toFixed(2)+' Hz</span></div>'+descHtml+'<img class="itembg" loading="lazy" decoding="async" src="app-images/'+(LIBIMG[m.n]||LIBBG[m.c]||"186.webp")+'" alt="">';
       b.addEventListener("click",function(){ if(favBuild)favPickFreq(m); else openPlayer(m,"lib"); }); list.appendChild(b); });
