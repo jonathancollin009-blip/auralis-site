@@ -21,7 +21,7 @@
     --bg-rgb:7,13,28;
     /* accents en composantes, pour les filets et halos colores */
     --cyan-rgb:127,216,240; --mauve-rgb:185,143,224;
-    --glow:.26;   /* opacite du halo autour d un contour mis en valeur */
+    --glow:.39;   /* opacite du halo autour d un contour mis en valeur */
     --scrim:rgba(0,0,0,.85);
     --shadow:rgba(0,0,0,.65);
     --onaccent:#071223;
@@ -41,7 +41,7 @@
     --bg-rgb:250,243,234;
     --cyan-rgb:63,169,190; --mauve-rgb:162,131,201;
     /* halo plus discret en clair : une lueur sur fond pale se lit comme un flou */
-    --glow:.10;
+    --glow:.15;
     --scrim:rgba(20,32,58,.5);
     --shadow:rgba(120,100,80,.22);
     --onaccent:#ffffff;
@@ -199,10 +199,10 @@
      masquerait le degrade : c est le halo qui reagit. */
   .search{border-color:transparent;
     background:linear-gradient(var(--pan),var(--pan)) padding-box,
-               linear-gradient(115deg, rgba(var(--cyan-rgb),1), rgba(var(--cyan-rgb),.38) 48%, rgba(var(--cyan-rgb),.9)) border-box;
-    box-shadow:0 0 20px rgba(var(--cyan-rgb),var(--glow));
+               linear-gradient(115deg, rgba(var(--cyan-rgb),1), rgba(var(--cyan-rgb),.57) 48%, rgba(var(--cyan-rgb),1)) border-box;
+    box-shadow:0 0 30px rgba(var(--cyan-rgb),var(--glow));
     transition:box-shadow .22s ease}
-  .search:focus{outline:none; box-shadow:0 0 22px rgba(var(--cyan-rgb),calc(var(--glow) + .14))}
+  .search:focus{outline:none; box-shadow:0 0 33px rgba(var(--cyan-rgb),calc(var(--glow) + .21))}
   /* Passage en 2 lignes plutot qu en defilement horizontal : la barre de
      defilement etait masquee (scrollbar-width:none), donc rien n indiquait que
      "Huile essentielle" et "Element" existaient. Meme probleme sur la page
@@ -233,15 +233,15 @@
      l action : cyan pour la saisie manuelle, mauve pour l enchainement. */
   .actbtn{border-color:transparent;
     background:linear-gradient(var(--pan),var(--pan)) padding-box,
-               linear-gradient(135deg, rgba(var(--cyan-rgb),1), rgba(var(--cyan-rgb),.35) 52%, rgba(var(--cyan-rgb),.9)) border-box;
-    box-shadow:0 0 20px rgba(var(--cyan-rgb),var(--glow));
+               linear-gradient(135deg, rgba(var(--cyan-rgb),1), rgba(var(--cyan-rgb),.52) 52%, rgba(var(--cyan-rgb),1)) border-box;
+    box-shadow:0 0 30px rgba(var(--cyan-rgb),var(--glow));
     transition:box-shadow .22s ease, transform .12s ease}
   .actbtn:nth-child(2){
     background:linear-gradient(var(--pan),var(--pan)) padding-box,
-               linear-gradient(135deg, rgba(var(--mauve-rgb),1), rgba(var(--mauve-rgb),.35) 52%, rgba(var(--mauve-rgb),.9)) border-box;
-    box-shadow:0 0 20px rgba(var(--mauve-rgb),var(--glow))}
-  .actbtn:active{transform:scale(.98); box-shadow:0 0 24px rgba(var(--cyan-rgb),calc(var(--glow) + .14))}
-  .actbtn:nth-child(2):active{box-shadow:0 0 24px rgba(var(--mauve-rgb),calc(var(--glow) + .14))}
+               linear-gradient(135deg, rgba(var(--mauve-rgb),1), rgba(var(--mauve-rgb),.52) 52%, rgba(var(--mauve-rgb),1)) border-box;
+    box-shadow:0 0 30px rgba(var(--mauve-rgb),var(--glow))}
+  .actbtn:active{transform:scale(.98); box-shadow:0 0 36px rgba(var(--cyan-rgb),calc(var(--glow) + .21))}
+  .actbtn:nth-child(2):active{box-shadow:0 0 36px rgba(var(--mauve-rgb),calc(var(--glow) + .21))}
   .actbtn .acticon{flex:0 0 auto; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; background:rgba(127,216,240,.14); color:var(--cyan)}
   .actbtn:nth-child(2) .acticon{background:rgba(185,143,224,.14); color:var(--mauve)}
   .actbtn .actlabel{flex:1; font-size:.82rem; font-weight:600; line-height:1.3}
