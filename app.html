@@ -1376,7 +1376,16 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     "Pipérine":"261.webp","Échinacoside":"262.webp"
   };
   function renderLib(){
-    var list=$("list"); list.innerHTML=""; var arr=LIB.filter(matches);
+    var list=$("list"); list.innerHTML="";
+    /* LIB n est PAS groupe par categorie (les categories reviennent par blocs :
+       des entrees ont ete ajoutees au fil du temps a la fin). On regroupe donc
+       ici, sinon un meme en-tete de section apparaitrait plusieurs fois.
+       Tri : ordre de CATS, puis alphabetique dans chaque categorie. */
+    var arr=LIB.filter(matches).slice().sort(function(a,b){
+      var ca=CATS.indexOf(a.c), cb=CATS.indexOf(b.c);
+      if(ca!==cb) return ca-cb;
+      return a.n.localeCompare(b.n,"fr");
+    });
     $("count").textContent=arr.length+" / "+LIB.length;
     if(!arr.length){ list.innerHTML='<p class="empty">'+t("none_freq")+'</p>'; return; }
     var lastCat=null;
