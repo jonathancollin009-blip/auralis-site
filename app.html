@@ -19,6 +19,9 @@
     --endo:#7fd8f0; --phyto:#8fe0a8; --he:#e6b866; --elem:#b98fe0;
     /* derives du fond, pour les rgba() : voir --bg */
     --bg-rgb:7,13,28;
+    /* accents en composantes, pour les filets et halos colores */
+    --cyan-rgb:127,216,240; --mauve-rgb:185,143,224;
+    --glow:.26;   /* opacite du halo autour d un contour mis en valeur */
     --scrim:rgba(0,0,0,.85);
     --shadow:rgba(0,0,0,.65);
     --onaccent:#071223;
@@ -36,6 +39,9 @@
     --txt:#14203a; --dim:#5a6880; --dimmer:#8b96ac;
     --endo:#3fa9be; --phyto:#4aa86a; --he:#b8873a; --elem:#a283c9;
     --bg-rgb:250,243,234;
+    --cyan-rgb:63,169,190; --mauve-rgb:162,131,201;
+    /* halo plus discret en clair : une lueur sur fond pale se lit comme un flou */
+    --glow:.10;
     --scrim:rgba(20,32,58,.5);
     --shadow:rgba(120,100,80,.22);
     --onaccent:#ffffff;
@@ -184,9 +190,19 @@
   .searchclear{position:absolute; right:8px; top:50%; transform:translateY(-50%); width:28px; height:28px; border-radius:50%; border:0; background:var(--line); color:var(--txt); font:inherit; font-size:1rem; line-height:1; cursor:pointer; z-index:1; display:flex; align-items:center; justify-content:center}
   .searchclear[hidden]{display:none}
   .search{width:100%; background:var(--pan); border:1px solid var(--line); border-radius:26px; color:var(--txt); font:inherit; font-size:.95rem; padding:13px 44px 13px 42px; margin:0}
-  .search:focus{outline:none; border-color:var(--cyan)}
   .search::-webkit-search-cancel-button{display:none}
-  .search::placeholder{color:var(--dimmer)} .search:focus{outline:none; border-color:var(--cyan)}
+  .search::placeholder{color:var(--dimmer)}
+  /* Contour mis en valeur : filet colore en degrade + halo diffus. Le degrade
+     de bordure demande deux fonds superposes — le fond plein s arrete au
+     padding-box, le degrade occupe la border-box et n est visible que la ou la
+     bordure est transparente. Donc pas de border-color au focus, elle
+     masquerait le degrade : c est le halo qui reagit. */
+  .search{border-color:transparent;
+    background:linear-gradient(var(--pan),var(--pan)) padding-box,
+               linear-gradient(115deg, rgba(var(--cyan-rgb),1), rgba(var(--cyan-rgb),.38) 48%, rgba(var(--cyan-rgb),.9)) border-box;
+    box-shadow:0 0 20px rgba(var(--cyan-rgb),var(--glow));
+    transition:box-shadow .22s ease}
+  .search:focus{outline:none; box-shadow:0 0 22px rgba(var(--cyan-rgb),calc(var(--glow) + .14))}
   /* Passage en 2 lignes plutot qu en defilement horizontal : la barre de
      defilement etait masquee (scrollbar-width:none), donc rien n indiquait que
      "Huile essentielle" et "Element" existaient. Meme probleme sur la page
@@ -213,7 +229,19 @@
   .manualbtn{width:100%; background:var(--pan); border:1px dashed var(--line2); color:var(--cyan); font:inherit; font-size:.9rem; font-weight:600; padding:12px; border-radius:12px; cursor:pointer; margin-bottom:12px}
   .actrow{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px}
   .actbtn{display:flex; align-items:center; gap:10px; width:100%; background:var(--pan); border:1px solid var(--line2); color:var(--txt); font:inherit; text-align:left; padding:12px 10px; border-radius:16px; cursor:pointer}
-  .actbtn:active{transform:scale(.98)}
+  /* Meme filet en degrade que la barre de recherche, dans la couleur de
+     l action : cyan pour la saisie manuelle, mauve pour l enchainement. */
+  .actbtn{border-color:transparent;
+    background:linear-gradient(var(--pan),var(--pan)) padding-box,
+               linear-gradient(135deg, rgba(var(--cyan-rgb),1), rgba(var(--cyan-rgb),.35) 52%, rgba(var(--cyan-rgb),.9)) border-box;
+    box-shadow:0 0 20px rgba(var(--cyan-rgb),var(--glow));
+    transition:box-shadow .22s ease, transform .12s ease}
+  .actbtn:nth-child(2){
+    background:linear-gradient(var(--pan),var(--pan)) padding-box,
+               linear-gradient(135deg, rgba(var(--mauve-rgb),1), rgba(var(--mauve-rgb),.35) 52%, rgba(var(--mauve-rgb),.9)) border-box;
+    box-shadow:0 0 20px rgba(var(--mauve-rgb),var(--glow))}
+  .actbtn:active{transform:scale(.98); box-shadow:0 0 24px rgba(var(--cyan-rgb),calc(var(--glow) + .14))}
+  .actbtn:nth-child(2):active{box-shadow:0 0 24px rgba(var(--mauve-rgb),calc(var(--glow) + .14))}
   .actbtn .acticon{flex:0 0 auto; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; background:rgba(127,216,240,.14); color:var(--cyan)}
   .actbtn:nth-child(2) .acticon{background:rgba(185,143,224,.14); color:var(--mauve)}
   .actbtn .actlabel{flex:1; font-size:.82rem; font-weight:600; line-height:1.3}
