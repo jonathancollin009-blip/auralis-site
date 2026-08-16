@@ -1332,13 +1332,25 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function matches(m){ if(state.filter!=="Toutes"&&m.c!==state.filter)return false; if(state.q&&m.n.toLowerCase().indexOf(state.q)<0)return false; return true; }
   function catShort(c){ return c==="Huiles ess."?"Huiles":c; }
   var LIBBG={"Endogène":"184.webp","Phyto":"186.webp","Huiles ess.":"185.webp","Élément":"182.webp"};
+  /* Photo propre a une molecule. Les autres retombent sur l'image de categorie
+     ci-dessus. Cle = nom exact dans LIB. */
+  var LIBIMG={
+    "Curcumine":"240.webp","Resvératrol":"241.webp","Caféine":"242.webp",
+    "Théobromine":"243.webp","EGCG":"244.webp","Quercétine":"245.webp",
+    "Berbérine":"246.webp","Chlorophylle":"247.webp","Igname":"248.webp",
+    "Angélique":"249.webp","Coriandre":"250.webp","Pamplemousse":"251.webp",
+    "Huile de ricin":"252.webp","Ginsénoside Rg1":"253.webp","Ginkgolide A":"254.webp",
+    "Astragaloside IV":"255.webp","Withaférine A":"256.webp","Salidroside":"257.webp",
+    "Bacoside A3":"258.webp","Vinpocétine":"259.webp","Sulforaphane":"260.webp",
+    "Pipérine":"261.webp","Échinacoside":"262.webp"
+  };
   function renderLib(){
     var list=$("list"); list.innerHTML=""; var arr=LIB.filter(matches);
     $("count").textContent=arr.length+" / "+LIB.length;
     if(!arr.length){ list.innerHTML='<p class="empty">'+t("none_freq")+'</p>'; return; }
     arr.forEach(function(m,i){ var b=document.createElement("button"); b.className="item mol";
       var descHtml='';
-      b.innerHTML='<div class="mhead"><span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span><span class="hz">'+m.f.toFixed(2)+' Hz</span></div>'+descHtml+'<img class="itembg" src="app-images/'+(LIBBG[m.c]||"186.webp")+'" alt="">';
+      b.innerHTML='<div class="mhead"><span class="dot '+catShort(m.c)+'"></span><span class="nm">'+m.n+'<br><span class="cat">'+t("f_"+m.c)+'</span></span><span class="hz">'+m.f.toFixed(2)+' Hz</span></div>'+descHtml+'<img class="itembg" loading="lazy" decoding="async" src="app-images/'+(LIBIMG[m.n]||LIBBG[m.c]||"186.webp")+'" alt="">';
       b.addEventListener("click",function(){ if(favBuild)favPickFreq(m); else openPlayer(m,"lib"); }); list.appendChild(b); });
   }
   $("back").addEventListener("click",function(){ stopSingle(false); show(returnTo); });
