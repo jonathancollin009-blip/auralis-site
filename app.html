@@ -420,7 +420,11 @@
   .favbtn{flex:0 0 auto; width:58px; border-radius:15px; border:1px solid var(--line2); background:var(--pan); color:var(--dimmer); font-size:1.4rem; cursor:pointer}
   .favbtn.on{color:var(--gold); border-color:var(--gold)}
   .disc{font-size:.7rem; color:var(--dimmer); text-align:center; margin-top:16px; line-height:1.5}
-  .pdesc{margin:10px 2px 2px; font-size:.82rem; line-height:1.5; color:#cfe0f0; text-align:left; max-height:32vh; overflow-y:auto}
+  /* Couleur fixe #cfe0f0 a l origine : lisible sur fond sombre, quasi
+     invisible sur fond clair (meme gamme pale que le fond creme derriere).
+     Bascule desormais sur les jetons de theme + halo pour se detacher des
+     ondes colorees qui traversent le texte. */
+  .pdesc{margin:10px 2px 2px; font-size:.82rem; line-height:1.5; color:var(--txt); text-align:left; max-height:32vh; overflow-y:auto; text-shadow:0 1px 3px rgba(var(--bg-rgb),.4)}
   .pdesc .pdtxt{display:block}
   .pdesc .pdinfo{display:block; margin-top:8px; font-size:.68rem; color:var(--dimmer); font-style:italic}
 
