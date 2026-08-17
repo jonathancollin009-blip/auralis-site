@@ -327,6 +327,27 @@
     .view.on.nav-fwd, .view.on.nav-back{animation:none}
     .hhero:active, .hscard:active, .hxcard:active, .hmethod:active, .gtile:active, .ftile:active, .pcard:active{transform:none} }
   canvas{display:block; width:200px; height:200px}
+  /* Cymatique de la frequence : remplace l anneau + fréquence-au-centre par
+     l image en haut et la frequence dessous. Le disque de la figure est
+     detoure en cercle (les coins noirs du PNG sortiraient du fond en theme
+     clair). Le halo reprend le role de feedback de lecture que jouait
+     l anneau : fixe a l arret, respiration lente pendant la lecture. */
+  .stage.cymon{flex-direction:column}
+  .stage.cymon::before, .stage.cymon canvas{display:none}
+  .cymimg{display:block; width:min(58vw,236px); height:min(58vw,236px); border-radius:50%; object-fit:cover;
+    background:#05070f; box-shadow:0 0 26px 4px rgba(127,216,240,.28), 0 0 70px 20px rgba(185,143,224,.13);
+    /* la figure est fine et sombre a l origine : sans ce coup de pouce elle se
+       perd dans le fond de l app */
+    filter:brightness(1.4) contrast(1.12) saturate(1.08);
+    transition:box-shadow .5s ease}
+  /* sans ca, le display:block ci-dessus l emporte sur le [hidden] du
+     navigateur et laisse un disque noir vide (frequence manuelle) */
+  .cymimg[hidden]{display:none}
+  .stage.cymon.playing .cymimg{box-shadow:0 0 40px 10px rgba(230,244,255,.5), 0 0 110px 34px rgba(185,143,224,.26);
+    animation:cymbreathe 6s ease-in-out infinite}
+  @keyframes cymbreathe{0%,100%{transform:scale(1)} 50%{transform:scale(1.025)}}
+  .stage.cymon .readout{position:static; margin-top:14px}
+  @media (prefers-reduced-motion: reduce){ .stage.cymon.playing .cymimg{animation:none} }
   .readout{position:absolute; text-align:center; pointer-events:none}
   .hz{font-size:2.4rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums}
   .hz .u{font-size:.9rem; font-weight:600; color:var(--dim); margin-left:3px}
@@ -608,7 +629,8 @@
   <section class="view" id="vPlay">
     <div class="bar"><button class="backbtn" id="back" aria-label="Retour">‹</button><h2 id="pTitle">—</h2></div>
     <div class="player">
-      <div class="stage"><canvas id="viz" width="400" height="400" aria-hidden="true"></canvas>
+      <div class="stage" id="pStage"><canvas id="viz" width="400" height="400" aria-hidden="true"></canvas>
+        <img class="cymimg" id="cymImg" alt="" hidden>
         <div class="readout"><div class="hz"><span id="hzval">0</span><span class="u">Hz</span></div><div class="pcat" id="pcat"></div></div></div>
       <p class="pdesc" id="pDesc"></p>
       <div id="manualWrap" hidden>
@@ -1506,7 +1528,22 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("pTitle").textContent=manual?t("manual_title"):m.n; $("pcat").textContent=manual?t("manual_cat"):t("f_"+m.c);
     var _dd=(!manual&&MOLDESC[m.n])?MOLDESC[m.n]:null; $("pDesc").innerHTML=_dd?('<span class="pdtxt">'+(_dd[lang]||_dd.fr)+'</span><span class="pdinfo">'+t("desc_info")+'</span>'):"";
     $("hzval").textContent=m.f.toFixed(2); if(manual)$("mInput").value=m.f.toFixed(2);
+    setCymatic(manual?null:m.f);
     setTimer(0); show("play");
+  }
+
+  /* Cymatique : les fichiers sont nommes par frequence a 2 decimales, le meme
+     arrondi que l affichage -> aucune table de correspondance a maintenir, et
+     deux isomeres (meme masse molaire, donc meme frequence) partagent
+     naturellement le meme fichier. Repli sur l ancien rendu (anneau + hz au
+     centre) si l image manque : frequence manuelle, ou molecule ajoutee a LIB
+     sans avoir relance tools/cymatics_for_app.py. */
+  function setCymatic(hz){
+    var img=$("cymImg"), stage=$("pStage");
+    if(hz==null){ img.hidden=true; img.removeAttribute("src"); stage.classList.remove("cymon"); return; }
+    img.onerror=function(){ img.hidden=true; stage.classList.remove("cymon"); };
+    img.onload=function(){ img.hidden=false; stage.classList.add("cymon"); };
+    img.src="app-images/cym/"+hz.toFixed(2)+".webp";
   }
 
   var lastManual=100.00; try{lastManual=parseFloat(localStorage.getItem("auralis_manual"))||100.00;}catch(e){}
