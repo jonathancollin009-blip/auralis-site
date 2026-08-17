@@ -146,7 +146,7 @@
   .hsgrid .hscard:nth-child(3):last-child{grid-column:1/-1}
   .hscard{height:150px}
   .hsbody{position:absolute; left:0; right:0; bottom:0; padding:10px 12px}
-  .hsbody b{display:block; font-size:.95rem; font-weight:700; text-shadow:0 1px 8px rgba(0,0,0,.85), 0 0 16px rgba(0,0,0,.5)}
+  .hsbody b{display:block; font-size:1.04rem; font-weight:700; text-shadow:0 1px 8px rgba(0,0,0,.85), 0 0 16px rgba(0,0,0,.5)}
   .hsbody i{display:block; font-style:normal; font-size:.68rem; color:#d7e0f2; margin-top:2px; text-shadow:0 1px 6px rgba(0,0,0,.85)}
   .hstar{position:absolute; top:9px; right:11px; z-index:2; color:var(--gold); font-size:.9rem; text-shadow:0 1px 6px rgba(0,0,0,.6)}
 
@@ -163,8 +163,10 @@
   :root[data-theme="light"] .hscard:has(img[data-light]) .hsbody b,
   :root[data-theme="light"] .hxcard:has(img[data-light]) > b{
     color:var(--txt); text-shadow:0 1px 6px rgba(255,255,255,.95), 0 0 14px rgba(255,255,255,.8)}
+  /* Sous-titre en noir + semi-gras : le gris-bleu (--dim) d'origine se
+     confondait avec les photos claires et chargees derriere. */
   :root[data-theme="light"] .hscard:has(img[data-light]) .hsbody i{
-    color:var(--dim); text-shadow:0 1px 5px rgba(255,255,255,.95)}
+    color:#000; font-weight:600; text-shadow:0 1px 5px rgba(255,255,255,.95), 0 0 9px rgba(255,255,255,.7)}
   :root[data-theme="light"] .hscard:has(img[data-light]) .hstar{
     text-shadow:0 1px 6px rgba(255,255,255,.95)}
   /* Symetrique : les cartes qui gardent une photo SOMBRE en mode clair (carte
