@@ -1278,9 +1278,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   try{ var _rs=JSON.parse(localStorage.getItem("auralis_settings")||"{}"); if(_rs.anim)settings.anim=_rs.anim; if(typeof _rs.vol==="number")settings.vol=_rs.vol; if(_rs.theme==="light"||_rs.theme==="dark")settings.theme=_rs.theme; }catch(e){}
   function saveSettings(){ try{ localStorage.setItem("auralis_settings",JSON.stringify(settings)); }catch(e){} }
 
-  /* Theme : settings.theme null = suit le systeme ; "light"/"dark" = choix memorise */
-  var _sysLight=window.matchMedia?window.matchMedia("(prefers-color-scheme: light)"):null;
-  function curTheme(){ return settings.theme || ((_sysLight&&_sysLight.matches)?"light":"dark"); }
+  /* Theme : par defaut toujours sombre (choix du user), independant du theme
+     du telephone. settings.theme "light"/"dark" = preference memorisee des
+     qu elle a bascule le theme une fois. */
+  function curTheme(){ return settings.theme || "dark"; }
   function applyTheme(){
     var th=curTheme();
     document.documentElement.setAttribute("data-theme",th);
@@ -1299,7 +1300,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     }
   }
   function toggleTheme(){ settings.theme=(curTheme()==="light")?"dark":"light"; saveSettings(); applyTheme(); }
-  if(_sysLight&&_sysLight.addEventListener) _sysLight.addEventListener("change",function(){ if(!settings.theme)applyTheme(); });
   var APP_VERSION="1.1.0";
 
   var ctx=null;
