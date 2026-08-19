@@ -20,7 +20,7 @@
     /* derives du fond, pour les rgba() : voir --bg */
     --bg-rgb:7,13,28;
     /* accents en composantes, pour les filets et halos colores */
-    --cyan-rgb:127,216,240; --mauve-rgb:185,143,224;
+    --cyan-rgb:127,216,240; --mauve-rgb:185,143,224; --gold-rgb:233,201,106;
     --glow:.39;   /* opacite du halo autour d un contour mis en valeur */
     --scrim:rgba(0,0,0,.85);
     --shadow:rgba(0,0,0,.65);
@@ -39,7 +39,7 @@
     --txt:#14203a; --dim:#5a6880; --dimmer:#8b96ac;
     --endo:#3fa9be; --phyto:#4aa86a; --he:#b8873a; --elem:#a283c9;
     --bg-rgb:250,243,234;
-    --cyan-rgb:63,169,190; --mauve-rgb:162,131,201;
+    --cyan-rgb:63,169,190; --mauve-rgb:162,131,201; --gold-rgb:201,164,63;
     /* halo plus discret en clair : une lueur sur fond pale se lit comme un flou */
     --glow:.15;
     --scrim:rgba(20,32,58,.5);
@@ -148,7 +148,6 @@
   .hsbody{position:absolute; left:0; right:0; bottom:0; padding:10px 12px}
   .hsbody b{display:block; font-size:1.04rem; font-weight:700; text-shadow:0 1px 8px rgba(0,0,0,.85), 0 0 16px rgba(0,0,0,.5)}
   .hsbody i{display:block; font-style:normal; font-size:.68rem; color:#d7e0f2; margin-top:2px; text-shadow:0 1px 6px rgba(0,0,0,.85)}
-  .hstar{position:absolute; top:9px; right:11px; z-index:2; color:var(--gold); font-size:.9rem; text-shadow:0 1px 6px rgba(0,0,0,.6)}
 
   .hexplain{margin:0 2px 10px; font-size:.72rem; line-height:1.5; color:var(--dimmer)}
   .hxrail{display:flex; gap:10px; overflow-x:auto; padding:0 16px 6px; margin:0 -16px; scrollbar-width:none}
@@ -167,8 +166,6 @@
      confondait avec les photos claires et chargees derriere. */
   :root[data-theme="light"] .hscard:has(img[data-light]) .hsbody i{
     color:#000; font-weight:600; text-shadow:0 1px 5px rgba(255,255,255,.95), 0 0 9px rgba(255,255,255,.7)}
-  :root[data-theme="light"] .hscard:has(img[data-light]) .hstar{
-    text-shadow:0 1px 6px rgba(255,255,255,.95)}
   /* Symetrique : les cartes qui gardent une photo SOMBRE en mode clair (carte
      heros, Construis ta musique, Couleurs) doivent rendre leur texte comme en
      mode nuit, sinon le titre en bleu nuit devient illisible sur du noir.
@@ -229,10 +226,11 @@
   .dot.Endogène{background:var(--endo)}
   .dot.Élément{background:var(--elem)}
   .manualbtn{width:100%; background:var(--pan); border:1px dashed var(--line2); color:var(--cyan); font:inherit; font-size:.9rem; font-weight:600; padding:12px; border-radius:12px; cursor:pointer; margin-bottom:12px}
-  .actrow{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px}
+  .actrow{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:14px}
   .actbtn{display:flex; align-items:center; gap:10px; width:100%; background:var(--pan); border:1px solid var(--line2); color:var(--txt); font:inherit; text-align:left; padding:12px 10px; border-radius:16px; cursor:pointer}
   /* Meme filet en degrade que la barre de recherche, dans la couleur de
-     l action : cyan pour la saisie manuelle, mauve pour l enchainement. */
+     l action : cyan pour la saisie manuelle, mauve pour l enchainement, or
+     pour les favoris (convention du design system : favori = etoile doree). */
   .actbtn{border-color:transparent;
     background:linear-gradient(var(--pan),var(--pan)) padding-box,
                linear-gradient(135deg, rgba(var(--cyan-rgb),1), rgba(var(--cyan-rgb),.52) 52%, rgba(var(--cyan-rgb),1)) border-box;
@@ -242,9 +240,16 @@
     background:linear-gradient(var(--pan),var(--pan)) padding-box,
                linear-gradient(135deg, rgba(var(--mauve-rgb),1), rgba(var(--mauve-rgb),.52) 52%, rgba(var(--mauve-rgb),1)) border-box;
     box-shadow:0 0 30px rgba(var(--mauve-rgb),var(--glow))}
+  .actbtn:nth-child(3){
+    background:linear-gradient(var(--pan),var(--pan)) padding-box,
+               linear-gradient(135deg, rgba(var(--gold-rgb),1), rgba(var(--gold-rgb),.52) 52%, rgba(var(--gold-rgb),1)) border-box;
+    box-shadow:0 0 30px rgba(var(--gold-rgb),var(--glow))}
   .actbtn:active{transform:scale(.98); box-shadow:0 0 36px rgba(var(--cyan-rgb),calc(var(--glow) + .21))}
   .actbtn:nth-child(2):active{box-shadow:0 0 36px rgba(var(--mauve-rgb),calc(var(--glow) + .21))}
-  .actbtn .actlabel{flex:1; font-size:.82rem; font-weight:600; line-height:1.3}
+  .actbtn:nth-child(3):active{box-shadow:0 0 36px rgba(var(--gold-rgb),calc(var(--glow) + .21))}
+  /* 3 colonnes = moins de place que la version a 2 : texte et coche
+     legerement resserres pour eviter un empilement trop haut. */
+  .actbtn .actlabel{flex:1; font-size:.74rem; font-weight:600; line-height:1.28}
   .actbtn .actarrow{flex:0 0 auto; color:var(--dimmer); font-size:1.1rem}
   .manualbtn:active{background:var(--pan2)}
 
@@ -524,9 +529,8 @@
 <script>
 /* Thème appliqué avant le premier rendu, sinon l'app clignote en sombre puis passe en clair. */
 (function(){
-  var t=null;
+  var t="dark";
   try{ var s=JSON.parse(localStorage.getItem("auralis_settings")||"{}"); if(s.theme==="light"||s.theme==="dark")t=s.theme; }catch(e){}
-  if(!t) t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches)?"light":"dark";
   document.documentElement.setAttribute("data-theme",t);
 })();
 </script>
@@ -553,7 +557,7 @@
       <div class="hsgrid">
         <button class="hscard" data-go="protos"><img src="app-images/294.webp" data-light="297.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
         <button class="hscard" data-go="bin"><img src="app-images/146.webp" data-light="301.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
-        <button class="hscard" data-go="favList"><span class="hstar" aria-hidden="true">★</span><img src="app-images/147.webp" data-light="298.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hFav">—</b><i id="hFavSub">—</i></span></button>
+        <button class="hscard" data-go="medmusic"><img src="app-images/299.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hMed">—</b><i id="hMedSub">—</i></span></button>
         <button class="hscard" data-go="mixbuild"><img src="app-images/302.webp" data-light="300.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hMix">—</b><i id="hMixSub">—</i></span></button>
       </div>
 
@@ -614,6 +618,7 @@
       <div class="actrow">
         <button class="actbtn" id="manualBtn"><span class="actlabel"></span><span class="actarrow">›</span></button>
         <button class="actbtn" id="chainBtn"><span class="actlabel"></span><span class="actarrow">›</span></button>
+        <button class="actbtn" id="favBtn"><span class="actlabel"></span><span class="actarrow">›</span></button>
       </div>
     </div>
     <div class="list" id="list"></div>
@@ -937,6 +942,8 @@ var T={
  home_sess_fav:{fr:"Mes séquences",en:"My sequences",es:"Mis secuencias"},
  home_mix:{fr:"Construis ta musique de méditation",en:"Build your meditation music",es:"Crea tu música de meditación"},
  home_sess_mix:{fr:"Musique + fréquences · bientôt",en:"Music + frequencies · soon",es:"Música + frecuencias · pronto"},
+ home_med:{fr:"Musiques",en:"Music",es:"Músicas"},
+ home_sess_med:{fr:"Séances complètes · bientôt",en:"Full sessions · soon",es:"Sesiones completas · pronto"},
  mix_soon:{fr:"Bientôt disponible — en cours de création",en:"Coming soon — in the works",es:"Próximamente — en desarrollo"},
  mix_title:{fr:"Ta musique de méditation",en:"Your meditation music",es:"Tu música de meditación"},
  mix_timer:{fr:"Minuterie",en:"Timer",es:"Temporiz."},
@@ -1141,6 +1148,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    chain_pick_title:"Frequenz wählen — Sequenz", chain_temp_name:"Eigene Sequenz",
    fav_play_now:"▶  Jetzt abspielen", fav_save_as_fav:"⭐  Als Favorit speichern", fav_no_slot:"Kein freier Favoritenplatz",
    home_mix:"Erstelle deine Meditationsmusik", home_sess_mix:"Musik + Frequenzen · bald", mix_soon:"Bald verfügbar — in Arbeit",
+   home_med:"Musik", home_sess_med:"Vollständige Sitzungen · bald",
    set_title:"Einstellungen", set_anim:"Umgebungsanimationen", set_anim_full:"Voll", set_anim_reduced:"Reduziert", set_anim_off:"Aus",
    set_lang:"Sprache", set_vol:"Standardlautstärke", set_about:"Über", set_version:"Version",
    geo_filter_crop:"Kornkreis", geo_filter_sacred:"Heilige Geometrie", geo_filter_snowflake:"Schneeflocke", geo_filter_color:"Farbe", geo_filter_planet:"Planet",
@@ -1183,6 +1191,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    chain_pick_title:"Scegli una frequenza — Sequenza", chain_temp_name:"Sequenza personalizzata",
    fav_play_now:"▶  Riproduci ora", fav_save_as_fav:"⭐  Salva nei preferiti", fav_no_slot:"Nessuno slot preferito libero",
    home_mix:"Crea la tua musica di meditazione", home_sess_mix:"Musica + frequenze · presto", mix_soon:"Presto disponibile — in lavorazione",
+   home_med:"Musiche", home_sess_med:"Sessioni complete · presto",
    set_title:"Impostazioni", set_anim:"Animazioni ambientali", set_anim_full:"Completo", set_anim_reduced:"Ridotto", set_anim_off:"Disattivato",
    set_lang:"Lingua", set_vol:"Volume predefinito", set_about:"Informazioni", set_version:"Versione",
    geo_filter_crop:"Cerchio nel grano", geo_filter_sacred:"Geometria sacra", geo_filter_snowflake:"Fiocco di neve", geo_filter_color:"Colore", geo_filter_planet:"Pianeta",
@@ -1355,7 +1364,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-go]"),function(b){
     b.addEventListener("click",function(){ var g=b.getAttribute("data-go");
-      if(g==="bin")openBinInput(); else if(g==="favList"){ renderFavList(); show("favList"); } else if(g==="mixbuild"){ openMix(); } else show(g); });
+      if(g==="bin")openBinInput(); else if(g==="mixbuild"){ openMix(); } else if(g==="medmusic"){ flashMsg(t("mix_soon")); } else show(g); });
   });
   Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-gocat]"),function(b){
     b.addEventListener("click",function(){ openGeoCat(b.getAttribute("data-gocat")); });
@@ -1368,27 +1377,30 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   });
   $("protBack").addEventListener("click",function(){ show("home"); });
   $("geoBack").addEventListener("click",function(){ show("home"); });
-  $("favBack").addEventListener("click",function(){ show("home"); });
+  /* Favoris n est plus accessible que depuis Frequences (le raccourci direct
+     sur l accueil a ete retire) : "lib" est desormais son seul parent logique. */
+  $("favBack").addEventListener("click",function(){ show("lib"); });
 
   // ---------- langue ----------
   function applyLang(){
     $("search").placeholder=t("search_ph");
     $("manualBtn").querySelector(".actlabel").textContent=t("manual_btn").replace(/^⌨\s*/,"");
     $("chainBtn").querySelector(".actlabel").textContent=t("chain_btn").replace(/^🔗\s*/,"");
+    $("favBtn").querySelector(".actlabel").textContent=t("fav_title");
     $("hzLabel").textContent=t("hz_label");
     $("volLabel").textContent=t("volume"); $("sVolLabel").textContent=t("volume"); $("pVolLabel").textContent=t("volume"); $("gVolLabel").textContent=t("volume"); $("binVolLabel").textContent=t("volume");
     $("timerLabel").textContent=t("timer_label");
     $("discSingle").textContent=t("disc_single"); $("discSeq").textContent=t("disc_seq"); $("discGeo").textContent=t("disc_geo"); $("discPulse").textContent=t("disc_pulse"); $("discBin").textContent=t("disc_bin");
     Array.prototype.forEach.call(fEl.children,function(b){ b.querySelector(".flabel").textContent=t("f_"+b.getAttribute("data-c")); });
     Array.prototype.forEach.call(gfEl.children,function(b){ b.textContent=t(b.getAttribute("data-l")); });
-    $("hFreq").textContent=t("tab_freq"); $("hProto").textContent=t("tab_proto"); $("hBin").textContent=t("home_bin"); $("hFav").textContent=t("fav_title");
+    $("hFreq").textContent=t("tab_freq"); $("hProto").textContent=t("tab_proto"); $("hBin").textContent=t("home_bin"); $("hMed").textContent=t("home_med");
     $("hebFreq").textContent=t("home_eb_freq"); $("hebSess").textContent=t("home_eb_sess"); $("hebExpl").textContent=t("home_eb_expl");
     $("hHeroTag").textContent=t("home_hero_tag");
     /* Sous-titre du heros = les 4 categories, composees a partir des libelles
        deja traduits (f_*). Traduit dans les 9 langues sans nouvelle chaine, et
        toujours aligne sur les puces de filtre si un libelle change. */
     $("hHeroSub").textContent=[t("f_Endogène"),t("f_Phyto"),t("f_Huiles ess."),t("f_Élément")].join(" · ");
-    $("hProtoSub").textContent=t("home_sess_proto"); $("hBinSub").textContent=t("home_sess_bin"); $("hFavSub").textContent=t("home_sess_fav");
+    $("hProtoSub").textContent=t("home_sess_proto"); $("hBinSub").textContent=t("home_sess_bin"); $("hMedSub").textContent=t("home_sess_med");
     $("hMix").textContent=t("home_mix"); $("hMixSub").textContent=t("home_sess_mix");
     $("hExplNote").textContent=t("home_expl_note");
     $("hxSacred").textContent=t("geo_filter_sacred"); $("hxCrop").textContent=t("geo_filter_crop"); $("hxPlanet").textContent=t("geo_filter_planet"); $("hxColor").textContent=t("geo_filter_color"); $("hxFlocon").textContent=t("geo_filter_snowflake");
@@ -1546,6 +1558,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 
   var lastManual=100.00; try{lastManual=parseFloat(localStorage.getItem("auralis_manual"))||100.00;}catch(e){}
   $("manualBtn").addEventListener("click",function(){ if(favBuild)openFavKeypad("freq"); else openPlayer({n:"Fréquence manuelle",f:lastManual,c:"Manuel",manual:true},"lib"); });
+  $("favBtn").addEventListener("click",function(){ renderFavList(); show("favList"); });
   function setManual(v){ v=Math.max(20,Math.min(1000,Math.round(v*100)/100)); state.cur.f=v; lastManual=v; try{localStorage.setItem("auralis_manual",v);}catch(e){}
     $("hzval").textContent=v.toFixed(2); if(document.activeElement!==$("mInput"))$("mInput").value=v.toFixed(2); live(); }
   $("mInput").addEventListener("input",function(){ var v=parseFloat(this.value); if(!isNaN(v))setManual(v); });
