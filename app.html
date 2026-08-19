@@ -957,9 +957,13 @@ var T={
  mix_reset:{fr:"Réinit.",en:"Reset",es:"Reiniciar"},
  mix_loading:{fr:"Chargement du son…",en:"Loading sound…",es:"Cargando sonido…"},
  mix_err:{fr:"Son introuvable",en:"Sound not found",es:"Sonido no encontrado"},
- mix_note:{fr:"Version d'essai — une seule ambiance pour le moment. D'autres sons s'ajouteront ici.",en:"Test version — a single ambience for now. More sounds will be added here.",es:"Versión de prueba — una sola ambientación por ahora. Se añadirán más sonidos."},
+ mix_note:{fr:"Version d'essai — mélange les ambiances à ton goût. D'autres sons s'ajouteront ici.",en:"Test version — blend the ambiences to your taste. More sounds will be added here.",es:"Versión de prueba — mezcla los ambientes a tu gusto. Se añadirán más sonidos."},
  snd_riviere:{fr:"Rivière",en:"River",es:"Río"},
  snd_riviere_sub:{fr:"Ambiance · eau vive",en:"Ambience · flowing water",es:"Ambiente · agua viva"},
+ snd_nappe1:{fr:"Nappe profonde",en:"Deep pad",es:"Capa profunda"},
+ snd_nappe1_sub:{fr:"Ambiance · souffle grave",en:"Ambience · low breath",es:"Ambiente · soplo grave"},
+ snd_nappe2:{fr:"Nappe feutrée",en:"Soft pad",es:"Capa suave"},
+ snd_nappe2_sub:{fr:"Ambiance · souffle doux",en:"Ambience · soft breath",es:"Ambiente · soplo suave"},
  med_note:{fr:"Séances complètes, écoutées en streaming — une nouvelle s'ajoutera régulièrement.",en:"Full sessions, streamed — a new one is added regularly.",es:"Sesiones completas, en streaming — se añade una nueva regularmente."},
  med_forest_rain:{fr:"Forêt sous la pluie",en:"Forest Rain",es:"Bosque bajo la lluvia"},
  med_forest_rain_sub:{fr:"Séance · pluie en forêt",en:"Session · rain in the forest",es:"Sesión · lluvia en el bosque"},
@@ -2379,7 +2383,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
 
   /* ===== Construis ta musique de méditation (version d'essai) ===== */
   var MIXSOUNDS=[
-    {id:"riviere", key:"snd_riviere", sub:"snd_riviere_sub", icon:"≈", tc:"#7fd8f0", base:"app-sounds/ambience/riviere2", vol:60}
+    {id:"riviere", key:"snd_riviere", sub:"snd_riviere_sub", icon:"≈", tc:"#7fd8f0", base:"app-sounds/ambience/riviere2", vol:60},
+    {id:"nappe1", key:"snd_nappe1", sub:"snd_nappe1_sub", icon:"◍", tc:"#b98fe0", base:"app-sounds/ambience/nappe1", vol:45},
+    {id:"nappe2", key:"snd_nappe2", sub:"snd_nappe2_sub", icon:"◎", tc:"#e9c96a", base:"app-sounds/ambience/nappe2", vol:45}
   ];
   var mix={ playing:false, bufs:{}, nodes:{}, gains:{}, vol:{}, muted:{} };
 
