@@ -506,6 +506,7 @@
   .mixtracks{display:flex; flex-direction:column; gap:10px}
   .mixtrack{background:linear-gradient(180deg, color-mix(in srgb, var(--tc) 16%, var(--pan)), var(--pan)); border:1px solid color-mix(in srgb, var(--tc) 34%, var(--line)); border-radius:18px; padding:11px 13px 13px}
   .mixtrack.off{opacity:.5}
+  .mixtrack.playing{box-shadow:0 0 0 1px var(--tc), 0 0 22px -6px var(--tc)}
   .mixrow{display:flex; align-items:center; gap:11px; margin-bottom:9px}
   .mixicon{width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-size:1.05rem; background:color-mix(in srgb, var(--tc) 26%, transparent); color:var(--tc); flex:none}
   .mixname{flex:1; font-weight:600; font-size:.95rem}
@@ -804,6 +805,12 @@
     <div class="mixtracks" id="mixTracks"></div>
     <p class="mixnote" id="mixNote"></p>
   </section>
+
+  <section class="view" id="vMedmusic">
+    <div class="bar"><button class="backbtn" id="medBack" aria-label="Retour">‹</button><h2 id="medTitle">—</h2></div>
+    <div class="mixtracks" id="medTracks"></div>
+    <p class="mixnote" id="medNote"></p>
+  </section>
 </div>
 
 <script>
@@ -953,6 +960,9 @@ var T={
  mix_note:{fr:"Version d'essai — une seule ambiance pour le moment. D'autres sons s'ajouteront ici.",en:"Test version — a single ambience for now. More sounds will be added here.",es:"Versión de prueba — una sola ambientación por ahora. Se añadirán más sonidos."},
  snd_riviere:{fr:"Rivière",en:"River",es:"Río"},
  snd_riviere_sub:{fr:"Ambiance · eau vive",en:"Ambience · flowing water",es:"Ambiente · agua viva"},
+ med_note:{fr:"Séances complètes, écoutées en streaming — une nouvelle s'ajoutera régulièrement.",en:"Full sessions, streamed — a new one is added regularly.",es:"Sesiones completas, en streaming — se añade una nueva regularmente."},
+ med_forest_rain:{fr:"Forêt sous la pluie",en:"Forest Rain",es:"Bosque bajo la lluvia"},
+ med_forest_rain_sub:{fr:"Séance · pluie en forêt",en:"Session · rain in the forest",es:"Sesión · lluvia en el bosque"},
  home_expl_note:{fr:"Un espace contemplatif, distinct du cœur fréquences.",en:"A contemplative space, separate from the frequency core.",es:"Un espacio contemplativo, aparte del núcleo de frecuencias."},
  home_method_t:{fr:"La méthode",en:"The method",es:"El método"},
  home_method_s:{fr:"La logique derrière chaque fréquence",en:"The logic behind each frequency",es:"La lógica detrás de cada frecuencia"},
@@ -1349,9 +1359,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   // ---------- nav ----------
   var returnTo="lib";
   var curView="home";
-  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, favList:1, settings:1, method:1,
+  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, favList:1, settings:1, method:1, medmusic:1,
     play:2, seq:2, geoPlay:2, binPlay:2, binError:2, favKeypad:2, favNext:2, favRecap:2, favName:2};
-  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMix"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
+  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMix","vMedmusic"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
     $("chainBtn").hidden=!!favBuild;
     if(v==="home"){ animHomeCards(); }
     else { var back=(NAV_LEVEL[v]||0)<(NAV_LEVEL[curView]||0);
@@ -1364,7 +1374,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-go]"),function(b){
     b.addEventListener("click",function(){ var g=b.getAttribute("data-go");
-      if(g==="bin")openBinInput(); else if(g==="mixbuild"){ openMix(); } else if(g==="medmusic"){ flashMsg(t("mix_soon")); } else show(g); });
+      if(g==="bin")openBinInput(); else if(g==="mixbuild"){ openMix(); } else if(g==="medmusic"){ openMedMusic(); } else show(g); });
   });
   Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-gocat]"),function(b){
     b.addEventListener("click",function(){ openGeoCat(b.getAttribute("data-gocat")); });
@@ -2476,6 +2486,93 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     mixRender();
   });
   $("mixTimer").addEventListener("click",function(){ flashMsg(t("mix_soon")); });
+
+  /* ===== Musiques de meditation (streaming) =====
+     Distinct du mixeur d ambiances ci-dessus : ici, des seances completes,
+     une seule a la fois (en demarrer une arrete la precedente), servies en
+     URL absolue depuis auralis-site plutot qu empaquetees dans www/ -- ca
+     evite d alourdir le binaire natif a chaque piste ajoutee, et permet d en
+     ajouter une par mois sans resoumission App Store/Play Store (juste
+     deposer le fichier + git push cote site). */
+  var MED_BASE="https://aura-lis.ca/app-sounds/meditation/";
+  var MEDMUSIC=[
+    {id:"forest_rain", key:"med_forest_rain", sub:"med_forest_rain_sub", icon:"🌧", tc:"#7fd8f0", base:"forest_rain", vol:60}
+  ];
+  var med={ playingId:null, bufs:{}, node:null, gain:{}, vol:{} };
+
+  function medUrl(base){
+    var a=document.createElement("audio");
+    var ogg = a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"');
+    return MED_BASE + base + (ogg==="probably"||ogg==="maybe" ? ".ogg" : ".m4a");
+  }
+  function medLoad(s,cb){
+    if(med.bufs[s.id]) { cb(med.bufs[s.id]); return; }
+    var c=ensureCtx(), x=new XMLHttpRequest();
+    x.open("GET",medUrl(s.base),true); x.responseType="arraybuffer";
+    x.onload=function(){ c.decodeAudioData(x.response,function(b){ med.bufs[s.id]=b; cb(b); },function(){ cb(null); }); };
+    x.onerror=function(){ cb(null); };
+    x.send();
+  }
+  function medStopCurrent(){
+    if(med.node){ try{ med.node.stop(0); }catch(e){} try{ med.node.disconnect(); }catch(e){} med.node=null; }
+    var prev=med.playingId; med.playingId=null;
+    if(prev){ var b=$("medPlay_"+prev); if(b) b.textContent="▶"; var c=$("medCard_"+prev); if(c) c.classList.remove("playing"); }
+  }
+  function medToggle(s){
+    if(med.playingId===s.id){ medStopCurrent(); return; }
+    medStopCurrent();
+    unlockAudio();
+    flashMsg(t("mix_loading"));
+    medLoad(s,function(b){
+      if(!b){ flashMsg(t("mix_err")); return; }
+      var c=ensureCtx();
+      var src=c.createBufferSource(); src.buffer=b; src.loop=true;
+      var g=c.createGain(); g.gain.value=(med.vol[s.id]!==undefined?med.vol[s.id]:s.vol)/100;
+      src.connect(g); g.connect(c.destination); src.start(0);
+      med.node=src; med.gain[s.id]=g; med.playingId=s.id;
+      var btn=$("medPlay_"+s.id); if(btn) btn.textContent="❚❚";
+      var card=$("medCard_"+s.id); if(card) card.classList.add("playing");
+    });
+  }
+  function medSetVol(s,pct){
+    med.vol[s.id]=pct;
+    var g=med.gain[s.id];
+    if(g && med.playingId===s.id) g.gain.value=pct/100;
+    var el=$("medPct_"+s.id); if(el) el.textContent=pct+" %";
+  }
+  function medRender(){
+    var box=$("medTracks"); box.innerHTML="";
+    MEDMUSIC.forEach(function(s){
+      if(med.vol[s.id]===undefined) med.vol[s.id]=s.vol;
+      var card=document.createElement("div");
+      card.className="mixtrack"+(med.playingId===s.id?" playing":"");
+      card.id="medCard_"+s.id; card.style.setProperty("--tc",s.tc);
+      var row=document.createElement("div"); row.className="mixrow";
+      var ic=document.createElement("span"); ic.className="mixicon"; ic.textContent=s.icon;
+      var nm=document.createElement("span"); nm.className="mixname";
+      nm.innerHTML="<b></b><i></i>";
+      nm.querySelector("b").textContent=t(s.key);
+      nm.querySelector("i").textContent=t(s.sub);
+      var pc=document.createElement("span"); pc.className="mixpct"; pc.id="medPct_"+s.id; pc.textContent=med.vol[s.id]+" %";
+      var pl=document.createElement("button"); pl.className="mixmute"; pl.id="medPlay_"+s.id;
+      pl.textContent=med.playingId===s.id?"❚❚":"▶";
+      pl.setAttribute("aria-label",t(s.key));
+      pl.addEventListener("click",function(){ medToggle(s); });
+      row.appendChild(ic); row.appendChild(nm); row.appendChild(pc); row.appendChild(pl);
+      var sl=document.createElement("input");
+      sl.type="range"; sl.min=0; sl.max=100; sl.step=1; sl.value=med.vol[s.id];
+      sl.setAttribute("aria-label",t(s.key));
+      sl.addEventListener("input",function(){ medSetVol(s,parseInt(this.value,10)); });
+      card.appendChild(row); card.appendChild(sl);
+      box.appendChild(card);
+    });
+  }
+  function openMedMusic(){
+    $("medTitle").textContent=t("home_med");
+    $("medNote").textContent=t("med_note");
+    medRender(); show("medmusic");
+  }
+  $("medBack").addEventListener("click",function(){ medStopCurrent(); show("home"); });
 
   makeViz("viz",function(){return state.playing;});
   makeViz("sViz",function(){return seq.playing;});
