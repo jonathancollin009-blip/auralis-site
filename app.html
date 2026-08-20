@@ -1849,34 +1849,90 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
      dans le grave. Retenu a l oreille par Jonathan.
      Figures a note unique (planetes/couleurs) : inchangees, elles n ont ni
      accord ni transposition. */
-  /* Basse du voicing : 1re note du drone, une octave plus bas. Sa 2e voix est
-     la note du drone qui forme une quarte/quinte/octave avec elle - jamais une
-     tierce, c est ce qui rendait le grave boueux. */
-  function bassPair(fig){
-    var root=noteFreq(fig.drone[0][0]), out=[root*0.5];
-    for(var i=1;i<fig.drone.length;i++){
-      var r=noteFreq(fig.drone[i][0])/root;
-      if(Math.abs(r-1.5)<0.04 || Math.abs(r-4/3)<0.04 || Math.abs(r-2)<0.04){ out.push(noteFreq(fig.drone[i][0])*0.5); break; }
+  /* ---- Harmonisation facon pianiste ----
+     Les versions precedentes transposaient la melodie en bloc (basse et quinte
+     figees, puis toutes les voix en parallele) : Jonathan entendait "une note
+     qui revient a chaque accord", puis "ca n a pas ete fait par un musicien".
+     Il avait raison dans les deux cas - un bloc transpose produit des quintes
+     et octaves paralleles, la faute d harmonie la plus reconnaissable.
+     Ici on procede comme un pianiste : chaque note recoit un ACCORD de la
+     tonalite qui la contient, et d un accord au suivant les voix rejoignent la
+     note la plus proche (conduite des voix). */
+  var GCHORDS={I:["Do","Mi","Sol"], ii:["Ré","Fa","La"], iii:["Mi","Sol","Si"],
+               IV:["Fa","La","Do"], V:["Sol","Si","Ré"], vi:["La","Do","Mi"]};
+  /* degres les plus consonants privilegies ; ii et iii restent possibles quand
+     la melodie ne laisse pas le choix */
+  var GPRIO={I:3.0, V:2.6, IV:2.6, vi:2.4, ii:1.6, iii:1.2};
+  var GPERMS={1:[[0]], 2:[[0,1],[1,0]], 3:[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]};
+  function gBaseNote(n){ return n==="Do′" ? "Do" : n; }
+  function gHarmonize(ns){
+    var prog=[], prev=null;
+    for(var i=0;i<ns.length;i++){
+      var m=gBaseNote(ns[i]), best=null, bestS=-99;
+      for(var c in GCHORDS){
+        if(GCHORDS[c].indexOf(m)<0) continue;      /* l accord doit contenir la note */
+        var s=GPRIO[c];
+        if(c===prev) s-=1.4;                       /* ne pas stagner sur le meme degre */
+        if(i===ns.length-1 && c==="I") s+=2.0;     /* finir sur la tonique */
+        if(prev==="V" && c==="I") s+=1.0;          /* cadence V -> I */
+        if(s>bestS){ bestS=s; best=c; }
+      }
+      prog.push(best||"I"); prev=prog[i];
     }
-    return out;
+    return prog;
+  }
+  /* Octave de `f` la plus proche de `target`, sans plage imposee : une plage
+     stricte laissait certains accords sans solution et la basse remontait
+     au-dessus de la melodie. */
+  function gOctaveNear(f,target){
+    while(f>target*1.415) f/=2;
+    while(f<target/1.415) f*=2;
+    return f;
   }
   function gScheduleCycle(t0){ var d=gp.dur, fig=gp.fig, ns=fig.notes;
-    if(ns.length<2){ for(var j=0;j<ns.length;j++) gScheduleNote(noteFreq(ns[j]),t0+j*d,d); return; }
-    var bass=bassPair(fig);
-    for(var i=0;i<ns.length;i++){ var t1=t0+i*d;
-      /* Basse et quinte legerement en retrait, melodie en avant : c est ce qui
-         fait ressortir le mouvement melodique au lieu d un bloc plaque. Le
-         petit decalage (12 ms) imite le roulement de la main d un pianiste,
-         une attaque parfaitement simultanee sonne mecanique. */
-      gScheduleNote(bass[0],t1,d,0.50);
-      if(bass[1]) gScheduleNote(bass[1],t1+0.012,d,0.36);
-      gScheduleNote(noteFreq(ns[i]),t1+0.024,d,0.60); } }
+    /* figures a note unique (planetes/couleurs) ou frequences numeriques :
+       pas d harmonisation, on joue la note telle quelle */
+    if(ns.length<2 || typeof ns[0]==="number"){
+      for(var j=0;j<ns.length;j++) gScheduleNote(noteFreq(ns[j]),t0+j*d,d);
+      return; }
+    if(!fig._prog) fig._prog=gHarmonize(ns);
+    var prog=fig._prog, prev=null;
+    for(var i=0;i<ns.length;i++){
+      var t1=t0+i*d, ch=GCHORDS[prog[i]], mel=noteFreq(ns[i]);
+      var bass=gOctaveNear(noteFreq(ch[0]),150);            /* main gauche, dans le grave */
+      var inner=[], k;
+      for(k=0;k<ch.length;k++) if(ch[k]!==gBaseNote(ns[i])) inner.push(ch[k]);
+      var targets=prev||[mel/1.5, mel/1.9, mel/2.4];
+      while(targets.length<inner.length) targets=targets.concat(targets);
+      /* on essaie chaque affectation possible des notes de l accord aux voix
+         precedentes et on garde celle qui fait le moins bouger l ensemble */
+      var perms=GPERMS[inner.length]||[[0]], bestSet=null, bestCost=1e18;
+      for(var p=0;p<perms.length;p++){
+        var cand=[], cost=0;
+        for(k=0;k<perms[p].length;k++){
+          var f=gOctaveNear(noteFreq(inner[perms[p][k]]),targets[k]);
+          cand.push(f); cost+=Math.abs(Math.log(f/targets[k]));
+        }
+        if(cost<bestCost){ bestCost=cost; bestSet=cand; }
+      }
+      bestSet.sort(function(a,b){return a-b;});
+      /* basse et voix internes en retrait, melodie en avant ; attaques
+         decalees de quelques ms, une frappe simultanee sonne mecanique */
+      gScheduleNote(bass,t1,d,0.50);
+      for(k=0;k<bestSet.length;k++) gScheduleNote(bestSet[k],t1+0.010+0.008*k,d,0.27);
+      gScheduleNote(mel,t1+0.032,d,0.58);
+      prev=bestSet; } }
   function gPlay(){ if(!gp.fig)return; ensureCtx(); unlockAudio(); var t=ctx.currentTime+0.06;
     gp.master=ctx.createGain(); gp.master.gain.setValueAtTime(0.0001,t); gp.master.gain.linearRampToValueAtTime(gp.vol,t+0.05);
     gp.dry=ctx.createGain(); gp.dry.gain.value=1; gp.master.connect(gp.dry); gp.dry.connect(ctx.destination);
     gp.conv=ctx.createConvolver(); gp.conv.buffer=getReverbIR(); gp.wet=ctx.createGain(); gp.wet.gain.setValueAtTime(gp.reverbAmt*0.7,t); gp.master.connect(gp.conv); gp.conv.connect(gp.wet); gp.wet.connect(ctx.destination);
     // écho retiré (2026-07-20) — ne reste que la réverb
-    gp.drones=[]; gp.fig.drone.forEach(function(dr){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(noteFreq(dr[0]),t); var g=ctx.createGain();g.gain.setValueAtTime(dr[1]*0.3,t); o.connect(g);g.connect(gp.master);o.start(t);gp.drones.push(o); });
+    /* Bourdon tenu : seulement pour les figures a note unique (planetes,
+       couleurs). Sur une figure harmonisee il tiendrait Do+Mi+Sol en continu
+       et frotterait contre les accords Fa et Sol de la progression - la basse
+       du voicing joue deja le role d ancrage. */
+    var gHarm=gp.fig.notes.length>1 && typeof gp.fig.notes[0]!=="number";
+    gp.drones=[]; if(!gHarm) gp.fig.drone.forEach(function(dr){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(noteFreq(dr[0]),t); var g=ctx.createGain();g.gain.setValueAtTime(dr[1]*0.3,t); o.connect(g);g.connect(gp.master);o.start(t);gp.drones.push(o); });
     gp.cycleStart=t;
     if(gp.fig.notes.length===1 && !gp.pulsed){
       var pf=noteFreq(gp.fig.notes[0]), pins=INSTR[gp.instr];
