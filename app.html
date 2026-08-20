@@ -1649,7 +1649,17 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   // ================= GÉOMÉTRIE SACRÉE & AGROGLYPHES =================
   // Accordage "Factor 9" Grid Built on 432 (grille de Nicolas Tesla) : chaque note = +9 Hz (colonne de base),
   // ici colonne ×2 pour rester dans une plage audible confortable. La=432 exactement, comme sur la grille.
-  var NM={"Do":252.00,"Ré":288.00,"Mi":324.00,"Fa":342.00,"Sol":378.00,"La":432.00,"Si":468.00,"Do′":504.00};
+  /* Gamme en INTONATION JUSTE ancree sur La=432 Hz (Do = 432 x 3/5 = 259,2).
+     L ancienne gamme (252/288/324/342/378/432/468/504, multiples de 18) avait
+     des intervalles tres decales : tierce a +35 cents, La +33, Re +31, Fa +29,
+     Si -28. Inaudible tant qu une seule note jouait a la fois, mais des qu on
+     est passe aux accords ca sonnait faux ("quelque chose accroche") - c est
+     la tierce trop haute (9/7 au lieu de 5/4) qui s entendait. Ici les
+     rapports sont purs : 9/8, 5/4, 4/3, 3/2, 5/3, 15/8, 2/1. Choisi a l
+     oreille par Jonathan parmi 3 accordages compares. La=432 preserve
+     l identite Auralis. */
+  var NM=(function(){ var d=432*3/5;
+    return {"Do":d,"Ré":d*9/8,"Mi":d*5/4,"Fa":d*4/3,"Sol":d*3/2,"La":d*5/3,"Si":d*15/8,"Do′":d*2}; })();
   var GEO=[
    {name:"Agroglyphe",ic:"🌀",shape:"crop",cat:"crop",photo:"139.webp",sym:{fr:"Symétrie 8 · Pythagore",en:"8-fold · Pythagoras",es:"Simetría 8 · Pitágoras"},ratios:"2:1 · 3:2 · 4:3",notes:["Do","Fa","Sol","Do′","Do′","Sol","Fa","Do"],drone:[["Do",0.3],["Sol",0.2]]},
    {name:"Vesica Piscis",ic:"⬮",shape:"flower",cat:"sacred",photo:"vesica.webp",sym:{fr:"Le 2 · deux cercles, la matrice",en:"The 2 · two circles, the matrix",es:"El 2 · dos círculos, la matriz"},ratios:"2:1 · octave",notes:["Do","Sol","Do′","Sol","Do"],drone:[["Do",0.32],["Sol",0.2]]},
@@ -1782,7 +1792,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     if(ph.parentNode) ph.parentNode.classList.toggle("photobig", !!gp.fig.photo);
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+noteLabel(nn)+"</b>"; row.appendChild(d); });
-    var n0=gp.fig.notes[0]; $("gNowN").textContent=noteLabel(n0); $("gNowF").textContent=(noteFreq(n0)*chordOct(gp.fig)).toFixed(2)+" Hz";
+    var n0=gp.fig.notes[0]; $("gNowN").textContent=noteLabel(n0); $("gNowF").textContent=noteFreq(n0).toFixed(2)+" Hz";
     gUpdateModeUI(); gSetBtn(false); show("geoPlay"); gWaveStart(); }
   $("gBack").addEventListener("click",function(){ gStop(false); gWaveStop(); show(returnTo); });
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
@@ -1832,28 +1842,41 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function noteLabel(n){ return (typeof n==="number")?n.toFixed(2):n; }
   /* Figures a sequence (sacred/crop/snowflake, notes.length>1) : jouees en
      accords plutot qu une seule note a la fois (une melodie monophonique
-     sonnait mince), transposees -1 octave pour retomber dans la plage
-     Auralis 70-200 Hz (la gamme NM va de 252 a 504 Hz, /2 donne 126-252 Hz).
-     Figures a note unique (planetes/couleurs, notes.length===1) : deja
-     posees dans la bonne plage (ex. 126,22 Hz), inchangees. */
-  function chordOct(fig){ return fig.notes.length>1 ? 0.5 : 1; }
-  function chordForStep(fig,stepNote){
-    var seen={}, out=[];
-    function add(n){ var k=String(n); if(!seen[k]){ seen[k]=1; out.push(n); } }
-    add(stepNote);
-    fig.drone.forEach(function(dr){ add(dr[0]); });
+     sonnait mince). Voicing 1-5-10 ("open position"), le plus courant au
+     piano en new age/ballade : fondamentale grave, quinte au-dessus, et la
+     melodie laissee a son octave d origine. La tierce reste ainsi loin de la
+     basse -> l accord respire, au lieu de baver comme un empilement serre
+     dans le grave. Retenu a l oreille par Jonathan.
+     Figures a note unique (planetes/couleurs) : inchangees, elles n ont ni
+     accord ni transposition. */
+  /* Basse du voicing : 1re note du drone, une octave plus bas. Sa 2e voix est
+     la note du drone qui forme une quarte/quinte/octave avec elle - jamais une
+     tierce, c est ce qui rendait le grave boueux. */
+  function bassPair(fig){
+    var root=noteFreq(fig.drone[0][0]), out=[root*0.5];
+    for(var i=1;i<fig.drone.length;i++){
+      var r=noteFreq(fig.drone[i][0])/root;
+      if(Math.abs(r-1.5)<0.04 || Math.abs(r-4/3)<0.04 || Math.abs(r-2)<0.04){ out.push(noteFreq(fig.drone[i][0])*0.5); break; }
+    }
     return out;
   }
-  function gScheduleCycle(t0){ var d=gp.dur, fig=gp.fig, ns=fig.notes, oct=chordOct(fig);
-    for(var i=0;i<ns.length;i++){ var t1=t0+i*d, chord=chordForStep(fig,ns[i]), gm=1/Math.sqrt(chord.length);
-      chord.forEach(function(nn){ gScheduleNote(noteFreq(nn)*oct,t1,d,gm); }); } }
+  function gScheduleCycle(t0){ var d=gp.dur, fig=gp.fig, ns=fig.notes;
+    if(ns.length<2){ for(var j=0;j<ns.length;j++) gScheduleNote(noteFreq(ns[j]),t0+j*d,d); return; }
+    var bass=bassPair(fig);
+    for(var i=0;i<ns.length;i++){ var t1=t0+i*d;
+      /* Basse et quinte legerement en retrait, melodie en avant : c est ce qui
+         fait ressortir le mouvement melodique au lieu d un bloc plaque. Le
+         petit decalage (12 ms) imite le roulement de la main d un pianiste,
+         une attaque parfaitement simultanee sonne mecanique. */
+      gScheduleNote(bass[0],t1,d,0.50);
+      if(bass[1]) gScheduleNote(bass[1],t1+0.012,d,0.36);
+      gScheduleNote(noteFreq(ns[i]),t1+0.024,d,0.60); } }
   function gPlay(){ if(!gp.fig)return; ensureCtx(); unlockAudio(); var t=ctx.currentTime+0.06;
     gp.master=ctx.createGain(); gp.master.gain.setValueAtTime(0.0001,t); gp.master.gain.linearRampToValueAtTime(gp.vol,t+0.05);
     gp.dry=ctx.createGain(); gp.dry.gain.value=1; gp.master.connect(gp.dry); gp.dry.connect(ctx.destination);
     gp.conv=ctx.createConvolver(); gp.conv.buffer=getReverbIR(); gp.wet=ctx.createGain(); gp.wet.gain.setValueAtTime(gp.reverbAmt*0.7,t); gp.master.connect(gp.conv); gp.conv.connect(gp.wet); gp.wet.connect(ctx.destination);
     // écho retiré (2026-07-20) — ne reste que la réverb
-    var oct=chordOct(gp.fig);
-    gp.drones=[]; gp.fig.drone.forEach(function(dr){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(noteFreq(dr[0])*oct,t); var g=ctx.createGain();g.gain.setValueAtTime(dr[1]*0.3,t); o.connect(g);g.connect(gp.master);o.start(t);gp.drones.push(o); });
+    gp.drones=[]; gp.fig.drone.forEach(function(dr){ var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(noteFreq(dr[0]),t); var g=ctx.createGain();g.gain.setValueAtTime(dr[1]*0.3,t); o.connect(g);g.connect(gp.master);o.start(t);gp.drones.push(o); });
     gp.cycleStart=t;
     if(gp.fig.notes.length===1 && !gp.pulsed){
       var pf=noteFreq(gp.fig.notes[0]), pins=INSTR[gp.instr];
@@ -2028,7 +2051,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   (function gDraw(){ var c=$("gViz"),g=c.getContext("2d"); g.clearRect(0,0,c.width,c.height);
     if(gp.fig){ drawShape(g,c.width,c.height,gp.fig.shape,gp.playing,gPhase,gp.fig); var idx=gCurrentIndex();
       gp.fig.notes.forEach(function(nn,k){ var el=$("gn"+k); if(el)el.classList.toggle("on",k===idx); });
-      if(idx>=0){ $("gNowN").textContent=noteLabel(gp.fig.notes[idx]); $("gNowF").textContent=(noteFreq(gp.fig.notes[idx])*chordOct(gp.fig)).toFixed(2)+" Hz"; } }
+      if(idx>=0){ $("gNowN").textContent=noteLabel(gp.fig.notes[idx]); $("gNowF").textContent=noteFreq(gp.fig.notes[idx]).toFixed(2)+" Hz"; } }
     if(!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)) gPhase+=gp.playing?0.09:0.015;
     requestAnimationFrame(gDraw); })();
 
