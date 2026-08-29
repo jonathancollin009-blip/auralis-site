@@ -142,9 +142,11 @@
   .hhero .htag, .hhero .hh2, .hhero .hsub{color:#fff}
   .hplay{position:absolute; left:16px; bottom:18px; width:48px; height:48px; border-radius:50%; background:var(--cyan); color:#04121a; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 8px 22px -6px rgba(127,216,240,.6)}
 
-  .hsgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-  .hsgrid .hscard:nth-child(3):last-child{grid-column:1/-1}
-  .hscard{height:150px}
+  /* Seances en bandes pleine largeur (croquis Jonathan 2026-08-29) : une
+     seule colonne, ratio ~2,6:1. Les images doivent suivre ce ratio
+     (1200x460) sinon object-fit:cover les recadre haut/bas. */
+  .hsgrid{display:grid; grid-template-columns:1fr; gap:10px}
+  .hscard{height:128px}
   .hsbody{position:absolute; left:0; right:0; bottom:0; padding:10px 12px}
   .hsbody b{display:block; font-size:1.04rem; font-weight:700; text-shadow:0 1px 8px rgba(0,0,0,.85), 0 0 16px rgba(0,0,0,.5)}
   .hsbody i{display:block; font-style:normal; font-size:.68rem; color:#d7e0f2; margin-top:2px; text-shadow:0 1px 6px rgba(0,0,0,.85)}
@@ -563,7 +565,6 @@
         <button class="hscard" data-go="protos"><img src="app-images/294.webp" data-light="297.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
         <button class="hscard" data-go="bin"><img src="app-images/146.webp" data-light="301.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
         <button class="hscard" data-go="medmusic"><img src="app-images/303.webp" data-light="299.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hMed">—</b><i id="hMedSub">—</i></span></button>
-        <button class="hscard" data-go="mixbuild"><img src="app-images/302.webp" data-light="300.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hMix">—</b><i id="hMixSub">—</i></span></button>
       </div>
 
       <p class="heyebrow mv"><span class="het" id="hebExpl">—</span><span class="hel"></span></p>
@@ -1425,7 +1426,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
        toujours aligne sur les puces de filtre si un libelle change. */
     $("hHeroSub").textContent=[t("f_Endogène"),t("f_Phyto"),t("f_Huiles ess."),t("f_Élément"),t("f_Acide aminé")].join(" · ");
     $("hProtoSub").textContent=t("home_sess_proto"); $("hBinSub").textContent=t("home_sess_bin"); $("hMedSub").textContent=t("home_sess_med");
-    $("hMix").textContent=t("home_mix"); $("hMixSub").textContent=t("home_sess_mix");
     $("hExplNote").textContent=t("home_expl_note");
     $("hxSacred").textContent=t("geo_filter_sacred"); $("hxCrop").textContent=t("geo_filter_crop"); $("hxPlanet").textContent=t("geo_filter_planet"); $("hxColor").textContent=t("geo_filter_color"); $("hxFlocon").textContent=t("geo_filter_snowflake");
     $("hMethodT").textContent=t("home_method_t"); $("hMethodS").textContent=t("home_method_s");
