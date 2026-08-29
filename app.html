@@ -504,6 +504,27 @@
   .flashmsg{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); background:var(--pan2); border:1px solid var(--gold); color:var(--gold); font-size:.82rem; font-weight:600; padding:10px 18px; border-radius:12px; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:20; max-width:80%; text-align:center}
   .flashmsg.show{opacity:1; transform:translateX(-50%) translateY(0)}
 
+  /* ---- Cartes de piste : ecran MUSIQUES (vMedmusic) ----
+     ⚠️ Ces classes s'appellent .mix* pour une raison historique : elles
+     avaient ete creees pour le mixeur d'ambiances, supprime le 2026-08-29.
+     medRender() les reutilise telles quelles -- les retirer en les croyant
+     orphelines casse la mise en page de l'ecran Musiques (deja arrive une
+     fois). Les regles propres au mixeur (.mixhero, .mixplay, .mixside,
+     .mixtrack.off) ont bien ete retirees, elles n'avaient pas d'autre usage. */
+  .mixtracks{display:flex; flex-direction:column; gap:10px}
+  .mixtrack{background:linear-gradient(180deg, color-mix(in srgb, var(--tc) 16%, var(--pan)), var(--pan)); border:1px solid color-mix(in srgb, var(--tc) 34%, var(--line)); border-radius:18px; padding:11px 13px 13px}
+  .mixtrack.playing{box-shadow:0 0 0 1px var(--tc), 0 0 22px -6px var(--tc)}
+  .mixrow{display:flex; align-items:center; gap:11px; margin-bottom:9px}
+  .mixicon{width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-size:1.05rem; background:color-mix(in srgb, var(--tc) 26%, transparent); color:var(--tc); flex:none}
+  .mixname{flex:1; font-weight:600; font-size:.95rem}
+  .mixname i{display:block; font-style:normal; font-size:.7rem; color:var(--dim); font-weight:400; margin-top:1px}
+  .mixpct{font-size:.82rem; font-weight:600; color:var(--tc); font-variant-numeric:tabular-nums; min-width:38px; text-align:right}
+  .mixmute{width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:color-mix(in srgb, var(--tc) 18%, transparent); color:var(--txt); font-size:.85rem; cursor:pointer; flex:none}
+  .mixtrack input[type=range]{background:linear-gradient(90deg, var(--tc), color-mix(in srgb, var(--tc) 35%, var(--line)))}
+  .mixtrack input[type=range]::-webkit-slider-thumb{border-color:var(--tc)}
+  .mixtrack input[type=range]::-moz-range-thumb{border-color:var(--tc)}
+  .mixnote{font-size:.68rem; color:var(--dimmer); text-align:center; margin-top:14px; line-height:1.4}
+
   /* ---- Photo agrandie (ecran de lecture geometrie) ---- */
   #vGeoPlay .stage.photobig{--ph:min(30vh,64vw)}
   #vGeoPlay .stage.photobig .gstagephoto,
