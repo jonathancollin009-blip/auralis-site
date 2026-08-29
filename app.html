@@ -504,28 +504,6 @@
   .flashmsg{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); background:var(--pan2); border:1px solid var(--gold); color:var(--gold); font-size:.82rem; font-weight:600; padding:10px 18px; border-radius:12px; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:20; max-width:80%; text-align:center}
   .flashmsg.show{opacity:1; transform:translateX(-50%) translateY(0)}
 
-  /* ---- Construis ta musique de méditation ---- */
-  #vMix .mixhero{display:flex; align-items:center; justify-content:center; gap:26px; margin:14px 0 18px}
-  .mixplay{width:84px; height:84px; border-radius:50%; border:2px solid var(--cyan); background:radial-gradient(circle at 50% 45%, #14304a, #0b1730); color:var(--cyan); font-size:1.7rem; display:grid; place-items:center; cursor:pointer; transition:transform .12s ease-out, box-shadow .3s}
-  .mixplay:active{transform:scale(.97)}
-  .mixplay.on{box-shadow:0 0 22px -4px var(--cyan)}
-  .mixside{width:60px; height:60px; border-radius:50%; border:1px solid var(--line); background:var(--pan); color:var(--dim); font-size:.6rem; font-weight:600; display:grid; place-items:center; gap:1px; text-align:center; line-height:1.15; cursor:pointer}
-  .mixside b{display:block; font-size:1.05rem; font-weight:600; color:var(--txt)}
-  .mixtracks{display:flex; flex-direction:column; gap:10px}
-  .mixtrack{background:linear-gradient(180deg, color-mix(in srgb, var(--tc) 16%, var(--pan)), var(--pan)); border:1px solid color-mix(in srgb, var(--tc) 34%, var(--line)); border-radius:18px; padding:11px 13px 13px}
-  .mixtrack.off{opacity:.5}
-  .mixtrack.playing{box-shadow:0 0 0 1px var(--tc), 0 0 22px -6px var(--tc)}
-  .mixrow{display:flex; align-items:center; gap:11px; margin-bottom:9px}
-  .mixicon{width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-size:1.05rem; background:color-mix(in srgb, var(--tc) 26%, transparent); color:var(--tc); flex:none}
-  .mixname{flex:1; font-weight:600; font-size:.95rem}
-  .mixname i{display:block; font-style:normal; font-size:.7rem; color:var(--dim); font-weight:400; margin-top:1px}
-  .mixpct{font-size:.82rem; font-weight:600; color:var(--tc); font-variant-numeric:tabular-nums; min-width:38px; text-align:right}
-  .mixmute{width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:color-mix(in srgb, var(--tc) 18%, transparent); color:var(--txt); font-size:.85rem; cursor:pointer; flex:none}
-  .mixtrack input[type=range]{background:linear-gradient(90deg, var(--tc), color-mix(in srgb, var(--tc) 35%, var(--line)))}
-  .mixtrack input[type=range]::-webkit-slider-thumb{border-color:var(--tc)}
-  .mixtrack input[type=range]::-moz-range-thumb{border-color:var(--tc)}
-  .mixnote{font-size:.68rem; color:var(--dimmer); text-align:center; margin-top:14px; line-height:1.4}
-
   /* ---- Photo agrandie (ecran de lecture geometrie) ---- */
   #vGeoPlay .stage.photobig{--ph:min(30vh,64vw)}
   #vGeoPlay .stage.photobig .gstagephoto,
@@ -562,9 +540,9 @@
 
       <p class="heyebrow"><span class="het" id="hebSess">—</span><span class="hel"></span></p>
       <div class="hsgrid">
-        <button class="hscard" data-go="protos"><img src="app-images/294.webp" data-light="297.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
-        <button class="hscard" data-go="bin"><img src="app-images/146.webp" data-light="301.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
-        <button class="hscard" data-go="medmusic"><img src="app-images/303.webp" data-light="299.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hMed">—</b><i id="hMedSub">—</i></span></button>
+        <button class="hscard" data-go="protos"><img src="app-images/320.webp" data-light="324.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
+        <button class="hscard" data-go="bin"><img src="app-images/321.webp" data-light="323.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
+        <button class="hscard" data-go="medmusic"><img src="app-images/322.webp" data-light="325.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hMed">—</b><i id="hMedSub">—</i></span></button>
       </div>
 
       <p class="heyebrow mv"><span class="het" id="hebExpl">—</span><span class="hel"></span></p>
@@ -800,17 +778,6 @@
     <div class="favgrid" id="favListEl"></div>
   </section>
 
-  <section class="view" id="vMix">
-    <div class="bar"><button class="backbtn" id="mixBack" aria-label="Retour">‹</button><h2 id="mixTitle">—</h2></div>
-    <div class="mixhero">
-      <button class="mixside" id="mixTimer"><b>∞</b><span id="mixTimerLbl">—</span></button>
-      <button class="mixplay" id="mixPlay" aria-label="Lecture">▶</button>
-      <button class="mixside" id="mixReset"><b>↺</b><span id="mixResetLbl">—</span></button>
-    </div>
-    <div class="mixtracks" id="mixTracks"></div>
-    <p class="mixnote" id="mixNote"></p>
-  </section>
-
   <section class="view" id="vMedmusic">
     <div class="bar"><button class="backbtn" id="medBack" aria-label="Retour">‹</button><h2 id="medTitle">—</h2></div>
     <div class="mixtracks" id="medTracks"></div>
@@ -953,23 +920,10 @@ var T={
  home_sess_pulse:{fr:"Ancrage · au tempo",en:"Grounding · by tempo",es:"Anclaje · por tempo"},
  home_sess_bin:{fr:"Focus · casque requis",en:"Focus · headphones",es:"Enfoque · auriculares"},
  home_sess_fav:{fr:"Mes séquences",en:"My sequences",es:"Mis secuencias"},
- home_mix:{fr:"Construis ta musique de méditation",en:"Build your meditation music",es:"Crea tu música de meditación"},
- home_sess_mix:{fr:"Musique + fréquences · bientôt",en:"Music + frequencies · soon",es:"Música + frecuencias · pronto"},
  home_med:{fr:"Musiques",en:"Music",es:"Músicas"},
  home_sess_med:{fr:"Séances complètes · bientôt",en:"Full sessions · soon",es:"Sesiones completas · pronto"},
- mix_soon:{fr:"Bientôt disponible — en cours de création",en:"Coming soon — in the works",es:"Próximamente — en desarrollo"},
- mix_title:{fr:"Ta musique de méditation",en:"Your meditation music",es:"Tu música de meditación"},
- mix_timer:{fr:"Minuterie",en:"Timer",es:"Temporiz."},
- mix_reset:{fr:"Réinit.",en:"Reset",es:"Reiniciar"},
  mix_loading:{fr:"Chargement du son…",en:"Loading sound…",es:"Cargando sonido…"},
  mix_err:{fr:"Son introuvable",en:"Sound not found",es:"Sonido no encontrado"},
- mix_note:{fr:"Version d'essai — mélange les ambiances à ton goût. D'autres sons s'ajouteront ici.",en:"Test version — blend the ambiences to your taste. More sounds will be added here.",es:"Versión de prueba — mezcla los ambientes a tu gusto. Se añadirán más sonidos."},
- snd_riviere:{fr:"Rivière",en:"River",es:"Río"},
- snd_riviere_sub:{fr:"Ambiance · eau vive",en:"Ambience · flowing water",es:"Ambiente · agua viva"},
- snd_nappe1:{fr:"Nappe profonde",en:"Deep pad",es:"Capa profunda"},
- snd_nappe1_sub:{fr:"Ambiance · souffle grave",en:"Ambience · low breath",es:"Ambiente · soplo grave"},
- snd_nappe2:{fr:"Nappe feutrée",en:"Soft pad",es:"Capa suave"},
- snd_nappe2_sub:{fr:"Ambiance · souffle doux",en:"Ambience · soft breath",es:"Ambiente · soplo suave"},
  med_note:{fr:"Séances complètes, écoutées en streaming — une nouvelle s'ajoutera régulièrement.",en:"Full sessions, streamed — a new one is added regularly.",es:"Sesiones completas, en streaming — se añade una nueva regularmente."},
  med_forest_rain:{fr:"Forêt sous la pluie",en:"Forest Rain",es:"Bosque bajo la lluvia"},
  med_forest_rain_sub:{fr:"Séance · pluie en forêt",en:"Session · rain in the forest",es:"Sesión · lluvia en el bosque"},
@@ -1167,7 +1121,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    fav_max_steps:"Maximal 8 Frequenzen pro Favorit", chain_btn:"🔗  Frequenzen verketten",
    chain_pick_title:"Frequenz wählen — Sequenz", chain_temp_name:"Eigene Sequenz",
    fav_play_now:"▶  Jetzt abspielen", fav_save_as_fav:"⭐  Als Favorit speichern", fav_no_slot:"Kein freier Favoritenplatz",
-   home_mix:"Erstelle deine Meditationsmusik", home_sess_mix:"Musik + Frequenzen · bald", mix_soon:"Bald verfügbar — in Arbeit",
    home_med:"Musik", home_sess_med:"Vollständige Sitzungen · bald",
    set_title:"Einstellungen", set_anim:"Umgebungsanimationen", set_anim_full:"Voll", set_anim_reduced:"Reduziert", set_anim_off:"Aus",
    set_lang:"Sprache", set_vol:"Standardlautstärke", set_about:"Über", set_version:"Version",
@@ -1210,7 +1163,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    fav_max_steps:"Massimo 8 frequenze per preferito", chain_btn:"🔗  Concatena frequenze",
    chain_pick_title:"Scegli una frequenza — Sequenza", chain_temp_name:"Sequenza personalizzata",
    fav_play_now:"▶  Riproduci ora", fav_save_as_fav:"⭐  Salva nei preferiti", fav_no_slot:"Nessuno slot preferito libero",
-   home_mix:"Crea la tua musica di meditazione", home_sess_mix:"Musica + frequenze · presto", mix_soon:"Presto disponibile — in lavorazione",
    home_med:"Musiche", home_sess_med:"Sessioni complete · presto",
    set_title:"Impostazioni", set_anim:"Animazioni ambientali", set_anim_full:"Completo", set_anim_reduced:"Ridotto", set_anim_off:"Disattivato",
    set_lang:"Lingua", set_vol:"Volume predefinito", set_about:"Informazioni", set_version:"Versione",
@@ -1376,7 +1328,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   var curView="home";
   var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, favList:1, settings:1, method:1, medmusic:1,
     play:2, seq:2, geoPlay:2, binPlay:2, binError:2, favKeypad:2, favNext:2, favRecap:2, favName:2};
-  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMix","vMedmusic"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
+  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMedmusic"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
     $("chainBtn").hidden=!!favBuild;
     if(v==="home"){ animHomeCards(); }
     else { var back=(NAV_LEVEL[v]||0)<(NAV_LEVEL[curView]||0);
@@ -1389,7 +1341,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-go]"),function(b){
     b.addEventListener("click",function(){ var g=b.getAttribute("data-go");
-      if(g==="bin")openBinInput(); else if(g==="mixbuild"){ openMix(); } else if(g==="medmusic"){ openMedMusic(); } else show(g); });
+      if(g==="bin")openBinInput(); else if(g==="medmusic"){ openMedMusic(); } else show(g); });
   });
   Array.prototype.forEach.call(document.querySelectorAll("#vHome [data-gocat]"),function(b){
     b.addEventListener("click",function(){ openGeoCat(b.getAttribute("data-gocat")); });
@@ -2455,118 +2407,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   // sélecteur de langue des Réglages : peuplé par fillLangList (clics câblés à la création)
   $("setVol").addEventListener("input",function(){ settings.vol=parseInt(this.value,10); $("setVolVal").textContent=settings.vol; applyDefaultVolume(settings.vol); saveSettings(); });
 
-
-  /* ===== Construis ta musique de méditation (version d'essai) ===== */
-  var MIXSOUNDS=[
-    {id:"riviere", key:"snd_riviere", sub:"snd_riviere_sub", icon:"≈", tc:"#7fd8f0", base:"app-sounds/ambience/riviere2", vol:60},
-    {id:"nappe1", key:"snd_nappe1", sub:"snd_nappe1_sub", icon:"◍", tc:"#b98fe0", base:"app-sounds/ambience/nappe1", vol:45},
-    {id:"nappe2", key:"snd_nappe2", sub:"snd_nappe2_sub", icon:"◎", tc:"#e9c96a", base:"app-sounds/ambience/nappe2", vol:45}
-  ];
-  var mix={ playing:false, bufs:{}, nodes:{}, gains:{}, vol:{}, muted:{} };
-
-  function mixUrl(base){
-    var a=document.createElement("audio");
-    var ogg = a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"');
-    return base + (ogg==="probably"||ogg==="maybe" ? ".ogg" : ".m4a");
-  }
-  function mixLoad(s,cb){
-    if(mix.bufs[s.id]) { cb(mix.bufs[s.id]); return; }
-    var c=ensureCtx(), x=new XMLHttpRequest();
-    x.open("GET",mixUrl(s.base),true); x.responseType="arraybuffer";
-    x.onload=function(){ c.decodeAudioData(x.response,function(b){ mix.bufs[s.id]=b; cb(b); },function(){ cb(null); }); };
-    x.onerror=function(){ cb(null); };
-    x.send();
-  }
-  function mixStartTrack(s){
-    if(mix.nodes[s.id]||!mix.bufs[s.id]) return;
-    var c=ensureCtx();
-    var src=c.createBufferSource(); src.buffer=mix.bufs[s.id]; src.loop=true;
-    var g=c.createGain(); g.gain.value=mix.muted[s.id]?0:(mix.vol[s.id]/100);
-    src.connect(g); g.connect(c.destination); src.start(0);
-    mix.nodes[s.id]=src; mix.gains[s.id]=g;
-  }
-  function mixStopTrack(s){
-    var n=mix.nodes[s.id]; if(!n) return;
-    try{ n.stop(0); }catch(e){}
-    try{ n.disconnect(); mix.gains[s.id].disconnect(); }catch(e){}
-    mix.nodes[s.id]=null; mix.gains[s.id]=null;
-  }
-  function mixStop(){
-    mix.playing=false;
-    MIXSOUNDS.forEach(mixStopTrack);
-    var b=$("mixPlay"); b.textContent="▶"; b.classList.remove("on");
-  }
-  function mixToggle(){
-    if(mix.playing){ mixStop(); return; }
-    unlockAudio();
-    var pending=MIXSOUNDS.length, failed=false;
-    flashMsg(t("mix_loading"));
-    MIXSOUNDS.forEach(function(s){
-      mixLoad(s,function(b){
-        if(!b) failed=true;
-        if(--pending===0){
-          if(failed){ flashMsg(t("mix_err")); return; }
-          mix.playing=true;
-          MIXSOUNDS.forEach(mixStartTrack);
-          var btn=$("mixPlay"); btn.textContent="❚❚"; btn.classList.add("on");
-        }
-      });
-    });
-  }
-  function mixSetVol(s,pct){
-    mix.vol[s.id]=pct;
-    var g=mix.gains[s.id];
-    if(g) g.gain.value = mix.muted[s.id] ? 0 : pct/100;
-    var el=$("mixPct_"+s.id); if(el) el.textContent=pct+" %";
-  }
-  function mixToggleMute(s){
-    mix.muted[s.id]=!mix.muted[s.id];
-    var g=mix.gains[s.id];
-    if(g) g.gain.value = mix.muted[s.id] ? 0 : mix.vol[s.id]/100;
-    var card=$("mixCard_"+s.id), b=$("mixMute_"+s.id);
-    if(card) card.classList.toggle("off",mix.muted[s.id]);
-    if(b) b.textContent = mix.muted[s.id] ? "🔇" : "🔊";
-  }
-  function mixRender(){
-    var box=$("mixTracks"); box.innerHTML="";
-    MIXSOUNDS.forEach(function(s){
-      if(mix.vol[s.id]===undefined) mix.vol[s.id]=s.vol;
-      var card=document.createElement("div");
-      card.className="mixtrack"+(mix.muted[s.id]?" off":"");
-      card.id="mixCard_"+s.id; card.style.setProperty("--tc",s.tc);
-      var row=document.createElement("div"); row.className="mixrow";
-      var ic=document.createElement("span"); ic.className="mixicon"; ic.textContent=s.icon;
-      var nm=document.createElement("span"); nm.className="mixname";
-      nm.innerHTML="<b></b><i></i>";
-      nm.querySelector("b").textContent=t(s.key);
-      nm.querySelector("i").textContent=t(s.sub);
-      var pc=document.createElement("span"); pc.className="mixpct"; pc.id="mixPct_"+s.id; pc.textContent=mix.vol[s.id]+" %";
-      var mu=document.createElement("button"); mu.className="mixmute"; mu.id="mixMute_"+s.id;
-      mu.textContent=mix.muted[s.id]?"🔇":"🔊";
-      mu.addEventListener("click",function(){ mixToggleMute(s); });
-      row.appendChild(ic); row.appendChild(nm); row.appendChild(pc); row.appendChild(mu);
-      var sl=document.createElement("input");
-      sl.type="range"; sl.min=0; sl.max=100; sl.step=1; sl.value=mix.vol[s.id];
-      sl.setAttribute("aria-label",t(s.key));
-      sl.addEventListener("input",function(){ mixSetVol(s,parseInt(this.value,10)); });
-      card.appendChild(row); card.appendChild(sl);
-      box.appendChild(card);
-    });
-  }
-  function openMix(){
-    $("mixTitle").textContent=t("mix_title");
-    $("mixTimerLbl").textContent=t("mix_timer");
-    $("mixResetLbl").textContent=t("mix_reset");
-    $("mixNote").textContent=t("mix_note");
-    mixRender(); show("mix");
-  }
-  $("mixPlay").addEventListener("click",mixToggle);
-  $("mixBack").addEventListener("click",function(){ mixStop(); show("home"); });
-  $("mixReset").addEventListener("click",function(){
-    MIXSOUNDS.forEach(function(s){ mix.muted[s.id]=false; mixSetVol(s,s.vol); });
-    mixRender();
-  });
-  $("mixTimer").addEventListener("click",function(){ flashMsg(t("mix_soon")); });
 
   /* ===== Musiques de meditation (streaming) =====
      Distinct du mixeur d ambiances ci-dessus : ici, des seances completes,
