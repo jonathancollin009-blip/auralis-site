@@ -1838,7 +1838,12 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("gModePulsed").addEventListener("click",function(){ gSetPulsed(true); });
   $("gModePure").addEventListener("click",function(){ gSetPulsed(false); });
   $("gDur").addEventListener("input",function(){ var bpm=parseInt(this.value,10); gp.dur=60/bpm; $("gDurLbl").textContent=bpm+" bpm · "+gp.dur.toFixed(2)+" s"; if(gp.playing){ gStop(true); setTimeout(gPlay,60); } });
-  $("gVol").addEventListener("input",function(){ gp.vol=parseInt(this.value,10)/100; $("gVolLbl").textContent=this.value; if(gp.master&&ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02); });
+  $("gVol").addEventListener("input",function(){ gp.vol=parseInt(this.value,10)/100; $("gVolLbl").textContent=this.value;
+    if(gp.master&&ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02);
+    /* figures a piste enregistree (streaming HTML5 Audio, sans gp.master) :
+       le curseur ne touchait que le synthetiseur -- silencieux sur ces
+       17 figures. On pilote directement le volume de l element audio. */
+    if(gAudio.el) gAudio.el.volume=Math.max(0,Math.min(1,gp.vol)); });
   $("gPlay").addEventListener("click",function(){ if(gp.playing)gStop(false); else gPlay(); });
   function gSetBtn(on){ var b=$("gPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("gViz").parentNode.classList.toggle("playing",on); setBg(on); }
 
