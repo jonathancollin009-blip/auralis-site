@@ -524,11 +524,9 @@
   .mixtrack input[type=range]::-moz-range-thumb{border-color:var(--tc)}
   .mixnote{font-size:.68rem; color:var(--dimmer); text-align:center; margin-top:14px; line-height:1.4}
 
-  /* ---- Photo agrandie + effet de vague (ecran de lecture geometrie) ---- */
-  #gWave{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; z-index:1; display:block; width:130px; height:130px; pointer-events:none}
+  /* ---- Photo agrandie (ecran de lecture geometrie) ---- */
   #vGeoPlay .stage.photobig{--ph:min(30vh,64vw)}
   #vGeoPlay .stage.photobig .gstagephoto,
-  #vGeoPlay .stage.photobig #gWave,
   #vGeoPlay .stage.photobig #gViz{width:var(--ph); height:var(--ph)}
   #vGeoPlay .stage.photobig::before{width:calc(var(--ph) + 20px); height:calc(var(--ph) + 20px)}
 </style>
@@ -681,7 +679,7 @@
   <section class="view" id="vGeoPlay">
     <div class="bar"><button class="backbtn" id="gBack" aria-label="Retour">‹</button><h2 id="gTitle">—</h2></div>
     <div class="player">
-      <div class="stage"><img class="gstagephoto" id="gPhoto" hidden alt=""><canvas id="gWave" hidden aria-hidden="true"></canvas><canvas id="gViz" width="400" height="400" aria-hidden="true"></canvas>
+      <div class="stage"><img class="gstagephoto" id="gPhoto" hidden alt=""><canvas id="gViz" width="400" height="400" aria-hidden="true"></canvas>
         <div class="gnow" id="gNow"><div class="gn" id="gNowN">—</div><div class="gf" id="gNowF"></div></div></div>
       <p class="gsym" id="gSym"></p>
       <p class="gratios" id="gRatios"></p>
@@ -1819,8 +1817,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var musUI = gp.fig.cat==="planet" || gp.fig.cat==="color";
     $("gNow").hidden=!musUI; $("gRow").hidden=!musUI;
     $("gInstrLabel").hidden=!musUI; $("gInstr").hidden=!musUI;
-    gUpdateModeUI(); gSetBtn(false); show("geoPlay"); gWaveStart(); }
-  $("gBack").addEventListener("click",function(){ gStop(false); gWaveStop(); show(returnTo); });
+    gUpdateModeUI(); gSetBtn(false); show("geoPlay"); }
+  $("gBack").addEventListener("click",function(){ gStop(false); show(returnTo); });
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
   $("gReverb").addEventListener("input",function(){ var v=parseInt(this.value,10); $("gReverbVal").textContent=v; gSetReverbAmt(v/100); });
   function gSetLoop(v){ gp.loop=v; $("gLoopOn").setAttribute("aria-pressed",v?"true":"false"); $("gLoopOff").setAttribute("aria-pressed",v?"false":"true"); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }
@@ -2444,104 +2442,6 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   // sélecteur de langue des Réglages : peuplé par fillLangList (clics câblés à la création)
   $("setVol").addEventListener("input",function(){ settings.vol=parseInt(this.value,10); $("setVolVal").textContent=settings.vol; applyDefaultVolume(settings.vol); saveSettings(); });
 
-  /* ===== Effet « vague liquide » sur la photo de l'écran de lecture ===== */
-  /* Bandes horizontales décalées par deux sinus lents : l'onde traverse l'image
-     du haut vers le bas, comme vue à travers l'eau. Amplitude faible, cycle lent,
-     coupé si les animations sont réduites/désactivées (design system Auralis). */
-  var gwave={raf:0,on:false,ctx:null,off:null,A:0,W:0,H:0,t0:0};
-  function gWaveReduced(){
-    try{ return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; }
-  }
-  function gWaveStop(){
-    if(gwave.raf){ cancelAnimationFrame(gwave.raf); gwave.raf=0; }
-    gwave.on=false;
-    var cv=$("gWave"), img=$("gPhoto");
-    if(cv) cv.hidden=true;
-    if(img) img.style.visibility="";
-  }
-  function gWaveFrame(now){
-    if(!gwave.on) return;
-    if(settings.anim==="off"){ gWaveStop(); return; }
-    var ctx=gwave.ctx, off=gwave.off, W=gwave.W, H=gwave.H;
-    var t=(now-gwave.t0)/1000;
-    var soft=(settings.anim==="reduced")?0.5:1;       // niveau « réduit » = plus lent
-    var spd=soft;
-    // « Living Image v1 » : l'image reste EN PLACE. Ce qui traverse, c'est une
-    // onde — réfraction de quelques pixels seulement — accompagnée d'une bande
-    // lumineuse qui rehausse luminosité/contraste sur son passage. C'est cette
-    // bande qui donne l'impression qu'une vague circule SOUS l'image.
-    var M=gwave.M, dpr=gwave.dpr;
-    var T=10/spd;                                      // durée de traversée (8-12 s)
-    // Une nouvelle vague démarre quand la précédente est à 90 % de son trajet :
-    // les deux se chevauchent brièvement, donc plus aucun temps mort ni « redémarrage ».
-    var Tp=T*0.9, n=Math.floor(t/Tp);
-    var pr1=(t-n*Tp)/T, pr2=(t-(n-1)*Tp)/T;
-    var waves=[1.25-pr1*1.62];
-    if(pr2<=1) waves.push(1.25-pr2*1.62);              // la précédente, encore en vue
-    var wd=0.15;                                       // largeur ~30 %
-    var R=3.6*dpr;                                     // réfraction 3,6 px (+20 %)
-    var N=1.5*dpr;                                     // bruit organique 1,5 px
-    var S=Math.max(2,Math.round(dpr*2));
-    ctx.clearRect(0,0,W,H);
-    for(var y=0;y<H;y+=S){
-      var p=y/H, dy=0;
-      // dérivée de gaussienne = réfraction (l'image se courbe au passage de l'onde)
-      for(var wi=0;wi<waves.length;wi++){
-        var u=(p-waves[wi])/wd;
-        dy+=R*1.65*u*Math.exp(-0.5*u*u);
-      }
-      // deux sinus de fréquences non harmoniques = flux organique permanent
-      var dx=N*(Math.sin(y*0.09/dpr+t*0.8*spd)+0.5*Math.sin(y*0.031/dpr-t*0.5*spd))/1.5;
-      var sh=Math.min(S,H-y);
-      ctx.drawImage(off, M+dx, M+y-dy, W, sh, 0, y, W, sh);
-    }
-    // bande lumineuse diagonale qui accompagne chaque onde (+ luminosité, + contraste)
-    var sp=wd*H*1.9;
-    for(var wi=0;wi<waves.length;wi++){
-      var yc=waves[wi]*H;
-      var g=ctx.createLinearGradient(W*0.2, yc+H*0.10-sp, W*0.8, yc-H*0.10+sp);
-      g.addColorStop(0,"rgba(255,255,255,0)");
-      g.addColorStop(0.5,"rgba(255,255,255,0.24)");
-      g.addColorStop(1,"rgba(255,255,255,0)");
-      ctx.globalCompositeOperation="soft-light";
-      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-      ctx.globalCompositeOperation="lighter";
-      ctx.globalAlpha=0.06; ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-      ctx.globalAlpha=1;
-    }
-    ctx.globalCompositeOperation="source-over";
-    gwave.raf=requestAnimationFrame(gWaveFrame);
-  }
-  function gWaveStart(){
-    var img=$("gPhoto"), cv=$("gWave");
-    if(!img||!cv||img.hidden||settings.anim==="off"||gWaveReduced()){ gWaveStop(); return; }
-    var build=function(){
-      if(!img.naturalWidth) return;
-      var r=img.getBoundingClientRect(), w=Math.round(r.width), hh=Math.round(r.height);
-      if(!w||!hh){ gWaveStop(); return; }
-      var dpr=Math.min(window.devicePixelRatio||1,2);
-      cv.style.width=w+"px"; cv.style.height=hh+"px";
-      cv.width=Math.round(w*dpr); cv.height=Math.round(hh*dpr);
-      // Marge de quelques pixels autour de l'image : les déplacements de
-      // réfraction (2-4 px) ne découvrent ainsi jamais de bord vide.
-      var M=Math.round(10*dpr);
-      var off=document.createElement("canvas");
-      off.width=cv.width+2*M; off.height=cv.height+2*M;
-      off.getContext("2d").drawImage(img,0,0,off.width,off.height);
-      gwave.ctx=cv.getContext("2d"); gwave.off=off; gwave.M=M;
-      gwave.W=cv.width; gwave.H=cv.height; gwave.dpr=dpr;
-      gwave.t0=performance.now(); gwave.on=true;
-      img.style.visibility="hidden"; cv.hidden=false;
-      if(gwave.raf) cancelAnimationFrame(gwave.raf);
-      gwave.raf=requestAnimationFrame(gWaveFrame);
-    };
-    if(img.complete&&img.naturalWidth) build(); else img.addEventListener("load",build,{once:true});
-  }
-  window.addEventListener("resize",function(){ if(gwave.on){ gWaveStop(); gWaveStart(); } });
-  document.addEventListener("visibilitychange",function(){
-    if(document.hidden) gWaveStop();
-    else if(curView==="geoPlay") gWaveStart();
-  });
 
   /* ===== Construis ta musique de méditation (version d'essai) ===== */
   var MIXSOUNDS=[
