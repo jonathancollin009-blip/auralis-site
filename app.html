@@ -473,6 +473,9 @@
   .gnow .gn{font-size:1.9rem; font-weight:800; line-height:1; text-shadow:0 2px 14px rgba(0,0,0,.85)}
   .gnow .gf{font-size:.8rem; color:var(--cyan); font-variant-numeric:tabular-nums; margin-top:4px; text-shadow:0 1px 10px rgba(0,0,0,.85)}
   .grow{display:flex; gap:6px; margin:12px 0 4px; justify-content:center; flex-wrap:wrap}
+  /* sans ca, le display:flex ci-dessus l emporte sur le [hidden] pose par
+     gShow() et les blocs resteraient visibles (meme piege que .cymimg) */
+  .grow[hidden], .filters[hidden]{display:none}
   .gnote{flex:0 0 auto; min-width:46px; text-align:center; background:var(--pan); border:1px solid var(--line); border-radius:9px; padding:8px 5px; transition:.1s}
   .gnote.on{background:rgba(127,216,240,.14); border-color:var(--cyan); color:var(--cyan); transform:translateY(-3px)}
   .gnote b{display:block; font-size:.95rem; font-weight:800}
@@ -679,7 +682,7 @@
     <div class="bar"><button class="backbtn" id="gBack" aria-label="Retour">‹</button><h2 id="gTitle">—</h2></div>
     <div class="player">
       <div class="stage"><img class="gstagephoto" id="gPhoto" hidden alt=""><canvas id="gWave" hidden aria-hidden="true"></canvas><canvas id="gViz" width="400" height="400" aria-hidden="true"></canvas>
-        <div class="gnow"><div class="gn" id="gNowN">—</div><div class="gf" id="gNowF"></div></div></div>
+        <div class="gnow" id="gNow"><div class="gn" id="gNowN">—</div><div class="gf" id="gNowF"></div></div></div>
       <p class="gsym" id="gSym"></p>
       <p class="gratios" id="gRatios"></p>
       <div class="grow" id="gRow"></div>
@@ -1807,6 +1810,15 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+noteLabel(nn)+"</b>"; row.appendChild(d); });
     var n0=gp.fig.notes[0]; $("gNowN").textContent=noteLabel(n0); $("gNowF").textContent=noteFreq(n0).toFixed(2)+" Hz";
+    /* Interface musicale reservee aux figures « planete » et « couleur »
+       (les seules a une note). Pour la geometrie sacree, les agroglyphes et
+       les flocons, on ne montre plus l'instrument, la rangee de notes ni le
+       releve central : il reste la figure, la sonification et ses reglages.
+       Les noeuds sont masques, pas supprimes -- gDraw() ecrit dedans a chaque
+       frame sans verifier leur existence. */
+    var musUI = gp.fig.cat==="planet" || gp.fig.cat==="color";
+    $("gNow").hidden=!musUI; $("gRow").hidden=!musUI;
+    $("gInstrLabel").hidden=!musUI; $("gInstr").hidden=!musUI;
     gUpdateModeUI(); gSetBtn(false); show("geoPlay"); gWaveStart(); }
   $("gBack").addEventListener("click",function(){ gStop(false); gWaveStop(); show(returnTo); });
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
