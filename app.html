@@ -1793,7 +1793,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("gModePulsed").setAttribute("aria-pressed",gp.pulsed?"true":"false"); $("gModePure").setAttribute("aria-pressed",gp.pulsed?"false":"true");
     /* gUpdateModeUI() s'execute APRES le bloc de gOpen : c'est donc ICI que
        gTempoCtl doit etre decide, sinon le `pure` ecraserait le masquage. */
-    $("gTempoCtl").hidden=pure||!mus; $("gLoopSeg").hidden=pure; }
+    $("gTempoCtl").hidden=pure||!mus; $("gLoopSeg").hidden=mus; }
   function gSetPulsed(v){ gp.pulsed=v; gUpdateModeUI(); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }
   $("gModePulsed").addEventListener("click",function(){ gSetPulsed(true); });
   $("gModePure").addEventListener("click",function(){ gSetPulsed(false); });
@@ -1975,7 +1975,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     } else {
       gScheduleCycle(t); gp.playing=true; gSetBtn(true);
       var cl=gp.fig.notes.length*gp.dur;
-      if(gp.loop){ gp.timer=setInterval(function(){ gp.cycleStart=ctx.currentTime; gScheduleCycle(gp.cycleStart); }, cl*1000); }
+      /* planetes/couleurs pulsees : frequence continue, la boucle n est pas
+         un choix expose a l utilisateur (gLoopSeg masque) — on boucle toujours. */
+      if(gp.loop || gp.fig.notes.length===1){ gp.timer=setInterval(function(){ gp.cycleStart=ctx.currentTime; gScheduleCycle(gp.cycleStart); }, cl*1000); }
       else { gp.timer=setTimeout(function(){ if(gp.playing)gStop(false); }, cl*1000+120); }
     } }
   function gStop(immediate){ gAudioStop(immediate); if(gp.timer){ clearInterval(gp.timer); clearTimeout(gp.timer); gp.timer=null; }
