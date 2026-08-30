@@ -1384,6 +1384,18 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     else { var back=(NAV_LEVEL[v]||0)<(NAV_LEVEL[curView]||0);
       var el=$("v"+cap(v)); if(el){ el.classList.remove("nav-fwd","nav-back"); void el.offsetWidth; el.classList.add(back?"nav-back":"nav-fwd"); } }
     curView=v;
+    /* Chaque ecran repart en haut. Le document est le conteneur de defilement
+       commun a toutes les vues : sans cette remise a zero, un ecran hérite du
+       defilement du precedent et s affiche en-tete hors champ. Le navigateur
+       mobile recale alors la position au premier contact -- tout glisse de la
+       hauteur de l en-tete et le tap atterrit a cote du bouton (typiquement
+       sur le curseur de volume juste au-dessus). D ou le « il faut appuyer
+       deux fois ». */
+    try{ window.scrollTo(0,0); }catch(e){}
+    var vEl=$("v"+cap(v));
+    if(vEl) Array.prototype.forEach.call(
+      vEl.querySelectorAll(".home,.list,.geogrid,.favgrid,.setwrap"),
+      function(sc){ sc.scrollTop=0; });
     /* Expose la vue courante au CSS : permet de neutraliser le fond d ecran
        anime sur certaines pages (la liste Frequences veut un aplat uni). */
     document.body.setAttribute("data-view",v); }
