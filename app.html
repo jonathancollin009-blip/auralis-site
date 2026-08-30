@@ -552,6 +552,26 @@
     #vGeoPlay .player{min-height:0}
     #vGeoPlay .stage{min-height:0}
   }
+  /* ---- Ecrans de LECTURE : bornes a la fenetre, jamais defilables ----
+     Ce sont les seuls ecrans ou un appui declenche une action : ce sont donc
+     les seuls ou un recalage de la mise en page fait mal. On les borne a la
+     hauteur stable et le contenu long (le descriptif de la frequence, qui a
+     deja son propre defilement) absorbe l espace restant au lieu de faire
+     deborder la page entiere. Les listes, elles, gardent leur defilement
+     normal : on n y appuie que pour naviguer. */
+  @supports (height:100svh){
+    #vPlay, #vGeoPlay, #vSeq, #vPulse, #vBinPlay{height:100svh; overflow:hidden}
+    #vPlay .player, #vSeq .player, #vPulse .player, #vBinPlay .player{min-height:0}
+    #vPlay .pdesc{flex:1 1 auto; min-height:0; max-height:none}
+    /* L illustration est reduite en consequence : sans ca elle absorbait tout
+       l espace et le descriptif tombait a 36 px, illisible. */
+    #vPlay .cymimg{width:min(22svh,52vw); height:min(22svh,52vw)}
+    #vPlay canvas{width:min(22svh,46vw); height:min(22svh,46vw)}
+    /* Sur un protocole, c est la liste des etapes qui est de longueur
+       variable : elle absorbe l espace restant et defile en interne, sinon
+       l `overflow:hidden` ci-dessus lui couperait ses dernieres etapes. */
+    #vSeq .steps{flex:1 1 auto; min-height:0; overflow-y:auto}
+  }
 </style>
 
 <script>
