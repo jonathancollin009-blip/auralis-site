@@ -55,6 +55,15 @@
   :root[data-theme="light"] .appbg::after{background:linear-gradient(180deg, rgba(var(--bg-rgb),.05), rgba(var(--bg-rgb),.12) 55%, rgba(var(--bg-rgb),.22))}
   *{box-sizing:border-box}
   html,body{margin:0; height:100%}
+  /* Hauteur STABLE. Mesure sur Samsung (sonde ?debug=1) : la fenetre oscille
+     entre 746 et 805 px selon que la barre systeme Android est visible ou non,
+     et le basculement se produit pendant un appui (ih=805 au touchstart,
+     ih=746 au touchend). Avec `100%`/`vh` la mise en page etait calee sur la
+     GRANDE valeur : elle debordait donc d environ 60 px, devenait defilable,
+     et se recalait sous le doigt -- le tap partait sur l element voisin
+     (image ou curseur de volume) au lieu du bouton. D ou le « il faut appuyer
+     deux fois ». `svh` est la petite hauteur, barres visibles : constante. */
+  @supports (height:100svh){ html,body{height:100svh} }
   body{background:var(--bg);
     color:var(--txt); font:16px/1.5 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; display:flex; justify-content:center}
   .appbg{position:fixed; inset:0; z-index:0; background:var(--bg) var(--bgimg) center center / cover no-repeat; pointer-events:none; transition:opacity .6s ease}
@@ -68,6 +77,11 @@
   .appbg::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(var(--bg-rgb),.18), rgba(var(--bg-rgb),.3) 55%, rgba(var(--bg-rgb),.42))}
   .pbg{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
   .app{width:100%; max-width:520px; min-height:100%; display:flex; flex-direction:column; position:relative; z-index:1}
+  /* Meme raison que html/body ci-dessus : `100%` se resout contre le bloc
+     conteneur initial, c est-a-dire la GRANDE fenetre (805 px mesures), alors
+     que seuls 746 px sont reellement disponibles. Le conteneur depassait donc
+     la fenetre a lui seul et rendait la page defilable sans raison. */
+  @supports (height:100svh){ .app{min-height:100svh} }
   .view{display:none; flex-direction:column; flex:1}
   .view.on{display:flex}
   .view.on.nav-fwd{animation:viewInFwd .28s cubic-bezier(.22,.61,.36,1) both}
@@ -530,6 +544,14 @@
   #vGeoPlay .stage.photobig .gstagephoto,
   #vGeoPlay .stage.photobig #gViz{width:var(--ph); height:var(--ph)}
   #vGeoPlay .stage.photobig::before{width:calc(var(--ph) + 20px); height:calc(var(--ph) + 20px)}
+  /* Meme calcul en hauteur stable, et un cran plus compact : l ecran doit
+     tenir entier dans la petite fenetre pour ne jamais devenir defilable
+     (preference « ecrans condenses, sans defilement » du design system). */
+  @supports (height:100svh){
+    #vGeoPlay .stage.photobig{--ph:min(26svh,58vw)}
+    #vGeoPlay .player{min-height:0}
+    #vGeoPlay .stage{min-height:0}
+  }
 </style>
 
 <script>
