@@ -283,6 +283,12 @@
   .gtvis .gtico{font-size:3.4rem; line-height:1}
   .gtname{padding:9px 8px 11px; font-weight:700; font-size:.86rem; text-align:center; line-height:1.25}
   .geogrid .empty{grid-column:1/3}
+  /* « Tout faire jouer » : pose au-dessus de la grille, seulement pour les
+     categories a pistes enregistrees (sacree, agroglyphes, flocons). */
+  .geoall{padding:0 18px 10px}
+  .geoallbtn{width:100%; display:flex; align-items:center; justify-content:center; gap:9px; min-height:48px; padding:13px 16px; border:1px solid var(--line2); border-radius:16px; background:linear-gradient(96deg,rgba(127,216,240,.13),rgba(185,143,224,.13)); color:var(--cyan); font:inherit; font-size:.92rem; font-weight:700; cursor:pointer; transition:transform .12s ease, box-shadow .22s ease, border-color .22s ease}
+  .geoallbtn:active{transform:scale(.985); border-color:var(--cyan); box-shadow:0 0 20px rgba(127,216,240,.24)}
+  .geoallbtn .gaico{font-size:.78rem; opacity:.9}
   .favgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:4px 18px 22px; overflow-y:auto}
   .ftile{position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:4px; min-height:98px; background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:16px 10px 12px; cursor:pointer; color:var(--txt); font:inherit; transition:transform .12s ease, box-shadow .22s ease, background .12s ease, border-color .22s ease}
   .ftile:active{background:var(--pan2); transform:scale(.975); border-color:rgba(233,201,106,.5); box-shadow:0 0 20px rgba(233,201,106,.24)}
@@ -715,6 +721,7 @@
   <section class="view" id="vGeo">
     <div class="bar"><button class="backbtn" id="geoBack" aria-label="Retour">‹</button><h2 id="geoTitle">—</h2></div>
     <div class="pad"><div class="filters" id="geoFilters"></div></div>
+    <div class="geoall" id="geoAllWrap" hidden><button class="geoallbtn" id="geoPlayAll"><span class="gaico" aria-hidden="true">▶</span><span id="geoPlayAllLbl">—</span></button></div>
     <div class="geogrid" id="geoList"></div>
   </section>
 
@@ -944,6 +951,7 @@ var T={
  geo_filter_color:{fr:"Couleur",en:"Color",es:"Color"},
  geo_filter_planet:{fr:"Planète",en:"Planet",es:"Planeta"},
  geo_empty_cat:{fr:"Aucune figure pour l'instant.",en:"No figures yet.",es:"Aún no hay figuras."},
+ geo_playall:{fr:"Tout faire jouer",en:"Play all",es:"Reproducir todo"},
  disc_pulse:{fr:"Bien-être et relaxation — pas un usage médical. Le volume pulse au rythme choisi, comme un battement.",en:"Wellness and relaxation — not medical use. Volume pulses at the chosen tempo, like a heartbeat.",es:"Bienestar y relajación — no es un uso médico. El volumen pulsa al ritmo elegido, como un latido."},
  home_bin:{fr:"Binauraux",en:"Binaural",es:"Binaurales"},
  bin_step1:{fr:"Entrez la fréquence No.1",en:"Enter frequency No.1",es:"Introduzca la frecuencia N.º1"},
@@ -1033,7 +1041,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    set_title:"ການຕັ້ງຄ່າ", set_anim:"ພາບເຄື່ອນໄຫວ", set_anim_full:"ເຕັມ", set_anim_reduced:"ຫຼຸດ", set_anim_off:"ປິດ",
    set_lang:"ພາສາ", set_vol:"ລະດັບສຽງເລີ່ມຕົ້ນ", set_about:"ກ່ຽວກັບ", set_version:"ເວີຊັນ",
    geo_filter_crop:"Crop Circle", geo_filter_sacred:"ເລຂາຄະນິດສັກສິດ", geo_filter_snowflake:"ເກັດຫິມະ", geo_filter_color:"ສີ", geo_filter_planet:"ດາວເຄາະ",
-   geo_empty_cat:"ຍັງບໍ່ມີຮູບ.",
+   geo_empty_cat:"ຍັງບໍ່ມີຮູບ.", geo_playall:"ຫຼິ້ນທັງໝົດ",
    disc_pulse:"ສຸຂະພາບ ແລະ ຜ່ອນຄາຍ — ບໍ່ແມ່ນການໃຊ້ທາງການແພດ. ລະດັບສຽງເຕັ້ນຕາມຈັງຫວະທີ່ເລືອກ ຄືກັບການເຕັ້ນຂອງຫົວໃຈ.",
    home_bin:"ສຽງໄບໂນຣອລ", bin_step1:"ປ້ອນຄວາມຖີ່ No.1", bin_step2:"ປ້ອນຄວາມຖີ່ No.2",
    bin_f1:"ຄວາມຖີ່ No.1 :", bin_f2:"ຄວາມຖີ່ No.2 :", bin_maxgap:"ຄວາມຕ່າງສູງສຸດ : 30 Hz",
@@ -1071,7 +1079,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    set_title:"सेटिंग्स", set_anim:"परिवेश एनिमेशन", set_anim_full:"पूर्ण", set_anim_reduced:"कम", set_anim_off:"बंद",
    set_lang:"भाषा", set_vol:"डिफ़ॉल्ट आवाज़", set_about:"परिचय", set_version:"संस्करण",
    geo_filter_crop:"क्रॉप सर्कल", geo_filter_sacred:"पवित्र ज्यामिति", geo_filter_snowflake:"हिमकण", geo_filter_color:"रंग", geo_filter_planet:"ग्रह",
-   geo_empty_cat:"अभी कोई आकृति नहीं।",
+   geo_empty_cat:"अभी कोई आकृति नहीं।", geo_playall:"सब चलाएँ",
    disc_pulse:"स्वास्थ्य और विश्राम — चिकित्सा उपयोग नहीं। आवाज़ चुनी गई गति पर स्पंदित होती है, धड़कन की तरह।",
    home_bin:"बाइनॉरल", bin_step1:"आवृत्ति No.1 दर्ज करें", bin_step2:"आवृत्ति No.2 दर्ज करें",
    bin_f1:"आवृत्ति No.1 :", bin_f2:"आवृत्ति No.2 :", bin_maxgap:"अधिकतम अंतर : 30 Hz",
@@ -1109,7 +1117,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    set_title:"设置", set_anim:"环境动画", set_anim_full:"完整", set_anim_reduced:"减弱", set_anim_off:"关闭",
    set_lang:"语言", set_vol:"默认音量", set_about:"关于", set_version:"版本",
    geo_filter_crop:"麦田圈", geo_filter_sacred:"神圣几何", geo_filter_snowflake:"雪花", geo_filter_color:"颜色", geo_filter_planet:"行星",
-   geo_empty_cat:"暂无图形。",
+   geo_empty_cat:"暂无图形。", geo_playall:"全部播放",
    disc_pulse:"健康与放松 — 非医疗用途。音量按所选节奏脉动，如同心跳。",
    home_bin:"双耳节拍", bin_step1:"输入频率 No.1", bin_step2:"输入频率 No.2",
    bin_f1:"频率 No.1 :", bin_f2:"频率 No.2 :", bin_maxgap:"最大差值 : 30 Hz",
@@ -1147,7 +1155,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    set_title:"設定", set_anim:"環境動畫", set_anim_full:"完整", set_anim_reduced:"減弱", set_anim_off:"關閉",
    set_lang:"語言", set_vol:"預設音量", set_about:"關於", set_version:"版本",
    geo_filter_crop:"麥田圈", geo_filter_sacred:"神聖幾何", geo_filter_snowflake:"雪花", geo_filter_color:"顏色", geo_filter_planet:"行星",
-   geo_empty_cat:"暫無圖形。",
+   geo_empty_cat:"暫無圖形。", geo_playall:"全部播放",
    disc_pulse:"健康與放鬆 — 非醫療用途。音量按所選節奏脈動，如同心跳。",
    home_bin:"雙耳節拍", bin_step1:"輸入頻率 No.1", bin_step2:"輸入頻率 No.2",
    bin_f1:"頻率 No.1 :", bin_f2:"頻率 No.2 :", bin_maxgap:"最大差值 : 30 Hz",
@@ -1186,7 +1194,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    set_title:"Einstellungen", set_anim:"Umgebungsanimationen", set_anim_full:"Voll", set_anim_reduced:"Reduziert", set_anim_off:"Aus",
    set_lang:"Sprache", set_vol:"Standardlautstärke", set_about:"Über", set_version:"Version",
    geo_filter_crop:"Kornkreis", geo_filter_sacred:"Heilige Geometrie", geo_filter_snowflake:"Schneeflocke", geo_filter_color:"Farbe", geo_filter_planet:"Planet",
-   geo_empty_cat:"Noch keine Figuren.",
+   geo_empty_cat:"Noch keine Figuren.", geo_playall:"Alle abspielen",
    disc_pulse:"Wohlbefinden und Entspannung — keine medizinische Anwendung. Die Lautstärke pulsiert im gewählten Tempo, wie ein Herzschlag.",
    home_bin:"Binaural", bin_step1:"Frequenz Nr. 1 eingeben", bin_step2:"Frequenz Nr. 2 eingeben",
    bin_f1:"Frequenz Nr. 1 :", bin_f2:"Frequenz Nr. 2 :", bin_maxgap:"Maximaler Abstand : 30 Hz",
@@ -1228,7 +1236,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    set_title:"Impostazioni", set_anim:"Animazioni ambientali", set_anim_full:"Completo", set_anim_reduced:"Ridotto", set_anim_off:"Disattivato",
    set_lang:"Lingua", set_vol:"Volume predefinito", set_about:"Informazioni", set_version:"Versione",
    geo_filter_crop:"Cerchio nel grano", geo_filter_sacred:"Geometria sacra", geo_filter_snowflake:"Fiocco di neve", geo_filter_color:"Colore", geo_filter_planet:"Pianeta",
-   geo_empty_cat:"Ancora nessuna figura.",
+   geo_empty_cat:"Ancora nessuna figura.", geo_playall:"Riproduci tutto",
    disc_pulse:"Benessere e relax — non è un uso medico. Il volume pulsa al ritmo scelto, come un battito.",
    home_bin:"Binaurale", bin_step1:"Inserisci la frequenza N.1", bin_step2:"Inserisci la frequenza N.2",
    bin_f1:"Frequenza N.1 :", bin_f2:"Frequenza N.2 :", bin_maxgap:"Differenza massima : 30 Hz",
@@ -1792,10 +1800,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   var gfEl=$("geoFilters");
   [{k:"all",l:"f_Toutes"},{k:"crop",l:"geo_filter_crop"},{k:"sacred",l:"geo_filter_sacred"},{k:"snowflake",l:"geo_filter_snowflake"},{k:"color",l:"geo_filter_color"},{k:"planet",l:"geo_filter_planet"}].forEach(function(gf){
     var b=document.createElement("button"); b.setAttribute("data-k",gf.k); b.setAttribute("data-l",gf.l); b.setAttribute("aria-pressed",gf.k==="all"?"true":"false");
-    b.addEventListener("click",function(){ geoState.filter=gf.k; Array.prototype.forEach.call(gfEl.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-k")===gf.k?"true":"false");}); gRenderList(); });
+    b.addEventListener("click",function(){ gQueueClear(); geoState.filter=gf.k; Array.prototype.forEach.call(gfEl.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-k")===gf.k?"true":"false");}); gRenderList(); });
     gfEl.appendChild(b);
   });
-  function openGeoCat(cat){ geoState.filter=cat;
+  function openGeoCat(cat){ gQueueClear(); geoState.filter=cat;
     Array.prototype.forEach.call(gfEl.children,function(x){ x.setAttribute("aria-pressed", x.getAttribute("data-k")===cat?"true":"false"); });
     gRenderList(); show("geo"); }
 
@@ -1837,7 +1845,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function buildInstr(){ var el=$("gInstr"); el.innerHTML=""; GORDER.forEach(function(id){ var b=document.createElement("button"); b.setAttribute("data-i",id); b.setAttribute("aria-pressed",id===gp.instr?"true":"false"); b.textContent=INSTR[id].name[lang]||INSTR[id].name.fr;
     b.addEventListener("click",function(){ gp.instr=id; Array.prototype.forEach.call(el.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-i")===id?"true":"false");}); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }); el.appendChild(b); }); }
 
-  function gRenderList(){ var el=$("geoList"); el.innerHTML="";
+  function gRenderList(){ var el=$("geoList"); el.innerHTML=""; gUpdateAllBtn();
     var arr=GEO.filter(function(fig){ return geoState.filter==="all"||fig.cat===geoState.filter; });
     if(!arr.length){ el.innerHTML='<p class="empty">'+t("geo_empty_cat")+'</p>'; return; }
     arr.forEach(function(fig){ var i=GEO.indexOf(fig); var b=document.createElement("button"); b.className="gtile";
@@ -1847,7 +1855,39 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       else if(isColor){ gtvisAttr=' style="background:radial-gradient(circle at 50% 45%, '+fig.color+' 0%, '+fig.color+' 72%, rgba(0,0,0,.3) 100%)"'; vis=""; }
       else { vis='<span class="gtico">'+fig.ic+'</span>'; }
       b.innerHTML='<span class="gtvis"'+gtvisAttr+'>'+vis+'</span><span class="gtname">'+tn(fig.name)+'</span>';
-      b.addEventListener("click",function(){ gOpen(i,"geo"); }); el.appendChild(b); }); }
+      b.addEventListener("click",function(){ gQueueClear(); gOpen(i,"geo"); }); el.appendChild(b); }); }
+
+  /* ---- « Tout faire jouer » : enchainement d une categorie ----
+     Le bouton n apparait que sur les trois categories a pistes enregistrees
+     (geometrie sacree, agroglyphes, flocons). La file retient les index GEO
+     de la categorie ; l ecran de lecture reste ouvert et affiche la figure en
+     cours pendant que la piste joue, puis passe a la suivante. */
+  var GEO_ALLCATS=["sacred","crop","snowflake"];
+  function gUpdateAllBtn(){ var w=$("geoAllWrap"); if(!w)return;
+    var ok=GEO_ALLCATS.indexOf(geoState.filter)>=0;
+    w.hidden=!ok; if(ok)$("geoPlayAllLbl").textContent=t("geo_playall"); }
+  var gQueue={list:null, idx:0, savedLoop:null};
+  function gQueueOn(){ return !!(gQueue.list&&gQueue.list.length); }
+  function gQueueSetLoopUI(v){ $("gLoopOn").setAttribute("aria-pressed",v?"true":"false"); $("gLoopOff").setAttribute("aria-pressed",v?"false":"true"); }
+  /* Sortie de file : on rend a l utilisateur le reglage Boucle qu il avait
+     avant, sans relancer la lecture (contrairement a gSetLoop). */
+  function gQueueClear(){ if(!gQueueOn())return;
+    if(gQueue.savedLoop!==null){ gp.loop=gQueue.savedLoop; gQueueSetLoopUI(gp.loop); }
+    gQueue.list=null; gQueue.idx=0; gQueue.savedLoop=null; }
+  function gQueueOpen(){ var i=gQueue.list[gQueue.idx];
+    gOpen(i,"geo");
+    /* Une figure a la fois : en boucle infinie, la piste ne se termine jamais
+       et l enchainement ne partirait pas. */
+    gp.loop=false; gQueueSetLoopUI(false);
+    $("gTitle").textContent=tn(GEO[i].name)+" · "+(gQueue.idx+1)+"/"+gQueue.list.length;
+    startWhenReady(gPlay); }
+  function gQueueNext(){ if(!gQueueOn())return false;
+    if(gQueue.idx+1>=gQueue.list.length){ gQueueClear(); return false; }
+    gQueue.idx++; gQueueOpen(); return true; }
+  function gQueueStart(cat){ var list=[]; GEO.forEach(function(f,i){ if(f.cat===cat)list.push(i); });
+    if(!list.length)return;
+    gQueueClear(); gQueue.list=list; gQueue.idx=0; gQueue.savedLoop=gp.loop; gQueueOpen(); }
+  $("geoPlayAll").addEventListener("click",function(){ gQueueStart(geoState.filter); });
   function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); }
     $("gTitle").textContent=tn(gp.fig.name); $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=tn(gp.fig.ratios);
     var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"||gp.fig.cat==="crop"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); $("gViz").style.visibility="visible"; }
@@ -1865,7 +1905,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("gNow").hidden=!musUI; $("gRow").hidden=!musUI;
     $("gInstrLabel").hidden=!musUI; $("gInstr").hidden=!musUI;
     gUpdateModeUI(); gSetBtn(false); show("geoPlay"); }
-  $("gBack").addEventListener("click",function(){ gStop(false); show(returnTo); });
+  $("gBack").addEventListener("click",function(){ gQueueClear(); gStop(false); show(returnTo); });
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
   function gSetLoop(v){ gp.loop=v; $("gLoopOn").setAttribute("aria-pressed",v?"true":"false"); $("gLoopOff").setAttribute("aria-pressed",v?"false":"true"); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }
   /* Interface musicale = figures « planete » et « couleur » uniquement (les
@@ -1889,7 +1929,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
        le curseur ne touchait que le synthetiseur -- silencieux sur ces
        17 figures. On pilote directement le volume de l element audio. */
     if(gAudio.el) gAudio.el.volume=Math.max(0,Math.min(1,gp.vol)); });
-  $("gPlay").addEventListener("click",function(){ if(gp.playing)gStop(false); else startWhenReady(gPlay); });
+  $("gPlay").addEventListener("click",function(){ if(gp.playing){ gQueueClear(); gStop(false); } else startWhenReady(gPlay); });
   function gSetBtn(on){ var b=$("gPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("gViz").parentNode.classList.toggle("playing",on); setBg(on); }
 
   function gScheduleNote(f,start,dur,gm){
@@ -2011,7 +2051,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
      retombent sur la synthese temps reel d origine, inchangee -- ca permet
      d ajouter les pistes une par une sans casser les 43 autres figures. */
   var GEO_BASE="https://aura-lis.ca/app-sounds/geometrie/";
-  var gAudio={ el:null, base:null };
+  var gAudio={ el:null, base:null, pool:null, fade:null, gen:0 };
   function gAudioUrl(base){
     var a=document.createElement("audio");
     var ogg=a.canPlayType&&a.canPlayType('audio/ogg; codecs="vorbis"');
@@ -2019,21 +2059,33 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   }
   function gAudioStop(immediate){
     if(!gAudio.el)return; var el=gAudio.el; gAudio.el=null;
+    if(gAudio.fade){ clearInterval(gAudio.fade); gAudio.fade=null; }
     if(immediate){ try{el.pause();}catch(e){} return; }
     /* fondu de sortie court : couper net claque dans les ecouteurs */
     var v=el.volume, n=8, i=0;
-    var iv=setInterval(function(){ i++; try{ el.volume=Math.max(0,v*(1-i/n)); }catch(e){}
-      if(i>=n){ clearInterval(iv); try{el.pause();}catch(e){} } },15);
+    gAudio.fade=setInterval(function(){ i++; try{ el.volume=Math.max(0,v*(1-i/n)); }catch(e){}
+      if(i>=n){ clearInterval(gAudio.fade); gAudio.fade=null; try{el.pause();}catch(e){} } },15);
   }
   function gPlayAudio(){
-    var el=new Audio(); el.src=gAudioUrl(gp.fig.audio); el.loop=!!gp.loop;
+    /* Un seul element <audio>, reutilise d une piste a l autre : sur iOS et
+       Android, seul un element deja deverrouille par un geste peut redemarrer
+       sans nouvelle interaction — c est ce qui permet a « Tout faire jouer »
+       d enchainer. Le jeton `gen` identifie la lecture en cours pour qu un
+       onended/onerror tardif de la piste precedente ne casse pas la suivante. */
+    var el=gAudio.pool||(gAudio.pool=new Audio());
+    var gen=++gAudio.gen;
+    if(gAudio.fade){ clearInterval(gAudio.fade); gAudio.fade=null; }
+    el.src=gAudioUrl(gp.fig.audio); el.loop=!!gp.loop;
     el.volume=Math.max(0,Math.min(1,gp.vol)); el.preload="auto";
-    el.onended=function(){ if(!el.loop&&gp.playing) gStop(false); };
-    el.onerror=function(){ /* piste injoignable : on ne laisse pas l ecran muet */
+    el.onended=function(){ if(gen!==gAudio.gen)return;
+      if(gQueueOn()&&gQueueNext())return;
+      if(!el.loop&&gp.playing) gStop(false); };
+    el.onerror=function(){ if(gen!==gAudio.gen)return;
+      /* piste injoignable : on ne laisse pas l ecran muet */
       gAudio.el=null; gp.fig=Object.assign({},gp.fig); delete gp.fig.audio;
       gPlaySynth(); };
     gAudio.el=el; gp.cycleStart=(ctx?ctx.currentTime:0);
-    var p=el.play(); if(p&&p.catch)p.catch(function(){ el.onerror(); });
+    var p=el.play(); if(p&&p.catch)p.catch(function(){ if(gen===gAudio.gen)el.onerror(); });
     gp.playing=true; gSetBtn(true);
   }
   function gPlay(){ if(!gp.fig)return; ensureCtx(); unlockAudio();
@@ -2063,7 +2115,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       /* planetes/couleurs pulsees : frequence continue, la boucle n est pas
          un choix expose a l utilisateur (gLoopSeg masque) — on boucle toujours. */
       if(gp.loop || gp.fig.notes.length===1){ gp.timer=setInterval(function(){ gp.cycleStart=ctx.currentTime; gScheduleCycle(gp.cycleStart); }, cl*1000); }
-      else { gp.timer=setTimeout(function(){ if(gp.playing)gStop(false); }, cl*1000+120); }
+      else { gp.timer=setTimeout(function(){ if(!gp.playing)return;
+        if(gQueueOn()&&gQueueNext())return;
+        gStop(false); }, cl*1000+120); }
     } }
   function gStop(immediate){ gAudioStop(immediate); if(gp.timer){ clearInterval(gp.timer); clearTimeout(gp.timer); gp.timer=null; }
     if(ctx&&gp.master){ var t=ctx.currentTime,m=gp.master,ds=gp.drones,dy=gp.dry,dl=gp.delayNode,fb=gp.feedback,ew=gp.echoWet,ef=gp.echoFilter;
