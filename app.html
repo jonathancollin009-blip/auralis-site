@@ -544,6 +544,10 @@
   .mixtrack input[type=range]::-webkit-slider-thumb{border-color:var(--tc)}
   .mixtrack input[type=range]::-moz-range-thumb{border-color:var(--tc)}
   .mixnote{font-size:.68rem; color:var(--dimmer); text-align:center; margin-top:14px; line-height:1.4}
+  /* « Tout faire jouer » (ecran Musiques) : meme bouton que la Geometrie
+     (.geoallbtn), mais dans un conteneur sans padding lateral pour s aligner
+     exactement sur la largeur des cartes .mixtrack. */
+  .medall{padding:0 0 10px}
 
   /* ---- Photo agrandie (ecran de lecture geometrie) ---- */
   #vGeoPlay .stage.photobig{--ph:min(30vh,64vw)}
@@ -849,6 +853,7 @@
 
   <section class="view" id="vMedmusic">
     <div class="bar"><button class="backbtn" id="medBack" aria-label="Retour">‹</button><h2 id="medTitle">—</h2></div>
+    <div class="medall"><button class="geoallbtn" id="medPlayAll"><span class="gaico" id="medPlayAllIco" aria-hidden="true">▶</span><span id="medPlayAllLbl">—</span></button></div>
     <div class="mixtracks" id="medTracks"></div>
     <p class="mixnote" id="medNote"></p>
   </section>
@@ -2612,7 +2617,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     {id:"riviere_sous_la_pluie", key:"med_riviere_sous_la_pluie", sub:"med_riviere_sous_la_pluie_sub", icon:"🏞️", tc:"#7fd8f0", base:"riviere_sous_la_pluie", vol:60},
     {id:"sanctuaire_tropical_paisible", key:"med_sanctuaire_tropical_paisible", sub:"med_sanctuaire_tropical_paisible_sub", icon:"🌴", tc:"#8fe0a8", base:"sanctuaire_tropical_paisible", vol:60}
   ];
-  var med={ playingId:null, bufs:{}, node:null, gain:{}, vol:{} };
+  var med={ playingId:null, bufs:{}, node:null, gain:{}, vol:{}, seq:0, q:{on:false, idx:0} };
 
   function medUrl(base){
     var a=document.createElement("audio");
@@ -2628,26 +2633,61 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     x.send();
   }
   function medStopCurrent(){
-    if(med.node){ try{ med.node.stop(0); }catch(e){} try{ med.node.disconnect(); }catch(e){} med.node=null; }
+    /* onended est coupe AVANT stop(0) : sans ca, l arret manuel declencherait
+       l evenement de fin et ferait partir la piste suivante de la file. */
+    if(med.node){ try{ med.node.onended=null; }catch(e){} try{ med.node.stop(0); }catch(e){} try{ med.node.disconnect(); }catch(e){} med.node=null; }
     var prev=med.playingId; med.playingId=null;
     if(prev){ var b=$("medPlay_"+prev); if(b) b.textContent="▶"; var c=$("medCard_"+prev); if(c) c.classList.remove("playing"); }
   }
-  function medToggle(s){
-    if(med.playingId===s.id){ medStopCurrent(); return; }
+  /* Demarre une piste. En file (« Tout faire jouer »), la boucle est coupee --
+     sinon la piste ne se termine jamais et l enchainement ne partirait pas --
+     et la fin enchaine sur la suivante. Le jeton `seq` protege des chargements
+     concurrents : un clic pendant le telechargement d une autre piste annule
+     la precedente au lieu de faire jouer les deux en meme temps. */
+  function medPlay(s){
     medStopCurrent();
     unlockAudio();
+    var myseq=++med.seq;
     flashMsg(t("mix_loading"));
     medLoad(s,function(b){
-      if(!b){ flashMsg(t("mix_err")); return; }
+      if(myseq!==med.seq) return;
+      /* Reseau coupe : on arrete la file au lieu d enchainer -- sinon les 16
+         pistes defileraient d un coup en autant de messages d erreur. */
+      if(!b){ flashMsg(t("mix_err")); medQClear(); return; }
       var c=ensureCtx();
-      var src=c.createBufferSource(); src.buffer=b; src.loop=true;
+      var src=c.createBufferSource(); src.buffer=b; src.loop=!med.q.on;
       var g=c.createGain(); g.gain.value=(med.vol[s.id]!==undefined?med.vol[s.id]:s.vol)/100;
-      src.connect(g); g.connect(c.destination); src.start(0);
+      src.connect(g); g.connect(c.destination);
+      src.onended=function(){ if(med.node!==src) return; medStopCurrent(); medQNext(); };
+      src.start(0);
       med.node=src; med.gain[s.id]=g; med.playingId=s.id;
       var btn=$("medPlay_"+s.id); if(btn) btn.textContent="❚❚";
       var card=$("medCard_"+s.id); if(card) card.classList.add("playing");
     });
   }
+  function medToggle(s){
+    if(med.playingId===s.id){ medQClear(); medStopCurrent(); return; }
+    medQClear();   /* un clic sur une piste precise sort de la file */
+    medPlay(s);
+  }
+  /* ---- « Tout faire jouer » : les 16 seances enchainees ----
+     Reutilise deux libelles deja traduits dans les 9 langues (geo_playall et
+     stop) plutot que d en ajouter : `stop` porte deja son propre carre, retire
+     ici puisque le bouton a son icone a part. */
+  function medQLabel(){
+    var ic=$("medPlayAllIco"), lb=$("medPlayAllLbl"); if(!ic||!lb) return;
+    if(med.q.on){ ic.textContent="■"; lb.textContent=t("stop").replace(/^[■▶]\s*/,"")+" · "+(med.q.idx+1)+"/"+MEDMUSIC.length; }
+    else { ic.textContent="▶"; lb.textContent=t("geo_playall"); }
+  }
+  function medQClear(){ med.q.on=false; med.q.idx=0; medQLabel(); }
+  function medQNext(){ if(!med.q.on) return;
+    if(med.q.idx+1>=MEDMUSIC.length){ medQClear(); return; }
+    med.q.idx++; medQLabel(); medPlay(MEDMUSIC[med.q.idx]); }
+  function medQStart(){
+    if(med.q.on){ medQClear(); medStopCurrent(); return; }
+    med.q.on=true; med.q.idx=0; medQLabel(); medPlay(MEDMUSIC[0]);
+  }
+  $("medPlayAll").addEventListener("click",medQStart);
   function medSetVol(s,pct){
     med.vol[s.id]=pct;
     var g=med.gain[s.id];
@@ -2684,9 +2724,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function openMedMusic(){
     $("medTitle").textContent=t("home_med");
     $("medNote").textContent=t("med_note");
-    medRender(); show("medmusic");
+    medQLabel(); medRender(); show("medmusic");
   }
-  $("medBack").addEventListener("click",function(){ medStopCurrent(); show("home"); });
+  $("medBack").addEventListener("click",function(){ medQClear(); medStopCurrent(); show("home"); });
 
   makeViz("viz",function(){return state.playing;});
   makeViz("sViz",function(){return seq.playing;});
