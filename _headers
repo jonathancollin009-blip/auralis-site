@@ -1,0 +1,19 @@
+# En-tetes Cloudflare Pages
+#
+# L'app empaquetee avec Capacitor s'execute depuis https://localhost (Android)
+# ou capacitor://localhost (iOS) : tout appel vers aura-lis.ca devient
+# cross-origin. L'onglet Musiques charge ses pistes par XMLHttpRequest pour les
+# decoder en Web Audio, ce qui EXIGE l'en-tete CORS -- sans lui l'app affiche
+# « son introuvable ». (Les pistes de Geometrie passent par un element <audio>,
+# qui lui n'est pas soumis a CORS : elles fonctionnaient deja.)
+#
+# `*` est sans consequence ici : ces fichiers sont publics et servis sans
+# authentification ni cookie, l'en-tete n'ouvre donc aucun acces nouveau.
+
+/app-sounds/*
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+/app-images/*
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
