@@ -503,6 +503,17 @@
   .gnote b{display:block; font-size:.95rem; font-weight:800}
   .gratios{text-align:center; color:var(--gold); font-size:.8rem; font-variant-numeric:tabular-nums; margin:2px 0 0}
   .gsym{text-align:center; color:var(--dim); font-size:.78rem; margin:2px 0 6px}
+  /* Progression de la piste enregistrée (figures à champ `audio`).
+     Compacte : l'écran de lecture Géométrie tient sans défilement, la barre
+     et ses deux horodatages ne prennent qu'une vingtaine de pixels. */
+  .gprog{width:100%; max-width:330px; margin:6px auto 0}
+  .gprog[hidden]{display:none}
+  .gpbar{height:4px; border-radius:99px; background:var(--line); overflow:hidden}
+  .gpbar>i{display:block; height:100%; width:0; border-radius:99px;
+    background:linear-gradient(90deg,var(--cyan),var(--mauve)); transition:width .25s linear}
+  .gprog.seek .gpbar>i{transition:none}
+  .gptimes{display:flex; justify-content:space-between; margin-top:4px;
+    font-size:.7rem; color:var(--dim); font-variant-numeric:tabular-nums}
   /* Lecteur Géométrie compacté — tout sur un écran, sans scroll (n'affecte que #vGeoPlay) */
   #vGeoPlay .player{padding:2px 20px 8px}
   #vGeoPlay .stage{margin:2px 0}
@@ -512,6 +523,7 @@
   #vGeoPlay .gnow .gn{font-size:1.5rem}
   #vGeoPlay .gnow .gf{font-size:.72rem; margin-top:2px}
   #vGeoPlay .gsym{margin:5px 0 1px}
+  #vGeoPlay .gprog{margin-top:4px}
   #vGeoPlay .gratios{margin:0}
   #vGeoPlay .grow{margin:8px 0 2px}
   #vGeoPlay .gnote{padding:6px 5px; min-width:42px}
@@ -543,6 +555,16 @@
   .mixtrack input[type=range]{background:linear-gradient(90deg, var(--tc), color-mix(in srgb, var(--tc) 35%, var(--line)))}
   .mixtrack input[type=range]::-webkit-slider-thumb{border-color:var(--tc)}
   .mixtrack input[type=range]::-moz-range-thumb{border-color:var(--tc)}
+  /* Progression de la seance en cours. `--tc` est porte par .mixtrack, la
+     barre prend donc automatiquement la couleur de sa piste. */
+  .mixprog{margin-top:9px}
+  .mixprog[hidden]{display:none}
+  .mixpbar{height:3px; border-radius:99px; overflow:hidden;
+    background:color-mix(in srgb, var(--tc) 22%, var(--line))}
+  .mixpbar>i{display:block; height:100%; width:0; border-radius:99px;
+    background:var(--tc); transition:width .25s linear}
+  .mixptimes{display:flex; justify-content:space-between; margin-top:4px;
+    font-size:.66rem; color:var(--dim); font-variant-numeric:tabular-nums}
   .mixnote{font-size:.68rem; color:var(--dimmer); text-align:center; margin-top:14px; line-height:1.4}
   /* « Tout faire jouer » (ecran Musiques) : meme bouton que la Geometrie
      (.geoallbtn), mais dans un conteneur sans padding lateral pour s aligner
@@ -734,6 +756,10 @@
     <div class="player">
       <div class="stage"><img class="gstagephoto" id="gPhoto" hidden alt=""><canvas id="gViz" width="400" height="400" aria-hidden="true"></canvas>
         <div class="gnow" id="gNow"><div class="gn" id="gNowN">—</div><div class="gf" id="gNowF"></div></div></div>
+      <div class="gprog" id="gProg" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
+        <div class="gpbar"><i id="gProgFill"></i></div>
+        <div class="gptimes"><span id="gProgCur">0:00</span><span id="gProgDur">--:--</span></div>
+      </div>
       <p class="gsym" id="gSym"></p>
       <p class="gratios" id="gRatios"></p>
       <div class="grow" id="gRow"></div>
@@ -1927,6 +1953,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("gTitle").textContent=tn(gp.fig.name); $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=tn(gp.fig.ratios);
     var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"||gp.fig.cat==="crop"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); $("gViz").style.visibility="visible"; }
     if(ph.parentNode) ph.parentNode.classList.toggle("photobig", !!gp.fig.photo);
+    gProgShow(!!gp.fig.audio); gProgReset();
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+noteLabel(nn)+"</b>"; row.appendChild(d); });
     var n0=gp.fig.notes[0]; $("gNowN").textContent=noteLabel(n0); $("gNowF").textContent=noteFreq(n0).toFixed(2)+" Hz";
@@ -2101,6 +2128,29 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     gAudio.fade=setInterval(function(){ i++; try{ el.volume=Math.max(0,v*(1-i/n)); }catch(e){}
       if(i>=n){ clearInterval(gAudio.fade); gAudio.fade=null; try{el.pause();}catch(e){} } },15);
   }
+  /* ---- Duree et avancement de la piste enregistree (2026-09-04) ----
+     Demande : pendant « Tout faire jouer », voir la figure, la duree de la
+     piste et ou on en est. Seules les figures a champ `audio` en ont une --
+     la synthese temps reel tourne en boucle ouverte, sans duree.
+     La duree est mise en cache par piste : au deuxieme passage sur la meme
+     figure elle s'affiche avant meme que les metadonnees soient rechargees. */
+  var gDurCache={};
+  function fmtMS(s){ if(!isFinite(s)||s<0)s=0;
+    var m=Math.floor(s/60), x=Math.floor(s%60); return m+":"+(x<10?"0":"")+x; }
+  function gProgSet(cur,dur){ var w=$("gProg"); if(!w)return;
+    var pct=(dur>0)?Math.max(0,Math.min(100,cur/dur*100)):0;
+    $("gProgFill").style.width=pct.toFixed(2)+"%";
+    $("gProgCur").textContent=fmtMS(cur);
+    $("gProgDur").textContent=(dur>0)?fmtMS(dur):"--:--";
+    w.setAttribute("aria-valuenow",String(Math.round(pct))); }
+  /* Remise a zero sans animation de retour : la barre repart de la gauche
+     d'un coup quand on change de figure ou qu'on arrete. */
+  function gProgReset(){ var w=$("gProg"); if(!w)return;
+    var known=(gp.fig&&gp.fig.audio)?(gDurCache[gp.fig.audio]||0):0;
+    w.classList.add("seek"); gProgSet(0,known);
+    setTimeout(function(){ w.classList.remove("seek"); },40); }
+  function gProgShow(on){ var w=$("gProg"); if(w)w.hidden=!on; }
+
   function gPlayAudio(){
     /* Un seul element <audio>, reutilise d une piste a l autre : sur iOS et
        Android, seul un element deja deverrouille par un geste peut redemarrer
@@ -2112,12 +2162,29 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     if(gAudio.fade){ clearInterval(gAudio.fade); gAudio.fade=null; }
     el.src=gAudioUrl(gp.fig.audio); el.loop=!!gp.loop;
     el.volume=Math.max(0,Math.min(1,gp.vol)); el.preload="auto";
+    gProgReset();
     el.onended=function(){ if(gen!==gAudio.gen)return;
       if(gQueueOn()&&gQueueNext())return;
       if(!el.loop&&gp.playing) gStop(false); };
+    el.onloadedmetadata=function(){ if(gen!==gAudio.gen)return;
+      if(isFinite(el.duration)&&el.duration>0){ gDurCache[gp.fig.audio]=el.duration;
+        gProgSet(el.currentTime,el.duration); } };
+    /* timeupdate suffit (~4 fois par seconde) et la transition CSS lisse le
+       reste : un requestAnimationFrame ne servirait qu'a vider la batterie.
+       On attend que la duree de la piste COURANTE soit connue : l element
+       <audio> est reutilise d une figure a l autre, et juste apres un
+       changement de src il emet un timeupdate qui porte encore le
+       currentTime de la piste precedente — le jeton `gen` ne protege pas de
+       celui-la, il est deja le nouveau. */
+    el.ontimeupdate=function(){ if(gen!==gAudio.gen)return;
+      if(!isFinite(el.duration)||el.duration<=0)return;
+      gProgSet(el.currentTime, el.duration); };
     el.onerror=function(){ if(gen!==gAudio.gen)return;
       /* piste injoignable : on ne laisse pas l ecran muet */
       gAudio.el=null; gp.fig=Object.assign({},gp.fig); delete gp.fig.audio;
+      /* la barre de progression n'a plus de sens : la synthese qui prend le
+         relais tourne en boucle ouverte, sans duree. */
+      gProgShow(false);
       gPlaySynth(); };
     gAudio.el=el; gp.cycleStart=(ctx?ctx.currentTime:0);
     var p=el.play(); if(p&&p.catch)p.catch(function(){ if(gen===gAudio.gen)el.onerror(); });
@@ -2160,7 +2227,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       try{ if(fb)fb.gain.setValueAtTime(0,t); }catch(e){}
       var tail=immediate?60:(gp.echoAmt>0?900:220);
       setTimeout(function(){ ds.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}}); [m,dy,dl,fb,ew,ef].forEach(function(nd){ if(nd){try{nd.disconnect();}catch(e){}} }); }, tail); }
-    gp.master=null; gp.drones=[]; gp.dry=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.echoFilter=null; gp.playing=false; gSetBtn(false); }
+    gp.master=null; gp.drones=[]; gp.dry=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.echoFilter=null; gp.playing=false; gSetBtn(false); gProgReset(); }
   function gCurrentIndex(){ if(gAudio.el)return -1; if(!gp.playing||!ctx||!gp.fig)return -1; var el=ctx.currentTime-gp.cycleStart; if(el<0)return -1; var i=Math.floor(el/gp.dur); return (i>=0&&i<gp.fig.notes.length)?i:-1; }
 
   function drawShape(g,W,H,type,on,phase,fig){
@@ -2617,7 +2684,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     {id:"riviere_sous_la_pluie", key:"med_riviere_sous_la_pluie", sub:"med_riviere_sous_la_pluie_sub", icon:"🏞️", tc:"#7fd8f0", base:"riviere_sous_la_pluie", vol:60},
     {id:"sanctuaire_tropical_paisible", key:"med_sanctuaire_tropical_paisible", sub:"med_sanctuaire_tropical_paisible_sub", icon:"🌴", tc:"#8fe0a8", base:"sanctuaire_tropical_paisible", vol:60}
   ];
-  var med={ playingId:null, bufs:{}, node:null, gain:{}, vol:{}, seq:0, q:{on:false, idx:0} };
+  var med={ playingId:null, bufs:{}, node:null, gain:{}, vol:{}, seq:0, q:{on:false, idx:0},
+            startAt:0, dur:0, looping:false, tick:null };
 
   function medUrl(base){
     var a=document.createElement("audio");
@@ -2632,10 +2700,45 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     x.onerror=function(){ cb(null); };
     x.send();
   }
+  /* ---- Duree et avancement de la seance (2026-09-04) ----
+     Un AudioBufferSourceNode n'expose ni position ni evenement de progression :
+     la duree vient du buffer decode et la position se deduit de l'horloge de
+     l'AudioContext. Un seul noeud DOM, deplace dans la carte de la piste en
+     cours -- 16 blocs caches coutent 16 fois plus cher pour rien. */
+  var medProgEl=null;
+  function medProgNode(){ if(medProgEl) return medProgEl;
+    var d=document.createElement("div"); d.className="mixprog";
+    d.setAttribute("role","progressbar");
+    d.setAttribute("aria-valuemin","0"); d.setAttribute("aria-valuemax","100");
+    d.innerHTML='<div class="mixpbar"><i></i></div>'+
+      '<div class="mixptimes"><span>0:00</span><span>--:--</span></div>';
+    medProgEl=d; return d; }
+  function medProgAttach(id){ var d=medProgNode(), card=$("medCard_"+id);
+    if(card) card.appendChild(d); else medProgDetach(); }
+  function medProgDetach(){ if(medProgEl&&medProgEl.parentNode) medProgEl.parentNode.removeChild(medProgEl); }
+  function medProgSet(cur,dur){ var d=medProgEl; if(!d)return;
+    var pct=(dur>0)?Math.max(0,Math.min(100,cur/dur*100)):0;
+    d.querySelector(".mixpbar>i").style.width=pct.toFixed(2)+"%";
+    var sp=d.querySelectorAll(".mixptimes span");
+    sp[0].textContent=fmtMS(cur); sp[1].textContent=(dur>0)?fmtMS(dur):"--:--";
+    d.setAttribute("aria-valuenow",String(Math.round(pct))); }
+  function medProgStop(){ if(med.tick){ clearInterval(med.tick); med.tick=null; } }
+  function medProgStart(){ medProgStop();
+    /* 250 ms : la transition CSS lisse l'intervalle, et on ne reveille pas le
+       telephone 60 fois par seconde pour une barre qui bouge d'un pixel. */
+    med.tick=setInterval(function(){
+      if(!med.playingId||!ctx){ medProgStop(); return; }
+      var el=ctx.currentTime-med.startAt, d=med.dur||0;
+      /* hors file la piste boucle : la position repart de zero a chaque tour. */
+      if(d>0&&med.looping) el=el%d;
+      if(d>0&&el>d) el=d;
+      medProgSet(Math.max(0,el),d); },250); }
+
   function medStopCurrent(){
     /* onended est coupe AVANT stop(0) : sans ca, l arret manuel declencherait
        l evenement de fin et ferait partir la piste suivante de la file. */
     if(med.node){ try{ med.node.onended=null; }catch(e){} try{ med.node.stop(0); }catch(e){} try{ med.node.disconnect(); }catch(e){} med.node=null; }
+    medProgStop(); medProgDetach();
     var prev=med.playingId; med.playingId=null;
     if(prev){ var b=$("medPlay_"+prev); if(b) b.textContent="▶"; var c=$("medCard_"+prev); if(c) c.classList.remove("playing"); }
   }
@@ -2661,6 +2764,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       src.onended=function(){ if(med.node!==src) return; medStopCurrent(); medQNext(); };
       src.start(0);
       med.node=src; med.gain[s.id]=g; med.playingId=s.id;
+      med.startAt=c.currentTime; med.dur=b.duration; med.looping=!!src.loop;
+      medProgAttach(s.id); medProgSet(0,b.duration); medProgStart();
       var btn=$("medPlay_"+s.id); if(btn) btn.textContent="❚❚";
       var card=$("medCard_"+s.id); if(card) card.classList.add("playing");
     });
@@ -2720,6 +2825,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       card.appendChild(row); card.appendChild(sl);
       box.appendChild(card);
     });
+    /* la liste vient d'etre reconstruite (ouverture de l'ecran, changement de
+       langue) : le bloc de progression a ete detache avec l'ancienne carte. */
+    if(med.playingId) medProgAttach(med.playingId);
   }
   function openMedMusic(){
     $("medTitle").textContent=t("home_med");
