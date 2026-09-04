@@ -533,7 +533,19 @@
   #vGeoPlay .gprog{margin-top:clamp(14px, 3.2svh, 32px)}
   #vGeoPlay .gratios{margin:0}
   #vGeoPlay .grow{margin:8px 0 2px}
-  #vGeoPlay .gnote{padding:6px 5px; min-width:42px}
+  /* Jusqu'a 8 notes par melodie : a 42 px elles passaient a la ligne sur
+     un ecran de 411 px (378 px requis pour 371 px disponibles) et la rangee
+     doublait de hauteur. Les libelles sont courts (« Do », « Si♭ », « Do′ »). */
+  #vGeoPlay .gnote{padding:5px 4px; min-width:34px}
+  #vGeoPlay .gnote b{font-size:.85rem}
+  #vGeoPlay .grow{margin:4px 0 2px}
+  /* Ecran tres court (sous un iPhone SE) : le libelle saute, les notes
+     restent -- c'est l'information, pas son intitule, qui compte ici. */
+  @media (max-height: 560px){ #vGeoPlay #gNotesLabel{display:none} }
+  /* Plus court encore (hors telephones courants) : la rangee elle-meme
+     s'efface. La mention legale doit rester entiere -- `overflow:hidden` la
+     rognerait, et c'est le cadrage bien-etre exige par les stores. */
+  @media (max-height: 500px){ #vGeoPlay #gRow{display:none} }
   #vGeoPlay .filters{padding-bottom:6px}
   #vGeoPlay .seg{margin:clamp(8px, 1.8svh, 20px) 0}
   #vGeoPlay .ctl{margin-bottom:clamp(6px, 1.4svh, 16px)}
@@ -601,7 +613,7 @@
        l'image prend ce qui reste. Sans ce troisieme terme, figer la hauteur de
        `.stage` faisait deborder le bas de page sous 600 px de fenetre (mesure :
        39 px coupes a 411x640) au lieu de simplement reduire l'image. */
-    #vGeoPlay .stage.photobig{--ph:max(80px, min(27svh, 60vw, calc(100svh - 400px)))}
+    #vGeoPlay .stage.photobig{--ph:max(64px, min(27svh, 60vw, calc(100svh - 460px)))}
     #vGeoPlay .player{min-height:0}
     #vGeoPlay .stage{min-height:0}
   }
@@ -783,6 +795,7 @@
       </div>
       <p class="gsym" id="gSym"></p>
       <p class="gratios" id="gRatios"></p>
+      <p class="label" id="gNotesLabel" style="margin:5px 0 2px"></p>
       <div class="grow" id="gRow"></div>
       <p class="label" id="gInstrLabel" style="margin:5px 0 4px"></p>
       <div class="filters" id="gInstr"></div>
@@ -1004,6 +1017,7 @@ var T={
  geo_filter_planet:{fr:"Planète",en:"Planet",es:"Planeta"},
  geo_empty_cat:{fr:"Aucune figure pour l'instant.",en:"No figures yet.",es:"Aún no hay figuras."},
  geo_playall:{fr:"Tout faire jouer",en:"Play all",es:"Reproducir todo"},
+ geo_notes:{fr:"Notes de la mélodie",en:"Melody notes",es:"Notas de la melodía"},
  nav_prev:{fr:"Piste précédente",en:"Previous track",es:"Pista anterior"},
  nav_next:{fr:"Piste suivante",en:"Next track",es:"Pista siguiente"},
  disc_pulse:{fr:"Bien-être et relaxation — pas un usage médical. Le volume pulse au rythme choisi, comme un battement.",en:"Wellness and relaxation — not medical use. Volume pulses at the chosen tempo, like a heartbeat.",es:"Bienestar y relajación — no es un uso médico. El volumen pulsa al ritmo elegido, como un latido."},
@@ -1583,6 +1597,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("gPrev").setAttribute("aria-label",t("nav_prev")); $("gNext").setAttribute("aria-label",t("nav_next"));
     $("gModePulsed").textContent=t("mode_pulsed"); $("gModePure").textContent=t("mode_pure");
     $("gTempoLabel").textContent=t("tempo"); $("pTempoLabel").textContent=t("tempo"); $("gInstrLabel").textContent=t("instr_label");
+    $("gNotesLabel").textContent=t("geo_notes");
     $("binMaxgap2").textContent=t("bin_maxgap");
     $("binErrTitle").textContent=t("bin_err_title"); $("binRetry").textContent=t("bin_retry"); $("binPlayTitle").textContent=t("bin_playing"); $("binStop").textContent=t("stop");
     if($("binPresets")){ $("binStepTitle").textContent=t("bin_tune_title"); $("binPickHint").textContent=t("bin_pick_hint"); renderBinPresets(); }
@@ -1989,7 +2004,11 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
        Les noeuds sont masques, pas supprimes -- gDraw() ecrit dedans a chaque
        frame sans verifier leur existence. */
     var musUI = gMusUI();
-    $("gNow").hidden=!musUI; $("gRow").hidden=!musUI;
+    /* La rangee de notes est visible partout : c'est elle qui montre la
+       melodie tiree de la figure, celle qui a servi a ecrire le prompt.
+       Son libelle ne s'affiche que la ou le releve central ne dit pas deja
+       la meme chose (planetes et couleurs n'ont qu'une note). */
+    $("gNow").hidden=!musUI; $("gRow").hidden=false; $("gNotesLabel").hidden=musUI;
     $("gInstrLabel").hidden=!musUI; $("gInstr").hidden=!musUI;
     gUpdateModeUI(); gSetBtn(false); show("geoPlay"); }
   $("gBack").addEventListener("click",function(){ gQueueClear(); gStop(false); show(returnTo); });
