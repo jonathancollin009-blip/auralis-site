@@ -466,6 +466,11 @@
   .play{flex:1; padding:17px; border:0; border-radius:15px; font:inherit; font-size:1.1rem; font-weight:800; cursor:pointer; color:#04101f; background:linear-gradient(96deg,var(--cyan),var(--mauve))}
   .play:active{transform:translateY(1px)}
   .play.on{background:linear-gradient(96deg,#e8836f,#e6b866); color:#2a0f08}
+  /* Navigation piste a piste (ecran de lecture Geometrie) : meme gabarit que
+     .favbtn, qui encadre deja le bouton de lecture sans casser le flex. */
+  .navbtn{flex:0 0 auto; width:56px; border-radius:15px; border:1px solid var(--line2); background:var(--pan); color:var(--cyan); font-size:1rem; cursor:pointer}
+  .navbtn:active{transform:translateY(1px)}
+  .navbtn[hidden]{display:none}
   .favbtn{flex:0 0 auto; width:58px; border-radius:15px; border:1px solid var(--line2); background:var(--pan); color:var(--dimmer); font-size:1.4rem; cursor:pointer}
   .favbtn.on{color:var(--gold); border-color:var(--gold)}
   .disc{font-size:.7rem; color:var(--dimmer); text-align:center; margin-top:16px; line-height:1.5}
@@ -563,8 +568,13 @@
     background:color-mix(in srgb, var(--tc) 22%, var(--line))}
   .mixpbar>i{display:block; height:100%; width:0; border-radius:99px;
     background:var(--tc); transition:width .25s linear}
-  .mixptimes{display:flex; justify-content:space-between; margin-top:4px;
+  .mixptimes{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:4px;
     font-size:.66rem; color:var(--dim); font-variant-numeric:tabular-nums}
+  /* Navigation dans la carte de la seance en cours : discrete, a la couleur
+     de la piste, sans cadre -- la carte porte deja son bouton lecture. */
+  .mixnav{border:0; background:none; color:var(--tc); font-size:.86rem; line-height:1;
+    padding:4px 6px; cursor:pointer; opacity:.85}
+  .mixnav:active{opacity:1}
   .mixnote{font-size:.68rem; color:var(--dimmer); text-align:center; margin-top:14px; line-height:1.4}
   /* « Tout faire jouer » (ecran Musiques) : meme bouton que la Geometrie
      (.geoallbtn), mais dans un conteneur sans padding lateral pour s aligner
@@ -769,7 +779,7 @@
       <div class="seg" id="gLoopSeg" role="group" aria-label="Boucle"><button id="gLoopOn" aria-pressed="true"></button><button id="gLoopOff" aria-pressed="false"></button></div>
       <div class="ctl" id="gTempoCtl"><div class="row"><span class="label" id="gTempoLabel"></span><span class="v" id="gDurLbl">72 bpm · 0.83 s</span></div><input type="range" id="gDur" min="50" max="120" step="1" value="72"></div>
       <div class="ctl"><div class="row"><span class="label" id="gVolLabel"></span><span class="v"><span id="gVolLbl">50</span> %</span></div><input type="range" id="gVol" min="0" max="100" step="1" value="50"></div>
-      <div class="actions"><button class="play" id="gPlay"></button></div>
+      <div class="actions"><button class="navbtn" id="gPrev" hidden>⏮</button><button class="play" id="gPlay"></button><button class="navbtn" id="gNext" hidden>⏭</button></div>
       <p class="disc" id="discGeo"></p>
     </div>
   </section>
@@ -983,6 +993,8 @@ var T={
  geo_filter_planet:{fr:"Planète",en:"Planet",es:"Planeta"},
  geo_empty_cat:{fr:"Aucune figure pour l'instant.",en:"No figures yet.",es:"Aún no hay figuras."},
  geo_playall:{fr:"Tout faire jouer",en:"Play all",es:"Reproducir todo"},
+ nav_prev:{fr:"Piste précédente",en:"Previous track",es:"Pista anterior"},
+ nav_next:{fr:"Piste suivante",en:"Next track",es:"Pista siguiente"},
  disc_pulse:{fr:"Bien-être et relaxation — pas un usage médical. Le volume pulse au rythme choisi, comme un battement.",en:"Wellness and relaxation — not medical use. Volume pulses at the chosen tempo, like a heartbeat.",es:"Bienestar y relajación — no es un uso médico. El volumen pulsa al ritmo elegido, como un latido."},
  home_bin:{fr:"Binauraux",en:"Binaural",es:"Binaurales"},
  bin_step1:{fr:"Entrez la fréquence No.1",en:"Enter frequency No.1",es:"Introduzca la frecuencia N.º1"},
@@ -1557,6 +1569,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("methTitle").textContent=t("home_method_t"); $("methBody").innerHTML=t("home_method_body");
     $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); pulseUpdTitle();
     $("gLoopOn").textContent=t("loop_inf"); $("gLoopOff").textContent=t("loop_once");
+    $("gPrev").setAttribute("aria-label",t("nav_prev")); $("gNext").setAttribute("aria-label",t("nav_next"));
     $("gModePulsed").textContent=t("mode_pulsed"); $("gModePure").textContent=t("mode_pure");
     $("gTempoLabel").textContent=t("tempo"); $("pTempoLabel").textContent=t("tempo"); $("gInstrLabel").textContent=t("instr_label");
     $("binMaxgap2").textContent=t("bin_maxgap");
@@ -1796,46 +1809,46 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   var NM=(function(){ var d=432*3/5;
     return {"Do":d,"Ré":d*9/8,"Mi":d*5/4,"Fa":d*4/3,"Sol":d*3/2,"La":d*5/3,"Si♭":d*7/4,"Si":d*15/8,"Do′":d*2}; })();
   var GEO=[
-   {name:"Agroglyphe",ic:"🌀",shape:"crop",cat:"crop",photo:"139.webp",sym:{fr:"Symétrie 8 · Pythagore",en:"8-fold · Pythagoras",es:"Simetría 8 · Pitágoras"},ratios:"2:1 · 3:2 · 4:3",notes:["Do","Fa","Sol","Do′","Do′","Sol","Fa","Do"],audio:"agroglyphe",drone:[["Do",0.3],["Sol",0.2]]},
-   {name:"Vesica Piscis",ic:"⬮",shape:"flower",cat:"sacred",photo:"vesica.webp",sym:{fr:"Le 2 · deux cercles, la matrice",en:"The 2 · two circles, the matrix",es:"El 2 · dos círculos, la matriz"},ratios:"2:1 · octave",notes:["Do","Sol","Do′","Sol","Do"],audio:"vesica_piscis",drone:[["Do",0.32],["Sol",0.2]]},
-   {name:"Graine de Vie",ic:"❁",shape:"flower",cat:"sacred",photo:"graine.webp",sym:{fr:"Le 7 · les 7 cercles de la genèse",en:"The 7 · the 7 circles of genesis",es:"El 7 · los 7 círculos del génesis"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′","Sol"],audio:"graine_de_vie",drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Graine de Vie Heptagonale",ic:"❋",shape:"flower",cat:"sacred",photo:"graine7.webp",sym:{fr:"Le 7 · sept cercles, symétrie première",en:"The 7 · seven circles, prime symmetry",es:"El 7 · siete círculos, simetría prima"},ratios:"7:4 · septième harmonique",notes:["Do","Ré","Mi","Sol","La","Si♭","Do′"],audio:"graine_de_vie_heptagonale",drone:[["Do",0.3],["Si♭",0.16]]},
-   {name:"Heptagramme",ic:"✷",shape:"penta",cat:"sacred",photo:"heptagramme.webp",sym:{fr:"Le 7 · l'étoile tracée d'un seul trait",en:"The 7 · the star drawn in one stroke",es:"El 7 · la estrella trazada de un solo trazo"},ratios:"tierces empilées",notes:["Do","Mi","Sol","Si","Ré","Fa","La","Do′"],audio:"heptagramme",drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Fleur de Vie",ic:"❀",shape:"flower",cat:"sacred",photo:"fleurvie.webp",sym:{fr:"Symétrie 6 · hexagonale",en:"6-fold · hexagonal",es:"Simetría 6 · hexagonal"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],audio:"fleur_de_vie",drone:[["Do",0.3],["Sol",0.2]]},
-   {name:"Fruit de Vie",ic:"✻",shape:"flower",cat:"sacred",photo:"fruitdevie.webp",sym:{fr:"13 cercles · l'aboutissement",en:"13 circles · the completion",es:"13 círculos · la culminación"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′","Sol","Ré"],audio:"fruit_de_vie",drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Hexagone Sacré",ic:"⬢",shape:"metatron",cat:"sacred",photo:"hexagonesacree.webp",sym:{fr:"Symétrie 6 · deux triangles en miroir",en:"6-fold · two mirrored triangles",es:"Simetría 6 · dos triángulos en espejo"},ratios:"deux triades entrelacées",notes:["Do","Mi","Sol","Ré","Fa","La"],audio:"hexagone_sacre",drone:[["Do",0.3],["Ré",0.15]]},
-   {name:"Merkaba",ic:"✡",shape:"merkaba",cat:"sacred",photo:"merkaba.webp",sym:{fr:"Deux triangles en miroir · le corps de lumière",en:"Two mirrored triangles · the light body",es:"Dos triángulos en espejo · el cuerpo de luz"},ratios:"triade ↑ ↓",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],audio:"merkaba",drone:[["Do",0.3],["Sol",0.2]]},
-   {name:"Pentagone Sacré",ic:"⬠",shape:"penta",cat:"sacred",photo:"pentagone.webp",sym:{fr:"Pentagone & pentagramme · symétrie 5",en:"Pentagon & pentagram · 5-fold",es:"Pentágono y pentagrama · simetría 5"},ratios:"pentatonique",notes:["Do","Mi","Sol","La","Mi","Do′"],audio:"pentagone_sacre",drone:[["Do",0.3],["La",0.15]]},
-   {name:"Pyramide",ic:"▲",shape:"triangle",cat:"sacred",photo:"pyramide.webp",sym:{fr:"Pyramide · base carrée vers l'apex",en:"Pyramid · square base to apex",es:"Pirámide · base cuadrada hacia el ápice"},ratios:"4:3",notes:["Do","Fa","Sol","Do′"],audio:"pyramide",drone:[["Do",0.3],["Fa",0.18]]},
-   {name:"Tétraktys",ic:"△",shape:"triangle",cat:"sacred",photo:"tetraktys.webp",sym:{fr:"1·2·3·4 · la décade de Pythagore",en:"1·2·3·4 · Pythagoras' decad",es:"1·2·3·4 · la década de Pitágoras"},ratios:"gamme ascendante",notes:["Do","Do′","Sol","Fa","Do"],audio:"tetraktys",drone:[["Do",0.32],["Sol",0.16]]},
-   {name:"Arbre de Vie",ic:"🌳",shape:"metatron",cat:"sacred",photo:"arbredevie.webp",sym:{fr:"10 sephiroth · les 3 piliers",en:"10 sephiroth · the 3 pillars",es:"10 sefirot · los 3 pilares"},ratios:"gamme ascendante",notes:["Do","Mi","Sol","Do′","Si","Sol","Mi","Do"],audio:"arbre_de_vie",drone:[["Do",0.28],["Sol",0.18]]},
-   {name:"Spirale d'Or",ic:"🌀",shape:"fibonacci",cat:"sacred",photo:"spiraledor.webp",sym:{fr:"φ ≈ 1,618 · la spirale de croissance",en:"φ ≈ 1.618 · the growth spiral",es:"φ ≈ 1,618 · la espiral de crecimiento"},ratios:"suite de Fibonacci",notes:["Do","Ré","Mi","Sol","Do′","Sol","Mi","Ré"],audio:"spirale_d_or",drone:[["Do",0.3],["Sol",0.15]]},
-   {name:"Cube de Métatron",ic:"✴️",shape:"metatron",cat:"sacred",photo:"metatron.webp",sym:{fr:"13 cercles · les 5 solides de Platon",en:"13 circles · the 5 Platonic solids",es:"13 círculos · los 5 sólidos de Platón"},ratios:"accord majeur + sixte",notes:["Do","Mi","Sol","La","Do′","Sol","Mi","Do"],audio:"cube_de_metatron",drone:[["Do",0.28],["Mi",0.13],["Sol",0.18]]},
-   {name:"Cube de Platon",ic:"⬡",shape:"metatron",cat:"sacred",photo:"platon.webp",sym:{fr:"Les 5 solides de Platon · les éléments",en:"The 5 Platonic solids · the elements",es:"Los 5 sólidos de Platón · los elementos"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],audio:"cube_de_platon",drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Icosaèdre",ic:"◉",shape:"metatron",cat:"sacred",photo:"icosaedre.webp",sym:{fr:"20 faces · l'eau",en:"20 faces · water",es:"20 caras · el agua"},ratios:"pentatonique",notes:["Do","Mi","Ré","Sol","Mi","La","Sol","Do′"],audio:"icosaedre",drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Torus",ic:"◎",shape:"metatron",cat:"sacred",photo:"torus.webp",sym:{fr:"Le flux · monte par le centre, redescend par l'extérieur",en:"The flow · up through the center, down around the outside",es:"El flujo · sube por el centro, baja por el exterior"},ratios:"boucle fermée",notes:["Do","Mi","Sol","Do′","Si","La","Fa","Ré"],audio:"torus",drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Sri Yantra",ic:"🕉️",shape:"sriyantra",cat:"sacred",photo:"sriyantra.webp",sym:{fr:"9 triangles · le son primordial",en:"9 triangles · the primordial sound",es:"9 triángulos · el sonido primordial"},ratios:"gamme ascendante",notes:["Do","Ré","Mi","Fa","Sol","La","Si","Do′"],audio:"sri_yantra",drone:[["Do",0.28],["Sol",0.18]]},
-   {name:"Spirale Double",ic:"☯",shape:"yinyang",cat:"crop",photo:"140.webp",sym:{fr:"Spirale double · dualité",en:"Double spiral · duality",es:"Espiral doble · dualidad"},ratios:"2:1 · octave",notes:["Do","Sol","Do′","Sol","Do","Sol","Do′","Sol"],audio:"spirale_double",drone:[["Do",0.3],["Sol",0.2]]},
-   {name:"Rosace Solaire",ic:"✺",shape:"rosace",cat:"crop",photo:"114.jpg",sym:{fr:"Rosace solaire · mandala rayonnant",en:"Solar rosette · radiant mandala",es:"Rosetón solar · mandala radiante"},ratios:"accord majeur rayonnant",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do","Sol"],audio:"rosace_solaire",drone:[["Do",0.28],["Sol",0.18]]},
-   {name:"Amas de Bulles",ic:"🫧",shape:"bubbles",cat:"crop",photo:"115.jpg",sym:{fr:"Amas de bulles · spirale double",en:"Bubble cluster · double spiral",es:"Racimo de burbujas · espiral doble"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Sol","Mi","Ré"],audio:"amas_de_bulles",drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Pentagramme Rayonnant",ic:"✦",shape:"pentastar",cat:"crop",photo:"116.jpg",sym:{fr:"Symétrie 5 · étoile rayonnante",en:"5-fold · radiant star",es:"Simetría 5 · estrella radiante"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],audio:"pentagramme_rayonnant",drone:[["Do",0.3],["La",0.15]]},
-   {name:"Spirale Dorée · Système",ic:"☄️",shape:"fibonacci",cat:"crop",photo:"304.webp",sym:{fr:"Suite de Fibonacci · nombre d'or",en:"Fibonacci sequence · golden ratio",es:"Secuencia de Fibonacci · número áureo"},ratios:"φ ≈ 1.618",notes:["Do","Ré","Mi","Sol","Do′","Sol","Mi","Ré"],audio:"spirale_doree",drone:[["Do",0.3],["Sol",0.15]]},
-   {name:"Réseau Cristallin",ic:"❄️",shape:"lattice",cat:"crop",photo:"118.jpg",sym:{fr:"Symétrie 4 · réseau cristallin",en:"4-fold · crystal lattice",es:"Simetría 4 · red cristalina"},ratios:"accord majeur en treillis",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do","Mi"],audio:"reseau_cristallin",drone:[["Do",0.3],["Mi",0.15],["Sol",0.15]]},
-   {name:"Spirale Ailée",ic:"🌊",shape:"wingspiral",cat:"crop",photo:"119.jpg",sym:{fr:"Spirale ailée · méandre grec",en:"Winged spiral · Greek meander",es:"Espiral alada · meandro griego"},ratios:"4:3 · méandre",notes:["Do","Fa","Do","Fa","Sol","Do′","Fa","Do"],audio:"spirale_ailee",drone:[["Do",0.3],["Fa",0.18]]},
-   {name:"Galaxie de Bulles",ic:"🌌",shape:"spiralbubbles",cat:"crop",photo:"120.jpg",sym:{fr:"Spirale logarithmique · croissance",en:"Logarithmic spiral · growth",es:"Espiral logarítmica · crecimiento"},ratios:"suite de Fibonacci",notes:["Do","Ré","Mi","Sol","La","Do′"],audio:"galaxie_de_bulles",drone:[["Do",0.28],["Sol",0.16]]},
-   {name:"Noyau et Satellites",ic:"⚛️",shape:"nucleus3",cat:"crop",photo:"121.jpg",sym:{fr:"Noyau et 3 satellites · orbite",en:"Nucleus and 3 satellites · orbit",es:"Núcleo y 3 satélites · órbita"},ratios:"triade orbitale",notes:["Do","Mi","Do","Sol","Do","La","Do"],audio:"noyau_et_satellites",drone:[["Do",0.32]]},
-   {name:"Nautile Doré",ic:"🐚",shape:"nautilus",cat:"crop",photo:"122.jpg",sym:{fr:"Spirale logarithmique · nombre d'or",en:"Logarithmic spiral · golden ratio",es:"Espiral logarítmica · número áureo"},ratios:"φ ≈ 1.618",notes:["Do′","Si","La","Sol","Fa","Mi","Ré","Do"],audio:"nautile_dore_2",drone:[["Do",0.3],["Sol",0.15]]},
-   {name:"Modèle Atomique",ic:"🪐",shape:"atom2",cat:"crop",photo:"123.jpg",sym:{fr:"Noyau et 2 satellites · orbite double",en:"Nucleus and 2 satellites · double orbit",es:"Núcleo y 2 satélites · órbita doble"},ratios:"dyade orbitale",notes:["Do","Sol","Do","La","Do","Sol","Do","La"],audio:"modele_atomique",drone:[["Do",0.32]]},
-   {name:"Stellaire",ic:"❄",shape:"lattice",cat:"snowflake",photo:"stellaire.webp",sym:{fr:"Symétrie 6 · l'étoile de glace",en:"6-fold · the ice star",es:"Simetría 6 · la estrella de hielo"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],audio:"stellaire",drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Dendritique",ic:"❆",shape:"lattice",cat:"snowflake",photo:"dendritique.webp",sym:{fr:"Symétrie 6 · branches ramifiées",en:"6-fold · branching arms",es:"Simetría 6 · ramas ramificadas"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′","La","Sol"],audio:"dendritique",drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Étoile Spectaculaire",ic:"✶",shape:"lattice",cat:"snowflake",photo:"etoilespec.webp",sym:{fr:"12 pointes · étoile rayonnante",en:"12 points · radiant star",es:"12 puntas · estrella radiante"},ratios:"accord majeur rayonnant",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],audio:"etoile_spectaculaire",drone:[["Do",0.28],["Sol",0.18]]},
-   {name:"Plaque Hexagonale",ic:"⬡",shape:"lattice",cat:"snowflake",photo:"plaquehex.webp",sym:{fr:"Symétrie 6 · plaque pleine",en:"6-fold · solid plate",es:"Simetría 6 · placa maciza"},ratios:"accord majeur + sixte",notes:["Do","Mi","Sol","La","Do′","Sol"],audio:"plaque_hexagonale",drone:[["Do",0.3],["Mi",0.13],["Sol",0.15]]},
-   {name:"Plaque Sectorisée",ic:"❋",shape:"lattice",cat:"snowflake",photo:"plaquesect.webp",sym:{fr:"6 secteurs · plaque étoilée",en:"6 sectors · sectored plate",es:"6 sectores · placa sectorizada"},ratios:"pentatonique",notes:["Do","Mi","Sol","Do′","La","Fa"],audio:"plaque_sectorisee",drone:[["Do",0.3],["Sol",0.15]]},
-   {name:"Plaque Creuse",ic:"⬡",shape:"lattice",cat:"snowflake",photo:"plaquecreuse.webp",sym:{fr:"Symétrie 6 · larges branches",en:"6-fold · broad branches",es:"Simetría 6 · ramas anchas"},ratios:"4:3",notes:["Do","Fa","La","Do′","La","Fa"],audio:"plaque_creuse",drone:[["Do",0.3],["Fa",0.18]]},
-   {name:"Colonne",ic:"❄",shape:"lattice",cat:"snowflake",photo:"colonne.webp",sym:{fr:"Symétrie 6 · colonne étoilée",en:"6-fold · capped column",es:"Simetría 6 · columna estrellada"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],audio:"colonne",drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Aiguille",ic:"✳",shape:"lattice",cat:"snowflake",photo:"aiguille.webp",sym:{fr:"Aiguilles rayonnantes · rosette",en:"Radiating needles · rosette",es:"Agujas radiantes · roseta"},ratios:"gamme ascendante",notes:["Do","Ré","Mi","Fa","Sol","La"],audio:"aiguille",drone:[["Do",0.3],["Sol",0.15]]},
-   {name:"Colonne avec Plaques",ic:"❆",shape:"lattice",cat:"snowflake",photo:"colonneplaques.webp",sym:{fr:"Branches à plaques hexagonales",en:"Arms with hexagonal plates",es:"Ramas con placas hexagonales"},ratios:"accord majeur",notes:["Do","Mi","Sol","Do′"],audio:"colonne_avec_plaques",drone:[["Do",0.3],["Sol",0.18]]},
-   {name:"Dendrite en Fougère",ic:"❋",shape:"lattice",cat:"snowflake",photo:"dendritefougere.webp",sym:{fr:"Symétrie 6 · fougère de givre",en:"6-fold · frost fern",es:"Simetría 6 · helecho de escarcha"},ratios:"suite de Fibonacci",notes:["Do","Ré","Mi","Sol","La","Do′","Mi","Ré"],audio:"dendrite_en_fougere",drone:[["Do",0.3],["Sol",0.15]]},
+   {name:"Agroglyphe",ic:"🌀",shape:"crop",cat:"crop",photo:"139.webp",sym:{fr:"Symétrie 8 · Pythagore",en:"8-fold · Pythagoras",es:"Simetría 8 · Pitágoras"},ratios:"2:1 · 3:2 · 4:3",notes:["Do","Fa","Sol","Do′","Do′","Sol","Fa","Do"],audio:"agroglyphe",dur:182.07,drone:[["Do",0.3],["Sol",0.2]]},
+   {name:"Vesica Piscis",ic:"⬮",shape:"flower",cat:"sacred",photo:"vesica.webp",sym:{fr:"Le 2 · deux cercles, la matrice",en:"The 2 · two circles, the matrix",es:"El 2 · dos círculos, la matriz"},ratios:"2:1 · octave",notes:["Do","Sol","Do′","Sol","Do"],audio:"vesica_piscis",dur:109.04,drone:[["Do",0.32],["Sol",0.2]]},
+   {name:"Graine de Vie",ic:"❁",shape:"flower",cat:"sacred",photo:"graine.webp",sym:{fr:"Le 7 · les 7 cercles de la genèse",en:"The 7 · the 7 circles of genesis",es:"El 7 · los 7 círculos del génesis"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′","Sol"],audio:"graine_de_vie",dur:162.84,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Graine de Vie Heptagonale",ic:"❋",shape:"flower",cat:"sacred",photo:"graine7.webp",sym:{fr:"Le 7 · sept cercles, symétrie première",en:"The 7 · seven circles, prime symmetry",es:"El 7 · siete círculos, simetría prima"},ratios:"7:4 · septième harmonique",notes:["Do","Ré","Mi","Sol","La","Si♭","Do′"],audio:"graine_de_vie_heptagonale",dur:173.03,drone:[["Do",0.3],["Si♭",0.16]]},
+   {name:"Heptagramme",ic:"✷",shape:"penta",cat:"sacred",photo:"heptagramme.webp",sym:{fr:"Le 7 · l'étoile tracée d'un seul trait",en:"The 7 · the star drawn in one stroke",es:"El 7 · la estrella trazada de un solo trazo"},ratios:"tierces empilées",notes:["Do","Mi","Sol","Si","Ré","Fa","La","Do′"],audio:"heptagramme",dur:152.49,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Fleur de Vie",ic:"❀",shape:"flower",cat:"sacred",photo:"fleurvie.webp",sym:{fr:"Symétrie 6 · hexagonale",en:"6-fold · hexagonal",es:"Simetría 6 · hexagonal"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],audio:"fleur_de_vie",dur:172.38,drone:[["Do",0.3],["Sol",0.2]]},
+   {name:"Fruit de Vie",ic:"✻",shape:"flower",cat:"sacred",photo:"fruitdevie.webp",sym:{fr:"13 cercles · l'aboutissement",en:"13 circles · the completion",es:"13 círculos · la culminación"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′","Sol","Ré"],audio:"fruit_de_vie",dur:173.03,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Hexagone Sacré",ic:"⬢",shape:"metatron",cat:"sacred",photo:"hexagonesacree.webp",sym:{fr:"Symétrie 6 · deux triangles en miroir",en:"6-fold · two mirrored triangles",es:"Simetría 6 · dos triángulos en espejo"},ratios:"deux triades entrelacées",notes:["Do","Mi","Sol","Ré","Fa","La"],audio:"hexagone_sacre",dur:173.11,drone:[["Do",0.3],["Ré",0.15]]},
+   {name:"Merkaba",ic:"✡",shape:"merkaba",cat:"sacred",photo:"merkaba.webp",sym:{fr:"Deux triangles en miroir · le corps de lumière",en:"Two mirrored triangles · the light body",es:"Dos triángulos en espejo · el cuerpo de luz"},ratios:"triade ↑ ↓",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],audio:"merkaba",dur:183.17,drone:[["Do",0.3],["Sol",0.2]]},
+   {name:"Pentagone Sacré",ic:"⬠",shape:"penta",cat:"sacred",photo:"pentagone.webp",sym:{fr:"Pentagone & pentagramme · symétrie 5",en:"Pentagon & pentagram · 5-fold",es:"Pentágono y pentagrama · simetría 5"},ratios:"pentatonique",notes:["Do","Mi","Sol","La","Mi","Do′"],audio:"pentagone_sacre",dur:161.01,drone:[["Do",0.3],["La",0.15]]},
+   {name:"Pyramide",ic:"▲",shape:"triangle",cat:"sacred",photo:"pyramide.webp",sym:{fr:"Pyramide · base carrée vers l'apex",en:"Pyramid · square base to apex",es:"Pirámide · base cuadrada hacia el ápice"},ratios:"4:3",notes:["Do","Fa","Sol","Do′"],audio:"pyramide",dur:166.59,drone:[["Do",0.3],["Fa",0.18]]},
+   {name:"Tétraktys",ic:"△",shape:"triangle",cat:"sacred",photo:"tetraktys.webp",sym:{fr:"1·2·3·4 · la décade de Pythagore",en:"1·2·3·4 · Pythagoras' decad",es:"1·2·3·4 · la década de Pitágoras"},ratios:"gamme ascendante",notes:["Do","Do′","Sol","Fa","Do"],audio:"tetraktys",dur:162.88,drone:[["Do",0.32],["Sol",0.16]]},
+   {name:"Arbre de Vie",ic:"🌳",shape:"metatron",cat:"sacred",photo:"arbredevie.webp",sym:{fr:"10 sephiroth · les 3 piliers",en:"10 sephiroth · the 3 pillars",es:"10 sefirot · los 3 pilares"},ratios:"gamme ascendante",notes:["Do","Mi","Sol","Do′","Si","Sol","Mi","Do"],audio:"arbre_de_vie",dur:162.88,drone:[["Do",0.28],["Sol",0.18]]},
+   {name:"Spirale d'Or",ic:"🌀",shape:"fibonacci",cat:"sacred",photo:"spiraledor.webp",sym:{fr:"φ ≈ 1,618 · la spirale de croissance",en:"φ ≈ 1.618 · the growth spiral",es:"φ ≈ 1,618 · la espiral de crecimiento"},ratios:"suite de Fibonacci",notes:["Do","Ré","Mi","Sol","Do′","Sol","Mi","Ré"],audio:"spirale_d_or",dur:244.81,drone:[["Do",0.3],["Sol",0.15]]},
+   {name:"Cube de Métatron",ic:"✴️",shape:"metatron",cat:"sacred",photo:"metatron.webp",sym:{fr:"13 cercles · les 5 solides de Platon",en:"13 circles · the 5 Platonic solids",es:"13 círculos · los 5 sólidos de Platón"},ratios:"accord majeur + sixte",notes:["Do","Mi","Sol","La","Do′","Sol","Mi","Do"],audio:"cube_de_metatron",dur:162.56,drone:[["Do",0.28],["Mi",0.13],["Sol",0.18]]},
+   {name:"Cube de Platon",ic:"⬡",shape:"metatron",cat:"sacred",photo:"platon.webp",sym:{fr:"Les 5 solides de Platon · les éléments",en:"The 5 Platonic solids · the elements",es:"Los 5 sólidos de Platón · los elementos"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],audio:"cube_de_platon",dur:137.01,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Icosaèdre",ic:"◉",shape:"metatron",cat:"sacred",photo:"icosaedre.webp",sym:{fr:"20 faces · l'eau",en:"20 faces · water",es:"20 caras · el agua"},ratios:"pentatonique",notes:["Do","Mi","Ré","Sol","Mi","La","Sol","Do′"],audio:"icosaedre",dur:130.90,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Torus",ic:"◎",shape:"metatron",cat:"sacred",photo:"torus.webp",sym:{fr:"Le flux · monte par le centre, redescend par l'extérieur",en:"The flow · up through the center, down around the outside",es:"El flujo · sube por el centro, baja por el exterior"},ratios:"boucle fermée",notes:["Do","Mi","Sol","Do′","Si","La","Fa","Ré"],audio:"torus",dur:182.80,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Sri Yantra",ic:"🕉️",shape:"sriyantra",cat:"sacred",photo:"sriyantra.webp",sym:{fr:"9 triangles · le son primordial",en:"9 triangles · the primordial sound",es:"9 triángulos · el sonido primordial"},ratios:"gamme ascendante",notes:["Do","Ré","Mi","Fa","Sol","La","Si","Do′"],audio:"sri_yantra",dur:161.42,drone:[["Do",0.28],["Sol",0.18]]},
+   {name:"Spirale Double",ic:"☯",shape:"yinyang",cat:"crop",photo:"140.webp",sym:{fr:"Spirale double · dualité",en:"Double spiral · duality",es:"Espiral doble · dualidad"},ratios:"2:1 · octave",notes:["Do","Sol","Do′","Sol","Do","Sol","Do′","Sol"],audio:"spirale_double",dur:152.00,drone:[["Do",0.3],["Sol",0.2]]},
+   {name:"Rosace Solaire",ic:"✺",shape:"rosace",cat:"crop",photo:"114.jpg",sym:{fr:"Rosace solaire · mandala rayonnant",en:"Solar rosette · radiant mandala",es:"Rosetón solar · mandala radiante"},ratios:"accord majeur rayonnant",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do","Sol"],audio:"rosace_solaire",dur:182.89,drone:[["Do",0.28],["Sol",0.18]]},
+   {name:"Amas de Bulles",ic:"🫧",shape:"bubbles",cat:"crop",photo:"115.jpg",sym:{fr:"Amas de bulles · spirale double",en:"Bubble cluster · double spiral",es:"Racimo de burbujas · espiral doble"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Sol","Mi","Ré"],audio:"amas_de_bulles",dur:96.76,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Pentagramme Rayonnant",ic:"✦",shape:"pentastar",cat:"crop",photo:"116.jpg",sym:{fr:"Symétrie 5 · étoile rayonnante",en:"5-fold · radiant star",es:"Simetría 5 · estrella radiante"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],audio:"pentagramme_rayonnant",dur:182.07,drone:[["Do",0.3],["La",0.15]]},
+   {name:"Spirale Dorée · Système",ic:"☄️",shape:"fibonacci",cat:"crop",photo:"304.webp",sym:{fr:"Suite de Fibonacci · nombre d'or",en:"Fibonacci sequence · golden ratio",es:"Secuencia de Fibonacci · número áureo"},ratios:"φ ≈ 1.618",notes:["Do","Ré","Mi","Sol","Do′","Sol","Mi","Ré"],audio:"spirale_doree",dur:132.25,drone:[["Do",0.3],["Sol",0.15]]},
+   {name:"Réseau Cristallin",ic:"❄️",shape:"lattice",cat:"crop",photo:"118.jpg",sym:{fr:"Symétrie 4 · réseau cristallin",en:"4-fold · crystal lattice",es:"Simetría 4 · red cristalina"},ratios:"accord majeur en treillis",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do","Mi"],audio:"reseau_cristallin",dur:66.08,drone:[["Do",0.3],["Mi",0.15],["Sol",0.15]]},
+   {name:"Spirale Ailée",ic:"🌊",shape:"wingspiral",cat:"crop",photo:"119.jpg",sym:{fr:"Spirale ailée · méandre grec",en:"Winged spiral · Greek meander",es:"Espiral alada · meandro griego"},ratios:"4:3 · méandre",notes:["Do","Fa","Do","Fa","Sol","Do′","Fa","Do"],audio:"spirale_ailee",dur:183.25,drone:[["Do",0.3],["Fa",0.18]]},
+   {name:"Galaxie de Bulles",ic:"🌌",shape:"spiralbubbles",cat:"crop",photo:"120.jpg",sym:{fr:"Spirale logarithmique · croissance",en:"Logarithmic spiral · growth",es:"Espiral logarítmica · crecimiento"},ratios:"suite de Fibonacci",notes:["Do","Ré","Mi","Sol","La","Do′"],audio:"galaxie_de_bulles",dur:182.60,drone:[["Do",0.28],["Sol",0.16]]},
+   {name:"Noyau et Satellites",ic:"⚛️",shape:"nucleus3",cat:"crop",photo:"121.jpg",sym:{fr:"Noyau et 3 satellites · orbite",en:"Nucleus and 3 satellites · orbit",es:"Núcleo y 3 satélites · órbita"},ratios:"triade orbitale",notes:["Do","Mi","Do","Sol","Do","La","Do"],audio:"noyau_et_satellites",dur:126.01,drone:[["Do",0.32]]},
+   {name:"Nautile Doré",ic:"🐚",shape:"nautilus",cat:"crop",photo:"122.jpg",sym:{fr:"Spirale logarithmique · nombre d'or",en:"Logarithmic spiral · golden ratio",es:"Espiral logarítmica · número áureo"},ratios:"φ ≈ 1.618",notes:["Do′","Si","La","Sol","Fa","Mi","Ré","Do"],audio:"nautile_dore_2",dur:183.21,drone:[["Do",0.3],["Sol",0.15]]},
+   {name:"Modèle Atomique",ic:"🪐",shape:"atom2",cat:"crop",photo:"123.jpg",sym:{fr:"Noyau et 2 satellites · orbite double",en:"Nucleus and 2 satellites · double orbit",es:"Núcleo y 2 satélites · órbita doble"},ratios:"dyade orbitale",notes:["Do","Sol","Do","La","Do","Sol","Do","La"],audio:"modele_atomique",dur:106.90,drone:[["Do",0.32]]},
+   {name:"Stellaire",ic:"❄",shape:"lattice",cat:"snowflake",photo:"stellaire.webp",sym:{fr:"Symétrie 6 · l'étoile de glace",en:"6-fold · the ice star",es:"Simetría 6 · la estrella de hielo"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],audio:"stellaire",dur:182.15,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Dendritique",ic:"❆",shape:"lattice",cat:"snowflake",photo:"dendritique.webp",sym:{fr:"Symétrie 6 · branches ramifiées",en:"6-fold · branching arms",es:"Simetría 6 · ramas ramificadas"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′","La","Sol"],audio:"dendritique",dur:74.64,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Étoile Spectaculaire",ic:"✶",shape:"lattice",cat:"snowflake",photo:"etoilespec.webp",sym:{fr:"12 pointes · étoile rayonnante",en:"12 points · radiant star",es:"12 puntas · estrella radiante"},ratios:"accord majeur rayonnant",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],audio:"etoile_spectaculaire",dur:121.12,drone:[["Do",0.28],["Sol",0.18]]},
+   {name:"Plaque Hexagonale",ic:"⬡",shape:"lattice",cat:"snowflake",photo:"plaquehex.webp",sym:{fr:"Symétrie 6 · plaque pleine",en:"6-fold · solid plate",es:"Simetría 6 · placa maciza"},ratios:"accord majeur + sixte",notes:["Do","Mi","Sol","La","Do′","Sol"],audio:"plaque_hexagonale",dur:183.17,drone:[["Do",0.3],["Mi",0.13],["Sol",0.15]]},
+   {name:"Plaque Sectorisée",ic:"❋",shape:"lattice",cat:"snowflake",photo:"plaquesect.webp",sym:{fr:"6 secteurs · plaque étoilée",en:"6 sectors · sectored plate",es:"6 sectores · placa sectorizada"},ratios:"pentatonique",notes:["Do","Mi","Sol","Do′","La","Fa"],audio:"plaque_sectorisee",dur:183.25,drone:[["Do",0.3],["Sol",0.15]]},
+   {name:"Plaque Creuse",ic:"⬡",shape:"lattice",cat:"snowflake",photo:"plaquecreuse.webp",sym:{fr:"Symétrie 6 · larges branches",en:"6-fold · broad branches",es:"Simetría 6 · ramas anchas"},ratios:"4:3",notes:["Do","Fa","La","Do′","La","Fa"],audio:"plaque_creuse",dur:183.25,drone:[["Do",0.3],["Fa",0.18]]},
+   {name:"Colonne",ic:"❄",shape:"lattice",cat:"snowflake",photo:"colonne.webp",sym:{fr:"Symétrie 6 · colonne étoilée",en:"6-fold · capped column",es:"Simetría 6 · columna estrellada"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],audio:"colonne",dur:135.79,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Aiguille",ic:"✳",shape:"lattice",cat:"snowflake",photo:"aiguille.webp",sym:{fr:"Aiguilles rayonnantes · rosette",en:"Radiating needles · rosette",es:"Agujas radiantes · roseta"},ratios:"gamme ascendante",notes:["Do","Ré","Mi","Fa","Sol","La"],audio:"aiguille",dur:183.66,drone:[["Do",0.3],["Sol",0.15]]},
+   {name:"Colonne avec Plaques",ic:"❆",shape:"lattice",cat:"snowflake",photo:"colonneplaques.webp",sym:{fr:"Branches à plaques hexagonales",en:"Arms with hexagonal plates",es:"Ramas con placas hexagonales"},ratios:"accord majeur",notes:["Do","Mi","Sol","Do′"],audio:"colonne_avec_plaques",dur:182.89,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Dendrite en Fougère",ic:"❋",shape:"lattice",cat:"snowflake",photo:"dendritefougere.webp",sym:{fr:"Symétrie 6 · fougère de givre",en:"6-fold · frost fern",es:"Simetría 6 · helecho de escarcha"},ratios:"suite de Fibonacci",notes:["Do","Ré","Mi","Sol","La","Do′","Mi","Ré"],audio:"dendrite_en_fougere",dur:90.44,drone:[["Do",0.3],["Sol",0.15]]},
    {name:"Soleil",ic:"☀️",shape:"psun",cat:"planet",photo:"167.webp",sym:{fr:"Fréquence fondamentale du Soleil",en:"Fundamental frequency of the Sun",es:"Frecuencia fundamental del Sol"},ratios:"126.22 Hz · Octave Cosmique",notes:[126.22],drone:[[126.22,0.3]]},
    {name:"Lune",ic:"🌙",shape:"pmoon",cat:"planet",photo:"169.webp",sym:{fr:"Mois synodique octavié",en:"Octaved synodic month",es:"Mes sinódico octavado"},ratios:"210.42 Hz · Octave Cosmique",notes:[210.42],drone:[[210.42,0.3]]},
    {name:"Mercure",ic:"☿",shape:"planet1",cat:"planet",photo:"mercure.webp",sym:{fr:"Période orbitale octaviée (2³⁰)",en:"Octaved orbital period (2³⁰)",es:"Período orbital octavado (2³⁰)"},ratios:"141.27 Hz · Octave Cosmique",notes:[141.27],drone:[[141.27,0.3]]},
@@ -1954,6 +1967,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"||gp.fig.cat==="crop"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); $("gViz").style.visibility="visible"; }
     if(ph.parentNode) ph.parentNode.classList.toggle("photobig", !!gp.fig.photo);
     gProgShow(!!gp.fig.audio); gProgReset();
+    $("gPrev").hidden=$("gNext").hidden=!gp.fig.audio;
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+noteLabel(nn)+"</b>"; row.appendChild(d); });
     var n0=gp.fig.notes[0]; $("gNowN").textContent=noteLabel(n0); $("gNowF").textContent=noteFreq(n0).toFixed(2)+" Hz";
@@ -1992,6 +2006,33 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
        17 figures. On pilote directement le volume de l element audio. */
     if(gAudio.el) gAudio.el.volume=Math.max(0,Math.min(1,gp.vol)); });
   $("gPlay").addEventListener("click",function(){ if(gp.playing){ gQueueClear(); gStop(false); } else startWhenReady(gPlay); });
+  /* ---- Navigation piste a piste (2026-09-04) ----
+     La liste parcourue est la file de « Tout faire jouer » quand elle tourne,
+     sinon les figures a piste enregistree de la categorie affichee. Circulaire
+     dans les deux cas : apres la derniere on revient a la premiere. */
+  function gNavList(){ var cat=gp.fig?gp.fig.cat:null, out=[];
+    GEO.forEach(function(f,i){ if(f.cat===cat&&f.audio)out.push(i); }); return out; }
+  function gNavGo(delta){ if(!gp.fig||!gp.fig.audio)return;
+    if(gQueueOn()){ var n=gQueue.list.length, i=(gQueue.idx+delta+n)%n;
+      gQueue.idx=i; gQueueOpen(); return; }
+    var list=gNavList(); if(!list.length)return;
+    var pos=list.indexOf(gp.figIdx); if(pos<0)pos=0;
+    /* on retient l'etat AVANT gOpen, qui appelle gStop et remet gp.playing a
+       false : sinon un « suivant » a l'arret demarrerait le son tout seul. */
+    var wasPlaying=gp.playing;
+    gOpen(list[(pos+delta+list.length)%list.length], returnTo);
+    if(wasPlaying) startWhenReady(gPlay); }
+  /* Position dans la piste : sert au bouton precedent, qui recommence au lieu
+     de reculer passe 3 secondes (convention Spotify). */
+  function gTrackPos(){ return (gAudio.el&&isFinite(gAudio.el.currentTime))?gAudio.el.currentTime:0; }
+  function gRestart(){ if(gAudio.el){ try{ gAudio.el.currentTime=0; }catch(e){}
+      gProgSet(0, (isFinite(gAudio.el.duration)&&gAudio.el.duration>0)?gAudio.el.duration:0); }
+    else gProgReset(); }
+  $("gPrev").addEventListener("click",function(){
+    if(gp.playing&&gTrackPos()>3){ gRestart(); return; }
+    gNavGo(-1); });
+  $("gNext").addEventListener("click",function(){ gNavGo(1); });
+
   function gSetBtn(on){ var b=$("gPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("gViz").parentNode.classList.toggle("playing",on); setBg(on); }
 
   function gScheduleNote(f,start,dur,gm){
@@ -2143,10 +2184,18 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("gProgCur").textContent=fmtMS(cur);
     $("gProgDur").textContent=(dur>0)?fmtMS(dur):"--:--";
     w.setAttribute("aria-valuenow",String(Math.round(pct))); }
+  /* Duree de reference : celle inscrite dans GEO (exacte, mesuree a
+     l'encodage par tools/patch_geo_durations.py). Chrome n'annonce sur un
+     .ogg qu'une duree estimee d'apres le debit, fausse de plusieurs dizaines
+     de secondes tant qu'il n'a pas lu assez du flux -- on ne s'en sert qu'en
+     repli, pour une piste sans champ `dur`. */
+  function gTrackDur(){ if(!gp.fig)return 0;
+    if(gp.fig.dur>0)return gp.fig.dur;
+    return gp.fig.audio?(gDurCache[gp.fig.audio]||0):0; }
   /* Remise a zero sans animation de retour : la barre repart de la gauche
      d'un coup quand on change de figure ou qu'on arrete. */
   function gProgReset(){ var w=$("gProg"); if(!w)return;
-    var known=(gp.fig&&gp.fig.audio)?(gDurCache[gp.fig.audio]||0):0;
+    var known=gTrackDur();
     w.classList.add("seek"); gProgSet(0,known);
     setTimeout(function(){ w.classList.remove("seek"); },40); }
   function gProgShow(on){ var w=$("gProg"); if(w)w.hidden=!on; }
@@ -2160,25 +2209,33 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var el=gAudio.pool||(gAudio.pool=new Audio());
     var gen=++gAudio.gen;
     if(gAudio.fade){ clearInterval(gAudio.fade); gAudio.fade=null; }
-    el.src=gAudioUrl(gp.fig.audio); el.loop=!!gp.loop;
+    var wantSrc=gAudioUrl(gp.fig.audio), wantKey=gp.fig.audio,
+        wantDur=(gp.fig.dur>0?gp.fig.dur:0);
+    el.src=wantSrc; el.loop=!!gp.loop;
     el.volume=Math.max(0,Math.min(1,gp.vol)); el.preload="auto";
     gProgReset();
     el.onended=function(){ if(gen!==gAudio.gen)return;
       if(gQueueOn()&&gQueueNext())return;
       if(!el.loop&&gp.playing) gStop(false); };
-    el.onloadedmetadata=function(){ if(gen!==gAudio.gen)return;
-      if(isFinite(el.duration)&&el.duration>0){ gDurCache[gp.fig.audio]=el.duration;
-        gProgSet(el.currentTime,el.duration); } };
-    /* timeupdate suffit (~4 fois par seconde) et la transition CSS lisse le
-       reste : un requestAnimationFrame ne servirait qu'a vider la batterie.
-       On attend que la duree de la piste COURANTE soit connue : l element
-       <audio> est reutilise d une figure a l autre, et juste apres un
-       changement de src il emet un timeupdate qui porte encore le
-       currentTime de la piste precedente — le jeton `gen` ne protege pas de
-       celui-la, il est deja le nouveau. */
-    el.ontimeupdate=function(){ if(gen!==gAudio.gen)return;
-      if(!isFinite(el.duration)||el.duration<=0)return;
-      gProgSet(el.currentTime, el.duration); };
+    /* L element <audio> est reutilise d une figure a l autre (il doit rester
+       le meme pour redemarrer sans geste sur iOS/Android). Juste apres un
+       changement de src il porte encore les metadonnees de la piste
+       precedente, et le jeton `gen` ne protege pas de ca — il est deja le
+       nouveau. On ne prend donc un evenement que si la ressource chargee est
+       bien celle demandee. */
+    function gProgFresh(){ var cs=el.currentSrc||"";
+      return cs===wantSrc || cs.slice(-wantSrc.length)===wantSrc; }
+    /* durationchange autant que loadedmetadata : sur un .ogg, Chrome annonce
+       d abord une duree estimee d apres le debit, puis la corrige quand il a
+       lu assez du flux. Sans ca on affiche — et on met en cache — une duree
+       fausse de plusieurs dizaines de secondes.
+       timeupdate (~4 fois par seconde) suffit pour la position ; un
+       requestAnimationFrame ne ferait que vider la batterie. */
+    function gProgPush(){ if(gen!==gAudio.gen||!gProgFresh())return;
+      var d=wantDur||el.duration; if(!isFinite(d)||d<=0)return;
+      if(!wantDur) gDurCache[wantKey]=d;
+      gProgSet(el.currentTime,d); }
+    el.onloadedmetadata=gProgPush; el.ondurationchange=gProgPush; el.ontimeupdate=gProgPush;
     el.onerror=function(){ if(gen!==gAudio.gen)return;
       /* piste injoignable : on ne laisse pas l ecran muet */
       gAudio.el=null; gp.fig=Object.assign({},gp.fig); delete gp.fig.audio;
@@ -2711,9 +2768,33 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     d.setAttribute("role","progressbar");
     d.setAttribute("aria-valuemin","0"); d.setAttribute("aria-valuemax","100");
     d.innerHTML='<div class="mixpbar"><i></i></div>'+
-      '<div class="mixptimes"><span>0:00</span><span>--:--</span></div>';
+      '<div class="mixptimes"><button class="mixnav" data-d="-1">\u23ee</button>'+
+      '<span>0:00</span><span>--:--</span>'+
+      '<button class="mixnav" data-d="1">\u23ed</button></div>';
+    /* medProgSet cible `.mixptimes span` : les boutons ne sont pas des span,
+       ils ne decalent donc pas les deux horodatages. */
+    d.querySelectorAll(".mixnav").forEach(function(b){
+      b.addEventListener("click",function(){ medNavGo(parseInt(b.getAttribute("data-d"),10)); }); });
     medProgEl=d; return d; }
+  /* Position dans la seance : l'AudioBufferSourceNode n'en expose pas, elle se
+     deduit de l'horloge de l'AudioContext (et du modulo quand la piste boucle
+     hors file). */
+  function medPos(){ if(!med.playingId||!ctx)return 0;
+    var el=ctx.currentTime-med.startAt, d=med.dur||0;
+    if(d>0&&med.looping) el=el%d; return Math.max(0,el); }
+  function medTrack(id){ for(var k=0;k<MEDMUSIC.length;k++) if(MEDMUSIC[k].id===id)return k; return -1; }
+  function medNavGo(delta){ var i=medTrack(med.playingId); if(i<0)return;
+    /* precedent = recommencer passe 3 s, comme sur Spotify */
+    if(delta<0&&medPos()>3){ medPlay(MEDMUSIC[i]); return; }
+    var j=(i+delta+MEDMUSIC.length)%MEDMUSIC.length;
+    if(med.q.on){ med.q.idx=j; medQLabel(); }
+    medPlay(MEDMUSIC[j]); }
   function medProgAttach(id){ var d=medProgNode(), card=$("medCard_"+id);
+    /* le noeud est cree une seule fois : ses libelles accessibles sont
+       rafraichis ici, sinon ils resteraient dans la langue d'origine. */
+    var nav=d.querySelectorAll(".mixnav");
+    if(nav[0]) nav[0].setAttribute("aria-label",t("nav_prev"));
+    if(nav[1]) nav[1].setAttribute("aria-label",t("nav_next"));
     if(card) card.appendChild(d); else medProgDetach(); }
   function medProgDetach(){ if(medProgEl&&medProgEl.parentNode) medProgEl.parentNode.removeChild(medProgEl); }
   function medProgSet(cur,dur){ var d=medProgEl; if(!d)return;
