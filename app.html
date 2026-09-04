@@ -521,21 +521,23 @@
     font-size:.7rem; color:var(--dim); font-variant-numeric:tabular-nums}
   /* Lecteur Géométrie compacté — tout sur un écran, sans scroll (n'affecte que #vGeoPlay) */
   #vGeoPlay .player{padding:2px 20px 8px}
-  #vGeoPlay .stage{margin:2px 0}
+  #vGeoPlay .stage{margin:auto 0 2px}
   #vGeoPlay .stage::before{width:150px; height:150px}
   #vGeoPlay #gViz{width:140px; height:140px}
   #vGeoPlay .gstagephoto{width:130px; height:130px}
   #vGeoPlay .gnow .gn{font-size:1.5rem}
   #vGeoPlay .gnow .gf{font-size:.72rem; margin-top:2px}
-  #vGeoPlay .gsym{margin:5px 0 1px}
-  #vGeoPlay .gprog{margin-top:4px}
+  #vGeoPlay .gsym{margin:clamp(8px, 1.8svh, 18px) 0 1px}
+  /* la barre doit sortir du halo : `.stage::before` deborde de 10 px de
+     chaque cote de la photo et projette une ombre de 26 a 70 px. */
+  #vGeoPlay .gprog{margin-top:clamp(14px, 3.2svh, 32px)}
   #vGeoPlay .gratios{margin:0}
   #vGeoPlay .grow{margin:8px 0 2px}
   #vGeoPlay .gnote{padding:6px 5px; min-width:42px}
   #vGeoPlay .filters{padding-bottom:6px}
-  #vGeoPlay .seg{margin:8px 0 8px}
-  #vGeoPlay .ctl{margin-bottom:6px}
-  #vGeoPlay .actions{margin-top:10px}
+  #vGeoPlay .seg{margin:clamp(8px, 1.8svh, 20px) 0}
+  #vGeoPlay .ctl{margin-bottom:clamp(6px, 1.4svh, 16px)}
+  #vGeoPlay .actions{margin-top:auto}
   #vGeoPlay .disc{margin-top:8px; font-size:.62rem; line-height:1.35}
 
   .flashmsg{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); background:var(--pan2); border:1px solid var(--gold); color:var(--gold); font-size:.82rem; font-weight:600; padding:10px 18px; border-radius:12px; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:20; max-width:80%; text-align:center}
@@ -582,7 +584,11 @@
   .medall{padding:0 0 10px}
 
   /* ---- Photo agrandie (ecran de lecture geometrie) ---- */
-  #vGeoPlay .stage.photobig{--ph:min(30vh,64vw)}
+  /* La photo est en position:absolute, elle ne contraint donc pas la
+     hauteur de `.stage`. Sans hauteur explicite, `.stage` est comprimee par le
+     flex des que l'ecran est court (mesure a 411x667 : 21 px de moins) et la
+     photo deborde par-dessus la barre de progression. */
+  #vGeoPlay .stage.photobig{--ph:min(30vh,64vw); height:var(--ph); flex:0 0 auto}
   #vGeoPlay .stage.photobig .gstagephoto,
   #vGeoPlay .stage.photobig #gViz{width:var(--ph); height:var(--ph)}
   #vGeoPlay .stage.photobig::before{width:calc(var(--ph) + 20px); height:calc(var(--ph) + 20px)}
@@ -590,7 +596,12 @@
      tenir entier dans la petite fenetre pour ne jamais devenir defilable
      (preference « ecrans condenses, sans defilement » du design system). */
   @supports (height:100svh){
-    #vGeoPlay .stage.photobig{--ph:min(26svh,58vw)}
+    /* Le reste de l'ecran (barre de titre, barre de progression, textes,
+       reglages, boutons, mention legale) occupe environ 400 px : au-dela,
+       l'image prend ce qui reste. Sans ce troisieme terme, figer la hauteur de
+       `.stage` faisait deborder le bas de page sous 600 px de fenetre (mesure :
+       39 px coupes a 411x640) au lieu de simplement reduire l'image. */
+    #vGeoPlay .stage.photobig{--ph:max(80px, min(27svh, 60vw, calc(100svh - 400px)))}
     #vGeoPlay .player{min-height:0}
     #vGeoPlay .stage{min-height:0}
   }
