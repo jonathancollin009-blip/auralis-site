@@ -4,3 +4,14 @@
 .git
 .gitignore
 .assetsignore
+
+# Le script Worker et sa config ne sont pas des pages du site : sans cette
+# entree, le journal de build du 2026-09-05 montre qu'ils se sont fait
+# televerser comme deux assets de plus, servis tels quels sur
+# aura-lis.ca/worker.js et aura-lis.ca/wrangler.jsonc.
+worker.js
+wrangler.jsonc
+
+# Dossier de travail cree par wrangler a chaque build (bundle + etat local) :
+# jamais present dans un checkout propre, mais growth garanti sinon.
+.wrangler
