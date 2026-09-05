@@ -1109,7 +1109,19 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function detectLang(){
     var navs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||navigator.userLanguage||"en"];
     for(var i=0;i<navs.length;i++){ var l=(navs[i]||"").toLowerCase();
-      if(l.indexOf("fr")===0)return "fr"; if(l.indexOf("es")===0)return "es"; if(l.indexOf("en")===0)return "en"; }
+      if(l.indexOf("fr")===0)return "fr";
+      if(l.indexOf("es")===0)return "es";
+      if(l.indexOf("de")===0)return "de";
+      if(l.indexOf("it")===0)return "it";
+      if(l.indexOf("lo")===0)return "lo";
+      if(l.indexOf("hi")===0)return "hi";
+      /* "zh" seul ne dit pas simplifie/traditionnel : la region ou le script
+         BCP 47 tranche (zh-TW, zh-HK, zh-MO, zh-Hant -> traditionnel). */
+      if(l.indexOf("zh")===0){
+        if(l.indexOf("tw")>=0||l.indexOf("hk")>=0||l.indexOf("mo")>=0||l.indexOf("hant")>=0)return "zht";
+        return "zh";
+      }
+      if(l.indexOf("en")===0)return "en"; }
     return "en";
   }
   var lang=null; try{ lang=localStorage.getItem("auralis_lang"); }catch(e){}
