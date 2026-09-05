@@ -1,0 +1,31 @@
+{
+  // Config restauree/completee -- le site est un Worker "assets seulement"
+  // depuis toujours (voir commit 41e5bec, jamais fusionne dans main : le
+  // tableau de bord Cloudflare pilotait ces memes reglages sans fichier
+  // versionne). name / compatibility_date / assets.directory sont repris a
+  // l'identique de cette configuration deja en production.
+  //
+  // `main` + `assets.binding` ajoutent un point d'entree Worker SANS changer
+  // le comportement existant : Cloudflare sert d'abord les fichiers de
+  // `assets.directory` directement (aucun cout de calcul, comme avant) et
+  // n'invoque worker.js que pour un chemin qui ne correspond a aucun fichier
+  // -- ici, uniquement /api/e. Tout le reste (index.html, app.html, sons,
+  // images, ota/...) est servi exactement comme avant ce fichier.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "auralis-site",
+  "main": "worker.js",
+  "compatibility_date": "2026-07-27",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  },
+  // Cree automatiquement au premier `writeDataPoint()` -- aucune etape de
+  // provisionnement manuelle requise, contrairement a D1/KV/R2.
+  "analytics_engine_datasets": [
+    { "binding": "AE", "dataset": "auralis_events" }
+  ]
+}
