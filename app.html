@@ -1526,7 +1526,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   var curView="home";
   var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, favList:1, settings:1, method:1, medmusic:1,
     play:2, seq:2, geoPlay:2, binPlay:2, binError:2, favKeypad:2, favNext:2, favRecap:2, favName:2};
-  function show(v){ ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMedmusic"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
+  function show(v){ ST.screen(v); ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vBinPlay","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMedmusic"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
     $("chainBtn").hidden=!!favBuild;
     if(v==="home"){ animHomeCards(); }
     else { var back=(NAV_LEVEL[v]||0)<(NAV_LEVEL[curView]||0);
@@ -1761,14 +1761,19 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function tTick(){ if(tRemain<=0){clearInterval(tHandle);tHandle=null;stopSingle(false);$("tclock").textContent=t("done");return;} var mm=Math.floor(tRemain/60),ss=tRemain%60; $("tclock").textContent=mm+":"+(ss<10?"0":"")+ss+" "+t("remaining"); tRemain--; }
 
   var sMaster=null,sOscs=[];
-  function startSingle(){ if(!state.cur)return; ensureCtx(); var ti=ctx.currentTime,f=state.cur.f;
+  function startSingle(){ if(!state.cur)return; ensureCtx();
+    ST.play("freq", state.cur.n);
+    NA.start(state.cur.n, state.cur.f.toFixed(2)+" Hz", {
+      pause: function(){ stopSingle(false); }, stop: function(){ stopSingle(false); },
+      play:  function(){ if(!state.playing) startSingle(); } });
+    var ti=ctx.currentTime,f=state.cur.f;
     sMaster=ctx.createGain(); sMaster.gain.setValueAtTime(0.0001,ti); sMaster.gain.linearRampToValueAtTime(state.vol,ti+0.05); sMaster.connect(ctx.destination); sOscs=[];
     var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(f,ti);o.connect(sMaster);o.start();sOscs.push(o);
     state.playing=true; setBtn(true); armTimer(); }
   function stopSingle(immediate){ clearInterval(tHandle);tHandle=null; if(!ctx||!sMaster){state.playing=false;setBtn(false);return;}
     var ti=ctx.currentTime,m=sMaster,os=sOscs; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
     setTimeout(function(){os.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?30:90);
-    sMaster=null;sOscs=[];state.playing=false;setBtn(false); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; }
+    sMaster=null;sOscs=[];state.playing=false;setBtn(false); naSweep(); ST.stop(); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; }
   function live(){ if(!state.playing||!ctx||!state.cur||!sOscs[0])return; sOscs[0].frequency.setTargetAtTime(state.cur.f,ctx.currentTime,0.03); }
   function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); $("viz").parentNode.classList.toggle("playing",on); setBg(on); }
   $("play").addEventListener("click",function(){ if(state.playing){ unlockAudio(); stopSingle(false); } else startWhenReady(startSingle); });
@@ -1795,7 +1800,14 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("sVol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("sVolLbl").textContent=this.value; $("vol").value=this.value; $("volLbl").textContent=this.value; if(seq.master&&ctx)seq.master.gain.setTargetAtTime(seq.playing?state.vol:0,ctx.currentTime,0.02); });
   $("sPlay").addEventListener("click",function(){ if(seq.playing){ unlockAudio(); stopSeq(false); } else startWhenReady(startSeq); });
   function setSeqBtn(on){ var b=$("sPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("seq_start"); $("sViz").parentNode.classList.toggle("playing",on); setBg(on); }
-  function startSeq(){ if(!seq.p)return; ensureCtx(); var ti=ctx.currentTime; if(seq.idx>=seq.p.s.length){seq.idx=0;seq.elapsed=0;}
+  function startSeq(){ if(!seq.p)return; ensureCtx();
+    /* l'index du protocole, pas son nom : celui-ci est traduit et changerait
+       de valeur selon la langue de l'utilisateur. */
+    ST.play("proto", String(seq.protoIdx !== null ? seq.protoIdx : "custom"));
+    NA.start(pname(seq.p), t("protos_head"), {
+      pause: function(){ stopSeq(false); }, stop: function(){ stopSeq(false); },
+      play:  function(){ if(!seq.playing) startSeq(); } });
+    var ti=ctx.currentTime; if(seq.idx>=seq.p.s.length){seq.idx=0;seq.elapsed=0;}
     seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(ctx.destination);
     seq.osc=ctx.createOscillator(); seq.osc.type="sine"; seq.osc.frequency.setValueAtTime(seq.p.s[seq.idx].f,ti); seq.osc.connect(seq.master); seq.osc.start();
     seq.remain=seq.p.s[seq.idx].m*60; seq.playing=true; setSeqBtn(true); updSeqUI(); seq.timer=setInterval(seqTick,1000);
@@ -1809,7 +1821,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function stopSeq(immediate){ clearInterval(seq.timer);seq.timer=null;
     if(ctx&&seq.master){ var ti=ctx.currentTime,m=seq.master,o=seq.osc; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
       setTimeout(function(){try{o.stop();o.disconnect();}catch(e){}try{m.disconnect();}catch(e){}},immediate?30:90); }
-    seq.master=null;seq.osc=null;seq.playing=false;setSeqBtn(false); }
+    seq.master=null;seq.osc=null;seq.playing=false;setSeqBtn(false); naSweep(); ST.stop(); }
 
   function makeViz(cvId,isPlaying){ var cv=$(cvId),g=cv.getContext("2d"),W=cv.width,H=cv.height,cx=W/2,cy=H/2,phase=0;
     var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1956,6 +1968,95 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       else { vis='<span class="gtico">'+fig.ic+'</span>'; }
       b.innerHTML='<span class="gtvis"'+gtvisAttr+'>'+vis+'</span><span class="gtname">'+tn(fig.name)+'</span>';
       b.addEventListener("click",function(){ gQueueClear(); gOpen(i,"geo"); }); el.appendChild(b); }); }
+
+  /* ---- Service de lecture natif (2026-09-04) ----
+     Android 16 coupe le son des applications en arriere-plan qui n'ont pas
+     declare de service de type mediaPlayback : sans ca, la lecture s'arretait
+     une quinzaine de secondes apres le verrouillage de l'ecran.
+     Le natif ne joue rien -- il legitime l'arriere-plan et affiche la
+     notification media. La page garde la main sur la lecture et recoit en
+     retour les commandes de l'ecran verrouille.
+     Hors application native (navigateur), tout est inerte. */
+  /* ---- Statistiques d'usage anonymes (2026-09-05) ----
+     Aucun identifiant : rien en localStorage, rien qui survive a la fermeture
+     de l'app, aucun moyen de relier deux evenements d'une meme personne
+     au-dela d'un meme lot. L'IP n'est jamais ecrite cote serveur.
+     Voir /confidentialite et worker.js dans auralis-site. */
+  var ST = (function(){
+    var URL_E = "https://aura-lis.ca/api/e";
+    var MAX = 40;
+    var q = [], cur = null;
+    function send(){
+      if(!q.length) return;
+      var body = JSON.stringify({ events: q.splice(0, MAX) });
+      try{
+        /* sendBeacon survit a la fermeture de l'app, contrairement a fetch.
+           text/plain garde la requete « simple » : aucun prevol CORS. */
+        if(navigator.sendBeacon) navigator.sendBeacon(URL_E, new Blob([body], {type:"text/plain"}));
+        else fetch(URL_E, {method:"POST", body:body, keepalive:true, mode:"no-cors"});
+      }catch(e){}
+    }
+    function push(e){ q.push(e); if(q.length >= MAX) send(); }
+    function stopCur(){
+      if(!cur) return;
+      /* secondes REELLEMENT ecoutees, pas la duree de la piste */
+      push({ t:"end", k:cur.k, id:cur.id, sec:Math.round((Date.now()-cur.t0)/1000) });
+      cur = null;
+    }
+    try{
+      document.addEventListener("visibilitychange", function(){
+        if(document.visibilityState === "hidden"){ send(); } });
+      window.addEventListener("pagehide", function(){ stopCur(); send(); });
+    }catch(e){}
+    /* Filet : une seance ecran verrouille peut durer une heure sans repasser
+       par pagehide. On vide la file regulierement pour ne pas tout perdre si
+       le systeme tue l'app. */
+    setInterval(send, 120000);
+    return {
+      screen: function(v){ push({ t:"screen", s:String(v||"") }); },
+      play: function(k, id){ stopCur();
+        cur = { k:String(k||""), id:String(id||""), t0:Date.now() };
+        push({ t:"play", k:cur.k, id:cur.id }); },
+      stop: stopCur
+    };
+  })();
+
+  var NA = (function(){
+    var P = (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AuralisAudio) || null;
+    var handler = null;
+    if(P){
+      try{ P.addListener("auralisTransport", function(e){
+        if(!handler||!e) return;
+        var f = handler[e.action]; if(typeof f === "function") f(); }); }catch(e){}
+      /* sans POST_NOTIFICATIONS le service tourne mais sa notification reste
+         invisible : l'utilisateur perd les controles sans comprendre pourquoi */
+      try{ if(P.requestPermission) P.requestPermission(); }catch(e){}
+    }
+    function call(m,a){ if(!P) return; try{ P[m](a); }catch(e){} }
+    return {
+      on: !!P,
+      /* L'ORDRE COMPTE : le service doit etre au premier plan avant que le son
+         demarre, sinon Android traite la lecture comme n'importe quelle
+         tentative en arriere-plan et la coupe quand meme. */
+      start: function(title, subtitle, h){ handler = h || null;
+        call("start", {title:title||"Auralis", subtitle:subtitle||"", playing:true}); },
+      update: function(title, subtitle, playing){
+        call("update", {title:title||"Auralis", subtitle:subtitle||"", playing:playing!==false}); },
+      stop: function(){ handler = null; call("stop", {}); }
+    };
+  })();
+  /* Arret differe : un changement de piste passe par un arret suivi d'un
+     demarrage. On ne coupe le service que si, une fois la poussiere retombee,
+     plus rien ne joue nulle part. */
+  var naSweepTimer = null;
+  /* naSweepAll : vrai des qu'un mode joue, quel qu'il soit. Sans ca le service
+     resterait au premier plan apres l'arret du dernier mode branche. */
+  function naSweepAll(){ return !!(med.playingId || gp.playing || state.playing
+    || seq.playing || pulse.playing || bin.playing); }
+  function naSweep(){ if(!NA.on) return;
+    if(naSweepTimer) clearTimeout(naSweepTimer);
+    naSweepTimer = setTimeout(function(){ naSweepTimer = null;
+      if(!naSweepAll()) NA.stop(); }, 400); }
 
   /* ---- « Tout faire jouer » : enchainement d une categorie ----
      Le bouton n apparait que sur les trois categories a pistes enregistrees
@@ -2278,6 +2379,14 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     gp.playing=true; gSetBtn(true);
   }
   function gPlay(){ if(!gp.fig)return; ensureCtx(); unlockAudio();
+    ST.play("geo", gp.fig.audio || gp.fig.name);
+    NA.start(tn(gp.fig.name), t("geo_head"), {
+      pause: function(){ if(gp.playing){ gQueueClear(); gStop(false); } },
+      stop:  function(){ if(gp.playing){ gQueueClear(); gStop(false); } },
+      play:  function(){ if(!gp.playing) startWhenReady(gPlay); },
+      next:     function(){ gNavGo(1); },
+      previous: function(){ if(gp.playing&&gTrackPos()>3){ gRestart(); return; } gNavGo(-1); }
+    });
     if(gp.fig.audio){ gPlayAudio(); return; }
     gPlaySynth(); }
   function gPlaySynth(){ var t=ctx.currentTime+0.06;
@@ -2314,7 +2423,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       try{ if(fb)fb.gain.setValueAtTime(0,t); }catch(e){}
       var tail=immediate?60:(gp.echoAmt>0?900:220);
       setTimeout(function(){ ds.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}}); [m,dy,dl,fb,ew,ef].forEach(function(nd){ if(nd){try{nd.disconnect();}catch(e){}} }); }, tail); }
-    gp.master=null; gp.drones=[]; gp.dry=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.echoFilter=null; gp.playing=false; gSetBtn(false); gProgReset(); }
+    gp.master=null; gp.drones=[]; gp.dry=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.echoFilter=null; gp.playing=false; gSetBtn(false); gProgReset(); naSweep(); ST.stop(); }
   function gCurrentIndex(){ if(gAudio.el)return -1; if(!gp.playing||!ctx||!gp.fig)return -1; var el=ctx.currentTime-gp.cycleStart; if(el<0)return -1; var i=Math.floor(el/gp.dur); return (i>=0&&i<gp.fig.notes.length)?i:-1; }
 
   function drawShape(g,W,H,type,on,phase,fig){
@@ -2475,7 +2584,15 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   // ================= 432 Hz PULSÉ =================
   var pulse={bpm:72,vol:0.5,playing:false,master:null,osc:null,trem:null,dc:null,lfo:null,lfoGain:null};
   function pulseSetBtn(on){ var b=$("pPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("play"); var st=$("pViz").parentNode; st.classList.toggle("playing",on); if(on)st.style.setProperty("--pulse-dur",(60/pulse.bpm).toFixed(3)+"s"); else st.style.removeProperty("--pulse-dur"); setBg(false); }
-  function pulseStart(){ ensureCtx(); unlockAudio(); var t=ctx.currentTime+0.05;
+  function pulseStart(){ ensureCtx(); unlockAudio();
+    /* pulseStart declare `var t=ctx.currentTime` : par hissage, `t` vaut
+       undefined des l'entree de la fonction et masque la fonction de
+       traduction. On reprend donc le titre deja affiche, qui est traduit. */
+    ST.play("pulse", String(pulse.bpm));
+    NA.start($("pulseTitle").textContent, pulse.bpm+" bpm", {
+      pause: function(){ pulseStop(false); }, stop: function(){ pulseStop(false); },
+      play:  function(){ if(!pulse.playing) pulseStart(); } });
+    var t=ctx.currentTime+0.05;
     pulse.master=ctx.createGain(); pulse.master.gain.setValueAtTime(0.0001,t); pulse.master.gain.linearRampToValueAtTime(pulse.vol,t+0.08); pulse.master.connect(ctx.destination);
     pulse.osc=ctx.createOscillator(); pulse.osc.type="sine"; pulse.osc.frequency.setValueAtTime(432,t);
     pulse.trem=ctx.createGain(); pulse.trem.gain.setValueAtTime(0.65,t);
@@ -2490,7 +2607,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var ti=ctx.currentTime,m=pulse.master,o=pulse.osc,l=pulse.lfo,d=pulse.dc;
     try{ m.gain.cancelScheduledValues(ti); m.gain.setValueAtTime(m.gain.value,ti); m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.02:0.08)); }catch(e){}
     setTimeout(function(){ [o,l,d].forEach(function(nd){ try{nd.stop();nd.disconnect();}catch(e){} }); try{m.disconnect();}catch(e){} }, immediate?40:140);
-    pulse.master=null; pulse.osc=null; pulse.trem=null; pulse.dc=null; pulse.lfo=null; pulse.lfoGain=null; pulse.playing=false; pulseSetBtn(false); }
+    pulse.master=null; pulse.osc=null; pulse.trem=null; pulse.dc=null; pulse.lfo=null; pulse.lfoGain=null; pulse.playing=false; pulseSetBtn(false); naSweep(); ST.stop(); }
   function pulseUpdTitle(){ $("pulseTitle").textContent=t("pulse_base")+" @ "+pulse.bpm+" bpm"; }
   function openPulse(from,bpm){ pulseStop(true); returnTo=from||"home";
     if(typeof bpm==="number"){ pulse.bpm=Math.max(40,Math.min(120,bpm)); }
@@ -2544,7 +2661,12 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("binBeatLbl").textContent=t("bin_beat")+" : "+Math.abs(bin.f1-bin.f2).toFixed(2)+" Hz";
     show("binPlay"); drawStars("binStars"); startWhenReady(binStart);
   }
-  function binStart(){ ensureCtx(); unlockAudio(); var ti=ctx.currentTime;
+  function binStart(){ ensureCtx(); unlockAudio();
+    ST.play("bin", bin.f1.toFixed(1)+"/"+bin.f2.toFixed(1));
+    NA.start(t("bin_playing"), bin.f1.toFixed(1)+" / "+bin.f2.toFixed(1)+" Hz", {
+      pause: function(){ binStop(false); }, stop: function(){ binStop(false); },
+      play:  function(){ if(!bin.playing) binStart(); } });
+    var ti=ctx.currentTime;
     bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(0.0001,ti); bin.master.gain.linearRampToValueAtTime(bin.vol,ti+0.05); bin.master.connect(ctx.destination);
     bin.oscA=ctx.createOscillator(); bin.oscA.type="sine"; bin.oscA.frequency.setValueAtTime(bin.f1,ti);
     bin.oscB=ctx.createOscillator(); bin.oscB.type="sine"; bin.oscB.frequency.setValueAtTime(bin.f2,ti);
@@ -2555,7 +2677,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var ti=ctx.currentTime,m=bin.master,a=bin.oscA,b=bin.oscB;
     try{ m.gain.cancelScheduledValues(ti); m.gain.setValueAtTime(m.gain.value,ti); m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.02:0.06)); }catch(e){}
     setTimeout(function(){ [a,b].forEach(function(o){try{o.stop();o.disconnect();}catch(e){}}); try{m.disconnect();}catch(e){} }, immediate?40:120);
-    bin.master=null; bin.oscA=null; bin.oscB=null; bin.playing=false; setBg(false); }
+    bin.master=null; bin.oscA=null; bin.oscB=null; bin.playing=false; setBg(false); naSweep(); ST.stop(); }
   $("binVol").addEventListener("input",function(){ bin.vol=parseInt(this.value,10)/100; $("binVolLbl").textContent=this.value; if(bin.master&&ctx)bin.master.gain.setTargetAtTime(bin.playing?bin.vol:0,ctx.currentTime,0.02); });
   $("binStop").addEventListener("click",function(){ binStop(false); openBinInput(); });
 
@@ -2754,38 +2876,33 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
      deposer le fichier + git push cote site). */
   var MED_BASE="https://aura-lis.ca/app-sounds/meditation/";
   var MEDMUSIC=[
-    {id:"forest_rain", key:"med_forest_rain", sub:"med_forest_rain_sub", icon:"🌧", tc:"#7fd8f0", base:"forest_rain", vol:60},
-    {id:"bols_chantants", key:"med_bols_chantants", sub:"med_bols_chantants_sub", icon:"🔔", tc:"#e9c96a", base:"bols_chantants", vol:60},
-    {id:"piano_feutre", key:"med_piano_feutre", sub:"med_piano_feutre_sub", icon:"🎹", tc:"#e9c96a", base:"piano_feutre", vol:60},
-    {id:"choeur_sacre", key:"med_choeur_sacre", sub:"med_choeur_sacre_sub", icon:"🕊️", tc:"#7fd8f0", base:"choeur_sacre", vol:60},
-    {id:"ambient_cosmique", key:"med_ambient_cosmique", sub:"med_ambient_cosmique_sub", icon:"🌌", tc:"#b98fe0", base:"ambient_cosmique", vol:60},
-    {id:"harpe_a_l_aube", key:"med_harpe_a_l_aube", sub:"med_harpe_a_l_aube_sub", icon:"🌅", tc:"#e9c96a", base:"harpe_a_l_aube", vol:60},
-    {id:"foret_ancienne", key:"med_foret_ancienne", sub:"med_foret_ancienne_sub", icon:"🌲", tc:"#8fe0a8", base:"foret_ancienne", vol:60},
-    {id:"ocean_au_clair_de_lune", key:"med_ocean_au_clair_de_lune", sub:"med_ocean_au_clair_de_lune_sub", icon:"🌙", tc:"#7fd8f0", base:"ocean_au_clair_de_lune", vol:60},
-    {id:"sanctuaire_celeste", key:"med_sanctuaire_celeste", sub:"med_sanctuaire_celeste_sub", icon:"✨", tc:"#b98fe0", base:"sanctuaire_celeste_2", vol:60},
-    {id:"temple_sous_la_pluie", key:"med_temple_sous_la_pluie", sub:"med_temple_sous_la_pluie_sub", icon:"⛩️", tc:"#8fe0a8", base:"temple_sous_la_pluie", vol:60},
-    {id:"voyage_parmi_les_etoiles", key:"med_voyage_parmi_les_etoiles", sub:"med_voyage_parmi_les_etoiles_sub", icon:"🌠", tc:"#b98fe0", base:"voyage_parmi_les_etoiles", vol:60},
-    {id:"foret_pluvieuse_au_lever_du_jour", key:"med_foret_pluvieuse_au_lever_du_jour", sub:"med_foret_pluvieuse_au_lever_du_jour_sub", icon:"🌦️", tc:"#7fd8f0", base:"foret_pluvieuse_au_lever_du_jour", vol:60},
-    {id:"jardin_apres_la_pluie", key:"med_jardin_apres_la_pluie", sub:"med_jardin_apres_la_pluie_sub", icon:"🌿", tc:"#8fe0a8", base:"jardin_apres_la_pluie", vol:60},
-    {id:"pluie_nocturne_et_piano", key:"med_pluie_nocturne_et_piano", sub:"med_pluie_nocturne_et_piano_sub", icon:"🎶", tc:"#b98fe0", base:"pluie_nocturne_et_piano", vol:60},
-    {id:"riviere_sous_la_pluie", key:"med_riviere_sous_la_pluie", sub:"med_riviere_sous_la_pluie_sub", icon:"🏞️", tc:"#7fd8f0", base:"riviere_sous_la_pluie", vol:60},
-    {id:"sanctuaire_tropical_paisible", key:"med_sanctuaire_tropical_paisible", sub:"med_sanctuaire_tropical_paisible_sub", icon:"🌴", tc:"#8fe0a8", base:"sanctuaire_tropical_paisible", vol:60}
+    {id:"forest_rain", key:"med_forest_rain", sub:"med_forest_rain_sub", icon:"🌧", tc:"#7fd8f0", base:"forest_rain",dur:196.20, vol:60},
+    {id:"bols_chantants", key:"med_bols_chantants", sub:"med_bols_chantants_sub", icon:"🔔", tc:"#e9c96a", base:"bols_chantants",dur:161.99, vol:60},
+    {id:"piano_feutre", key:"med_piano_feutre", sub:"med_piano_feutre_sub", icon:"🎹", tc:"#e9c96a", base:"piano_feutre",dur:150.74, vol:60},
+    {id:"choeur_sacre", key:"med_choeur_sacre", sub:"med_choeur_sacre_sub", icon:"🕊️", tc:"#7fd8f0", base:"choeur_sacre",dur:244.49, vol:60},
+    {id:"ambient_cosmique", key:"med_ambient_cosmique", sub:"med_ambient_cosmique_sub", icon:"🌌", tc:"#b98fe0", base:"ambient_cosmique",dur:243.22, vol:60},
+    {id:"harpe_a_l_aube", key:"med_harpe_a_l_aube", sub:"med_harpe_a_l_aube_sub", icon:"🌅", tc:"#e9c96a", base:"harpe_a_l_aube",dur:185.62, vol:60},
+    {id:"foret_ancienne", key:"med_foret_ancienne", sub:"med_foret_ancienne_sub", icon:"🌲", tc:"#8fe0a8", base:"foret_ancienne",dur:244.36, vol:60},
+    {id:"ocean_au_clair_de_lune", key:"med_ocean_au_clair_de_lune", sub:"med_ocean_au_clair_de_lune_sub", icon:"🌙", tc:"#7fd8f0", base:"ocean_au_clair_de_lune",dur:249.42, vol:60},
+    {id:"sanctuaire_celeste", key:"med_sanctuaire_celeste", sub:"med_sanctuaire_celeste_sub", icon:"✨", tc:"#b98fe0", base:"sanctuaire_celeste_2",dur:173.07, vol:60},
+    {id:"temple_sous_la_pluie", key:"med_temple_sous_la_pluie", sub:"med_temple_sous_la_pluie_sub", icon:"⛩️", tc:"#8fe0a8", base:"temple_sous_la_pluie",dur:141.90, vol:60},
+    {id:"voyage_parmi_les_etoiles", key:"med_voyage_parmi_les_etoiles", sub:"med_voyage_parmi_les_etoiles_sub", icon:"🌠", tc:"#b98fe0", base:"voyage_parmi_les_etoiles",dur:244.36, vol:60},
+    {id:"foret_pluvieuse_au_lever_du_jour", key:"med_foret_pluvieuse_au_lever_du_jour", sub:"med_foret_pluvieuse_au_lever_du_jour_sub", icon:"🌦️", tc:"#7fd8f0", base:"foret_pluvieuse_au_lever_du_jour",dur:272.27, vol:60},
+    {id:"jardin_apres_la_pluie", key:"med_jardin_apres_la_pluie", sub:"med_jardin_apres_la_pluie_sub", icon:"🌿", tc:"#8fe0a8", base:"jardin_apres_la_pluie",dur:274.84, vol:60},
+    {id:"pluie_nocturne_et_piano", key:"med_pluie_nocturne_et_piano", sub:"med_pluie_nocturne_et_piano_sub", icon:"🎶", tc:"#b98fe0", base:"pluie_nocturne_et_piano",dur:274.84, vol:60},
+    {id:"riviere_sous_la_pluie", key:"med_riviere_sous_la_pluie", sub:"med_riviere_sous_la_pluie_sub", icon:"🏞️", tc:"#7fd8f0", base:"riviere_sous_la_pluie",dur:366.59, vol:60},
+    {id:"sanctuaire_tropical_paisible", key:"med_sanctuaire_tropical_paisible", sub:"med_sanctuaire_tropical_paisible_sub", icon:"🌴", tc:"#8fe0a8", base:"sanctuaire_tropical_paisible",dur:191.03, vol:60}
   ];
-  var med={ playingId:null, bufs:{}, node:null, gain:{}, vol:{}, seq:0, q:{on:false, idx:0},
-            startAt:0, dur:0, looping:false, tick:null };
+  /* `pool` : un SEUL element <audio>, reutilise d'une seance a l'autre. Sur
+     iOS et Android, seul un element deja deverrouille par un geste peut
+     redemarrer sans nouvelle interaction — c'est ce qui permet a « Tout faire
+     jouer » d'enchainer les 16 seances. Meme principe que gAudio.pool. */
+  var med={ playingId:null, el:null, pool:null, vol:{}, seq:0, q:{on:false, idx:0} };
 
   function medUrl(base){
     var a=document.createElement("audio");
     var ogg = a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"');
     return MED_BASE + base + (ogg==="probably"||ogg==="maybe" ? ".ogg" : ".m4a");
-  }
-  function medLoad(s,cb){
-    if(med.bufs[s.id]) { cb(med.bufs[s.id]); return; }
-    var c=ensureCtx(), x=new XMLHttpRequest();
-    x.open("GET",medUrl(s.base),true); x.responseType="arraybuffer";
-    x.onload=function(){ c.decodeAudioData(x.response,function(b){ med.bufs[s.id]=b; cb(b); },function(){ cb(null); }); };
-    x.onerror=function(){ cb(null); };
-    x.send();
   }
   /* ---- Duree et avancement de la seance (2026-09-04) ----
      Un AudioBufferSourceNode n'expose ni position ni evenement de progression :
@@ -2806,12 +2923,9 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     d.querySelectorAll(".mixnav").forEach(function(b){
       b.addEventListener("click",function(){ medNavGo(parseInt(b.getAttribute("data-d"),10)); }); });
     medProgEl=d; return d; }
-  /* Position dans la seance : l'AudioBufferSourceNode n'en expose pas, elle se
-     deduit de l'horloge de l'AudioContext (et du modulo quand la piste boucle
-     hors file). */
-  function medPos(){ if(!med.playingId||!ctx)return 0;
-    var el=ctx.currentTime-med.startAt, d=med.dur||0;
-    if(d>0&&med.looping) el=el%d; return Math.max(0,el); }
+  /* L'element <audio> expose directement sa position, et la remet a zero tout
+     seul quand la piste boucle : plus rien a calculer. */
+  function medPos(){ return (med.el&&isFinite(med.el.currentTime))?med.el.currentTime:0; }
   function medTrack(id){ for(var k=0;k<MEDMUSIC.length;k++) if(MEDMUSIC[k].id===id)return k; return -1; }
   function medNavGo(delta){ var i=medTrack(med.playingId); if(i<0)return;
     /* precedent = recommencer passe 3 s, comme sur Spotify */
@@ -2833,25 +2947,18 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     var sp=d.querySelectorAll(".mixptimes span");
     sp[0].textContent=fmtMS(cur); sp[1].textContent=(dur>0)?fmtMS(dur):"--:--";
     d.setAttribute("aria-valuenow",String(Math.round(pct))); }
-  function medProgStop(){ if(med.tick){ clearInterval(med.tick); med.tick=null; } }
-  function medProgStart(){ medProgStop();
-    /* 250 ms : la transition CSS lisse l'intervalle, et on ne reveille pas le
-       telephone 60 fois par seconde pour une barre qui bouge d'un pixel. */
-    med.tick=setInterval(function(){
-      if(!med.playingId||!ctx){ medProgStop(); return; }
-      var el=ctx.currentTime-med.startAt, d=med.dur||0;
-      /* hors file la piste boucle : la position repart de zero a chaque tour. */
-      if(d>0&&med.looping) el=el%d;
-      if(d>0&&el>d) el=d;
-      medProgSet(Math.max(0,el),d); },250); }
 
   function medStopCurrent(){
-    /* onended est coupe AVANT stop(0) : sans ca, l arret manuel declencherait
-       l evenement de fin et ferait partir la piste suivante de la file. */
-    if(med.node){ try{ med.node.onended=null; }catch(e){} try{ med.node.stop(0); }catch(e){} try{ med.node.disconnect(); }catch(e){} med.node=null; }
-    medProgStop(); medProgDetach();
+    /* les gestionnaires sont coupes AVANT la pause : sans ca, l'arret manuel
+       declencherait `ended` et ferait partir la piste suivante de la file. */
+    var el=med.el; med.el=null;
+    if(el){ try{ el.onended=null; el.ontimeupdate=null; el.onerror=null;
+                 el.onloadedmetadata=null; el.ondurationchange=null; el.onplaying=null;
+                 el.pause(); }catch(e){} }
+    medProgDetach();
     var prev=med.playingId; med.playingId=null;
     if(prev){ var b=$("medPlay_"+prev); if(b) b.textContent="▶"; var c=$("medCard_"+prev); if(c) c.classList.remove("playing"); }
+    naSweep(); ST.stop();
   }
   /* Demarre une piste. En file (« Tout faire jouer »), la boucle est coupee --
      sinon la piste ne se termine jamais et l enchainement ne partirait pas --
@@ -2861,25 +2968,48 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function medPlay(s){
     medStopCurrent();
     unlockAudio();
-    var myseq=++med.seq;
-    flashMsg(t("mix_loading"));
-    medLoad(s,function(b){
-      if(myseq!==med.seq) return;
-      /* Reseau coupe : on arrete la file au lieu d enchainer -- sinon les 16
-         pistes defileraient d un coup en autant de messages d erreur. */
-      if(!b){ flashMsg(t("mix_err")); medQClear(); return; }
-      var c=ensureCtx();
-      var src=c.createBufferSource(); src.buffer=b; src.loop=!med.q.on;
-      var g=c.createGain(); g.gain.value=(med.vol[s.id]!==undefined?med.vol[s.id]:s.vol)/100;
-      src.connect(g); g.connect(c.destination);
-      src.onended=function(){ if(med.node!==src) return; medStopCurrent(); medQNext(); };
-      src.start(0);
-      med.node=src; med.gain[s.id]=g; med.playingId=s.id;
-      med.startAt=c.currentTime; med.dur=b.duration; med.looping=!!src.loop;
-      medProgAttach(s.id); medProgSet(0,b.duration); medProgStart();
-      var btn=$("medPlay_"+s.id); if(btn) btn.textContent="❚❚";
-      var card=$("medCard_"+s.id); if(card) card.classList.add("playing");
+    ST.play("music", s.id);
+    NA.start(t(s.key), t("home_med"), {
+      pause: function(){ medQClear(); medStopCurrent(); },
+      stop:  function(){ medQClear(); medStopCurrent(); },
+      play:  function(){ if(!med.playingId) medPlay(s); },
+      next:     function(){ medNavGo(1); },
+      previous: function(){ medNavGo(-1); }
     });
+    var el=med.pool||(med.pool=new Audio());
+    var myseq=++med.seq;
+    var wantSrc=medUrl(s.base), wantDur=(s.dur>0?s.dur:0);
+    el.src=wantSrc; el.loop=!med.q.on;
+    el.volume=Math.max(0,Math.min(1,(med.vol[s.id]!==undefined?med.vol[s.id]:s.vol)/100));
+    el.preload="auto";
+    /* L'element est reutilise : juste apres un changement de src il porte
+       encore les metadonnees de la piste precedente, et `seq` ne protege pas
+       de ca (il est deja le nouveau). On ne retient un evenement que si la
+       ressource chargee est bien celle demandee. Meme piege que la Geometrie. */
+    function fresh(){ var cs=el.currentSrc||"";
+      return cs===wantSrc || cs.slice(-wantSrc.length)===wantSrc; }
+    function push(){ if(myseq!==med.seq||!fresh())return;
+      /* `s.dur` prime : sur un .ogg, Chrome n'annonce d'abord qu'une duree
+         estimee d'apres le debit, fausse de plusieurs dizaines de secondes. */
+      var d=wantDur||el.duration; if(!isFinite(d)||d<=0)return;
+      medProgSet(el.currentTime,d); }
+    el.onloadedmetadata=push; el.ondurationchange=push; el.ontimeupdate=push;
+    el.onended=function(){ if(myseq!==med.seq)return; medStopCurrent(); medQNext(); };
+    /* Reseau coupe : on arrete la file au lieu d enchainer -- sinon les 16
+       pistes defileraient d un coup en autant de messages d erreur. */
+    el.onerror=function(){ if(myseq!==med.seq)return;
+      flashMsg(t("mix_err")); medQClear(); medStopCurrent(); };
+    /* « Chargement » seulement si ca tarde : avec un element <audio> la
+       lecture demarre en general avant, et l'afficher a chaque seance de la
+       file serait du bruit. */
+    var slow=setTimeout(function(){ if(myseq===med.seq&&med.el===el&&el.paused) flashMsg(t("mix_loading")); },500);
+    el.onplaying=function(){ clearTimeout(slow); };
+    med.el=el; med.playingId=s.id;
+    medProgAttach(s.id); medProgSet(0,wantDur);
+    var p=el.play(); if(p&&p.catch)p.catch(function(){
+      if(myseq===med.seq&&el.onerror) el.onerror(); });
+    var btn=$("medPlay_"+s.id); if(btn) btn.textContent="❚❚";
+    var card=$("medCard_"+s.id); if(card) card.classList.add("playing");
   }
   function medToggle(s){
     if(med.playingId===s.id){ medQClear(); medStopCurrent(); return; }
@@ -2906,8 +3036,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   $("medPlayAll").addEventListener("click",medQStart);
   function medSetVol(s,pct){
     med.vol[s.id]=pct;
-    var g=med.gain[s.id];
-    if(g && med.playingId===s.id) g.gain.value=pct/100;
+    if(med.el && med.playingId===s.id) med.el.volume=Math.max(0,Math.min(1,pct/100));
     var el=$("medPct_"+s.id); if(el) el.textContent=pct+" %";
   }
   function medRender(){
