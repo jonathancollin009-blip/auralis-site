@@ -2557,6 +2557,16 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     setTimeout(function(){ w.classList.remove("seek"); },40); }
   function gProgShow(on){ var w=$("gProg"); if(w)w.hidden=!on; }
 
+  /* Echec definitif d une piste enregistree : on le DIT, on ne bascule pas sur
+     la synthese. Les 40 figures a piste (agroglyphes, geometrie sacree,
+     flocons) n affichent pas le choix d instrument -- entendre surgir un piano
+     a la place de l orchestration donne l impression d une autre application,
+     pas d une degradation. Meme comportement que l onglet Musiques, qui
+     affiche deja `mix_err`.
+     Les planetes et les couleurs, synthetisees par conception, ne passent
+     jamais par ici : elles n ont pas de champ `audio`. */
+  function gAudioFail(){ if(!gAudio.el)return; gAudio.el=null;
+    gProgShow(false); flashMsg(t("mix_err")); gQueueClear(); gStop(true); }
   function gPlayAudio(){
     /* Un seul element <audio>, reutilise d une piste a l autre : sur iOS et
        Android, seul un element deja deverrouille par un geste peut redemarrer
@@ -2565,6 +2575,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
        onended/onerror tardif de la piste precedente ne casse pas la suivante. */
     var el=gAudio.pool||(gAudio.pool=new Audio());
     var gen=++gAudio.gen;
+    gAudio.retried=false;
     if(gAudio.fade){ clearInterval(gAudio.fade); gAudio.fade=null; }
     var wantSrc=gAudioUrl(gp.fig.audio), wantKey=gp.fig.audio,
         wantDur=(gp.fig.dur>0?gp.fig.dur:0);
@@ -2594,12 +2605,17 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
       gProgSet(el.currentTime,d); }
     el.onloadedmetadata=gProgPush; el.ondurationchange=gProgPush; el.ontimeupdate=gProgPush;
     el.onerror=function(){ if(gen!==gAudio.gen)return;
-      /* piste injoignable : on ne laisse pas l ecran muet */
-      gAudio.el=null; gp.fig=Object.assign({},gp.fig); delete gp.fig.audio;
-      /* la barre de progression n'a plus de sens : la synthese qui prend le
-         relais tourne en boucle ouverte, sans duree. */
-      gProgShow(false);
-      gPlaySynth(); };
+      /* Une coupure mobile est le plus souvent passagere et l ecran de lecture
+         est deja ouvert : on retente une fois avant d abandonner. */
+      if(!gAudio.retried){ gAudio.retried=true;
+        setTimeout(function(){
+          if(gen!==gAudio.gen||!gp.playing)return;
+          try{ el.load(); var r=el.play();
+               if(r&&r.catch)r.catch(function(){ if(gen===gAudio.gen)gAudioFail(); }); }
+          catch(e){ gAudioFail(); }
+        },800);
+        return; }
+      gAudioFail(); };
     gAudio.el=el; gp.cycleStart=(ctx?ctx.currentTime:0);
     var p=el.play(); if(p&&p.catch)p.catch(function(){ if(gen===gAudio.gen)el.onerror(); });
     gp.playing=true; gSetBtn(true);
