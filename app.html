@@ -289,6 +289,16 @@
   .geoallbtn{width:100%; display:flex; align-items:center; justify-content:center; gap:9px; min-height:48px; padding:13px 16px; border:1px solid var(--line2); border-radius:16px; background:linear-gradient(96deg,rgba(127,216,240,.13),rgba(185,143,224,.13)); color:var(--cyan); font:inherit; font-size:.92rem; font-weight:700; cursor:pointer; transition:transform .12s ease, box-shadow .22s ease, border-color .22s ease}
   .geoallbtn:active{transform:scale(.985); border-color:var(--cyan); box-shadow:0 0 20px rgba(127,216,240,.24)}
   .geoallbtn .gaico{font-size:.78rem; opacity:.9}
+  /* Rangee « 🔀 + Tout faire jouer ». Le bouton large garde tout l espace
+     restant ; l interrupteur est un carre de 48 (zone tactile minimale). */
+  .allrow{display:flex; gap:9px; align-items:stretch}
+  .allrow .geoallbtn{width:auto; flex:1 1 auto; min-width:0}
+  .shufbtn{position:relative; flex:0 0 48px; min-height:48px; display:flex; align-items:center; justify-content:center; border:1px solid var(--line2); border-radius:16px; background:var(--pan2); color:var(--dimmer); font-size:1.05rem; line-height:1; cursor:pointer; transition:transform .12s ease, color .22s ease, border-color .22s ease, box-shadow .22s ease}
+  .shufbtn:active{transform:scale(.94)}
+  .shufbtn[aria-pressed="true"]{color:var(--cyan); border-color:var(--cyan); box-shadow:0 0 16px rgba(127,216,240,.22)}
+  /* L etat actif ne doit pas tenir a la seule couleur : un point le double. */
+  .shufbtn::after{content:""; position:absolute; bottom:6px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:currentColor; opacity:0; transition:opacity .22s ease}
+  .shufbtn[aria-pressed="true"]::after{opacity:1}
   .favgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:4px 18px 22px; overflow-y:auto}
   .ftile{position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:4px; min-height:98px; background:var(--pan); border:1px solid var(--line); border-radius:14px; padding:16px 10px 12px; cursor:pointer; color:var(--txt); font:inherit; transition:transform .12s ease, box-shadow .22s ease, background .12s ease, border-color .22s ease}
   .ftile:active{background:var(--pan2); transform:scale(.975); border-color:rgba(233,201,106,.5); box-shadow:0 0 20px rgba(233,201,106,.24)}
@@ -780,7 +790,7 @@
   <section class="view" id="vGeo">
     <div class="bar"><button class="backbtn" id="geoBack" aria-label="Retour">‹</button><h2 id="geoTitle">—</h2></div>
     <div class="pad"><div class="filters" id="geoFilters"></div></div>
-    <div class="geoall" id="geoAllWrap" hidden><button class="geoallbtn" id="geoPlayAll"><span class="gaico" aria-hidden="true">▶</span><span id="geoPlayAllLbl">—</span></button></div>
+    <div class="geoall" id="geoAllWrap" hidden><div class="allrow"><button class="shufbtn" id="geoShuffle" type="button" aria-pressed="false"><span aria-hidden="true">🔀</span></button><button class="geoallbtn" id="geoPlayAll"><span class="gaico" aria-hidden="true">▶</span><span id="geoPlayAllLbl">—</span></button></div></div>
     <div class="geogrid" id="geoList"></div>
   </section>
 
@@ -913,7 +923,7 @@
 
   <section class="view" id="vMedmusic">
     <div class="bar"><button class="backbtn" id="medBack" aria-label="Retour">‹</button><h2 id="medTitle">—</h2></div>
-    <div class="medall"><button class="geoallbtn" id="medPlayAll"><span class="gaico" id="medPlayAllIco" aria-hidden="true">▶</span><span id="medPlayAllLbl">—</span></button></div>
+    <div class="medall"><div class="allrow"><button class="shufbtn" id="medShuffle" type="button" aria-pressed="false"><span aria-hidden="true">🔀</span></button><button class="geoallbtn" id="medPlayAll"><span class="gaico" id="medPlayAllIco" aria-hidden="true">▶</span><span id="medPlayAllLbl">—</span></button></div></div>
     <div class="mixtracks" id="medTracks"></div>
     <p class="mixnote" id="medNote"></p>
   </section>
@@ -1018,6 +1028,7 @@ var T={
  geo_empty_cat:{fr:"Aucune figure pour l'instant.",en:"No figures yet.",es:"Aún no hay figuras."},
  geo_playall:{fr:"Tout faire jouer",en:"Play all",es:"Reproducir todo"},
  geo_notes:{fr:"Notes de la mélodie",en:"Melody notes",es:"Notas de la melodía"},
+ shuffle:{fr:"Lecture aléatoire",en:"Shuffle",es:"Reproducción aleatoria"},
  nav_prev:{fr:"Piste précédente",en:"Previous track",es:"Pista anterior"},
  nav_next:{fr:"Piste suivante",en:"Next track",es:"Pista siguiente"},
  disc_pulse:{fr:"Bien-être et relaxation — pas un usage médical. Le volume pulse au rythme choisi, comme un battement.",en:"Wellness and relaxation — not medical use. Volume pulses at the chosen tempo, like a heartbeat.",es:"Bienestar y relajación — no es un uso médico. El volumen pulsa al ritmo elegido, como un latido."},
@@ -1169,7 +1180,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_med:"ດົນຕີ", home_sess_med:"ຮອບການຟັງເຕັມ · ສະຕຣີມມິງ",
    "f_Endogène":"ພາຍໃນຮ່າງກາຍ", "f_Huiles ess.":"ນ້ຳມັນຫອມລະເຫີຍ", "f_Élément":"ທາດ",
    geo_notes:"ໂນດຂອງທຳນອງ", mode_pure:"ບໍລິສຸດ", mode_pulsed:"ເຕັ້ນ",
-   nav_prev:"ເພງກ່ອນໜ້າ", nav_next:"ເພງຕໍ່ໄປ",
+   nav_prev:"ເພງກ່ອນໜ້າ", nav_next:"ເພງຕໍ່ໄປ", shuffle:"ຫຼິ້ນແບບສຸ່ມ",
    mix_loading:"ກຳລັງໂຫຼດສຽງ…", mix_err:"ບໍ່ພົບສຽງ",
    desc_info:"ຂໍ້ມູນນີ້ໃຫ້ໄວ້ເພື່ອຄວາມຮູ້ ແລະ ວັດທະນະທຳເທົ່ານັ້ນ. ບໍ່ແມ່ນຄຳແນະນຳທາງການແພດ; Auralis ບໍ່ອ້າງຜົນການປິ່ນປົວໃດໆ.",
    disc_geo:"ການປ່ຽນເລຂາຄະນິດເປັນສຽງ — ການສຳຫຼວດທາງສຽງ, ບໍ່ມີການອ້າງອີງ. ສຽງ: tonejs-instruments (N. Brosowsky, CC-BY 3.0).",
@@ -1235,7 +1246,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_med:"संगीत", home_sess_med:"पूर्ण सत्र · स्ट्रीमिंग",
    "f_Endogène":"अंतर्जात", "f_Huiles ess.":"आवश्यक तेल", "f_Élément":"तत्व", "f_Acide aminé":"अमीनो अम्ल",
    geo_notes:"धुन के स्वर", mode_pure:"शुद्ध", mode_pulsed:"स्पंदित",
-   nav_prev:"पिछला ट्रैक", nav_next:"अगला ट्रैक",
+   nav_prev:"पिछला ट्रैक", nav_next:"अगला ट्रैक", shuffle:"यादृच्छिक क्रम",
    mix_loading:"ध्वनि लोड हो रही है…", mix_err:"ध्वनि नहीं मिली",
    desc_info:"जानकारी केवल सूचनात्मक और सांस्कृतिक उद्देश्य से दी गई है। यह चिकित्सीय सलाह नहीं है; Auralis किसी चिकित्सीय प्रभाव का दावा नहीं करता।",
    disc_geo:"ज्यामिति का ध्वनि-रूपांतरण — ध्वनि अन्वेषण, कोई दावा नहीं। ध्वनियाँ: tonejs-instruments (N. Brosowsky, CC-BY 3.0)।",
@@ -1301,7 +1312,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_med:"音乐", home_sess_med:"完整聆听 · 在线播放",
    "f_Endogène":"内源性", "f_Huiles ess.":"精油", "f_Élément":"元素", "f_Acide aminé":"氨基酸",
    geo_notes:"旋律音符", mode_pure:"纯音", mode_pulsed:"脉动",
-   nav_prev:"上一首", nav_next:"下一首",
+   nav_prev:"上一首", nav_next:"下一首", shuffle:"随机播放",
    mix_loading:"正在加载声音…", mix_err:"未找到声音",
    desc_info:"仅供参考与文化了解之用。本内容不构成医疗建议；Auralis 不宣称任何治疗效果。",
    disc_geo:"几何的声音化 — 声音探索，不作任何宣称。声音：tonejs-instruments（N. Brosowsky，CC-BY 3.0）。",
@@ -1368,7 +1379,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_med:"音樂", home_sess_med:"完整聆聽 · 線上串流",
    "f_Endogène":"內源性", "f_Huiles ess.":"精油", "f_Élément":"元素", "f_Acide aminé":"胺基酸",
    geo_notes:"旋律音符", mode_pure:"純音", mode_pulsed:"脈動",
-   nav_prev:"上一首", nav_next:"下一首",
+   nav_prev:"上一首", nav_next:"下一首", shuffle:"隨機播放",
    mix_loading:"正在載入聲音…", mix_err:"找不到聲音",
    desc_info:"僅供參考與文化了解之用。本內容不構成醫療建議；Auralis 不宣稱任何治療效果。",
    disc_geo:"幾何的聲音化 — 聲音探索，不作任何宣稱。聲音：tonejs-instruments（N. Brosowsky，CC-BY 3.0）。",
@@ -1435,7 +1446,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_method_t:"Die Methode", home_method_s:"Die Logik hinter jeder Frequenz",
    "f_Endogène":"Endogen", "f_Huiles ess.":"Ätherisches Öl", "f_Élément":"Element", "f_Acide aminé":"Aminosäure",
    geo_notes:"Noten der Melodie", mode_pure:"Rein", mode_pulsed:"Pulsierend",
-   nav_prev:"Vorheriger Titel", nav_next:"Nächster Titel",
+   nav_prev:"Vorheriger Titel", nav_next:"Nächster Titel", shuffle:"Zufallswiedergabe",
    mix_loading:"Klang wird geladen…", mix_err:"Klang nicht gefunden",
    desc_info:"Nur zu Informations- und Kulturzwecken. Dies ist keine medizinische Beratung; Auralis erhebt keinen therapeutischen Anspruch.",
    disc_geo:"Sonifikation der Geometrie — Klangerkundung, ohne Anspruch. Klänge: tonejs-instruments (N. Brosowsky, CC-BY 3.0).",
@@ -1502,7 +1513,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    home_method_t:"Il metodo", home_method_s:"La logica dietro ogni frequenza",
    "f_Endogène":"Endogeno", "f_Huiles ess.":"Olio essenziale", "f_Élément":"Elemento", "f_Acide aminé":"Amminoacido",
    geo_notes:"Note della melodia", mode_pure:"Puro", mode_pulsed:"Pulsato",
-   nav_prev:"Traccia precedente", nav_next:"Traccia successiva",
+   nav_prev:"Traccia precedente", nav_next:"Traccia successiva", shuffle:"Riproduzione casuale",
    mix_loading:"Caricamento del suono…", mix_err:"Suono non trovato",
    desc_info:"Informazioni fornite solo a scopo informativo e culturale. Non costituiscono un parere medico; Auralis non rivendica alcun effetto terapeutico.",
    disc_geo:"Sonificazione della geometria — esplorazione sonora, senza rivendicazioni. Suoni: tonejs-instruments (N. Brosowsky, CC-BY 3.0).",
@@ -1775,6 +1786,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); pulseUpdTitle();
     $("gLoopOn").textContent=t("loop_inf"); $("gLoopOff").textContent=t("loop_once");
     $("gPrev").setAttribute("aria-label",t("nav_prev")); $("gNext").setAttribute("aria-label",t("nav_next"));
+    [["geoShuffle"],["medShuffle"]].forEach(function(p){ var b=$(p[0]); if(!b)return;
+      b.setAttribute("aria-label",t("shuffle")); b.setAttribute("title",t("shuffle")); });
     $("gModePulsed").textContent=t("mode_pulsed"); $("gModePure").textContent=t("mode_pure");
     $("gTempoLabel").textContent=t("tempo"); $("pTempoLabel").textContent=t("tempo"); $("gInstrLabel").textContent=t("instr_label");
     $("gNotesLabel").textContent=t("geo_notes");
@@ -2247,6 +2260,35 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function gUpdateAllBtn(){ var w=$("geoAllWrap"); if(!w)return;
     var ok=GEO_ALLCATS.indexOf(geoState.filter)>=0;
     w.hidden=!ok; if(ok)$("geoPlayAllLbl").textContent=t("geo_playall"); }
+  /* ---- Lecture aleatoire (2026-09-05) ----
+     Fisher-Yates sur une copie : la liste d origine n est jamais touchee.
+     Le reglage est retenu par ecran, parce qu explorer la Geometrie et
+     ecouter les Musiques ne se font pas dans le meme esprit. */
+  function shuffled(a){ var r=a.slice(), i, j, t;
+    for(i=r.length-1;i>0;i--){ j=Math.floor(Math.random()*(i+1)); t=r[i]; r[i]=r[j]; r[j]=t; }
+    return r; }
+  /* Re-ordonne ce qui RESTE, sans interrompre la piste en cours : appuyer sur
+     🔀 pendant une lecture doit se voir tout de suite, sinon le bouton parait
+     casse. Desactiver rend l ordre naturel (indices croissants). */
+  function requeueTail(list, idx, on){
+    var tete=list.slice(0, idx+1), reste=list.slice(idx+1);
+    return tete.concat(on ? shuffled(reste)
+                          : reste.slice().sort(function(a,b){ return a-b; })); }
+  var SHUF = (function(){
+    var st={geo:false, med:false};
+    try{ st.geo=localStorage.getItem("auralis_shuf_geo")==="1";
+         st.med=localStorage.getItem("auralis_shuf_med")==="1"; }catch(e){}
+    function paint(k){ var b=$(k==="geo"?"geoShuffle":"medShuffle");
+      if(b) b.setAttribute("aria-pressed", st[k]?"true":"false"); }
+    return {
+      on: function(k){ return st[k]; },
+      paint: function(){ paint("geo"); paint("med"); },
+      toggle: function(k){ st[k]=!st[k];
+        try{ localStorage.setItem("auralis_shuf_"+k, st[k]?"1":"0"); }catch(e){}
+        paint(k); return st[k]; }
+    };
+  })();
+
   var gQueue={list:null, idx:0, savedLoop:null};
   function gQueueOn(){ return !!(gQueue.list&&gQueue.list.length); }
   function gQueueSetLoopUI(v){ $("gLoopOn").setAttribute("aria-pressed",v?"true":"false"); $("gLoopOff").setAttribute("aria-pressed",v?"false":"true"); }
@@ -2267,8 +2309,12 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     gQueue.idx++; gQueueOpen(); return true; }
   function gQueueStart(cat){ var list=[]; GEO.forEach(function(f,i){ if(f.cat===cat)list.push(i); });
     if(!list.length)return;
+    if(SHUF.on("geo")) list=shuffled(list);
     gQueueClear(); gQueue.list=list; gQueue.idx=0; gQueue.savedLoop=gp.loop; gQueueOpen(); }
   $("geoPlayAll").addEventListener("click",function(){ gQueueStart(geoState.filter); });
+  $("geoShuffle").addEventListener("click",function(){ var on=SHUF.toggle("geo");
+    /* file deja en cours : on re-ordonne la suite, la figure en cours continue */
+    if(gQueueOn()) gQueue.list=requeueTail(gQueue.list, gQueue.idx, on); });
   function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); }
     $("gTitle").textContent=tn(gp.fig.name); $("gSym").textContent=(gp.fig.sym[lang]||gp.fig.sym.fr); $("gRatios").textContent=tn(gp.fig.ratios);
     var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"||gp.fig.cat==="crop"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); $("gViz").style.visibility="visible"; }
@@ -3077,7 +3123,11 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
      iOS et Android, seul un element deja deverrouille par un geste peut
      redemarrer sans nouvelle interaction — c'est ce qui permet a « Tout faire
      jouer » d'enchainer les 16 seances. Meme principe que gAudio.pool. */
-  var med={ playingId:null, el:null, pool:null, vol:{}, seq:0, q:{on:false, idx:0} };
+  /* `q.order` = les index de MEDMUSIC dans l ordre ou la file les joue, et
+     `q.idx` = la position DANS cette file (pas dans MEDMUSIC). La distinction
+     n avait pas d importance tant que la file suivait la liste ; elle en a
+     des qu elle est melangee. */
+  var med={ playingId:null, el:null, pool:null, vol:{}, seq:0, q:{on:false, idx:0, order:null} };
 
   function medUrl(base){
     var a=document.createElement("audio");
@@ -3110,8 +3160,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function medNavGo(delta){ var i=medTrack(med.playingId); if(i<0)return;
     /* precedent = recommencer passe 3 s, comme sur Spotify */
     if(delta<0&&medPos()>3){ medPlay(MEDMUSIC[i]); return; }
+    /* en file d attente, « suivant » suit la FILE, pas l ordre de la liste */
+    if(med.q.on&&med.q.order){ var n=med.q.order.length, p=(med.q.idx+delta+n)%n;
+      med.q.idx=p; medQLabel(); medPlay(MEDMUSIC[med.q.order[p]]); return; }
     var j=(i+delta+MEDMUSIC.length)%MEDMUSIC.length;
-    if(med.q.on){ med.q.idx=j; medQLabel(); }
     medPlay(MEDMUSIC[j]); }
   function medProgAttach(id){ var d=medProgNode(), card=$("medCard_"+id);
     /* le noeud est cree une seule fois : ses libelles accessibles sont
@@ -3202,18 +3254,25 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
      ici puisque le bouton a son icone a part. */
   function medQLabel(){
     var ic=$("medPlayAllIco"), lb=$("medPlayAllLbl"); if(!ic||!lb) return;
-    if(med.q.on){ ic.textContent="■"; lb.textContent=t("stop").replace(/^[■▶]\s*/,"")+" · "+(med.q.idx+1)+"/"+MEDMUSIC.length; }
+    var n=(med.q.order?med.q.order.length:MEDMUSIC.length);
+    if(med.q.on){ ic.textContent="■"; lb.textContent=t("stop").replace(/^[■▶]\s*/,"")+" · "+(med.q.idx+1)+"/"+n; }
     else { ic.textContent="▶"; lb.textContent=t("geo_playall"); }
   }
-  function medQClear(){ med.q.on=false; med.q.idx=0; medQLabel(); }
-  function medQNext(){ if(!med.q.on) return;
-    if(med.q.idx+1>=MEDMUSIC.length){ medQClear(); return; }
-    med.q.idx++; medQLabel(); medPlay(MEDMUSIC[med.q.idx]); }
+  function medQClear(){ med.q.on=false; med.q.idx=0; med.q.order=null; medQLabel(); }
+  function medQNext(){ if(!med.q.on||!med.q.order) return;
+    if(med.q.idx+1>=med.q.order.length){ medQClear(); return; }
+    med.q.idx++; medQLabel(); medPlay(MEDMUSIC[med.q.order[med.q.idx]]); }
   function medQStart(){
     if(med.q.on){ medQClear(); medStopCurrent(); return; }
-    med.q.on=true; med.q.idx=0; medQLabel(); medPlay(MEDMUSIC[0]);
+    var order=[]; for(var k=0;k<MEDMUSIC.length;k++) order.push(k);
+    if(SHUF.on("med")) order=shuffled(order);
+    med.q.on=true; med.q.idx=0; med.q.order=order; medQLabel();
+    medPlay(MEDMUSIC[order[0]]);
   }
   $("medPlayAll").addEventListener("click",medQStart);
+  $("medShuffle").addEventListener("click",function(){ var on=SHUF.toggle("med");
+    if(med.q.on&&med.q.order) med.q.order=requeueTail(med.q.order, med.q.idx, on); });
+  SHUF.paint();
   function medSetVol(s,pct){
     med.vol[s.id]=pct;
     if(med.el && med.playingId===s.id) med.el.volume=Math.max(0,Math.min(1,pct/100));
