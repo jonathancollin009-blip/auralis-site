@@ -51,6 +51,22 @@ summary:hover{background:#1c2749}
   font-size:12px;color:var(--dim);margin-bottom:3px;gap:8px;min-width:0}
 .row label span,.row label{overflow-wrap:anywhere}
 .row label b{color:var(--cyan);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* Valeur editable : meme allure que les autres valeurs (cyan, chiffres alignes)
+   mais avec un soulignement discret qui signale qu'on peut y taper. */
+.valwrap{display:inline-flex;align-items:baseline;gap:4px;flex:none}
+.valwrap i{color:var(--dimmer);font-style:normal;font-size:11px;white-space:nowrap}
+/* `input[type=text].valbox` et non `.valbox` seul : la regle generique
+   `select,input[type=text]{width:100%}` est declaree plus bas, et a
+   specificite egale c'est la derniere qui gagne -- le champ prenait toute la
+   largeur et rejetait le "Hz" hors du cadre. */
+input[type=text].valbox{
+  width:76px;padding:1px 4px;text-align:right;
+  background:transparent;color:var(--cyan);font-weight:600;font-size:12px;
+  font-variant-numeric:tabular-nums;font-family:inherit;
+  border:none;border-bottom:1px dashed var(--line2);border-radius:0;
+}
+input[type=text].valbox:focus{outline:none;border-bottom-color:var(--cyan);background:#0c142b}
+input[type=text].valbox.bad{color:#e88;border-bottom-color:#e88}
 input[type=range]{
   -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;
   background:var(--line2);outline:none;margin:0;cursor:pointer;
@@ -158,6 +174,7 @@ canvas{
   .btn{padding:13px 10px;font-size:14px}
   summary{padding:14px 12px;font-size:14px}
   select{padding:11px 8px;font-size:16px}   /* sous 16px, iOS zoome tout seul */
+  input[type=text].valbox{font-size:16px;width:96px}
   input[type=color]{height:44px}
   .check{margin:14px 0;font-size:14px}
   input[type=checkbox]{width:22px;height:22px}
@@ -204,7 +221,7 @@ canvas{
     <summary>Fréquence &amp; plaque</summary>
     <div class="body">
       <div class="row">
-        <label>Fréquence jouée <b id="vFreq">120.00 Hz</b></label>
+        <label>Fréquence jouée <span class="valwrap"><input type="text" id="vFreq" class="valbox" inputmode="decimal" autocomplete="off" spellcheck="false" value="120" aria-label="Fréquence en hertz, modifiable"><i>Hz</i></span></label>
         <input type="range" id="freq" min="20" max="600" step="0.01" value="120">
       </div>
       <select id="freqPick"><option value="">— Choisir une fréquence Auralis —</option></select>
@@ -1066,7 +1083,7 @@ function render(final){
   draw(d.w,d.h);
   const ex=dimsFor(parseInt(P.size,10));
   $("hud").textContent=
-    `${P.freq.toFixed(2)} Hz · ${MODES.length} modes · ${d.w}×${d.h}${final?"":" (ébauche)"} · export ${ex.w}×${ex.h}`;
+    `${fmtFreq(P.freq)} Hz · ${MODES.length} modes · ${d.w}×${d.h}${final?"":" (ébauche)"} · export ${ex.w}×${ex.h}`;
 }
 
 let anim=null;              // boucle d'animation (lue par schedule)
@@ -1088,9 +1105,72 @@ function toast(msg){
   clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove("on"),1800);
 }
 
+/* ---- Fréquence : curseur ET champ de saisie ----
+   Le curseur va au 0,01 Hz, ce qui est inatteignable au doigt : pour viser une
+   valeur precise (432,72) il faut pouvoir la taper. Les deux commandes pilotent
+   la meme valeur et se suivent l'une l'autre. */
+const FREQ_MIN=0.1, FREQ_MAX=20000;
+
+// Affichage : jusqu'a 4 decimales, sans zeros inutiles (120, 432.72, 104.3988).
+function fmtFreq(v){
+  return v.toFixed(4).replace(/0+$/,"").replace(/\.$/,"");
+}
+// Saisie tolerante : virgule decimale (clavier francais), espaces, unite tapee.
+function parseFreq(txt){
+  const v=parseFloat(String(txt).replace(",",".").replace(/[^0-9.]/g,""));
+  return isFinite(v)?v:null;
+}
+/* Le curseur couvre 20-600 Hz, la zone utile. Si on tape au-dela, on etend sa
+   plage plutot que d'ecreter en silence -- et on la ramene des qu'on revient,
+   sinon le curseur resterait inutilisable apres un detour a 15 000 Hz. */
+function fitFreqSlider(v){
+  const sl=$("freq");
+  sl.max=String(v<=600 ? 600 : Math.ceil(v/100)*100);
+  sl.min=String(v>=20 ? 20 : Math.max(FREQ_MIN,Math.floor(v*10)/10));
+}
+/* `source` dit quelle commande a bouge, pour ne pas la contrarier :
+   - "slider" : ne pas retoucher la plage du curseur en plein glissement
+     (revenir de 15 000 a 300 la ferait passer de 20-15000 a 20-600, et le
+     pouce sauterait sous le doigt) ;
+   - "field"  : ne pas reecrire le texte pendant la frappe, le curseur de
+     texte reviendrait au debut a chaque caractere. */
+function setFreq(v,source){
+  v=Math.min(FREQ_MAX,Math.max(FREQ_MIN,v));
+  P.freq=v;
+  if(source!=="slider"){
+    fitFreqSlider(v);
+    $("freq").value=String(v);
+  }
+  if(source!=="field") $("vFreq").value=fmtFreq(v);
+  $("vFreq").classList.remove("bad");
+  schedule(true);
+}
+
+$("freq").addEventListener("input",()=>setFreq(parseFloat($("freq").value),"slider"));
+// relachement du curseur : la plage peut enfin se recaler sans gener personne
+$("freq").addEventListener("change",()=>fitFreqSlider(P.freq));
+
+$("vFreq").addEventListener("input",()=>{
+  const v=parseFreq($("vFreq").value);
+  if(v===null || v<FREQ_MIN || v>FREQ_MAX){
+    $("vFreq").classList.add("bad");   // saisie en cours ou hors bornes
+    return;
+  }
+  setFreq(v,"field");
+});
+// a la sortie du champ (ou sur Entree), on remet la valeur au propre
+function normaliseFreqField(){
+  const v=parseFreq($("vFreq").value);
+  setFreq(v===null?P.freq:v,"normalise");
+}
+$("vFreq").addEventListener("change",normaliseFreqField);
+$("vFreq").addEventListener("blur",normaliseFreqField);
+$("vFreq").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){ e.preventDefault(); $("vFreq").blur(); }
+});
+
 // (id du curseur, clé de P, id de l'affichage, fonction de formatage, recalcul des modes ?)
 const SLIDERS=[
-  ["freq","freq","vFreq",v=>v.toFixed(2)+" Hz",true],
   ["pA","a","vA",v=>v.toFixed(3)+" m",true],
   ["pC","c","vC",v=>v.toFixed(1)+" m/s",true],
   ["pQ","q","vQ",v=>String(Math.round(v)),true],
@@ -1165,16 +1245,13 @@ const fpick=$("freqPick");
 FREQS.forEach((f,i)=>{
   const o=document.createElement("option");
   o.value=String(i);
-  o.textContent=`${f.n} — ${f.hz.toFixed(2)} Hz`;
+  o.textContent=`${f.n} — ${fmtFreq(f.hz)} Hz`;
   fpick.appendChild(o);
 });
 fpick.addEventListener("change",()=>{
   const i=parseInt(fpick.value,10);
   if(isNaN(i)) return;
-  P.freq=FREQS[i].hz;
-  $("freq").value=String(P.freq);
-  $("vFreq").textContent=P.freq.toFixed(2)+" Hz";
-  schedule(true);
+  setFreq(FREQS[i].hz,"liste");
 });
 
 // interactions sur l'image
@@ -1242,6 +1319,7 @@ cv.addEventListener("pointercancel",releasePointer);
 
 /* ---- boutons ---- */
 function syncUI(){
+  setFreq(P.freq,"sync");
   SLIDERS.forEach(([id,key,disp,fmt])=>{ $(id).value=String(P[key]); $(disp).textContent=fmt(P[key]); });
   CHECKS.forEach(([id,key])=>{ $(id).checked=!!P[key]; });
   $("pStyle").value=String(P.style);
@@ -1294,7 +1372,7 @@ function withSize(w,h,alphaBg,fn){
 }
 function exportName(ext){
   const st=["sable","encre","champ","interference","relief","vitrail"][P.style];
-  return `cymatique_${P.freq.toFixed(2).replace(".","_")}hz_${st}_s${P.seed}.${ext}`;
+  return `cymatique_${fmtFreq(P.freq).replace(".","_")}hz_${st}_s${P.seed}.${ext}`;
 }
 function download(url,name){
   const a=document.createElement("a");
@@ -1343,7 +1421,7 @@ function renderGal(){
   g.forEach((it,i)=>{
     const d=document.createElement("div");
     d.className="gitem";
-    d.innerHTML=`<img src="${it.thumb}" alt=""><div class="lab">${it.p.freq.toFixed(1)} Hz</div><div class="del">✕</div>`;
+    d.innerHTML=`<img src="${it.thumb}" alt=""><div class="lab">${fmtFreq(it.p.freq)} Hz</div><div class="del">✕</div>`;
     d.querySelector("img").addEventListener("click",()=>{
       P=sanitize(it.p);
       syncUI(); schedule(true); toast("Réglages rechargés");
