@@ -142,6 +142,18 @@ canvas{
   background:rgba(7,13,28,.7);padding:5px 9px;border-radius:8px;
   font-variant-numeric:tabular-nums;pointer-events:none;backdrop-filter:blur(4px);
 }
+/* Bouton d'export pose sur la figure, en bas a droite. Masque sur grand
+   ecran : le panneau y est entierement visible, son bouton Export suffit. */
+#expFab{
+  display:none;position:absolute;right:10px;bottom:10px;z-index:4;
+  background:rgba(7,13,28,.82);color:var(--gold);
+  border:1px solid var(--gold);border-radius:12px;
+  padding:11px 14px;font:600 14px/1 inherit;font-family:inherit;
+  cursor:pointer;backdrop-filter:blur(6px);
+  min-height:44px;                       /* zone tactile confortable */
+}
+#expFab:active{background:rgba(233,201,106,.22)}
+
 #toast{
   position:absolute;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);
   background:var(--pan2);border:1px solid var(--mauve);border-radius:10px;
@@ -202,21 +214,19 @@ canvas{
        defilerait a l'interieur. */
     flex:1;min-height:0;overflow-y:auto;
     /* La marge basse degage le contenu de dessous la barre de pouce (sticky,
-       ~60 px) et laisse un peu de course pour que les dernieres categories
-       remontent quand on les ouvre. Ne pas la pousser trop loin : au-dela,
-       on ouvre un grand vide sous les reglages. */
-    border-right:none;padding:10px 12px 100px;
+       laisse un peu de course pour que les dernieres categories remontent
+       quand on les ouvre. Ne pas la pousser trop loin : au-dela, on ouvre un
+       grand vide sous les reglages. */
+    border-right:none;padding:10px 12px 60px;
   }
   h1{font-size:15px}
   #hud{font-size:10px;top:6px;left:6px;padding:4px 7px}
   #gallery{grid-template-columns:repeat(4,minmax(0,1fr))}
-  /* les deux actions les plus utilisées restent à portée de pouce */
-  #quick{
-    position:sticky;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:6px;padding:8px 0;background:linear-gradient(transparent,var(--pan) 30%);
-  }
+  /* La figure etant toujours a l'ecran en mode telephone, le bouton pose
+     dessus est toujours atteignable -- sans jamais recouvrir un reglage,
+     contrairement a la barre flottante qu'il remplace. */
+  #expFab{display:block}
 }
-@media (min-width:861px){ #quick{display:none} }
 </style>
 </head>
 <body>
@@ -419,16 +429,13 @@ canvas{
     </div>
   </details>
 
-  <div id="quick">
-    <button class="btn primary" id="qRandom">🎲 Surprends-moi</button>
-    <button class="btn gold" id="qExport">⬇ Exporter</button>
-  </div>
 </div>
 
 <div id="stage">
   <div id="wrap">
     <canvas id="cv"></canvas>
     <div id="hud"></div>
+    <button id="expFab" title="Exporter le PNG">⬇ Exporter</button>
   </div>
   <div id="toast"></div>
   <div id="err"></div>
@@ -1478,9 +1485,8 @@ document.addEventListener("keydown",e=>{
   if(e.key==="s"||e.key==="S") $("bSave").click();
 });
 
-// les deux actions de la barre de pouce rejouent les boutons du panneau
-$("qRandom").addEventListener("click",()=>$("bRandom").click());
-$("qExport").addEventListener("click",()=>$("bExport").click());
+// le bouton pose sur la figure rejoue celui du panneau
+$("expFab").addEventListener("click",()=>$("bExport").click());
 
 /* Sur telephone, toutes les sections ouvertes font un panneau interminable :
    on ne garde ouverte que la premiere, les autres se deplient au besoin.
