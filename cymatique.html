@@ -182,18 +182,30 @@ canvas{
 }
 
 @media (max-width:860px){
-  body{flex-direction:column;overflow:auto}
-  /* svh et non vh : sur Android la barre système fait osciller vh, ce qui
-     décale la page sous le doigt (piège déjà rencontré sur l'app). */
+  /* La figure NE DEFILE PAS : elle occupe le haut de l'ecran en permanence et
+     seul le panneau defile dessous. `position:sticky` ne suffisait pas -- avec
+     un body en flex qui defile lui-meme, l'image finissait par sortir de
+     l'ecran des qu'on descendait dans les reglages, et on ne voyait plus ce
+     qu'on etait en train d'ajuster.
+     svh et non vh : sur Android la barre systeme fait osciller vh, ce qui
+     decale la page sous le doigt (piege deja rencontre sur l'app). */
+  body{flex-direction:column;overflow:hidden;height:100svh}
   #stage{
-    order:-1;flex:none;width:100%;height:46svh;min-height:230px;
-    padding:8px;position:sticky;top:0;z-index:5;
-    border-bottom:1px solid var(--line);
+    order:-1;flex:none;width:100%;height:44svh;min-height:200px;
+    padding:8px;border-bottom:1px solid var(--line);
   }
-  canvas{max-height:calc(46svh - 16px)}
+  canvas{max-height:calc(44svh - 16px)}
   #panel{
-    width:100%;min-width:0;height:auto;overflow:visible;
-    border-right:none;padding:10px 12px 30px;
+    width:100%;min-width:0;
+    /* min-height:0 est indispensable : sans lui un flex item ne retrecit pas
+       sous la taille de son contenu, le panneau deborderait et rien ne
+       defilerait a l'interieur. */
+    flex:1;min-height:0;overflow-y:auto;
+    /* La marge basse degage le contenu de dessous la barre de pouce (sticky,
+       ~60 px) et laisse un peu de course pour que les dernieres categories
+       remontent quand on les ouvre. Ne pas la pousser trop loin : au-dela,
+       on ouvre un grand vide sous les reglages. */
+    border-right:none;padding:10px 12px 100px;
   }
   h1{font-size:15px}
   #hud{font-size:10px;top:6px;left:6px;padding:4px 7px}
@@ -1475,6 +1487,22 @@ $("qExport").addEventListener("click",()=>$("bExport").click());
    Une seule fois au chargement -- ensuite c'est l'utilisateur qui decide. */
 if(window.matchMedia("(max-width:860px)").matches){
   document.querySelectorAll("details").forEach((d,i)=>{ if(i>0) d.open=false; });
+
+  /* Ouvrir une categorie situee bas dans la liste laissait son contenu sous
+     l'ecran : on la ramene juste sous la figure, qui elle reste visible. On
+     defile le PANNEAU (seul conteneur qui defile en mode telephone), jamais la
+     page -- le body est en overflow:hidden. */
+  const panel=$("panel");
+  document.querySelectorAll("details").forEach(d=>{
+    d.addEventListener("toggle",()=>{
+      if(!d.open) return;
+      // un tour de boucle pour laisser la mise en page integrer l'ouverture
+      requestAnimationFrame(()=>{
+        const delta=d.getBoundingClientRect().top-panel.getBoundingClientRect().top;
+        panel.scrollBy({top:delta-6,behavior:"smooth"});
+      });
+    });
+  });
 }
 
 /* Un telephone n'a pas la memoire graphique d'un PC : un rendu 4096x4096
