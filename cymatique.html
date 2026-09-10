@@ -55,6 +55,20 @@ summary:hover{background:#1c2749}
    mais avec un soulignement discret qui signale qu'on peut y taper. */
 .valwrap{display:inline-flex;align-items:baseline;gap:4px;flex:none}
 .valwrap i{color:var(--dimmer);font-style:normal;font-size:11px;white-space:nowrap}
+/* Bouton de confirmation : masque en temps normal (le "Hz" suffit), et
+   remplace ce "Hz" pendant la saisie -- c'est la ou Jonathan signale que le
+   clavier mobile reste ouvert et revient parfois tout seul. Toucher ce bouton
+   force un blur() explicite, ce qui referme vraiment le clavier au lieu de
+   compter sur un tap ailleurs qui peut echouer a faire perdre le focus. */
+.freqok{
+  display:none;width:22px;height:22px;flex:none;padding:0;
+  border-radius:50%;border:1px solid var(--cyan);
+  background:rgba(127,216,240,.14);color:var(--cyan);
+  font-size:13px;line-height:1;cursor:pointer;
+  align-items:center;justify-content:center;
+}
+.valwrap:focus-within i{display:none}
+.valwrap:focus-within .freqok{display:inline-flex}
 /* `input[type=text].valbox` et non `.valbox` seul : la regle generique
    `select,input[type=text]{width:100%}` est declaree plus bas, et a
    specificite egale c'est la derniere qui gagne -- le champ prenait toute la
@@ -195,6 +209,7 @@ canvas{
   summary{padding:14px 12px;font-size:14px}
   select{padding:11px 8px;font-size:16px}   /* sous 16px, iOS zoome tout seul */
   input[type=text].valbox{font-size:16px;width:96px}
+  .freqok{width:30px;height:30px;font-size:16px}
   input[type=color]{height:44px}
   .check{margin:14px 0;font-size:14px}
   input[type=checkbox]{width:22px;height:22px}
@@ -251,7 +266,7 @@ canvas{
     <summary>Fréquence &amp; plaque</summary>
     <div class="body">
       <div class="row">
-        <label>Fréquence jouée <span class="valwrap"><input type="text" id="vFreq" class="valbox" inputmode="decimal" autocomplete="off" spellcheck="false" value="120" aria-label="Fréquence en hertz, modifiable"><i>Hz</i></span></label>
+        <label>Fréquence jouée <span class="valwrap"><input type="text" id="vFreq" class="valbox" inputmode="decimal" enterkeyhint="done" autocomplete="off" spellcheck="false" value="120" aria-label="Fréquence en hertz, modifiable"><i>Hz</i><button type="button" id="freqOk" class="freqok" aria-label="Confirmer la fréquence" title="Confirmer">✓</button></span></label>
         <input type="range" id="freq" min="20" max="600" step="0.01" value="120">
       </div>
       <select id="freqPick"><option value="">— Choisir une fréquence Auralis —</option></select>
@@ -1247,6 +1262,17 @@ $("vFreq").addEventListener("change",normaliseFreqField);
 $("vFreq").addEventListener("blur",normaliseFreqField);
 $("vFreq").addEventListener("keydown",e=>{
   if(e.key==="Enter"){ e.preventDefault(); $("vFreq").blur(); }
+});
+// Bouton de confirmation (visible pendant la saisie, voir le CSS) : referme
+// le clavier explicitement. Sur Android, laisser le champ focus() sans appel
+// explicite de blur() est ce qui fait revenir le clavier de temps en temps --
+// un simple tap ailleurs qui ne deplace pas vraiment le focus ne suffit pas
+// toujours. normaliseFreqField() peut deja avoir tourne via l'evenement
+// "blur" naturel avant que ce clic n'arrive ; l'appeler une seconde fois ici
+// est sans effet dans ce cas (meme valeur), donc sans risque.
+$("freqOk").addEventListener("click",()=>{
+  normaliseFreqField();
+  if(document.activeElement===$("vFreq")) $("vFreq").blur();
 });
 
 // (id du curseur, clé de P, id de l'affichage, fonction de formatage, recalcul des modes ?)
