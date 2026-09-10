@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Atelier Cymatique — Auralis</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070d1c">
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root{
+  --bg:#070d1c; --pan:#111a33; --pan2:#18223f; --line:#26325a; --line2:#334066;
+  --cyan:#7fd8f0; --mauve:#b98fe0; --gold:#e9c96a;
+  --txt:#e8edf8; --dim:#93a2c2; --dimmer:#63719a;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg); color:var(--txt);
+  font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  display:flex; overflow:hidden;
+}
+
+/* ---------- Panneau de contrôle ---------- */
+#panel{
+  width:340px; min-width:340px; height:100%; overflow-y:auto; overflow-x:hidden;
+  background:var(--pan); border-right:1px solid var(--line);
+  padding:14px 14px 40px;
+}
+#panel::-webkit-scrollbar{width:10px}
+#panel::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px}
+#panel::-webkit-scrollbar-track{background:transparent}
+
+h1{font-size:16px;font-weight:600;margin:0 0 2px;letter-spacing:.3px}
+h1 small{display:block;font-size:11px;color:var(--dimmer);font-weight:400;letter-spacing:0}
+
+details{border:1px solid var(--line);border-radius:12px;margin:10px 0;background:var(--pan2);overflow:hidden}
+details[open]{border-color:var(--line2)}
+summary{
+  cursor:pointer;padding:9px 12px;font-weight:600;font-size:13px;list-style:none;
+  color:var(--txt);user-select:none;display:flex;align-items:center;gap:8px;
+}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";color:var(--dimmer);font-size:11px;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:#1c2749}
+.body{padding:4px 12px 12px}
+
+/* Curseur */
+.row{margin:9px 0}
+.row label{display:flex;justify-content:space-between;align-items:baseline;
+  font-size:12px;color:var(--dim);margin-bottom:3px;gap:8px;min-width:0}
+.row label span,.row label{overflow-wrap:anywhere}
+.row label b{color:var(--cyan);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;
+  background:var(--line2);outline:none;margin:0;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+  background:var(--cyan);border:2px solid var(--pan);cursor:pointer;
+  box-shadow:0 0 0 1px var(--cyan);
+}
+input[type=range]::-moz-range-thumb{
+  width:13px;height:13px;border-radius:50%;background:var(--cyan);
+  border:2px solid var(--pan);cursor:pointer;
+}
+
+select,input[type=text],input[type=number]{
+  width:100%;background:#0c142b;color:var(--txt);border:1px solid var(--line2);
+  border-radius:8px;padding:6px 8px;font-size:12.5px;font-family:inherit;
+}
+select:focus,input:focus{outline:none;border-color:var(--cyan)}
+input[type=color]{
+  width:100%;height:30px;padding:2px;background:#0c142b;
+  border:1px solid var(--line2);border-radius:8px;cursor:pointer;
+}
+input[type=checkbox]{accent-color:var(--cyan);width:15px;height:15px;cursor:pointer;vertical-align:-2px}
+.check{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--dim);margin:8px 0;cursor:pointer}
+
+.btn{
+  background:#1b2649;color:var(--txt);border:1px solid var(--line2);border-radius:10px;
+  padding:8px 10px;font-size:12.5px;font-family:inherit;cursor:pointer;
+  transition:background .12s,transform .08s;width:100%;
+  min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.btn:hover{background:#25325e}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:linear-gradient(135deg,#2a3a7a,#3d2a6b);border-color:var(--mauve);font-weight:600}
+.btn.primary:hover{background:linear-gradient(135deg,#33468f,#4a3380)}
+.btn.gold{border-color:var(--gold);color:var(--gold)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:8px 0}
+
+.hint{font-size:11px;color:var(--dimmer);line-height:1.4;margin:6px 0 2px}
+
+/* Galerie */
+#gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+.gitem{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;cursor:pointer;border:1px solid var(--line2)}
+.gitem img{width:100%;height:100%;object-fit:cover;display:block}
+.gitem:hover{border-color:var(--cyan)}
+.gitem .del{
+  position:absolute;top:2px;right:2px;width:17px;height:17px;line-height:15px;text-align:center;
+  background:rgba(7,13,28,.85);border-radius:50%;font-size:12px;color:#e88;opacity:0;transition:opacity .12s;
+}
+.gitem:hover .del{opacity:1}
+.gitem .lab{
+  position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(7,13,28,.9));
+  font-size:9px;padding:8px 3px 2px;text-align:center;color:var(--cyan);
+  font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;
+}
+
+/* ---------- Scène ---------- */
+#stage{
+  flex:1;height:100%;display:flex;align-items:center;justify-content:center;
+  position:relative;background:#04060f;padding:20px;min-width:0;
+}
+#wrap{position:relative;max-width:100%;max-height:100%;display:flex}
+canvas{
+  display:block;max-width:100%;max-height:calc(100vh - 40px);
+  touch-action:none;
+  border-radius:6px;box-shadow:0 0 60px rgba(0,0,0,.7);
+}
+#hud{
+  position:absolute;top:12px;left:12px;font-size:11px;color:var(--dimmer);
+  background:rgba(7,13,28,.7);padding:5px 9px;border-radius:8px;
+  font-variant-numeric:tabular-nums;pointer-events:none;backdrop-filter:blur(4px);
+}
+#toast{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--pan2);border:1px solid var(--mauve);border-radius:10px;
+  padding:9px 16px;font-size:13px;opacity:0;transition:opacity .25s,transform .25s;
+  pointer-events:none;
+}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#err{
+  position:absolute;inset:20px;background:#2a0f18;border:1px solid #a44;
+  color:#fbb;padding:16px;border-radius:10px;font:12px/1.5 monospace;
+  white-space:pre-wrap;overflow:auto;display:none;
+}
+
+/* ---------- Tactile / téléphone ----------
+   Deux choses distinctes : la LARGEUR (téléphone en portrait = une colonne,
+   image en haut, réglages dessous) et le POINTEUR (au doigt, il faut des
+   zones de 44 px même sur une tablette large). D'où deux requêtes média. */
+
+@media (pointer:coarse){
+  /* Piste fine, zone tactile de 44 px : c'est le padding qui fait la hauteur.
+     `content-box` est indispensable ici -- avec le border-box global, height:6px
+     serait la hauteur TOTALE, la zone de contenu tomberait a 0 et
+     background-clip:content-box n'aurait plus rien a peindre (piste invisible). */
+  input[type=range]{
+    box-sizing:content-box;height:6px;padding:19px 0;background-clip:content-box;
+  }
+  input[type=range]::-webkit-slider-thumb{width:26px;height:26px}
+  input[type=range]::-moz-range-thumb{width:24px;height:24px}
+  .row{margin:2px 0}
+  .btn{padding:13px 10px;font-size:14px}
+  summary{padding:14px 12px;font-size:14px}
+  select{padding:11px 8px;font-size:16px}   /* sous 16px, iOS zoome tout seul */
+  input[type=color]{height:44px}
+  .check{margin:14px 0;font-size:14px}
+  input[type=checkbox]{width:22px;height:22px}
+  .gitem .del{opacity:1;width:24px;height:24px;line-height:22px;font-size:14px}
+}
+
+@media (max-width:860px){
+  body{flex-direction:column;overflow:auto}
+  /* svh et non vh : sur Android la barre système fait osciller vh, ce qui
+     décale la page sous le doigt (piège déjà rencontré sur l'app). */
+  #stage{
+    order:-1;flex:none;width:100%;height:46svh;min-height:230px;
+    padding:8px;position:sticky;top:0;z-index:5;
+    border-bottom:1px solid var(--line);
+  }
+  canvas{max-height:calc(46svh - 16px)}
+  #panel{
+    width:100%;min-width:0;height:auto;overflow:visible;
+    border-right:none;padding:10px 12px 30px;
+  }
+  h1{font-size:15px}
+  #hud{font-size:10px;top:6px;left:6px;padding:4px 7px}
+  #gallery{grid-template-columns:repeat(4,minmax(0,1fr))}
+  /* les deux actions les plus utilisées restent à portée de pouce */
+  #quick{
+    position:sticky;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:6px;padding:8px 0;background:linear-gradient(transparent,var(--pan) 30%);
+  }
+}
+@media (min-width:861px){ #quick{display:none} }
+</style>
+</head>
+<body>
+
+<div id="panel">
+  <h1>Atelier Cymatique<small>Auralis — figures de Chladni paramétrables</small></h1>
+
+  <div class="grid2">
+    <button class="btn primary" id="bRandom">🎲 Surprends-moi</button>
+    <button class="btn" id="bReset">↺ Réinitialiser</button>
+  </div>
+
+  <details open>
+    <summary>Fréquence &amp; plaque</summary>
+    <div class="body">
+      <div class="row">
+        <label>Fréquence jouée <b id="vFreq">120.00 Hz</b></label>
+        <input type="range" id="freq" min="20" max="600" step="0.01" value="120">
+      </div>
+      <select id="freqPick"><option value="">— Choisir une fréquence Auralis —</option></select>
+      <div class="row">
+        <label>Rayon de la plaque (a) <b id="vA">0.100 m</b></label>
+        <input type="range" id="pA" min="0.02" max="0.4" step="0.001" value="0.1">
+      </div>
+      <div class="row">
+        <label>Vitesse d'onde (c) <b id="vC">10.0 m/s</b></label>
+        <input type="range" id="pC" min="1" max="60" step="0.1" value="10">
+      </div>
+      <div class="row">
+        <label>Finesse des résonances (Q) <b id="vQ">20</b></label>
+        <input type="range" id="pQ" min="1" max="200" step="1" value="20">
+      </div>
+      <p class="hint">c/a fixe où tombent les résonances. Le repère ci-dessous montre les modes qui répondent le plus fort à la fréquence choisie.</p>
+      <div id="modeInfo" class="hint" style="color:var(--dim)"></div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Modes vibratoires</summary>
+    <div class="body">
+      <div class="row">
+        <label>Ordres angulaires n max <b id="vNmax">8</b></label>
+        <input type="range" id="pNmax" min="0" max="14" step="1" value="8">
+      </div>
+      <div class="row">
+        <label>Indices radiaux m max <b id="vMmax">8</b></label>
+        <input type="range" id="pMmax" min="1" max="12" step="1" value="8">
+      </div>
+      <div class="row">
+        <label>Modes retenus (les + forts) <b id="vK">24</b></label>
+        <input type="range" id="pK" min="1" max="48" step="1" value="24">
+      </div>
+      <div class="row">
+        <label>Symétrie imposée <b id="vSym">libre</b></label>
+        <input type="range" id="pSym" min="0" max="12" step="1" value="0">
+      </div>
+      <div class="row">
+        <label>Désordre des phases <b id="vPh">0 %</b></label>
+        <input type="range" id="pPh" min="0" max="100" step="1" value="0">
+      </div>
+      <div class="row">
+        <label>Graine aléatoire <b id="vSeed">1</b></label>
+        <input type="range" id="pSeed" min="1" max="999" step="1" value="1">
+      </div>
+      <label class="check"><input type="checkbox" id="pOnlyEven"> N'utiliser que les n pairs</label>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Rendu</summary>
+    <div class="body">
+      <select id="pStyle">
+        <option value="0">Sable — lignes nodales (comme le boîtier)</option>
+        <option value="1">Encre — traits sombres sur clair</option>
+        <option value="2">Champ — nappes de couleur</option>
+        <option value="3">Interférence — anneaux concentriques</option>
+        <option value="4">Relief — métal éclairé</option>
+        <option value="5">Vitrail — cellules pleines</option>
+      </select>
+      <div class="row">
+        <label>Épaisseur du trait <b id="vW">2.0 px</b></label>
+        <input type="range" id="pW" min="0.3" max="12" step="0.1" value="2">
+      </div>
+      <div class="row">
+        <label>Halo lumineux <b id="vH">45 %</b></label>
+        <input type="range" id="pH" min="0" max="150" step="1" value="45">
+      </div>
+      <div class="row">
+        <label>Exposition <b id="vExp">1.00</b></label>
+        <input type="range" id="pExp" min="0.1" max="4" step="0.01" value="1">
+      </div>
+      <div class="row">
+        <label>Contraste (gamma) <b id="vG">1.00</b></label>
+        <input type="range" id="pG" min="0.2" max="3" step="0.01" value="1">
+      </div>
+      <div class="row">
+        <label>Grain <b id="vGr">5 %</b></label>
+        <input type="range" id="pGr" min="0" max="40" step="1" value="5">
+      </div>
+      <div class="row">
+        <label>Vignettage <b id="vVig">0 %</b></label>
+        <input type="range" id="pVig" min="0" max="100" step="1" value="0">
+      </div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Couleurs</summary>
+    <div class="body">
+      <select id="palPick"></select>
+      <div class="grid4" id="palEdit">
+        <input type="color" id="c0" value="#050814">
+        <input type="color" id="c1" value="#121842">
+        <input type="color" id="c2" value="#482d91">
+        <input type="color" id="c3" value="#8c6edc">
+      </div>
+      <input type="color" id="c4" value="#96dcf5" style="margin-bottom:6px">
+      <div class="row">
+        <label>Répartition des teintes <b id="vBias">0.50</b></label>
+        <input type="range" id="pBias" min="0.15" max="0.85" step="0.01" value="0.5">
+      </div>
+      <label class="check"><input type="checkbox" id="pInvert"> Inverser le dégradé</label>
+    </div>
+  </details>
+
+  <details>
+    <summary>Cadrage</summary>
+    <div class="body">
+      <div class="row">
+        <label>Zoom <b id="vZ">1.00×</b></label>
+        <input type="range" id="pZ" min="0.3" max="3" step="0.01" value="1">
+      </div>
+      <div class="row">
+        <label>Rotation <b id="vR">0°</b></label>
+        <input type="range" id="pR" min="0" max="360" step="1" value="0">
+      </div>
+      <div class="row">
+        <label>Décalage X <b id="vOX">0.00</b></label>
+        <input type="range" id="pOX" min="-1" max="1" step="0.01" value="0">
+      </div>
+      <div class="row">
+        <label>Décalage Y <b id="vOY">0.00</b></label>
+        <input type="range" id="pOY" min="-1" max="1" step="0.01" value="0">
+      </div>
+      <label class="check"><input type="checkbox" id="pMask" checked> Limiter au disque de la plaque</label>
+      <label class="check"><input type="checkbox" id="pRing"> Dessiner le cercle du bord</label>
+      <div class="hint">Astuce : molette = zoom, glisser = déplacer, sur l'image.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>Animation</summary>
+    <div class="body">
+      <div class="row">
+        <label>Balayage temporel <b id="vT">0.00</b></label>
+        <input type="range" id="pT" min="0" max="6.283" step="0.001" value="0">
+      </div>
+      <div class="row">
+        <label>Vitesse <b id="vSpd">0.30</b></label>
+        <input type="range" id="pSpd" min="0.02" max="2" step="0.01" value="0.3">
+      </div>
+      <button class="btn" id="bPlay">▶ Animer les phases</button>
+      <div class="hint">Laisse tourner, mets en pause quand une forme te plaît, puis exporte.</div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Export</summary>
+    <div class="body">
+      <div class="grid2">
+        <select id="pFormat">
+          <option value="1:1">Carré 1:1</option>
+          <option value="16:9">Paysage 16:9</option>
+          <option value="9:16">Portrait 9:16</option>
+          <option value="1024x600">Boîtier 1024×600</option>
+          <option value="4:3">4:3</option>
+        </select>
+        <select id="pSize">
+          <option value="1024">1024 px</option>
+          <option value="2048" selected>2048 px</option>
+          <option value="3072">3072 px</option>
+          <option value="4096">4096 px</option>
+        </select>
+      </div>
+      <label class="check"><input type="checkbox" id="pTransp"> Fond transparent (PNG détouré)</label>
+      <button class="btn primary" id="bExport">⬇ Exporter le PNG</button>
+      <div class="grid2">
+        <button class="btn" id="bSave">⭐ Garder</button>
+        <button class="btn" id="bLink">🔗 Copier le lien</button>
+      </div>
+      <button class="btn" id="bRecipe">📋 Copier la recette (JSON)</button>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Galerie <span id="galCount" style="color:var(--dimmer);font-weight:400"></span></summary>
+    <div class="body">
+      <div class="hint">Clic = recharger les réglages. Survol puis ✕ = supprimer.</div>
+      <div id="gallery"></div>
+    </div>
+  </details>
+
+  <div id="quick">
+    <button class="btn primary" id="qRandom">🎲 Surprends-moi</button>
+    <button class="btn gold" id="qExport">⬇ Exporter</button>
+  </div>
+</div>
+
+<div id="stage">
+  <div id="wrap">
+    <canvas id="cv"></canvas>
+    <div id="hud"></div>
+  </div>
+  <div id="toast"></div>
+  <div id="err"></div>
+</div>
+
+<script>
+// --- frequences.js incorpore par outils/deployer_site.py ---
+// Genere par outils/extraire_frequences.py -- NE PAS EDITER A LA MAIN.
+// Source : musicologix/Auralis_v2/Auralis_v2.ino
+const AURALIS_FREQS = [
+  {n:"Calcium", hz:59.735, c:"Element"},
+  {n:"Bore", hz:64.454, c:"Element"},
+  {n:"Sodium", hz:68.53, c:"Element"},
+  {n:"Molybdene", hz:71.505, c:"Element"},
+  {n:"Carbone", hz:71.604, c:"Element"},
+  {n:"Magnesium", hz:72.452, c:"Element"},
+  {n:"Platine", hz:72.532, c:"Element"},
+  {n:"Or", hz:73.233, c:"Element"},
+  {n:"Vanadium", hz:75.927, c:"Element"},
+  {n:"Chrome", hz:77.499, c:"Element"},
+  {n:"Lithium", hz:82.765, c:"Element"},
+  {n:"Manganese", hz:83.235, c:"Element"},
+  {n:"Fer", hz:83.2355, c:"Element"},
+  {n:"Azote", hz:83.5262, c:"Element"},
+  {n:"Silicium", hz:83.721, c:"Element"},
+  {n:"Strontium", hz:87.62, c:"Element"},
+  {n:"Oxyde nitrique", hz:89.45831, c:"Endogene"},
+  {n:"Phosphore", hz:92.322, c:"Element"},
+  {n:"Iode", hz:94.572, c:"Element"},
+  {n:"Cuivre", hz:94.71, c:"Element"},
+  {n:"Oxygene", hz:95.387, c:"Element"},
+  {n:"Helium", hz:95.452, c:"Element"},
+  {n:"Soufre", hz:95.584, c:"Element"},
+  {n:"Zinc", hz:97.4475, c:"Element"},
+  {n:"Xenon", hz:97.84053, c:"Element"},
+  {n:"Apigénine", hz:100.69649, c:"Phyto"},
+  {n:"Estradiol (E2)", hz:101.4939, c:"Endogene"},
+  {n:"Alpha-Pinène", hz:101.5237, c:"Huile essentielle"},
+  {n:"Limonène", hz:101.5237, c:"Huile essentielle"},
+  {n:"Ginsénoside Rb1", hz:103.33556, c:"Phyto"},
+  {n:"Eau Structurée [H3O2]- R.Ruhlmann", hz:104.3988, c:"Element"},
+  {n:"Lutéine", hz:105.98581, c:"Phyto"},
+  {n:"Pipérine", hz:106.32303, c:"Phyto"},
+  {n:"Testostérone", hz:107.4707, c:"Endogene"},
+  {n:"DHEA", hz:107.4748, c:"Endogene"},
+  {n:"Chakra Racine", hz:108.0, c:"Chakra"},
+  {n:"Pamplemousse", hz:108.1582, c:"Phyto"},
+  {n:"Acétylcholine", hz:108.96117, c:"Endogene"},
+  {n:"Glutamate", hz:109.64679, c:"Endogene"},
+  {n:"Huile de ricin", hz:111.2118, c:"Phyto"},
+  {n:"Glycine", hz:111.88549, c:"Endogene"},
+  {n:"Salidroside", hz:111.89741, c:"Phyto"},
+  {n:"Carvacrol", hz:111.94958, c:"Huile essentielle"},
+  {n:"Thymol", hz:111.94958, c:"Huile essentielle"},
+  {n:"Quercétine", hz:112.6188, c:"Phyto"},
+  {n:"Fluor", hz:113.266, c:"Element"},
+  {n:"Camphre", hz:113.4475, c:"Huile essentielle"},
+  {n:"Cayenne", hz:113.8015, c:"Phyto"},
+  {n:"Dopamine", hz:114.15548, c:"Endogene"},
+  {n:"Glutathion", hz:114.51431, c:"Endogene"},
+  {n:"1,8-Cinéole", hz:114.95288, c:"Huile essentielle"},
+  {n:"Citronellal", hz:114.95288, c:"Huile essentielle"},
+  {n:"Géraniol", hz:114.95288, c:"Huile essentielle"},
+  {n:"Linalol", hz:114.95288, c:"Huile essentielle"},
+  {n:"Tea tree (arbre à thé)", hz:114.95288, c:"Huile essentielle"},
+  {n:"Menthol", hz:116.45826, c:"Huile essentielle"},
+  {n:"Coriandre", hz:116.4583, c:"Phyto"},
+  {n:"Potassium", hz:116.55, c:"Element"},
+  {n:"Chakra Sacre", hz:117.0, c:"Chakra"},
+  {n:"Progestérone", hz:117.1737, c:"Endogene"},
+  {n:"Selenium", hz:117.706, c:"Element"},
+  {n:"Bleu de méthylène", hz:119.1821, c:"Element"},
+  {n:"L-Carnitine", hz:120.13154, c:"Endogene"},
+  {n:"Bilobalide", hz:121.5855, c:"Phyto"},
+  {n:"Eugénol", hz:122.368, c:"Huile essentielle"},
+  {n:"PQQ", hz:123.04244, c:"Endogene"},
+  {n:"NAD+", hz:123.60323, c:"Endogene"},
+  {n:"Acide carnosique", hz:123.86965, c:"Phyto"},
+  {n:"NADH", hz:123.97771, c:"Endogene"},
+  {n:"Berbérine", hz:125.334, c:"Phyto"},
+  {n:"Plexus Solaire", hz:126.0, c:"Chakra"},
+  {n:"Noradrénaline", hz:126.07928, c:"Endogene"},
+  {n:"Vitamine B12", hz:126.2586, c:"Endogene"},
+  {n:"Rubidium", hz:127.3909, c:"Element"},
+  {n:"Macamide", hz:128.76214, c:"Phyto"},
+  {n:"L-Théanine", hz:129.82037, c:"Phyto"},
+  {n:"Vinpocétine", hz:130.58424, c:"Phyto"},
+  {n:"Sérotonine", hz:131.32203, c:"Endogene"},
+  {n:"Sulforaphane", hz:132.12316, c:"Phyto"},
+  {n:"Acide rosmarinique", hz:134.25826, c:"Phyto"},
+  {n:"Théobromine", hz:134.262, c:"Phyto"},
+  {n:"L-Tyrosine", hz:135.02958, c:"Phyto"},
+  {n:"Ombelliprénine", hz:136.56477, c:"Phyto"},
+  {n:"Curcumine", hz:137.2653, c:"Phyto"},
+  {n:"Angélique", hz:138.7334, c:"Phyto"},
+  {n:"Rhénium", hz:138.7707, c:"Element"},
+  {n:"Sulfate (SO4)", hz:143.175, c:"Element"},
+  {n:"Schisandrine C", hz:143.2421, c:"Phyto"},
+  {n:"Bacoside A3", hz:143.27191, c:"Phyto"},
+  {n:"Vitamine D", hz:143.32333, c:"Endogene"},
+  {n:"Chakra du Coeur", hz:144.0, c:"Chakra"},
+  {n:"Acide férulique", hz:144.71022, c:"Phyto"},
+  {n:"Caféine", hz:144.71767, c:"Phyto"},
+  {n:"Astragaloside IV", hz:146.24727, c:"Phyto"},
+  {n:"Ginsénoside Rg3", hz:146.25472, c:"Phyto"},
+  {n:"Acétate de linalyle", hz:146.28267, c:"Huile essentielle"},
+  {n:"Échinacoside", hz:146.57517, c:"Phyto"},
+  {n:"Acide galbanique", hz:148.48485, c:"Phyto"},
+  {n:"Schisandrine B", hz:149.22263, c:"Phyto"},
+  {n:"Ginsénoside Rg1", hz:149.23567, c:"Phyto"},
+  {n:"Ginkgolide A", hz:152.1775, c:"Phyto"},
+  {n:"GABA", hz:153.69778, c:"Endogene"},
+  {n:"Igname", hz:154.4952, c:"Phyto"},
+  {n:"Schisandrine A", hz:155.19944, c:"Phyto"},
+  {n:"Érinacine A", hz:155.21434, c:"Phyto"},
+  {n:"Ghréline", hz:157.0057, c:"Endogene"},
+  {n:"Valtrate", hz:157.42024, c:"Phyto"},
+  {n:"Ginkgolide B", hz:158.1394, c:"Phyto"},
+  {n:"Rosavine", hz:159.64105, c:"Phyto"},
+  {n:"Coenzyme Q10", hz:160.84834, c:"Endogene"},
+  {n:"Isovitexine", hz:161.1129, c:"Phyto"},
+  {n:"Vitexine", hz:161.1129, c:"Phyto"},
+  {n:"Endorphine", hz:161.38584, c:"Endogene"},
+  {n:"Chakra de la Gorge", hz:162.0, c:"Chakra"},
+  {n:"Ginkgolide C", hz:164.1013, c:"Phyto"},
+  {n:"5-HTP", hz:164.12365, c:"Phyto"},
+  {n:"Faradiol", hz:164.96577, c:"Phyto"},
+  {n:"Histamine", hz:165.6663, c:"Endogene"},
+  {n:"Bisabolol", hz:165.71846, c:"Huile essentielle"},
+  {n:"Chlorophylle", hz:166.4656, c:"Phyto"},
+  {n:"Resvératrol", hz:170.09301, c:"Phyto"},
+  {n:"EGCG", hz:170.79726, c:"Phyto"},
+  {n:"Troisieme Oeil", hz:171.0, c:"Chakra"},
+  {n:"Mélatonine", hz:173.10228, c:"Endogene"},
+  {n:"Acide valérénique", hz:174.6315, c:"Phyto"},
+  {n:"Withaférine A", hz:175.35438, c:"Phyto"},
+  {n:"Asiaticoside", hz:178.69305, c:"Phyto"},
+  {n:"Huperzine A", hz:180.58595, c:"Phyto"},
+  {n:"Madecassoside", hz:181.67586, c:"Phyto"},
+  {n:"Bicarbonate (HCO3)", hz:181.8856, c:"Element"},
+  {n:"Citicoline", hz:181.95719, c:"Endogene"},
+  {n:"Taurine", hz:186.53295, c:"Endogene"},
+  {n:"Cordycépine", hz:187.23347, c:"Phyto"},
+  {n:"Ocytocine", hz:187.6489, c:"Endogene"},
+  {n:"ATP", hz:188.98478, c:"Endogene"},
+  {n:"Chakra Couronne", hz:189.0, c:"Chakra"},
+  {n:"Chrysine", hz:189.46918, c:"Phyto"},
+  {n:"AKBA", hz:191.04909, c:"Phyto"},
+  {n:"Alpha-GPC", hz:191.68999, c:"Endogene"},
+  {n:"Acide ganodérique A", hz:192.52093, c:"Phyto"},
+  {n:"Créatine", hz:195.44599, c:"Endogene"},
+  {n:"Cinnamaldéhyde", hz:196.98118, c:"Huile essentielle"},
+  {n:"Honokiol", hz:198.4791, c:"Phyto"},
+  {n:"Magnolol", hz:198.4791, c:"Phyto"},
+  {n:"Adénosine", hz:199.15727, c:"Endogene"}
+];
+</script>
+<script>
+"use strict";
+
+/* ==================================================================
+   1. Fonctions de Bessel en JS (Numerical Recipes) + zéros α(n,m)
+   ================================================================== */
+function besselJ0(x){
+  const ax=Math.abs(x);
+  if(ax<8){
+    const y=x*x;
+    const p1=-2957821389.0+y*(7062834065.0+y*(-512359803.6+y*(10879881.29+y*(-86327.92757+y*228.4622733))));
+    const p2=40076544269.0+y*(745249964.8+y*(7189466.438+y*(47447.26470+y*(226.1030244+y))));
+    return p1/p2;
+  }
+  const z=8/ax,y=z*z,xx=ax-0.785398164;
+  const p1=1+y*(-0.1098628627e-2+y*(0.2734510407e-4+y*(-0.2073370639e-5+y*0.2093887211e-6)));
+  const p2=-0.1562499995e-1+y*(0.1430488765e-3+y*(-0.6911147651e-5+y*(0.7621095161e-6+y*(-0.934935152e-7))));
+  return Math.sqrt(0.636619772/ax)*(Math.cos(xx)*p1-z*Math.sin(xx)*p2);
+}
+function besselJ1(x){
+  const ax=Math.abs(x); let res;
+  if(ax<8){
+    const y=x*x;
+    const p1=x*(72362614232.0+y*(-7895059235.0+y*(242396853.1+y*(-2972611.439+y*(15704.48260+y*(-30.16036606))))));
+    const p2=144725228442.0+y*(2300535178.0+y*(18583304.74+y*(99447.43394+y*(376.9991397+y))));
+    res=p1/p2;
+  }else{
+    const z=8/ax,y=z*z,xx=ax-2.356194491;
+    const p1=1+y*(0.183105e-2+y*(-0.3516396496e-4+y*(0.2457520174e-5+y*(-0.240337019e-6))));
+    const p2=0.04687499995+y*(-0.2002690873e-3+y*(0.8449199096e-5+y*(-0.88228987e-6+y*0.105787412e-6)));
+    res=Math.sqrt(0.636619772/ax)*(Math.cos(xx)*p1-z*Math.sin(xx)*p2);
+    if(x<0) res=-res;
+  }
+  return res;
+}
+function besselJn(n,x){
+  if(n===0) return besselJ0(x);
+  if(n===1) return besselJ1(x);
+  // récurrence ascendante : suffisante pour n<=14 et x>=n (notre cas, α(n,m)>n)
+  const tox=2/Math.max(Math.abs(x),1e-8);
+  let bjm=besselJ0(x), bj=besselJ1(x), bjp=0;
+  for(let j=1;j<n;j++){ bjp=j*tox*bj-bjm; bjm=bj; bj=bjp; }
+  return bj;
+}
+// zéros de J_n : estimation de McMahon puis affinage par bissection.
+const ZERO_CACHE={};
+function besselZero(n,m){
+  const key=n+"_"+m;
+  if(ZERO_CACHE[key]!==undefined) return ZERO_CACHE[key];
+  const beta=(m+n/2-0.25)*Math.PI;
+  let guess=beta-(4*n*n-1)/(8*beta);
+  let lo=Math.max(guess-1.2,n>0?n:0.1), hi=guess+1.2;
+  let flo=besselJn(n,lo), fhi=besselJn(n,hi);
+  // élargit tant que la racine n'est pas encadrée
+  let tries=0;
+  while(flo*fhi>0 && tries<40){ lo-=0.25; hi+=0.25; if(lo<=0) lo=1e-4;
+    flo=besselJn(n,lo); fhi=besselJn(n,hi); tries++; }
+  for(let i=0;i<80;i++){
+    const mid=(lo+hi)/2, fm=besselJn(n,mid);
+    if(flo*fm<=0){ hi=mid; fhi=fm; } else { lo=mid; flo=fm; }
+  }
+  const r=(lo+hi)/2;
+  ZERO_CACHE[key]=r;
+  return r;
+}
+
+/* ==================================================================
+   2. Paramètres
+   ================================================================== */
+const DEF={
+  freq:120, a:0.1, c:10, q:20,
+  nmax:8, mmax:8, k:24, sym:0, phase:0, seed:1, onlyEven:false,
+  style:0, w:2, halo:45, exp:1, gamma:1, grain:5, vig:0,
+  pal:"auralis", cols:["#050814","#121842","#482d91","#8c6edc","#96dcf5"],
+  bias:0.5, invert:false,
+  zoom:1, rot:0, ox:0, oy:0, mask:true, ring:false,
+  t:0, spd:0.3,
+  format:"1:1", size:"2048", transp:false
+};
+let P=Object.assign({},DEF,{cols:DEF.cols.slice()});
+
+const PALETTES={
+  auralis:  ["#050814","#121842","#482d91","#8c6edc","#96dcf5"],
+  cyan:     ["#04080f","#062430","#0d6a80","#3fb8d4","#dcfaff"],
+  mauve:    ["#080510","#1e0f3a","#4d2585","#9b6ede","#f0e2ff"],
+  or:       ["#0d0a04","#33230a","#8a5f18","#e0ad45","#fff3d0"],
+  cosmos:   ["#02030a","#0d1030","#3b1d63","#b05a9c","#ffd9a8"],
+  aurore:   ["#030b0a","#07301f","#149468","#79e6b0","#e8fff4"],
+  braise:   ["#0a0303","#380b06","#a3300d","#f08033","#ffe7bd"],
+  encre:    ["#f4f6fb","#cfd8ea","#7d8cae","#2c3654","#070d1c"],
+  argent:   ["#07090f","#1c2230","#4c5870","#a3b0c6","#ffffff"],
+  glace:    ["#04060d","#0b1c3d","#25549b","#7fa8e8","#eef6ff"],
+  perso:    null
+};
+
+/* ==================================================================
+   3. WebGL
+   ================================================================== */
+const cv=document.getElementById("cv");
+const gl=cv.getContext("webgl",{preserveDrawingBuffer:true,alpha:true,premultipliedAlpha:false,antialias:false});
+const errBox=document.getElementById("err");
+function fatal(msg){ errBox.style.display="block"; errBox.textContent=msg; throw new Error(msg); }
+if(!gl) fatal("WebGL indisponible dans ce navigateur.");
+
+/* Chaque mode occupe un vec4 d'uniforme dans le fragment shader. La limite
+   varie beaucoup d'une carte à l'autre (WebGL 1 n'en garantit que 16) : on
+   dimensionne le tableau d'après ce que la carte annonce vraiment, en gardant
+   une réserve pour les ~24 autres uniformes. Sinon le programme refuserait de
+   se lier, sans rien afficher. */
+const UNI_LIMIT=gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS)||16;
+const MAXMODES=Math.max(4,Math.min(48,UNI_LIMIT-24));
+
+const VS=`
+attribute vec2 aPos;
+void main(){ gl_Position=vec4(aPos,0.0,1.0); }
+`;
+
+const FS=`
+precision highp float;
+
+uniform vec2  u_res;
+uniform vec4  u_modes[${MAXMODES}];   // x=n, y=alpha, z=poids, w=phase
+uniform int   u_count;
+uniform float u_zscale;
+uniform float u_zoom, u_rot, u_ox, u_oy;
+uniform float u_width, u_halo, u_exposure, u_gamma, u_grain, u_vig;
+uniform int   u_style;
+uniform float u_mask, u_ring, u_bias, u_invert, u_bgAlpha;
+uniform float u_seed;
+uniform sampler2D u_pal;
+
+/* ---- Bessel ---- */
+float bj0(float x){
+  float ax=abs(x);
+  if(ax<8.0){
+    float y=x*x;
+    float p1=-2957821389.0+y*(7062834065.0+y*(-512359803.6+y*(10879881.29+y*(-86327.92757+y*228.4622733))));
+    float p2=40076544269.0+y*(745249964.8+y*(7189466.438+y*(47447.26470+y*(226.1030244+y))));
+    return p1/p2;
+  }
+  float z=8.0/ax, y=z*z, xx=ax-0.785398164;
+  float p1=1.0+y*(-0.1098628627e-2+y*(0.2734510407e-4+y*(-0.2073370639e-5+y*0.2093887211e-6)));
+  float p2=-0.1562499995e-1+y*(0.1430488765e-3+y*(-0.6911147651e-5+y*(0.7621095161e-6+y*(-0.934935152e-7))));
+  return sqrt(0.636619772/ax)*(cos(xx)*p1-z*sin(xx)*p2);
+}
+float bj1(float x){
+  float ax=abs(x); float res;
+  if(ax<8.0){
+    float y=x*x;
+    float p1=x*(72362614232.0+y*(-7895059235.0+y*(242396853.1+y*(-2972611.439+y*(15704.48260+y*(-30.16036606))))));
+    float p2=144725228442.0+y*(2300535178.0+y*(18583304.74+y*(99447.43394+y*(376.9991397+y))));
+    res=p1/p2;
+  }else{
+    float z=8.0/ax, y=z*z, xx=ax-2.356194491;
+    float p1=1.0+y*(0.183105e-2+y*(-0.3516396496e-4+y*(0.2457520174e-5+y*(-0.240337019e-6))));
+    float p2=0.04687499995+y*(-0.2002690873e-3+y*(0.8449199096e-5+y*(-0.88228987e-6+y*0.105787412e-6)));
+    res=sqrt(0.636619772/ax)*(cos(xx)*p1-z*sin(xx)*p2);
+    if(x<0.0) res=-res;
+  }
+  return res;
+}
+float bjn(int n, float x){
+  if(n==0) return bj0(x);
+  if(n==1) return bj1(x);
+  float tox=2.0/max(abs(x),1e-6);
+  float bjm=bj0(x), bjc=bj1(x), bjp=0.0;
+  for(int j=1;j<16;j++){
+    if(j>=n) break;
+    bjp=float(j)*tox*bjc-bjm;
+    bjm=bjc; bjc=bjp;
+  }
+  return bjc;
+}
+
+/* ---- champ de déplacement de la membrane ---- */
+float field(vec2 p){
+  float r=length(p);
+  float th=atan(p.y,p.x);
+  float z=0.0;
+  for(int i=0;i<${MAXMODES};i++){
+    if(i>=u_count) break;
+    vec4 md=u_modes[i];
+    z += md.z * bjn(int(md.x+0.5), md.y*r) * cos(md.x*th+md.w);
+  }
+  return z/u_zscale;
+}
+
+/* tanh n'existe pas en GLSL ES 1.00 (WebGL 1) : compression douce maison. */
+float squash(float x){
+  float e=exp(-2.0*clamp(x,-20.0,20.0));
+  return (1.0-e)/(1.0+e);
+}
+
+float hash(vec2 p){
+  return fract(sin(dot(p,vec2(127.1,311.7))+u_seed)*43758.5453123);
+}
+
+vec3 ramp(float t){
+  t=clamp(t,0.0,1.0);
+  if(u_invert>0.5) t=1.0-t;
+  // biais : pousse le dégradé vers le sombre ou le clair
+  t=pow(t, log(0.5)/log(clamp(u_bias,0.05,0.95)));
+  return texture2D(u_pal, vec2(clamp(t,0.002,0.998),0.5)).rgb;
+}
+
+void main(){
+  vec2 frag=gl_FragCoord.xy;
+  float minDim=min(u_res.x,u_res.y);
+  vec2 uv=(frag-0.5*u_res)/(0.5*minDim);   // ~[-1,1] sur le petit côté
+  uv=uv/u_zoom;
+  float ca=cos(u_rot), sa=sin(u_rot);
+  uv=vec2(uv.x*ca-uv.y*sa, uv.x*sa+uv.y*ca);
+  uv+=vec2(u_ox,u_oy);
+
+  float r=length(uv);
+
+  // pas de calcul hors du disque quand le masque est actif
+  if(u_mask>0.5 && r>1.02){
+    gl_FragColor=vec4(ramp(0.0), u_bgAlpha);
+    return;
+  }
+
+  // sous le masque, on rabat le rayon à 1 (la membrane s'arrête au bord)
+  vec2 pp=(u_mask>0.5)? uv*(min(r,1.0)/max(r,1e-6)) : uv;
+
+  float z=field(pp);
+
+  // gradient analytique par différences centrées : donne la DISTANCE
+  // à la ligne nodale, indépendamment de l'amplitude locale du champ.
+  float h=2.0/minDim/u_zoom;
+  float zx=(field(pp+vec2(h,0.0))-field(pp-vec2(h,0.0)))/(2.0*h);
+  float zy=(field(pp+vec2(0.0,h))-field(pp-vec2(0.0,h)))/(2.0*h);
+  float grad=max(length(vec2(zx,zy)), 0.02);
+  float dist=abs(z)/grad;                 // en unités de membrane
+  float distPx=dist*0.5*minDim*u_zoom;    // en pixels écran
+
+  float t;
+  if(u_style==0 || u_style==1){                     // sable / encre
+    float core=exp(-pow(distPx/max(u_width,0.05),2.0));
+    float halo=exp(-pow(distPx/max(u_width*5.0,0.25),2.0));
+    t=clamp(core+u_halo*halo,0.0,1.0);
+    if(u_style==1) t=1.0-t;
+  }else if(u_style==2){                             // champ (nappes)
+    t=0.5+0.5*squash(z*u_exposure*1.5);
+    float core=exp(-pow(distPx/max(u_width,0.05),2.0));
+    t=clamp(t+u_halo*core*0.5,0.0,1.0);
+  }else if(u_style==3){                             // interférence
+    t=0.5+0.5*sin(z*u_exposure*8.0);
+    t=clamp(t+u_halo*exp(-pow(distPx/max(u_width*3.0,0.2),2.0))*0.4,0.0,1.0);
+  }else if(u_style==4){                             // relief métal
+    vec3 nrm=normalize(vec3(-zx*0.02*u_exposure,-zy*0.02*u_exposure,1.0));
+    vec3 L=normalize(vec3(-0.5,0.7,0.6));
+    float diff=max(dot(nrm,L),0.0);
+    float spec=pow(max(dot(reflect(-L,nrm),vec3(0.0,0.0,1.0)),0.0),24.0);
+    t=clamp(diff*0.85+spec*0.8*u_halo,0.0,1.0);
+  }else{                                            // vitrail
+    float cell=0.5+0.5*sign(z);
+    float edge=exp(-pow(distPx/max(u_width*1.5,0.1),2.0));
+    t=clamp(cell*0.55+edge*(0.45+u_halo*0.5),0.0,1.0);
+  }
+
+  if(u_style!=4) t=clamp(t*u_exposure,0.0,1.0);
+  t=pow(t, u_gamma);
+
+  // grain organique proportionnel à la luminosité (comme le générateur Python)
+  if(u_grain>0.001){
+    float g=(hash(frag)-0.5)*2.0*u_grain;
+    t=clamp(t+g*t,0.0,1.0);
+  }
+
+  // bord du disque
+  float inside=1.0;
+  if(u_mask>0.5) inside=1.0-smoothstep(0.995,1.005,r);
+  t*=inside;
+
+  vec3 col=ramp(t);
+
+  if(u_ring>0.5){
+    float ringT=exp(-pow(abs(r-1.0)*minDim*u_zoom*0.5/1.5,2.0));
+    col=mix(col, ramp(1.0), ringT*0.85);
+    inside=max(inside,ringT);
+  }
+
+  // vignettage
+  if(u_vig>0.001){
+    float d=length((frag-0.5*u_res)/(0.5*minDim));
+    col*=mix(1.0,1.0-u_vig, smoothstep(0.55,1.5,d));
+  }
+
+  float alpha=mix(u_bgAlpha,1.0,clamp(inside*(0.15+0.85*step(0.004,t)),0.0,1.0));
+  gl_FragColor=vec4(col, u_bgAlpha>0.5?1.0:alpha);
+}
+`;
+
+function compile(type,src){
+  const s=gl.createShader(type);
+  gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) fatal("Shader : "+gl.getShaderInfoLog(s));
+  return s;
+}
+const prog=gl.createProgram();
+gl.attachShader(prog,compile(gl.VERTEX_SHADER,VS));
+gl.attachShader(prog,compile(gl.FRAGMENT_SHADER,FS));
+gl.linkProgram(prog);
+if(!gl.getProgramParameter(prog,gl.LINK_STATUS)) fatal("Lien : "+gl.getProgramInfoLog(prog));
+gl.useProgram(prog);
+
+const buf=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+const aPos=gl.getAttribLocation(prog,"aPos");
+gl.enableVertexAttribArray(aPos);
+gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,0,0);
+
+const U={};
+["u_res","u_modes","u_count","u_zscale","u_zoom","u_rot","u_ox","u_oy",
+ "u_width","u_halo","u_exposure","u_gamma","u_grain","u_vig","u_style",
+ "u_mask","u_ring","u_bias","u_invert","u_bgAlpha","u_seed","u_pal"
+].forEach(n=>U[n]=gl.getUniformLocation(prog,n));
+
+// texture de palette 256×1
+const palTex=gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D,palTex);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+gl.uniform1i(U.u_pal,0);
+
+function hex2rgb(h){
+  return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+}
+function uploadPalette(cols){
+  const stops=cols.map(hex2rgb);
+  const N=256, data=new Uint8Array(N*4);
+  for(let i=0;i<N;i++){
+    const t=i/(N-1)*(stops.length-1);
+    const k=Math.min(Math.floor(t),stops.length-2), f=t-k;
+    for(let ch=0;ch<3;ch++) data[i*4+ch]=Math.round(stops[k][ch]*(1-f)+stops[k+1][ch]*f);
+    data[i*4+3]=255;
+  }
+  gl.bindTexture(gl.TEXTURE_2D,palTex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,N,1,0,gl.RGBA,gl.UNSIGNED_BYTE,data);
+}
+
+/* ==================================================================
+   4. Calcul des modes (côté CPU, comme cymatic_field du .py)
+   ================================================================== */
+function mulberry(seed){
+  let a=seed>>>0;
+  return function(){
+    a|=0; a=a+0x6D2B79F5|0;
+    let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t;
+    return ((t^t>>>14)>>>0)/4294967296;
+  };
+}
+
+let MODES=[], ZSCALE=1;
+function computeModes(){
+  const rnd=mulberry(P.seed*7919+13);
+  const base=P.c/(2*Math.PI*P.a);
+  let list=[];
+  for(let n=0;n<=P.nmax;n++){
+    if(P.onlyEven && n%2!==0) continue;
+    if(P.sym>0 && n%P.sym!==0) continue;
+    for(let m=1;m<=P.mmax;m++){
+      const alpha=besselZero(n,m);
+      const fnm=base*alpha;
+      const ratio=P.freq/fnm;
+      // réponse d'un oscillateur amorti : le pic de résonance sélectionne les modes
+      const w=1/Math.sqrt(Math.pow(1-ratio*ratio,2)+Math.pow(ratio/P.q,2));
+      list.push({n,m,alpha,fnm,w});
+    }
+  }
+  list.sort((x,y)=>y.w-x.w);
+  list=list.slice(0,Math.min(P.k,MAXMODES));
+  const wmax=list.length?list[0].w:1;
+
+  const arr=new Float32Array(MAXMODES*4);
+  let ss=0;
+  list.forEach((md,i)=>{
+    const wn=md.w/wmax;
+    // phase : 0 = figure parfaitement symétrique ; le désordre casse la symétrie
+    const ph=(rnd()*2*Math.PI)*(P.phase/100)+P.t*(md.n+1)*0.5;
+    arr[i*4  ]=md.n;
+    arr[i*4+1]=md.alpha;
+    arr[i*4+2]=wn;
+    arr[i*4+3]=ph;
+    ss+=wn*wn;
+  });
+  MODES=list;
+  ZSCALE=Math.max(Math.sqrt(ss)*0.55,1e-4);
+  gl.uniform4fv(U.u_modes,arr);
+  gl.uniform1i(U.u_count,list.length);
+  gl.uniform1f(U.u_zscale,ZSCALE);
+
+  const top=list.slice(0,4).map(m=>`n=${m.n},m=${m.m} → ${m.fnm.toFixed(1)} Hz`).join(" · ");
+  document.getElementById("modeInfo").textContent=list.length?("Modes dominants : "+top):"Aucun mode (assouplis la symétrie).";
+}
+
+/* ==================================================================
+   5. Rendu
+   ================================================================== */
+function aspectOf(fmt){
+  if(fmt==="1:1") return 1;
+  if(fmt==="16:9") return 16/9;
+  if(fmt==="9:16") return 9/16;
+  if(fmt==="4:3") return 4/3;
+  if(fmt==="1024x600") return 1024/600;
+  return 1;
+}
+function dimsFor(base){
+  // le format du boîtier est une taille d'écran exacte, pas un ratio à l'échelle
+  if(P.format==="1024x600") return {w:1024,h:600};
+  const ar=aspectOf(P.format);
+  return ar>=1 ? {w:Math.round(base*ar), h:base} : {w:base, h:Math.round(base/ar)};
+}
+
+function setUniforms(){
+  gl.uniform1f(U.u_zoom,P.zoom);
+  gl.uniform1f(U.u_rot,P.rot*Math.PI/180);
+  gl.uniform1f(U.u_ox,P.ox);
+  gl.uniform1f(U.u_oy,P.oy);
+  gl.uniform1f(U.u_width,P.w);
+  gl.uniform1f(U.u_halo,P.halo/100);
+  gl.uniform1f(U.u_exposure,P.exp);
+  gl.uniform1f(U.u_gamma,P.gamma);
+  gl.uniform1f(U.u_grain,P.grain/100);
+  gl.uniform1f(U.u_vig,P.vig/100);
+  gl.uniform1i(U.u_style,P.style);
+  gl.uniform1f(U.u_mask,P.mask?1:0);
+  gl.uniform1f(U.u_ring,P.ring?1:0);
+  gl.uniform1f(U.u_bias,P.bias);
+  gl.uniform1f(U.u_invert,P.invert?1:0);
+  gl.uniform1f(U.u_seed,P.seed*13.37);
+}
+
+function draw(w,h){
+  if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; }
+  gl.viewport(0,0,w,h);
+  gl.uniform2f(U.u_res,w,h);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D,palTex);
+  gl.clearColor(0,0,0,0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+}
+
+/* Le shader évalue jusqu'à 48 fonctions de Bessel × 3 (pour le gradient) par
+   pixel : le coût dépend énormément de la carte. On mesure une fois au
+   démarrage et on en déduit le plafond de résolution de l'aperçu, pour que
+   les curseurs restent réactifs même sur une machine modeste. L'export, lui,
+   n'est jamais bridé. `?test=N` force le plafond (utile en headless). */
+/* Rendu progressif, en deux temps.
+
+   Le shader coûte cher (jusqu'à 48 Bessel × 3 par pixel) : à pleine résolution
+   un téléphone ne suivrait pas le doigt sur un curseur. Pendant qu'on règle, on
+   rend donc une ébauche basse résolution, étirée à l'affichage ; dès que le
+   doigt s'arrête, on refait l'image nette. Les deux plafonds sont mesurés au
+   démarrage sur la machine réelle, plutôt que devinés d'après l'user-agent. */
+let DRAFT_CAP=420, FINAL_CAP=1400;
+const forcedCap=new URLSearchParams(location.search).get("test");
+function calibrate(){
+  if(forcedCap){
+    FINAL_CAP=Math.max(64,parseInt(forcedCap,10)||220);
+    DRAFT_CAP=FINAL_CAP;
+    return;
+  }
+  const probe=480;
+  computeModes(); setUniforms(); gl.uniform1f(U.u_bgAlpha,1);
+  const t0=performance.now();
+  draw(probe,probe);
+  gl.finish();                       // sinon on ne mesure que l'envoi des commandes
+  const dt=Math.max(performance.now()-t0,0.3);
+  // le coût varie comme la surface : côté ∝ √(temps visé / temps mesuré)
+  DRAFT_CAP=Math.round(Math.min(900, Math.max(200, probe*Math.sqrt(14/dt))));
+  FINAL_CAP=Math.round(Math.min(1600,Math.max(DRAFT_CAP,probe*Math.sqrt(220/dt))));
+}
+
+// Taille d'affichage du canvas : ce que la scène peut lui donner.
+function cssDims(){
+  const stage=$("stage");
+  const pad=window.innerWidth<=860?16:40;
+  const availW=stage.clientWidth-pad, availH=stage.clientHeight-pad;
+  const ar=aspectOf(P.format);
+  let w=availW, h=w/ar;
+  if(h>availH){ h=availH; w=h*ar; }
+  return {w:Math.max(40,Math.round(w)), h:Math.max(40,Math.round(h))};
+}
+// Résolution de rendu : la taille d'affichage, bridée par le plafond du moment.
+function renderDims(css,cap){
+  let {w,h}=css;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  w*=dpr; h*=dpr;
+  if(Math.max(w,h)>cap){ const s=cap/Math.max(w,h); w*=s; h*=s; }
+  return {w:Math.max(32,Math.round(w)), h:Math.max(32,Math.round(h))};
+}
+
+let dirtyModes=true;
+function render(final){
+  if(dirtyModes){ computeModes(); dirtyModes=false; }
+  setUniforms();
+  gl.uniform1f(U.u_bgAlpha,1);
+  const css=cssDims();
+  const d=renderDims(css, final?FINAL_CAP:DRAFT_CAP);
+  cv.style.width=css.w+"px"; cv.style.height=css.h+"px";
+  draw(d.w,d.h);
+  const ex=dimsFor(parseInt(P.size,10));
+  $("hud").textContent=
+    `${P.freq.toFixed(2)} Hz · ${MODES.length} modes · ${d.w}×${d.h}${final?"":" (ébauche)"} · export ${ex.w}×${ex.h}`;
+}
+
+let anim=null;              // boucle d'animation (lue par schedule)
+let raf=null, sharpTimer=null;
+function schedule(modes){
+  if(modes) dirtyModes=true;
+  clearTimeout(sharpTimer);
+  if(!raf) raf=requestAnimationFrame(()=>{ raf=null; render(false); });
+  // le doigt (ou la souris) s'est arrêté : on repasse en net
+  sharpTimer=setTimeout(()=>{ if(!anim) render(true); },260);
+}
+
+/* ==================================================================
+   6. Interface
+   ================================================================== */
+const $=id=>document.getElementById(id);
+function toast(msg){
+  const el=$("toast"); el.textContent=msg; el.classList.add("on");
+  clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove("on"),1800);
+}
+
+// (id du curseur, clé de P, id de l'affichage, fonction de formatage, recalcul des modes ?)
+const SLIDERS=[
+  ["freq","freq","vFreq",v=>v.toFixed(2)+" Hz",true],
+  ["pA","a","vA",v=>v.toFixed(3)+" m",true],
+  ["pC","c","vC",v=>v.toFixed(1)+" m/s",true],
+  ["pQ","q","vQ",v=>String(Math.round(v)),true],
+  ["pNmax","nmax","vNmax",v=>String(Math.round(v)),true],
+  ["pMmax","mmax","vMmax",v=>String(Math.round(v)),true],
+  ["pK","k","vK",v=>String(Math.round(v)),true],
+  ["pSym","sym","vSym",v=>v==0?"libre":("×"+Math.round(v)),true],
+  ["pPh","phase","vPh",v=>Math.round(v)+" %",true],
+  ["pSeed","seed","vSeed",v=>String(Math.round(v)),true],
+  ["pW","w","vW",v=>v.toFixed(1)+" px",false],
+  ["pH","halo","vH",v=>Math.round(v)+" %",false],
+  ["pExp","exp","vExp",v=>v.toFixed(2),false],
+  ["pG","gamma","vG",v=>v.toFixed(2),false],
+  ["pGr","grain","vGr",v=>Math.round(v)+" %",false],
+  ["pVig","vig","vVig",v=>Math.round(v)+" %",false],
+  ["pBias","bias","vBias",v=>v.toFixed(2),false],
+  ["pZ","zoom","vZ",v=>v.toFixed(2)+"×",false],
+  ["pR","rot","vR",v=>Math.round(v)+"°",false],
+  ["pOX","ox","vOX",v=>v.toFixed(2),false],
+  ["pOY","oy","vOY",v=>v.toFixed(2),false],
+  ["pT","t","vT",v=>v.toFixed(2),true],
+  ["pSpd","spd","vSpd",v=>v.toFixed(2),false],
+];
+const INTS=new Set(["nmax","mmax","k","sym","seed"]);
+
+SLIDERS.forEach(([id,key,disp,fmt,rem])=>{
+  const el=$(id);
+  el.addEventListener("input",()=>{
+    let v=parseFloat(el.value);
+    if(INTS.has(key)) v=Math.round(v);
+    P[key]=v;
+    $(disp).textContent=fmt(v);
+    schedule(rem);
+  });
+});
+
+const CHECKS=[["pOnlyEven","onlyEven",true],["pInvert","invert",false],
+              ["pMask","mask",false],["pRing","ring",false],["pTransp","transp",false]];
+CHECKS.forEach(([id,key,rem])=>{
+  $(id).addEventListener("change",()=>{ P[key]=$(id).checked; schedule(rem); });
+});
+
+$("pStyle").addEventListener("change",()=>{ P.style=parseInt($("pStyle").value,10); schedule(false); });
+$("pFormat").addEventListener("change",()=>{ P.format=$("pFormat").value; schedule(false); });
+$("pSize").addEventListener("change",()=>{ P.size=$("pSize").value; schedule(false); });
+
+// palettes
+const palSel=$("palPick");
+Object.keys(PALETTES).forEach(k=>{
+  const o=document.createElement("option");
+  o.value=k; o.textContent=k==="perso"?"Palette personnalisée":("Palette "+k);
+  palSel.appendChild(o);
+});
+function applyPalette(name){
+  if(name!=="perso" && PALETTES[name]) P.cols=PALETTES[name].slice();
+  P.pal=name;
+  for(let i=0;i<5;i++) $("c"+i).value=P.cols[i];
+  uploadPalette(P.cols);
+  schedule(false);
+}
+palSel.addEventListener("change",()=>applyPalette(palSel.value));
+for(let i=0;i<5;i++){
+  $("c"+i).addEventListener("input",()=>{
+    P.cols[i]=$("c"+i).value; P.pal="perso"; palSel.value="perso";
+    uploadPalette(P.cols); schedule(false);
+  });
+}
+
+// fréquences Auralis
+const FREQS=(typeof AURALIS_FREQS!=="undefined")?AURALIS_FREQS:[];
+const fpick=$("freqPick");
+FREQS.forEach((f,i)=>{
+  const o=document.createElement("option");
+  o.value=String(i);
+  o.textContent=`${f.n} — ${f.hz.toFixed(2)} Hz`;
+  fpick.appendChild(o);
+});
+fpick.addEventListener("change",()=>{
+  const i=parseInt(fpick.value,10);
+  if(isNaN(i)) return;
+  P.freq=FREQS[i].hz;
+  $("freq").value=String(P.freq);
+  $("vFreq").textContent=P.freq.toFixed(2)+" Hz";
+  schedule(true);
+});
+
+// interactions sur l'image
+cv.addEventListener("wheel",e=>{
+  e.preventDefault();
+  setZoom(P.zoom*(e.deltaY>0?0.92:1.087));
+  schedule(false);
+},{passive:false});
+/* Un doigt (ou la souris) deplace, deux doigts pincent pour zoomer.
+   On suit les pointeurs actifs nous-memes : `touch-action:none` sur le canvas
+   desactive les gestes natifs, donc rien ne le fait a notre place. */
+const pointers=new Map();
+let drag=null, pinch=null;
+
+function setZoom(z){
+  P.zoom=Math.min(3,Math.max(0.3,z));
+  $("pZ").value=String(P.zoom); $("vZ").textContent=P.zoom.toFixed(2)+"×";
+}
+function setOffset(x,y){
+  P.ox=Math.max(-1,Math.min(1,x));
+  P.oy=Math.max(-1,Math.min(1,y));
+  $("pOX").value=String(P.ox); $("vOX").textContent=P.ox.toFixed(2);
+  $("pOY").value=String(P.oy); $("vOY").textContent=P.oy.toFixed(2);
+}
+function pinchSpan(){
+  const v=[...pointers.values()];
+  return Math.hypot(v[0].x-v[1].x, v[0].y-v[1].y);
+}
+
+cv.addEventListener("pointerdown",e=>{
+  cv.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===1){
+    drag={x:e.clientX,y:e.clientY,ox:P.ox,oy:P.oy};
+  }else if(pointers.size===2){
+    drag=null;                                  // deux doigts : on ne deplace plus
+    pinch={span:Math.max(pinchSpan(),1),zoom:P.zoom};
+  }
+});
+cv.addEventListener("pointermove",e=>{
+  if(!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch && pointers.size===2){
+    setZoom(pinch.zoom*(pinchSpan()/pinch.span));
+    schedule(false);
+  }else if(drag){
+    const s=2/(cv.clientHeight*P.zoom);
+    setOffset(drag.ox-(e.clientX-drag.x)*s, drag.oy+(e.clientY-drag.y)*s);
+    schedule(false);
+  }
+});
+function releasePointer(e){
+  pointers.delete(e.pointerId);
+  if(pointers.size<2) pinch=null;
+  // le doigt restant reprend la main sur le deplacement, sans saut de position
+  if(pointers.size===1){
+    const p=[...pointers.values()][0];
+    drag={x:p.x,y:p.y,ox:P.ox,oy:P.oy};
+  }else if(pointers.size===0){
+    drag=null;
+  }
+}
+cv.addEventListener("pointerup",releasePointer);
+cv.addEventListener("pointercancel",releasePointer);
+
+/* ---- boutons ---- */
+function syncUI(){
+  SLIDERS.forEach(([id,key,disp,fmt])=>{ $(id).value=String(P[key]); $(disp).textContent=fmt(P[key]); });
+  CHECKS.forEach(([id,key])=>{ $(id).checked=!!P[key]; });
+  $("pStyle").value=String(P.style);
+  $("pFormat").value=P.format;
+  $("pSize").value=P.size;
+  palSel.value=P.pal;
+  for(let i=0;i<5;i++) $("c"+i).value=P.cols[i];
+  uploadPalette(P.cols);
+}
+
+$("bReset").addEventListener("click",()=>{
+  P=Object.assign({},DEF,{cols:DEF.cols.slice()});
+  syncUI(); schedule(true); toast("Réglages par défaut");
+});
+
+const R=(a,b)=>a+Math.random()*(b-a);
+$("bRandom").addEventListener("click",()=>{
+  P.freq=+R(40,320).toFixed(2);
+  P.a=+R(0.05,0.25).toFixed(3);
+  P.c=+R(4,35).toFixed(1);
+  P.q=Math.round(R(4,90));
+  P.nmax=Math.round(R(3,12));
+  P.mmax=Math.round(R(3,10));
+  P.k=Math.round(R(4,32));
+  P.sym=Math.random()<0.45?Math.round(R(2,8)):0;
+  P.phase=Math.random()<0.5?0:Math.round(R(0,70));
+  P.seed=Math.round(R(1,999));
+  P.onlyEven=Math.random()<0.25;
+  P.style=Math.floor(R(0,6));
+  P.w=+R(0.8,5).toFixed(1);
+  P.halo=Math.round(R(10,100));
+  P.exp=+R(0.7,1.8).toFixed(2);
+  P.gamma=+R(0.6,1.6).toFixed(2);
+  P.rot=Math.round(R(0,360));
+  const keys=Object.keys(PALETTES).filter(k=>k!=="perso");
+  P.pal=keys[Math.floor(Math.random()*keys.length)];
+  P.cols=PALETTES[P.pal].slice();
+  syncUI(); schedule(true);
+});
+
+// ---- export ----
+function withSize(w,h,alphaBg,fn){
+  const sw=cv.width, sh=cv.height, cssW=cv.style.width, cssH=cv.style.height;
+  gl.uniform1f(U.u_bgAlpha,alphaBg);
+  draw(w,h);
+  fn();
+  gl.uniform1f(U.u_bgAlpha,1);
+  cv.style.width=cssW; cv.style.height=cssH;
+  draw(sw,sh);
+}
+function exportName(ext){
+  const st=["sable","encre","champ","interference","relief","vitrail"][P.style];
+  return `cymatique_${P.freq.toFixed(2).replace(".","_")}hz_${st}_s${P.seed}.${ext}`;
+}
+function download(url,name){
+  const a=document.createElement("a");
+  a.href=url; a.download=name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+$("bExport").addEventListener("click",()=>{
+  const d=dimsFor(parseInt(P.size,10));
+  const maxTex=gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
+  if(Math.max(d.w,d.h)>maxTex){ toast("Trop grand pour cette carte ("+maxTex+" px max)"); return; }
+  toast("Rendu en cours…");
+  setTimeout(()=>{
+    withSize(d.w,d.h,P.transp?0:1,()=>{
+      cv.toBlob(b=>{
+        if(!b){ toast("Échec du rendu : essaie une taille plus petite"); return; }
+        download(URL.createObjectURL(b),exportName("png"));
+        toast(`Exporté en ${d.w}×${d.h}`);
+      },"image/png");
+    });
+  },30);
+});
+
+$("bRecipe").addEventListener("click",()=>{
+  navigator.clipboard.writeText(JSON.stringify(P,null,2))
+    .then(()=>toast("Recette copiée")).catch(()=>toast("Copie refusée par le navigateur"));
+});
+
+// ---- permalien ----
+function encodeP(){ return btoa(unescape(encodeURIComponent(JSON.stringify(P)))); }
+function decodeP(s){ return JSON.parse(decodeURIComponent(escape(atob(s)))); }
+$("bLink").addEventListener("click",()=>{
+  const url=location.origin+location.pathname+"#"+encodeP();
+  navigator.clipboard.writeText(url).then(()=>toast("Lien copié")).catch(()=>{
+    location.hash=encodeP(); toast("Lien dans la barre d'adresse");
+  });
+});
+
+// ---- galerie ----
+const LSKEY="auralis_cymatique_galerie";
+function loadGal(){ try{ return JSON.parse(localStorage.getItem(LSKEY))||[]; }catch(e){ return []; } }
+function saveGal(g){ try{ localStorage.setItem(LSKEY,JSON.stringify(g)); }catch(e){ toast("Mémoire du navigateur pleine"); } }
+function renderGal(){
+  const g=loadGal(), box=$("gallery");
+  box.innerHTML="";
+  $("galCount").textContent=g.length?`(${g.length})`:"";
+  g.forEach((it,i)=>{
+    const d=document.createElement("div");
+    d.className="gitem";
+    d.innerHTML=`<img src="${it.thumb}" alt=""><div class="lab">${it.p.freq.toFixed(1)} Hz</div><div class="del">✕</div>`;
+    d.querySelector("img").addEventListener("click",()=>{
+      P=sanitize(it.p);
+      syncUI(); schedule(true); toast("Réglages rechargés");
+    });
+    d.querySelector(".del").addEventListener("click",e=>{
+      e.stopPropagation();
+      const gg=loadGal(); gg.splice(i,1); saveGal(gg); renderGal();
+    });
+    box.appendChild(d);
+  });
+}
+$("bSave").addEventListener("click",()=>{
+  withSize(200,200,1,()=>{
+    const thumb=cv.toDataURL("image/jpeg",0.72);
+    const g=loadGal();
+    g.unshift({p:JSON.parse(JSON.stringify(P)),thumb,at:Date.now()});
+    saveGal(g.slice(0,60)); renderGal(); toast("Ajouté à la galerie");
+  });
+});
+
+// ---- animation ----
+$("bPlay").addEventListener("click",()=>{
+  if(anim){ cancelAnimationFrame(anim); anim=null; $("bPlay").textContent="▶ Animer les phases"; render(true); return; }
+  $("bPlay").textContent="⏸ Mettre en pause";
+  let last=performance.now();
+  const step=now=>{
+    const dt=(now-last)/1000; last=now;
+    P.t=(P.t+dt*P.spd)%(2*Math.PI);
+    $("pT").value=String(P.t); $("vT").textContent=P.t.toFixed(2);
+    dirtyModes=true; render();
+    anim=requestAnimationFrame(step);
+  };
+  anim=requestAnimationFrame(step);
+});
+
+// ---- raccourcis clavier ----
+document.addEventListener("keydown",e=>{
+  if(/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+  if(e.key===" "){ e.preventDefault(); $("bPlay").click(); }
+  if(e.key==="r"||e.key==="R") $("bRandom").click();
+  if(e.key==="e"||e.key==="E") $("bExport").click();
+  if(e.key==="s"||e.key==="S") $("bSave").click();
+});
+
+// les deux actions de la barre de pouce rejouent les boutons du panneau
+$("qRandom").addEventListener("click",()=>$("bRandom").click());
+$("qExport").addEventListener("click",()=>$("bExport").click());
+
+/* Sur telephone, toutes les sections ouvertes font un panneau interminable :
+   on ne garde ouverte que la premiere, les autres se deplient au besoin.
+   Une seule fois au chargement -- ensuite c'est l'utilisateur qui decide. */
+if(window.matchMedia("(max-width:860px)").matches){
+  document.querySelectorAll("details").forEach((d,i)=>{ if(i>0) d.open=false; });
+}
+
+/* Un telephone n'a pas la memoire graphique d'un PC : un rendu 4096x4096
+   demande ~67 Mo rien que pour le tampon, plus le PNG. On le signale au lieu
+   de laisser l'export echouer sans explication (le message de repli existe,
+   mais autant prevenir avant d'attendre le rendu). */
+if(window.matchMedia("(pointer:coarse)").matches){
+  [...$("pSize").options].forEach(o=>{
+    if(parseInt(o.value,10)>=3072) o.textContent+=" (lourd sur telephone)";
+  });
+}
+
+/* Rotation du telephone : la scene change de forme, il faut refaire l'image.
+   `resize` suffit -- orientationchange arrive avant la nouvelle taille. */
+window.addEventListener("resize",()=>schedule(false));
+
+/* ==================================================================
+   7. Démarrage
+   ================================================================== */
+/* Un jeu de réglages venu d'un lien ou de la galerie peut contenir des types
+   inattendus (JSON → chaînes). gl.uniform1i/1f exigent des nombres, sinon le
+   rendu casse silencieusement : on remet tout au bon type ici. */
+function sanitize(p){
+  const out=Object.assign({},DEF,p);
+  ["freq","a","c","q","nmax","mmax","k","sym","phase","seed","style",
+   "w","halo","exp","gamma","grain","vig","bias","zoom","rot","ox","oy","t","spd"]
+    .forEach(key=>{
+      const v=parseFloat(out[key]);
+      out[key]=isFinite(v)?v:DEF[key];
+    });
+  ["onlyEven","invert","mask","ring","transp"].forEach(k=>out[k]=!!out[k]);
+  out.size=String(out.size);
+  if(!Array.isArray(out.cols)||out.cols.length!==5||
+     !out.cols.every(c=>typeof c==="string"&&/^#[0-9a-fA-F]{6}$/.test(c))){
+    out.cols=DEF.cols.slice();
+  }
+  if(!(out.pal in PALETTES)) out.pal="perso";
+  if(!["1:1","16:9","9:16","4:3","1024x600"].includes(out.format)) out.format=DEF.format;
+  return out;
+}
+
+if(location.hash.length>10){
+  try{ P=sanitize(decodeP(location.hash.slice(1))); }
+  catch(err){ /* lien illisible : on garde les valeurs par défaut */ }
+}
+// le curseur « modes retenus » ne peut pas dépasser ce que la carte accepte
+$("pK").max=String(MAXMODES);
+if(P.k>MAXMODES) P.k=MAXMODES;
+
+syncUI();
+renderGal();
+calibrate();
+render(true);
+document.body.dataset.ready="1";   // repère pour le test headless
+</script>
+</body>
+</html>
