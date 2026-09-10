@@ -142,10 +142,12 @@ canvas{
   background:rgba(7,13,28,.7);padding:5px 9px;border-radius:8px;
   font-variant-numeric:tabular-nums;pointer-events:none;backdrop-filter:blur(4px);
 }
-/* Bouton d'export pose sur la figure, en bas a droite. Masque sur grand
-   ecran : le panneau y est entierement visible, son bouton Export suffit. */
+/* Bouton d'export en bas a droite de la SCENE -- pas de #wrap, qui epouse le
+   canvas : celui-ci est carre et centre, donc un bouton cale dessus restait
+   loin du bord de l'ecran. Masque sur grand ecran : le panneau y est
+   entierement visible, son bouton Export suffit. */
 #expFab{
-  display:none;position:absolute;right:10px;bottom:10px;z-index:4;
+  display:none;position:absolute;right:8px;bottom:8px;z-index:4;
   background:rgba(7,13,28,.82);color:var(--gold);
   border:1px solid var(--gold);border-radius:12px;
   padding:11px 14px;font:600 14px/1 inherit;font-family:inherit;
@@ -435,8 +437,8 @@ canvas{
   <div id="wrap">
     <canvas id="cv"></canvas>
     <div id="hud"></div>
-    <button id="expFab" title="Exporter le PNG">⬇ Exporter</button>
   </div>
+  <button id="expFab" title="Exporter le PNG">⬇ Exporter</button>
   <div id="toast"></div>
   <div id="err"></div>
 </div>
