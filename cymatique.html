@@ -605,8 +605,8 @@ function besselJ0(x){
   const ax=Math.abs(x);
   if(ax<8){
     const y=x*x;
-    const p1=-2957821389.0+y*(7062834065.0+y*(-512359803.6+y*(10879881.29+y*(-86327.92757+y*228.4622733))));
-    const p2=40076544269.0+y*(745249964.8+y*(7189466.438+y*(47447.26470+y*(226.1030244+y))));
+    const p1=57568490574.0+y*(-13362590354.0+y*(651619640.7+y*(-11214424.18+y*(77392.33017+y*(-184.9052456)))));
+    const p2=57568490411.0+y*(1029532985.0+y*(9494680.718+y*(59272.64853+y*(267.8532712+y))));
     return p1/p2;
   }
   const z=8/ax,y=z*z,xx=ax-0.785398164;
@@ -633,9 +633,21 @@ function besselJ1(x){
 function besselJn(n,x){
   if(n===0) return besselJ0(x);
   if(n===1) return besselJ1(x);
-  // récurrence ascendante : suffisante pour n<=14 et x>=n (notre cas, α(n,m)>n)
-  const tox=2/Math.max(Math.abs(x),1e-8);
-  let bjm=besselJ0(x), bj=besselJ1(x), bjp=0;
+  const ax=Math.abs(x);
+  // La récurrence ascendante n'est stable que pour x > n (voir le commentaire
+  // détaillé au-dessus de bjn() dans le shader) : sous le seuil, série de
+  // puissances. Même correctif des deux côtés pour que le JS et le GPU
+  // calculent bien la même chose.
+  if(ax<n){
+    const xh=0.5*ax;                          // meme nom qu'en GLSL, ou `half` est reserve
+    let t=1;
+    for(let i=1;i<=n;i++) t*=xh/i;            // (x/2)^n / n!
+    let s=t; const h2=xh*xh;
+    for(let k=1;k<=14;k++){ t*=-h2/(k*(n+k)); s+=t; }
+    return s;
+  }
+  const tox=2/Math.max(ax,1e-8);
+  let bjm=besselJ0(ax), bj=besselJ1(ax), bjp=0;
   for(let j=1;j<n;j++){ bjp=j*tox*bj-bjm; bjm=bj; bj=bjp; }
   return bj;
 }
@@ -705,7 +717,8 @@ if(!gl) fatal("WebGL indisponible dans ce navigateur.");
    une réserve pour les ~24 autres uniformes. Sinon le programme refuserait de
    se lier, sans rien afficher. */
 const UNI_LIMIT=gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS)||16;
-const MAXMODES=Math.max(4,Math.min(48,UNI_LIMIT-24));
+// deux vec4 par mode (u_modes + u_modesB) : la reserve compte double
+const MAXMODES=Math.max(4,Math.min(48,Math.floor((UNI_LIMIT-24)/2)));
 
 const VS=`
 attribute vec2 aPos;
@@ -717,6 +730,7 @@ precision highp float;
 
 uniform vec2  u_res;
 uniform vec4  u_modes[${MAXMODES}];   // x=n, y=alpha, z=poids, w=phase
+uniform vec4  u_modesB[${MAXMODES}];  // x = 1/n!, pour la serie de J_n
 uniform int   u_count;
 uniform float u_zscale;
 uniform float u_zoom, u_rot, u_ox, u_oy;
@@ -726,13 +740,18 @@ uniform float u_mask, u_ring, u_bias, u_invert, u_bgAlpha;
 uniform float u_seed;
 uniform sampler2D u_pal;
 
-/* ---- Bessel ---- */
+/* ---- Bessel ----
+   ATTENTION aux coefficients : ceux de Y0 (Neumann) commencent par
+   -2957821389 et ressemblent beaucoup a ceux de J0. Les avoir confondus
+   rendait J0 faux sur tout x<8, donc le coeur du disque, et semait des
+   anneaux parasites dans l'image. Controle qui les distingue en une ligne :
+   J0(0) doit valoir 1, soit p1/p2 = 57568490574/57568490411 a x=0. */
 float bj0(float x){
   float ax=abs(x);
   if(ax<8.0){
     float y=x*x;
-    float p1=-2957821389.0+y*(7062834065.0+y*(-512359803.6+y*(10879881.29+y*(-86327.92757+y*228.4622733))));
-    float p2=40076544269.0+y*(745249964.8+y*(7189466.438+y*(47447.26470+y*(226.1030244+y))));
+    float p1=57568490574.0+y*(-13362590354.0+y*(651619640.7+y*(-11214424.18+y*(77392.33017+y*(-184.9052456)))));
+    float p2=57568490411.0+y*(1029532985.0+y*(9494680.718+y*(59272.64853+y*(267.8532712+y))));
     return p1/p2;
   }
   float z=8.0/ax, y=z*z, xx=ax-0.785398164;
@@ -756,11 +775,38 @@ float bj1(float x){
   }
   return res;
 }
-float bjn(int n, float x){
+/* J_n : serie de puissances pres du centre, recurrence ascendante au-dela.
+
+   x vaut toujours alpha*r >= 0 ici. */
+float bjn(int n, float x, float invFact){
   if(n==0) return bj0(x);
   if(n==1) return bj1(x);
-  float tox=2.0/max(abs(x),1e-6);
-  float bjm=bj0(x), bjc=bj1(x), bjp=0.0;
+  float ax=abs(x);
+
+  if(ax<6.0){
+    /* Pres du centre (x < n), la recurrence ascendante diverge : erreur 0.38
+       pour |J_n| <= 0.6 des n=8. On passe par la serie de puissances,
+       DEROULEE A LA MAIN sur 8 termes -- pas de boucle : bjn est appelee
+       48 modes x 3 (gradient) par pixel et le compilateur GLSL deroule tout ;
+       une boucle de plus rendait le shader incompilable (link jamais termine,
+       verifie a 90 s). 1/n! vient du JS, ce qui evite la boucle qui le
+       calculerait ici. Erreur du couple, mesuree en float32 sur n=2..14 et
+       x<=60 : 3e-4, contre 1e30 pour la recurrence seule. */
+    float xh=0.5*ax, h2=xh*xh, fn=float(n);
+    float t=pow(xh,fn)*invFact, sm=t;
+    t*=-h2/(fn+1.0);        sm+=t;
+    t*=-h2/(2.0*(fn+2.0));  sm+=t;
+    t*=-h2/(3.0*(fn+3.0));  sm+=t;
+    t*=-h2/(4.0*(fn+4.0));  sm+=t;
+    t*=-h2/(5.0*(fn+5.0));  sm+=t;
+    t*=-h2/(6.0*(fn+6.0));  sm+=t;
+    t*=-h2/(7.0*(fn+7.0));  sm+=t;
+    t*=-h2/(8.0*(fn+8.0));  sm+=t;
+    return sm;
+  }
+
+  float tox=2.0/max(ax,1e-6);
+  float bjm=bj0(ax), bjc=bj1(ax), bjp=0.0;
   for(int j=1;j<16;j++){
     if(j>=n) break;
     bjp=float(j)*tox*bjc-bjm;
@@ -777,7 +823,7 @@ float field(vec2 p){
   for(int i=0;i<${MAXMODES};i++){
     if(i>=u_count) break;
     vec4 md=u_modes[i];
-    z += md.z * bjn(int(md.x+0.5), md.y*r) * cos(md.x*th+md.w);
+    z += md.z * bjn(int(md.x+0.5), md.y*r, u_modesB[i].x) * cos(md.x*th+md.w);
   }
   return z/u_zscale;
 }
@@ -910,7 +956,7 @@ gl.enableVertexAttribArray(aPos);
 gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,0,0);
 
 const U={};
-["u_res","u_modes","u_count","u_zscale","u_zoom","u_rot","u_ox","u_oy",
+["u_res","u_modes","u_modesB","u_count","u_zscale","u_zoom","u_rot","u_ox","u_oy",
  "u_width","u_halo","u_exposure","u_gamma","u_grain","u_vig","u_style",
  "u_mask","u_ring","u_bias","u_invert","u_bgAlpha","u_seed","u_pal"
 ].forEach(n=>U[n]=gl.getUniformLocation(prog,n));
@@ -974,6 +1020,7 @@ function computeModes(){
   const wmax=list.length?list[0].w:1;
 
   const arr=new Float32Array(MAXMODES*4);
+  const arrB=new Float32Array(MAXMODES*4);
   let ss=0;
   list.forEach((md,i)=>{
     const wn=md.w/wmax;
@@ -983,11 +1030,17 @@ function computeModes(){
     arr[i*4+1]=md.alpha;
     arr[i*4+2]=wn;
     arr[i*4+3]=ph;
+    // 1/n! sert la série de J_n près du centre ; le calculer ici évite au
+    // shader une boucle qu'il déroulerait 48 x 3 fois par pixel.
+    let f=1;
+    for(let k=2;k<=md.n;k++) f*=k;
+    arrB[i*4]=1/f;
     ss+=wn*wn;
   });
   MODES=list;
   ZSCALE=Math.max(Math.sqrt(ss)*0.55,1e-4);
   gl.uniform4fv(U.u_modes,arr);
+  gl.uniform4fv(U.u_modesB,arrB);
   gl.uniform1i(U.u_count,list.length);
   gl.uniform1f(U.u_zscale,ZSCALE);
 
