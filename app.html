@@ -171,10 +171,13 @@
   .hsbody i{display:block; font-style:normal; font-size:.68rem; color:#d7e0f2; margin-top:2px; text-shadow:0 1px 6px rgba(0,0,0,.85)}
 
   .hexplain{margin:0 2px 10px; font-size:.72rem; line-height:1.5; color:var(--dimmer)}
-  .hxrail{display:flex; gap:10px; overflow-x:auto; padding:0 16px 6px; margin:0 -16px; scrollbar-width:none}
-  .hxrail::-webkit-scrollbar{display:none}
-  .hxcard{flex:0 0 auto; width:120px; height:145px; border-radius:16px; border-color:rgba(185,143,224,.2)}
-  .hxcard b{position:absolute; left:0; right:0; bottom:0; padding:9px 10px; font-size:.78rem; font-weight:700; z-index:2; text-shadow:0 1px 8px rgba(0,0,0,.85), 0 0 16px rgba(0,0,0,.5)}
+  /* Bannieres pleine largeur, au format des cartes Seances : les visuels
+     d exploration sont fournis en 1200x460 (ratio 2,6), que les anciennes
+     tuiles 120x145 en carrousel rognaient aux deux tiers. Plus de defilement
+     horizontal : les cinq cartes s empilent comme les Seances. */
+  .hxrail{display:flex; flex-direction:column; gap:10px}
+  .hxcard{height:128px; border-radius:20px; border-color:rgba(185,143,224,.2)}
+  .hxcard b{position:absolute; left:0; right:0; bottom:0; padding:10px 12px; font-size:1.3rem; font-weight:700; z-index:2; text-shadow:0 1px 8px rgba(0,0,0,.85), 0 0 16px rgba(0,0,0,.5)}
   /* Cartes dont la photo passe en version claire (celles qui portent un data-light) :
      le halo sombre du mode nuit rend le texte boueux sur une image pale, et le
      sous-titre bleu pale (#d7e0f2) devient invisible. Titre en bleu nuit + halo
@@ -691,11 +694,11 @@
       <p class="heyebrow mv"><span class="het" id="hebExpl">—</span><span class="hel"></span></p>
       <p class="hexplain" id="hExplNote">—</p>
       <div class="hxrail">
-        <button class="hxcard" data-gocat="sacred"><img src="app-images/141.webp" data-light="224.webp" alt=""><span class="hscrim"></span><b id="hxSacred">—</b></button>
-        <button class="hxcard" data-gocat="crop"><img src="app-images/139.webp" data-light="225.webp" alt=""><span class="hscrim"></span><b id="hxCrop">—</b></button>
-        <button class="hxcard" data-gocat="planet"><img src="app-images/163.webp" data-light="226.webp" alt=""><span class="hscrim"></span><b id="hxPlanet">—</b></button>
-        <button class="hxcard" data-gocat="color"><img src="app-images/166.webp" alt=""><span class="hscrim"></span><b id="hxColor">—</b></button>
-        <button class="hxcard" data-gocat="snowflake"><img src="app-images/stellaire.webp" data-light="227.webp" alt=""><span class="hscrim"></span><b id="hxFlocon">—</b></button>
+        <button class="hxcard" data-gocat="sacred"><img src="app-images/363.webp" alt=""><span class="hscrim"></span><b id="hxSacred">—</b></button>
+        <button class="hxcard" data-gocat="crop"><img src="app-images/362.webp" alt=""><span class="hscrim"></span><b id="hxCrop">—</b></button>
+        <button class="hxcard" data-gocat="planet"><img src="app-images/360.webp" alt=""><span class="hscrim"></span><b id="hxPlanet">—</b></button>
+        <button class="hxcard" data-gocat="color"><img src="app-images/361.webp" alt=""><span class="hscrim"></span><b id="hxColor">—</b></button>
+        <button class="hxcard" data-gocat="snowflake"><img src="app-images/364.webp" alt=""><span class="hscrim"></span><b id="hxFlocon">—</b></button>
       </div>
 
       <button class="hmethod" id="hMethodBtn">
