@@ -142,7 +142,12 @@
 
   .hring{position:absolute; border-radius:50%; border:2px solid rgba(255,255,255,.9); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#fff; font-weight:700; text-shadow:0 1px 10px rgba(0,0,0,.55); box-shadow:0 0 30px rgba(127,216,240,.5), inset 0 0 24px rgba(127,216,240,.2)}
 
-  .hhero{height:300px; border-color:rgba(127,216,240,.22)}
+  /* La hauteur suit les PROPORTIONS de l image (1691x930), au lieu des 300px
+     fixes d avant : la carte etait alors nettement plus haute que son visuel,
+     poussait les cartes suivantes vers le bas, et la derniere (Musiques) se
+     retrouvait coupee sur les ecrans courts. min-height garde le titre lisible
+     sur un telephone tres etroit. */
+  .hhero{aspect-ratio:1691/930; min-height:170px; border-color:rgba(127,216,240,.22)}
   .hhero .hring{width:150px; height:150px; top:40px; left:50%; transform:translateX(-50%); font-size:1.6rem; font-variant-numeric:tabular-nums}
   .hhero .hring i{font-style:normal; font-size:.6rem; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.72); margin-top:3px}
   /* Texte cale a DROITE depuis le retrait de l'anneau : le padding gauche
