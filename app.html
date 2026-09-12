@@ -408,6 +408,20 @@
   @media(max-width:355px){.freqintro{min-height:118px;margin-left:12px;margin-right:12px;padding-right:38%}.freqintro h3{font-size:1.53rem}.freqintro p{font-size:.68rem}#vLib>.pad{padding-left:11px;padding-right:11px}#vLib .filters{gap:6px}#vLib .fbtn .flabel{font-size:.61rem}#vLib .actbtn .actlabel{font-size:.62rem}.freqlibhead{margin-left:12px;margin-right:12px}#vLib .freqlist{gap:8px;padding-left:11px;padding-right:11px}.freqcard{min-height:161px}.freqart{height:86px}.freqmeta{min-height:73px;padding-left:8px;padding-right:7px}.freqmeta .nm{font-size:.83rem}.freqmeta .cat{font-size:.54rem}.freqmeta .hz{font-size:.6rem}.freqgo{width:24px;height:24px;top:-14px}}
   @media(prefers-reduced-motion:reduce){.freqcard{transition:none}.freqcard:active{transform:none}}
 
+  /* AURALIS_HOME_EQUAL_SESSION_BANNERS_V1
+     Les trois seances retrouvent le meme bandeau pleine largeur. */
+  #vHome .hsgrid{grid-template-columns:1fr}
+  #vHome .hscard,
+  #vHome .hscard:first-child{grid-column:auto;height:146px}
+  #vHome .hscard .hsbody b,
+  #vHome .hscard:first-child .hsbody b{font-size:1.28rem}
+  #vHome .hscard .hsbody i,
+  #vHome .hscard:first-child .hsbody i{font-size:.69rem}
+  @media (max-width:350px){
+    #vHome .hscard,
+    #vHome .hscard:first-child{height:140px}
+  }
+
   .pad{padding:0 18px}
   /* La loupe et le bouton d effacement sont poses par-dessus le champ ; le
      padding interne du champ leur reserve la place. */
