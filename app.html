@@ -181,8 +181,13 @@
   /* Cartes dont la photo passe en version claire (celles qui portent un data-light) :
      le halo sombre du mode nuit rend le texte boueux sur une image pale, et le
      sous-titre bleu pale (#d7e0f2) devient invisible. Titre en bleu nuit + halo
-     blanc, comme la maquette. Les cartes restees sombres (Construis ta musique,
-     Couleurs) ne sont pas touchees : leur texte blanc reste le bon choix. */
+     blanc, comme la maquette. Les 9 cartes d'accueil (hero, 3 seances, 5
+     exploration) ont chacune leur data-light depuis le 2026-09-11 -- plus
+     aucune n'est dans le cas "reste sombre" ci-dessous, mais la regle
+     symetrique reste utile si une future carte n'a pas de variante claire. */
+  :root[data-theme="light"] .hhero:has(img[data-light]) .htag,
+  :root[data-theme="light"] .hhero:has(img[data-light]) .hh2,
+  :root[data-theme="light"] .hhero:has(img[data-light]) .hsub,
   :root[data-theme="light"] .hscard:has(img[data-light]) .hsbody b,
   :root[data-theme="light"] .hxcard:has(img[data-light]) > b{
     color:var(--txt); text-shadow:0 1px 6px rgba(255,255,255,.95), 0 0 14px rgba(255,255,255,.8)}
@@ -190,11 +195,11 @@
      confondait avec les photos claires et chargees derriere. */
   :root[data-theme="light"] .hscard:has(img[data-light]) .hsbody i{
     color:#000; font-weight:600; text-shadow:0 1px 5px rgba(255,255,255,.95), 0 0 9px rgba(255,255,255,.7)}
-  /* Symetrique : les cartes qui gardent une photo SOMBRE en mode clair (carte
-     heros, Construis ta musique, Couleurs) doivent rendre leur texte comme en
-     mode nuit, sinon le titre en bleu nuit devient illisible sur du noir.
-     On redefinit les jetons a l'echelle de la carte : tout ce qu'elle contient
-     suit, sans avoir a lister chaque element. */
+  /* Symetrique : une carte qui garderait une photo SOMBRE en mode clair (plus
+     aucune actuellement, les 9 ont leur data-light) doit rendre son texte
+     comme en mode nuit, sinon le titre en bleu nuit devient illisible sur du
+     noir. On redefinit les jetons a l'echelle de la carte : tout ce qu'elle
+     contient suit, sans avoir a lister chaque element. */
   :root[data-theme="light"] .hhero:not(:has(img[data-light])),
   :root[data-theme="light"] .hscard:not(:has(img[data-light])),
   :root[data-theme="light"] .hxcard:not(:has(img[data-light])){
@@ -674,7 +679,7 @@
     <div class="home in" id="homeScroll">
       <p class="heyebrow cy"><span class="het" id="hebFreq">—</span><span class="hel"></span></p>
       <button class="hhero" data-go="lib">
-        <img src="app-images/365.webp" alt="">
+        <img src="app-images/365.webp" data-light="370.webp" alt="">
         <span class="hscrim"></span>
         <span class="hherobody">
           <span class="htag" id="hHeroTag">—</span>
@@ -686,19 +691,19 @@
 
       <p class="heyebrow"><span class="het" id="hebSess">—</span><span class="hel"></span></p>
       <div class="hsgrid">
-        <button class="hscard" data-go="protos"><img src="app-images/366.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
-        <button class="hscard" data-go="bin"><img src="app-images/367.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
-        <button class="hscard" data-go="medmusic"><img src="app-images/368.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hMed">—</b><i id="hMedSub">—</i></span></button>
+        <button class="hscard" data-go="protos"><img src="app-images/366.webp" data-light="371.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hProto">—</b><i id="hProtoSub">—</i></span></button>
+        <button class="hscard" data-go="bin"><img src="app-images/367.webp" data-light="372.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hBin">—</b><i id="hBinSub">—</i></span></button>
+        <button class="hscard" data-go="medmusic"><img src="app-images/368.webp" data-light="373.webp" alt=""><span class="hscrim"></span><span class="hsbody"><b id="hMed">—</b><i id="hMedSub">—</i></span></button>
       </div>
 
       <p class="heyebrow mv"><span class="het" id="hebExpl">—</span><span class="hel"></span></p>
       <p class="hexplain" id="hExplNote">—</p>
       <div class="hxrail">
-        <button class="hxcard" data-gocat="sacred"><img src="app-images/363.webp" alt=""><span class="hscrim"></span><b id="hxSacred">—</b></button>
-        <button class="hxcard" data-gocat="crop"><img src="app-images/362.webp" alt=""><span class="hscrim"></span><b id="hxCrop">—</b></button>
-        <button class="hxcard" data-gocat="planet"><img src="app-images/360.webp" alt=""><span class="hscrim"></span><b id="hxPlanet">—</b></button>
-        <button class="hxcard" data-gocat="color"><img src="app-images/361.webp" alt=""><span class="hscrim"></span><b id="hxColor">—</b></button>
-        <button class="hxcard" data-gocat="snowflake"><img src="app-images/364.webp" alt=""><span class="hscrim"></span><b id="hxFlocon">—</b></button>
+        <button class="hxcard" data-gocat="sacred"><img src="app-images/363.webp" data-light="374.webp" alt=""><span class="hscrim"></span><b id="hxSacred">—</b></button>
+        <button class="hxcard" data-gocat="crop"><img src="app-images/362.webp" data-light="375.webp" alt=""><span class="hscrim"></span><b id="hxCrop">—</b></button>
+        <button class="hxcard" data-gocat="planet"><img src="app-images/360.webp" data-light="376.webp" alt=""><span class="hscrim"></span><b id="hxPlanet">—</b></button>
+        <button class="hxcard" data-gocat="color"><img src="app-images/361.webp" data-light="377.webp" alt=""><span class="hscrim"></span><b id="hxColor">—</b></button>
+        <button class="hxcard" data-gocat="snowflake"><img src="app-images/364.webp" data-light="378.webp" alt=""><span class="hscrim"></span><b id="hxFlocon">—</b></button>
       </div>
 
       <button class="hmethod" id="hMethodBtn">
