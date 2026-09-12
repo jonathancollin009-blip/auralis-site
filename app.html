@@ -422,6 +422,16 @@
     #vHome .hscard:first-child{height:140px}
   }
 
+  /* AURALIS_HOME_VIEWPORT_FIT_V1
+     Budget vertical stable : reserve l'en-tete, les espacements et une
+     marge sous Musiques. Les petites fenetres gardent le defilement. */
+  @supports (height:100svh){
+    #vHome{--home-hero-height:clamp(170px,27svh,222px)}
+    #vHome .hhero{height:var(--home-hero-height);min-height:var(--home-hero-height);flex-shrink:0}
+    #vHome .hscard,
+    #vHome .hscard:first-child{height:clamp(96px,calc((100svh - var(--home-hero-height) - 164px) / 3),146px)}
+  }
+
   .pad{padding:0 18px}
   /* La loupe et le bouton d effacement sont poses par-dessus le champ ; le
      padding interne du champ leur reserve la place. */
