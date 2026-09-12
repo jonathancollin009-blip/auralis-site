@@ -432,6 +432,12 @@
     #vHome .hscard:first-child{height:clamp(96px,calc((100svh - var(--home-hero-height) - 164px) / 3),146px)}
   }
 
+  /* AURALIS_FREQUENCY_PAGE_SCROLL_V1
+     Un seul defilement pour l'introduction, les filtres et les cartes. */
+  #vLib{overflow:visible}
+  #vLib .libbar{position:relative;top:auto}
+  #vLib .freqlist{flex:0 0 auto;overflow:visible}
+
   .pad{padding:0 18px}
   /* La loupe et le bouton d effacement sont poses par-dessus le champ ; le
      padding interne du champ leur reserve la place. */
