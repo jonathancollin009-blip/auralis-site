@@ -438,6 +438,10 @@
   #vLib .libbar{position:relative;top:auto}
   #vLib .freqlist{flex:0 0 auto;overflow:visible}
 
+  /* AURALIS_HOME_EXPLORE_ART_V2 : motifs entiers a toute largeur. */
+  #vHome .hxcard:has(.homefitart){background:var(--bg)}
+  #vHome .hxcard > .homefitart{object-fit:contain}
+
   .pad{padding:0 18px}
   /* La loupe et le bouton d effacement sont poses par-dessus le champ ; le
      padding interne du champ leur reserve la place. */
@@ -1142,11 +1146,11 @@
       <p class="heyebrow mv"><span class="het" id="hebExpl">—</span><span class="hel"></span></p>
       <p class="hexplain" id="hExplNote">—</p>
       <div class="hxrail">
-        <button class="hxcard" data-gocat="sacred"><img src="app-images/363.webp" data-light="374.webp" alt=""><span class="hscrim"></span><b id="hxSacred">—</b></button>
+        <button class="hxcard" data-gocat="sacred"><img src="app-images/home-sacred-dark-v2.webp" data-light="home-sacred-light-v2.webp" class="homefitart" alt=""><span class="hscrim"></span><b id="hxSacred">—</b></button>
         <button class="hxcard" data-gocat="crop"><img src="app-images/362.webp" data-light="375.webp" alt=""><span class="hscrim"></span><b id="hxCrop">—</b></button>
-        <button class="hxcard" data-gocat="planet"><img src="app-images/360.webp" data-light="376.webp" alt=""><span class="hscrim"></span><b id="hxPlanet">—</b></button>
-        <button class="hxcard" data-gocat="color"><img src="app-images/361.webp" data-light="377.webp" alt=""><span class="hscrim"></span><b id="hxColor">—</b></button>
-        <button class="hxcard" data-gocat="snowflake"><img src="app-images/364.webp" data-light="378.webp" alt=""><span class="hscrim"></span><b id="hxFlocon">—</b></button>
+        <button class="hxcard" data-gocat="planet"><img src="app-images/home-planet-dark-v2.webp" data-light="home-planet-light-v2.webp" class="homefitart" alt=""><span class="hscrim"></span><b id="hxPlanet">—</b></button>
+        <button class="hxcard" data-gocat="color"><img src="app-images/home-color-dark-v2.webp" data-light="home-color-light-v2.webp" class="homefitart" alt=""><span class="hscrim"></span><b id="hxColor">—</b></button>
+        <button class="hxcard" data-gocat="snowflake"><img src="app-images/home-snowflake-dark-v2.webp" data-light="home-snowflake-light-v2.webp" class="homefitart" alt=""><span class="hscrim"></span><b id="hxFlocon">—</b></button>
       </div>
 
       <button class="hmethod" id="hMethodBtn">
