@@ -439,6 +439,25 @@
   .freqmeta .hz{color:var(--txt);font-size:.68rem;font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
   .freqgo{position:absolute;right:8px;top:-17px;display:grid;place-items:center;width:28px;height:28px;border:1px solid color-mix(in srgb,var(--fc) 65%,transparent);border-radius:50%;background:rgba(var(--panel-rgb),.88);color:var(--fc);font-size:1rem;font-style:normal}
   .freqfoot{grid-column:1/-1;margin:8px 1px 0;padding:17px 8px 2px;border-top:1px solid var(--line);color:var(--dim);font-size:.68rem;text-align:center}
+  /* AURALIS_FREQUENCY_SAND_PLATE_V1
+     Plaque anthracite et sable ivoire/beige : le halo reste discret afin que
+     les grains et le relief du motif demeurent le point focal. Les visuels
+     personnalises de certaines frequences conservent leur format panoramique. */
+  #vPlay .cymimg.cymplate{
+    width:min(29svh,72vw,280px);height:min(29svh,72vw,280px);
+    background:#2b2d2f;border:1px solid rgba(183,197,205,.34);
+    filter:brightness(1.025) contrast(1.035) saturate(.82);
+    box-shadow:0 10px 24px rgba(0,0,0,.34),0 0 24px 3px rgba(var(--cyan-rgb),.18),0 0 64px 16px rgba(var(--purple-rgb),.08)
+  }
+  #vPlay .stage.cymon.playing .cymimg.cymplate{
+    box-shadow:0 12px 28px rgba(0,0,0,.38),0 0 31px 5px rgba(var(--cyan-rgb),.28),0 0 78px 20px rgba(var(--purple-rgb),.13)
+  }
+  :root[data-theme="light"] #vPlay .cymimg.cymplate{
+    border-color:rgba(65,83,93,.42);
+    box-shadow:0 12px 25px rgba(42,48,56,.22),0 0 24px 2px rgba(var(--cyan-rgb),.15),0 0 58px 14px rgba(var(--purple-rgb),.07)
+  }
+  @media(max-height:620px){#vPlay .cymimg.cymplate{width:min(25svh,58vw);height:min(25svh,58vw)}}
+
   #vPlay .cymimg.freqpersonal{width:min(86vw,400px);height:min(24svh,190px);border-radius:22px;object-fit:cover;filter:brightness(1.04) contrast(1.05) saturate(1.05);box-shadow:0 0 27px 5px rgba(var(--cyan-rgb),.2),0 0 72px 20px rgba(var(--purple-rgb),.11)}
   #vPlay .stage.cymon.playing .cymimg.freqpersonal{box-shadow:0 0 38px 9px rgba(var(--cyan-rgb),.34),0 0 100px 29px rgba(var(--purple-rgb),.2)}
   :root[data-theme="light"] .freqintro::after{background:radial-gradient(circle,rgba(var(--cyan-rgb),.15),rgba(var(--purple-rgb),.09) 48%,transparent 72%)}
@@ -2608,10 +2627,10 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
      sans avoir relance tools/cymatics_for_app.py. */
   function setCymatic(hz,personal){
     var img=$("cymImg"),stage=$("pStage");
-    img.classList.toggle("freqpersonal",!!personal);
+    img.classList.toggle("freqpersonal",!!personal); img.classList.toggle("cymplate",hz!=null&&!personal);
     if(hz==null){img.hidden=true;img.removeAttribute("src");stage.classList.remove("cymon");return;}
     img.onerror=function(){
-      if(personal){personal=null;img.classList.remove("freqpersonal");img.src="app-images/cym/"+hz.toFixed(2)+".webp";return;}
+      if(personal){personal=null;img.classList.remove("freqpersonal");img.classList.add("cymplate");img.src="app-images/cym/"+hz.toFixed(2)+".webp";return;}
       img.hidden=true;stage.classList.remove("cymon");
     };
     img.onload=function(){img.hidden=false;stage.classList.add("cymon");};
