@@ -1082,6 +1082,34 @@
      par defaut, perdait son cyan en theme clair. Rappele ici a specificite
      superieure. */
   :root[data-theme="light"] .medtransport button[aria-pressed="true"]{color:var(--cyan)}
+  /* AURALIS_GEO_PLAYER_PHOTO_ORBS_V1
+     Les photos carrées des Couleurs, Planètes et Crop Circles deviennent de
+     vrais médaillons : l'image est découpée par l'anneau au lieu de laisser
+     ses quatre coins dépasser sous le halo. Les Flocons et Géométries sacrées
+     conservent volontairement leur présentation actuelle. */
+  #vGeoPlay .stage.photoorb{isolation:isolate}
+  #vGeoPlay .stage.photoorb .gstagephoto{
+    object-fit:cover;object-position:center;border-radius:50%;clip-path:circle(50% at 50% 50%);
+    border:1px solid rgba(226,244,255,.46);
+    box-shadow:inset 0 0 26px rgba(5,11,27,.24),0 0 22px rgba(127,216,240,.14);
+    transition:transform .7s ease,filter .45s ease
+  }
+  #vGeoPlay .stage.photoorb::after{
+    content:"";position:absolute;z-index:1;width:var(--ph);height:var(--ph);border-radius:50%;
+    border:1px solid rgba(255,255,255,.18);
+    box-shadow:inset 0 0 34px rgba(3,8,22,.3),inset 0 -20px 38px rgba(3,8,22,.16);
+    pointer-events:none
+  }
+  #vGeoPlay .stage.photoorb.playing .gstagephoto{animation:photoorbbreathe 6s ease-in-out infinite}
+  @keyframes photoorbbreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.018)}}
+  :root[data-theme="light"] #vGeoPlay .stage.photoorb .gstagephoto{
+    border-color:rgba(77,133,154,.42);box-shadow:inset 0 0 24px rgba(18,39,54,.12),0 0 22px rgba(73,166,193,.13)
+  }
+  :root[data-theme="light"] #vGeoPlay .stage.photoorb::after{
+    border-color:rgba(255,255,255,.48);box-shadow:inset 0 0 28px rgba(27,52,68,.16),inset 0 -18px 34px rgba(27,52,68,.1)
+  }
+  @media(prefers-reduced-motion:reduce){#vGeoPlay .stage.photoorb.playing .gstagephoto{animation:none}}
+
   /* ---- Photo agrandie (ecran de lecture geometrie) ---- */
   /* La photo est en position:absolute, elle ne contraint donc pas la
      hauteur de `.stage`. Sans hauteur explicite, `.stage` est comprimee par le
@@ -3114,7 +3142,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); }
     $("gTitle").textContent=tn(gp.fig.name); $("gSym").textContent=geoSymbol(gp.fig); $("gRatios").textContent=tn(gp.fig.ratios);
     var ph=$("gPhoto"); if(gp.fig.photo){ var playPhoto=gp.fig.photo; ph.removeAttribute("data-dark"); ph.removeAttribute("data-light"); if(gp.fig.cat==="snowflake"){ph.setAttribute("data-dark",gp.fig.photo);ph.setAttribute("data-light","snow-light-"+gp.fig.photo);playPhoto=curTheme()==="light"?"snow-light-"+gp.fig.photo:gp.fig.photo;} ph.src="app-images/"+playPhoto; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"||gp.fig.cat==="crop"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); ph.removeAttribute("data-dark"); ph.removeAttribute("data-light"); $("gViz").style.visibility="visible"; }
-    if(ph.parentNode) ph.parentNode.classList.toggle("photobig", !!gp.fig.photo);
+    if(ph.parentNode){ var photoOrb=!!gp.fig.photo&&(gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="crop"); ph.parentNode.classList.toggle("photobig",!!gp.fig.photo); ph.parentNode.classList.toggle("photoorb",photoOrb); }
     gProgShow(!!gp.fig.audio); gProgReset();
     $("gPrev").hidden=$("gNext").hidden=!gp.fig.audio;
     var row=$("gRow"); row.innerHTML="";
