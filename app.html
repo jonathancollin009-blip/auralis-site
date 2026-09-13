@@ -350,6 +350,51 @@
   :root[data-theme="light"] .gtile.sacredcard:nth-child(3n){border-color:#dfd0a9}
   @media(max-width:355px){.sacredhero{height:207px;margin-left:11px;margin-right:11px}.sacredherocopy{left:17px;right:39%;bottom:17px}.sacredherocopy h3{font-size:1.43rem}.sacredherocopy p{font-size:.63rem}#vGeo.sacredmode .geogrid{padding-left:11px;padding-right:11px;gap:8px}.sacredcopy{padding-left:9px}.sacredcopy b{font-size:.79rem}.sacredcopy small{font-size:.52rem}.sacredplay{width:25px;height:25px}}
 
+  /* AURALIS_SNOWFLAKE_COLLECTION_V1
+     Page Flocons approuvee : hero cristallin, dix formes et deux themes. */
+  #vGeo.snowmode{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:22px}
+  #vGeo.snowmode .bar{flex:0 0 auto;background:linear-gradient(180deg,var(--bg) 65%,rgba(var(--bg-rgb),.86))}
+  #vGeo.snowmode .bar h2{position:absolute;left:64px;right:64px;text-align:center;font-family:Georgia,"Times New Roman",serif;font-size:1.38rem;font-weight:500}
+  #vGeo.snowmode>.pad{display:none}
+  .snowhero{position:relative;flex:0 0 auto;min-height:278px;margin:2px 16px 0;border:1px solid rgba(var(--cyan-rgb),.42);border-radius:23px;overflow:hidden;background:#030919;color:#f8fbff;box-shadow:0 25px 48px -34px rgba(88,210,247,.54)}
+  .snowhero>img{position:absolute;inset:0;width:100%;height:68%;object-fit:cover;object-position:68% 46%}
+  .snowhero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,rgba(3,9,25,.04) 40%,rgba(3,9,25,.92) 69%,#030919 86%)}
+  .snowherocopy{position:absolute;z-index:1;left:17px;right:17px;bottom:17px;text-align:center;text-shadow:0 2px 12px rgba(0,0,0,.9)}
+  .snowbrand{display:block;margin-bottom:5px;color:#83e9f7;font-size:.56rem;font-weight:800;letter-spacing:.5em}
+  .snowherocopy h3{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:1.55rem;font-weight:400;line-height:1.05}
+  .snowherocopy p{margin:7px 0 0;color:#d7e5f5;font-size:.69rem;line-height:1.35}
+  .snowsectionhead{display:flex;align-items:baseline;justify-content:space-between;margin:20px 18px 11px}
+  .snowsectionhead h3{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:1.35rem;font-weight:400}
+  .snowsectionhead span{color:var(--dim);font-size:.7rem;white-space:nowrap}
+  #vGeo.snowmode .geoall{flex:0 0 auto;padding:0 18px 12px}
+  #vGeo.snowmode .allrow{gap:8px}
+  #vGeo.snowmode .geoallbtn{order:1;flex:1;border-color:rgba(var(--cyan-rgb),.55);background:linear-gradient(96deg,rgba(var(--cyan-rgb),.12),rgba(var(--mauve-rgb),.1));color:var(--cyan)}
+  #vGeo.snowmode .shufbtn{order:2;flex:0 0 48px;width:48px;border-color:rgba(var(--cyan-rgb),.48);color:var(--cyan)}
+  #vGeo.snowmode .geogrid{flex:none;overflow:visible;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 16px 14px}
+  .gtile.snowcard{position:relative;display:block;min-width:0;aspect-ratio:.91;border-radius:18px;border-color:rgba(var(--line-rgb,65,85,125),.68);overflow:hidden;background:#050b18;box-shadow:0 18px 35px -30px rgba(0,0,0,.98);text-align:left}
+  .gtile.snowcard:first-child{border-color:var(--cyan);box-shadow:0 0 22px rgba(var(--cyan-rgb),.18)}
+  .gtile.snowcard .gtvis{position:absolute;inset:0;width:100%;height:100%;background:#050b18;overflow:hidden}
+  .gtile.snowcard .gtvis::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(3,9,20,.18) 62%,rgba(3,9,20,.96) 100%)}
+  .gtile.snowcard img{filter:none;object-fit:cover;transform:scale(1.01);transition:transform .25s ease}
+  .gtile.snowcard:active img{transform:scale(1.045)}
+  .snowcopy{position:absolute;z-index:2;left:11px;right:9px;bottom:9px;display:flex;align-items:flex-end;gap:7px;color:#f7f9ff;text-shadow:0 1px 8px rgba(0,0,0,.95)}
+  .snowcopy b{display:block;min-width:0;flex:1;font-family:Georgia,"Times New Roman",serif;font-size:.87rem;font-weight:600;line-height:1.08}
+  .snowplay{display:grid;place-items:center;flex:0 0 auto;width:29px;height:29px;border:1px solid rgba(127,216,240,.78);border-radius:50%;background:rgba(3,10,24,.68);color:#dff9ff;font-size:.58rem}
+  .snowfooter{margin:2px 17px 7px;padding:15px 12px 2px;border-top:1px solid rgba(var(--cyan-rgb),.2);color:var(--dim);font-size:.68rem;letter-spacing:.13em;text-align:center}
+  .snowhero[hidden],.snowsectionhead[hidden],.snowfooter[hidden]{display:none}
+  :root[data-theme="light"] .snowhero{background:#f6fbfc;border-color:#b6dfe9;box-shadow:0 24px 43px -32px rgba(74,125,146,.4);color:#18233b}
+  :root[data-theme="light"] .snowhero::after{background:linear-gradient(180deg,transparent 0%,rgba(248,252,252,.03) 39%,rgba(248,252,252,.9) 69%,#f6fbfc 86%)}
+  :root[data-theme="light"] .snowherocopy{text-shadow:0 2px 10px rgba(255,255,255,.95)}
+  :root[data-theme="light"] .snowbrand{color:#257f98}
+  :root[data-theme="light"] .snowherocopy p{color:#43516b}
+  :root[data-theme="light"] .gtile.snowcard{background:#f8fcfd;border-color:#cfdae4;box-shadow:0 18px 33px -29px rgba(55,75,103,.34)}
+  :root[data-theme="light"] .gtile.snowcard:first-child{border-color:#3fa9be;box-shadow:0 0 20px rgba(63,169,190,.15)}
+  :root[data-theme="light"] .gtile.snowcard .gtvis{background:#f8fcfd}
+  :root[data-theme="light"] .gtile.snowcard .gtvis::after{background:linear-gradient(180deg,transparent 48%,rgba(250,253,253,.18) 62%,rgba(250,253,253,.97) 100%)}
+  :root[data-theme="light"] .snowcopy{color:#18233b;text-shadow:0 1px 7px rgba(255,255,255,.98)}
+  :root[data-theme="light"] .snowplay{border-color:#78becd;background:rgba(255,255,255,.8);color:#257f98}
+  @media(max-width:355px){.snowhero{min-height:252px;margin-left:11px;margin-right:11px}.snowherocopy h3{font-size:1.37rem}.snowherocopy p{font-size:.63rem}#vGeo.snowmode .geogrid{padding-left:11px;padding-right:11px;gap:8px}.snowcopy{left:9px}.snowcopy b{font-size:.77rem}.snowplay{width:26px;height:26px}}
+
   /* AURALIS_FREQUENCY_GALLERY_V2
      Galerie a deux colonnes : toutes les illustrations sont des SVG en ligne
      et des gradients CSS. Les photos personnalisees vivent dans le lecteur. */
@@ -1271,12 +1316,15 @@
     <div class="bar"><button class="backbtn" id="geoBack" aria-label="Retour">‹</button><h2 id="geoTitle">—</h2><button class="geotheme" id="geoThemeBtn" aria-label="Thème clair ou sombre">☾</button></div>
     <div class="crophero" id="cropHero" hidden><img src="app-images/362.webp" data-light="375.webp" alt=""><div class="cropherocopy"><span class="cropbrand">AURALIS</span><h3 id="cropHeroTitle">—</h3><p id="cropHeroSub">—</p><span class="croppill" id="cropCollection">—</span></div></div>
     <div class="sacredhero" id="sacredHero" hidden><img src="app-images/sacred-hero-dark-v2.webp" data-dark="sacred-hero-dark-v2.webp" data-light="sacred-hero-light-v2.webp" alt=""><div class="sacredherocopy"><span class="sacredbrand">AURALIS</span><h3 id="sacredHeroTitle">—</h3><p id="sacredHeroSub">—</p></div></div>
+    <div class="snowhero" id="snowHero" hidden><img src="app-images/home-snowflake-dark-v2.webp" data-dark="home-snowflake-dark-v2.webp" data-light="home-snowflake-light-v2.webp" alt=""><div class="snowherocopy"><span class="snowbrand">AURALIS</span><h3 id="snowHeroTitle">—</h3><p id="snowHeroSub">—</p></div></div>
     <div class="pad"><div class="filters" id="geoFilters"></div></div>
     <div class="cropsectionhead" id="cropSectionHead" hidden><h3 id="cropChoose">—</h3></div>
     <div class="sacredsectionhead" id="sacredSectionHead" hidden><h3 id="sacredChoose">—</h3><span id="sacredCount">—</span></div>
+    <div class="snowsectionhead" id="snowSectionHead" hidden><h3 id="snowChoose">—</h3><span id="snowCount">—</span></div>
     <div class="geoall" id="geoAllWrap" hidden><div class="allrow"><button class="shufbtn" id="geoShuffle" type="button" aria-pressed="false"><span aria-hidden="true">🔀</span></button><button class="geoallbtn" id="geoPlayAll"><span class="gaico" aria-hidden="true">▶</span><span id="geoPlayAllLbl">—</span></button></div></div>
     <div class="geogrid" id="geoList"></div>
     <p class="sacredfooter" id="sacredFooter" hidden>—</p>
+    <p class="snowfooter" id="snowFooter" hidden>—</p>
   </section>
 
   <section class="view" id="vGeoPlay">
@@ -2410,7 +2458,8 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     $("methTitle").textContent=t("home_method_t"); $("methBody").innerHTML=t("home_method_body");
     $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); pulseUpdTitle();
     $("cropHeroTitle").textContent=t("crop_hero_title"); $("cropHeroSub").textContent=t("crop_hero_sub"); $("cropCollection").textContent=t("crop_collection"); $("cropChoose").textContent=t("crop_choose");
-    $("sacredHeroTitle").textContent=t("sacred_hero_title"); $("sacredHeroSub").textContent=t("sacred_hero_sub"); $("sacredChoose").textContent=t("sacred_choose"); $("sacredCount").textContent=t("sacred_count"); $("sacredFooter").textContent=t("sacred_footer"); gPaintCollectionMode();
+    $("sacredHeroTitle").textContent=t("sacred_hero_title"); $("sacredHeroSub").textContent=t("sacred_hero_sub"); $("sacredChoose").textContent=t("sacred_choose"); $("sacredCount").textContent=t("sacred_count"); $("sacredFooter").textContent=t("sacred_footer");
+    $("snowHeroTitle").textContent=snowText("hero"); $("snowHeroSub").textContent=snowText("sub"); $("snowChoose").textContent=snowText("choose"); $("snowCount").textContent=snowText("count"); $("snowFooter").textContent=snowText("footer"); gPaintCollectionMode();
     $("gLoopOn").textContent=t("loop_inf"); $("gLoopOff").textContent=t("loop_once");
     $("gPrev").setAttribute("aria-label",t("nav_prev")); $("gNext").setAttribute("aria-label",t("nav_next"));
     [["geoShuffle"],["medShuffle"]].forEach(function(p){ var b=$(p[0]); if(!b)return;
@@ -2810,6 +2859,19 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
    {name:"Rosace Entrelacée",pending:true,cat:"crop",photo:"crop-rosace-entrelacee.webp",sym:{fr:"Devizes · Wiltshire",en:"Devizes · Wiltshire",es:"Devizes · Wiltshire"}},
    {name:"Yin Yang",pending:true,cat:"crop",photo:"crop-yin-yang.webp",sym:{fr:"Windmill Hill · dualité",en:"Windmill Hill · duality",es:"Windmill Hill · dualidad"}}
   ];
+  var SNOW_I18N={
+    fr:{hero:"La musique du cristal",sub:"Explorez leurs formes. Écoutez leurs harmonies.",choose:"Choisir un flocon",count:"10 formes",footer:"Un instant de contemplation."},
+    en:{hero:"The music of crystal",sub:"Explore their forms. Listen to their harmonies.",choose:"Choose a snowflake",count:"10 forms",footer:"A moment of contemplation."},
+    es:{hero:"La música del cristal",sub:"Explora sus formas. Escucha sus armonías.",choose:"Elegir un copo",count:"10 formas",footer:"Un instante de contemplación."},
+    de:{hero:"Die Musik des Kristalls",sub:"Entdecke ihre Formen. Höre ihre Harmonien.",choose:"Schneeflocke wählen",count:"10 Formen",footer:"Ein Moment der Betrachtung."},
+    it:{hero:"La musica del cristallo",sub:"Esplora le loro forme. Ascolta le loro armonie.",choose:"Scegli un fiocco",count:"10 forme",footer:"Un momento di contemplazione."},
+    lo:{hero:"ດົນຕີແຫ່ງຜະລຶກ",sub:"ສຳຫຼວດຮູບຊົງຂອງພວກມັນ. ຟັງສຽງປະສານຂອງພວກມັນ.",choose:"ເລືອກເກັດຫິມະ",count:"10 ຮູບແບບ",footer:"ຊ່ວງເວລາແຫ່ງການພິຈາລະນາ."},
+    hi:{hero:"क्रिस्टल का संगीत",sub:"उनके आकारों को देखें। उनके सामंजस्य सुनें।",choose:"हिमकण चुनें",count:"10 आकार",footer:"चिंतन का एक क्षण।"},
+    zh:{hero:"晶体之音",sub:"探索它们的形态，聆听它们的和声。",choose:"选择一片雪花",count:"10 种形态",footer:"片刻静观。"},
+    zht:{hero:"晶體之音",sub:"探索它們的形態，聆聽它們的和聲。",choose:"選擇一片雪花",count:"10 種形態",footer:"片刻靜觀。"}
+  };
+  function snowText(k){var d=SNOW_I18N[lang]||SNOW_I18N.en;return d[k]||SNOW_I18N.en[k];}
+
   var geoState={filter:"all"};
   var gfEl=$("geoFilters");
   [{k:"all",l:"f_Toutes"},{k:"crop",l:"geo_filter_crop"},{k:"sacred",l:"geo_filter_sacred"},{k:"snowflake",l:"geo_filter_snowflake"},{k:"color",l:"geo_filter_color"},{k:"planet",l:"geo_filter_planet"}].forEach(function(gf){
@@ -2859,25 +2921,27 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
   function buildInstr(){ var el=$("gInstr"); el.innerHTML=""; GORDER.forEach(function(id){ var b=document.createElement("button"); b.setAttribute("data-i",id); b.setAttribute("aria-pressed",id===gp.instr?"true":"false"); b.textContent=instrumentName(id);
     b.addEventListener("click",function(){ gp.instr=id; Array.prototype.forEach.call(el.children,function(x){x.setAttribute("aria-pressed",x.getAttribute("data-i")===id?"true":"false");}); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } }); el.appendChild(b); }); }
 
-  function gPaintCollectionMode(){ var crop=geoState.filter==="crop",sacred=geoState.filter==="sacred",v=$("vGeo");
-    if(v){v.classList.toggle("cropmode",crop);v.classList.toggle("sacredmode",sacred);}
+  function gPaintCollectionMode(){ var crop=geoState.filter==="crop",sacred=geoState.filter==="sacred",snow=geoState.filter==="snowflake",v=$("vGeo");
+    if(v){v.classList.toggle("cropmode",crop);v.classList.toggle("sacredmode",sacred);v.classList.toggle("snowmode",snow);}
     $("cropHero").hidden=!crop; $("cropSectionHead").hidden=!crop;
     $("sacredHero").hidden=!sacred; $("sacredSectionHead").hidden=!sacred; $("sacredFooter").hidden=!sacred;
-    $("geoTitle").textContent=t(crop?"geo_filter_crop":sacred?"geo_filter_sacred":"geo_head"); }
+    $("snowHero").hidden=!snow; $("snowSectionHead").hidden=!snow; $("snowFooter").hidden=!snow;
+    $("geoTitle").textContent=t(crop?"geo_filter_crop":sacred?"geo_filter_sacred":snow?"geo_filter_snowflake":"geo_head"); }
   function gRenderList(){ var el=$("geoList"); el.innerHTML=""; gUpdateAllBtn();
-    var cropMode=geoState.filter==="crop",sacredMode=geoState.filter==="sacred";
+    var cropMode=geoState.filter==="crop",sacredMode=geoState.filter==="sacred",snowMode=geoState.filter==="snowflake";
     var arr=GEO.filter(function(fig){ return geoState.filter==="all"||fig.cat===geoState.filter; });
     if(cropMode)arr=arr.concat(CROP_PENDING);
     if(!arr.length){ el.innerHTML='<p class="empty">'+t("geo_empty_cat")+'</p>'; return; }
-    arr.forEach(function(fig){ var i=GEO.indexOf(fig),pending=!!fig.pending; var b=document.createElement("button"); b.className="gtile"+(cropMode?" cropcard":sacredMode?" sacredcard":"")+(pending?" pending":"");
+    arr.forEach(function(fig){ var i=GEO.indexOf(fig),pending=!!fig.pending; var b=document.createElement("button"); b.className="gtile"+(cropMode?" cropcard":sacredMode?" sacredcard":snowMode?" snowcard":"")+(pending?" pending":"");
       var isColor=fig.cat==="color"&&fig.color;
       var vis, gtvisAttr="";
-      if(fig.photo){ vis='<img class="'+((fig.cat==="planet"||fig.cat==="color"||fig.cat==="sacred"||fig.cat==="snowflake"||fig.cat==="crop")?"incolor":"")+'" src="app-images/'+fig.photo+'" alt="">'; }
+      if(fig.photo){ var shownPhoto=fig.photo,photoAttrs=""; if(snowMode&&fig.cat==="snowflake"){var snowLight="snow-light-"+fig.photo;shownPhoto=curTheme()==="light"?snowLight:fig.photo;photoAttrs=' data-dark="'+fig.photo+'" data-light="'+snowLight+'"';} vis='<img class="'+((fig.cat==="planet"||fig.cat==="color"||fig.cat==="sacred"||fig.cat==="snowflake"||fig.cat==="crop")?"incolor":"")+'" src="app-images/'+shownPhoto+'"'+photoAttrs+' alt="">'; }
       else if(isColor){ gtvisAttr=' style="background:radial-gradient(circle at 50% 45%, '+fig.color+' 0%, '+fig.color+' 72%, rgba(0,0,0,.3) 100%)"'; vis=""; }
       else { vis='<span class="gtico">'+fig.ic+'</span>'; }
       if(cropMode){ var meta=pending?t("crop_audio_coming"):geoSymbol(fig);
         b.innerHTML='<span class="gtvis"'+gtvisAttr+'>'+vis+(pending?'<span class="cropbadge">'+htmlText(t("crop_audio_coming"))+'</span>':'')+'<span class="gtcopy"><b>'+htmlText(tn(fig.name))+'</b><small>'+htmlText(meta)+'</small></span></span>';
       } else if(sacredMode){ b.innerHTML='<span class="gtvis"'+gtvisAttr+'>'+vis+'</span><span class="sacredcopy"><span><b>'+htmlText(tn(fig.name))+'</b><small>'+htmlText(geoSymbol(fig))+'</small></span><i class="sacredplay" aria-hidden="true">▶</i></span>';
+      } else if(snowMode){ b.innerHTML='<span class="gtvis"'+gtvisAttr+'>'+vis+'</span><span class="snowcopy"><b>'+htmlText(tn(fig.name))+'</b><i class="snowplay" aria-hidden="true">▶</i></span>';
       } else b.innerHTML='<span class="gtvis"'+gtvisAttr+'>'+vis+'</span><span class="gtname">'+tn(fig.name)+'</span>';
       if(pending){ b.setAttribute("aria-disabled","true"); b.addEventListener("click",function(){ flashMsg(t("crop_audio_coming")); }); }
       else b.addEventListener("click",function(){ gQueueClear(); gOpen(i,"geo"); }); el.appendChild(b); }); }
@@ -3045,7 +3109,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     if(gQueueOn()) gQueue.list=requeueTail(gQueue.list, gQueue.idx, on); });
   function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); }
     $("gTitle").textContent=tn(gp.fig.name); $("gSym").textContent=geoSymbol(gp.fig); $("gRatios").textContent=tn(gp.fig.ratios);
-    var ph=$("gPhoto"); if(gp.fig.photo){ ph.src="app-images/"+gp.fig.photo; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"||gp.fig.cat==="crop"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); $("gViz").style.visibility="visible"; }
+    var ph=$("gPhoto"); if(gp.fig.photo){ var playPhoto=gp.fig.photo; ph.removeAttribute("data-dark"); ph.removeAttribute("data-light"); if(gp.fig.cat==="snowflake"){ph.setAttribute("data-dark",gp.fig.photo);ph.setAttribute("data-light","snow-light-"+gp.fig.photo);playPhoto=curTheme()==="light"?"snow-light-"+gp.fig.photo:gp.fig.photo;} ph.src="app-images/"+playPhoto; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"||gp.fig.cat==="crop"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); ph.removeAttribute("data-dark"); ph.removeAttribute("data-light"); $("gViz").style.visibility="visible"; }
     if(ph.parentNode) ph.parentNode.classList.toggle("photobig", !!gp.fig.photo);
     gProgShow(!!gp.fig.audio); gProgReset();
     $("gPrev").hidden=$("gNext").hidden=!gp.fig.audio;
