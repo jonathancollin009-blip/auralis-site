@@ -970,6 +970,10 @@
   #vGeoPlay .stage::before{width:150px; height:150px}
   #vGeoPlay #gViz{width:140px; height:140px}
   #vGeoPlay .gstagephoto{width:130px; height:130px}
+  /* #gViz reste dans le flux flex meme masque par visibility:hidden : sans
+     display:none il partage l'espace avec la photo et decale celle-ci a
+     gauche du halo. */
+  #vGeoPlay .stage:has(.gstagephoto:not([hidden])) #gViz{display:none}
   #vGeoPlay .gnow .gn{font-size:1.5rem}
   #vGeoPlay .gnow .gf{font-size:.72rem; margin-top:2px}
   #vGeoPlay .gsym{margin:clamp(8px, 1.8svh, 18px) 0 1px}
