@@ -3015,7 +3015,7 @@ var SILENCE_URI="data:audio/wav;base64,UklGRqQMAABXQVZFZm10IBAAAAABAAEAQB8AAIA+A
     Array.prototype.forEach.call(gfEl.children,function(x){ x.setAttribute("aria-pressed", x.getAttribute("data-k")===cat?"true":"false"); });
     gPaintCollectionMode(); gRenderList(); show("geo"); }
 
-  var gp={fig:null,figIdx:null,dur:60/72,loop:true,pulsed:true,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0,instr:"sine",
+  var gp={fig:null,figIdx:null,dur:60/72,loop:true,pulsed:false,vol:0.5,playing:false,master:null,drones:[],timer:null,cycleStart:0,instr:"sine",
     echoAmt:0,delayMs:250,
     dry:null,delayNode:null,feedback:null,echoWet:null,echoFilter:null}, gPhase=0;
   function gSetEchoAmt(v){ gp.echoAmt=v; if(gp.feedback&&gp.echoWet&&ctx){ gp.feedback.gain.setTargetAtTime(v*0.55,ctx.currentTime,0.05); gp.echoWet.gain.setTargetAtTime(v>0?0.5:0.0001,ctx.currentTime,0.05); } }
