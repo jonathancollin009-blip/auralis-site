@@ -6,3 +6,15 @@ desktop.ini
 # Éditeurs
 .vscode/
 *.swp
+
+# Cache local wrangler (wrangler dev)
+.wrangler/
+
+# Pistes musicales et geometrie : servies depuis R2 (bucket auralis-assets)
+# via worker.js depuis le 2026-09-16, plus besoin de les committer ici.
+# Les echantillons d'instruments (piano/guitar/violin/sax/ir) restent
+# suivis : ils sont embarques dans l'app, pas serves par ce site.
+/app-sounds/geometrie/*.ogg
+/app-sounds/geometrie/*.m4a
+/app-sounds/meditation/*.ogg
+/app-sounds/meditation/*.m4a

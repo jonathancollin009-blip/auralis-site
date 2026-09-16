@@ -8,8 +8,9 @@
  * meme personne au-dela du lot recu dans une seule requete.
  *
  * Le reste du site est un Worker "assets seulement" (voir wrangler.jsonc) :
- * ce script n'intercepte QUE /api/e, tout le reste passe par env.ASSETS.fetch
- * -- comportement identique a avant l'ajout de ce fichier.
+ * ce script intercepte /api/e, /stats, /api/stats-data et les deux dossiers
+ * audio servis depuis R2 (voir handleAudioFromR2 plus bas) -- tout le reste
+ * passe par env.ASSETS.fetch, comportement identique a avant ce fichier.
  *
  * Schema d'un evenement, envoye en lot par le client (voir NA_STATS cote app) :
  *   {t:"screen", s:"<ecran>"}
@@ -219,9 +220,82 @@ document.querySelectorAll(".range button").forEach(function(b){ b.addEventListen
 load(7);
 </script></body></html>`;
 
+/* ---- Musiques et pistes de geometrie servies depuis R2 ----
+   Deplacees hors du depot le 2026-09-16 (297 Mo de .ogg/.m4a) : le Worker les
+   sert desormais depuis le bucket R2 "auralis-assets" au lieu des fichiers
+   statiques. Memes URLs qu'avant (aucun changement cote app), donc ce
+   handler doit se comporter comme un vrai serveur de fichiers -- notamment
+   repondre aux requetes Range, sans quoi le seek et le chargement progressif
+   des pistes casseraient silencieusement dans <audio>. */
+const R2_PREFIXES = ["app-sounds/geometrie/", "app-sounds/meditation/"];
+
+function parseRange(header) {
+  if (!header) return undefined;
+  const m = /bytes=(\d+)-(\d+)?/.exec(header);
+  if (!m) return undefined;
+  const offset = Number(m[1]);
+  const end = m[2] === undefined ? undefined : Number(m[2]);
+  return { offset, length: end === undefined ? undefined : end - offset + 1 };
+}
+
+async function handleAudioFromR2(request, env, key) {
+  try {
+    if (request.method === "HEAD") {
+      const head = await env.AUDIO.head(key);
+      if (head === null) return new Response("introuvable", { status: 404 });
+      const headers = new Headers();
+      head.writeHttpMetadata(headers);
+      headers.set("etag", head.httpEtag);
+      headers.set("accept-ranges", "bytes");
+      headers.set("content-length", String(head.size));
+      headers.set("cache-control", "public, max-age=31536000, immutable");
+      return new Response(null, { status: 200, headers });
+    }
+
+    const range = parseRange(request.headers.get("range"));
+    // Attention : passer `{range: undefined}` compte comme une demande de
+    // plage pour le binding R2 (la simple presence de la cle suffit) --
+    // verifie ici en testant sans Range, qui revenait a tort en 206 avec un
+    // Content-Range couvrant le fichier entier. La cle n'est incluse que
+    // lorsqu'une vraie plage a ete demandee.
+    const getOptions = { onlyIf: request.headers };
+    if (range) getOptions.range = range;
+    const object = await env.AUDIO.get(key, getOptions);
+    if (object === null) return new Response("introuvable", { status: 404 });
+
+    const headers = new Headers();
+    object.writeHttpMetadata(headers);
+    headers.set("etag", object.httpEtag);
+    headers.set("accept-ranges", "bytes");
+    // Le nom de fichier encode deja le contenu (pistes figees une fois publiees) :
+    // cache long cote navigateur et edge Cloudflare.
+    headers.set("cache-control", "public, max-age=31536000, immutable");
+
+    if (!("body" in object)) {
+      // onlyIf a matche (304) : pas de corps a renvoyer.
+      return new Response(null, { status: 304, headers });
+    }
+    if (range && object.range) {
+      const end = object.range.offset + object.range.length - 1;
+      headers.set("content-range", `bytes ${object.range.offset}-${end}/${object.size}`);
+      return new Response(object.body, { status: 206, headers });
+    }
+    return new Response(object.body, { status: 200, headers });
+  } catch (e) {
+    return new Response("erreur de stockage", { status: 502 });
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (request.method === "GET" || request.method === "HEAD") {
+      const key = url.pathname.slice(1); // retire le "/" initial
+      if (R2_PREFIXES.some((p) => key.startsWith(p))) {
+        return handleAudioFromR2(request, env, key);
+      }
+    }
 
     if (url.pathname === "/api/e") {
       if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });

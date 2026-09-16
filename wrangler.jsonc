@@ -21,11 +21,23 @@
   },
   "assets": {
     "directory": ".",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // Sans ceci, Cloudflare sert d'abord le fichier statique s'il existe
+    // encore a ce chemin et n'invoque jamais worker.js -- le routage vers R2
+    // deviendrait dependant de la suppression effective des fichiers du
+    // depot, un etat fragile et invisible en relisant juste le code.
+    "run_worker_first": ["/app-sounds/geometrie/*", "/app-sounds/meditation/*"]
   },
   // Cree automatiquement au premier `writeDataPoint()` -- aucune etape de
   // provisionnement manuelle requise, contrairement a D1/KV/R2.
   "analytics_engine_datasets": [
     { "binding": "AE", "dataset": "auralis_events" }
+  ],
+  // Bucket cree le 2026-09-14, rempli le 2026-09-16 (112 fichiers .ogg/.m4a
+  // de app-sounds/geometrie/ et app-sounds/meditation/, verifies SHA256).
+  // worker.js sert ces deux dossiers depuis R2 ; le reste du site continue
+  // de passer par ASSETS comme avant.
+  "r2_buckets": [
+    { "binding": "AUDIO", "bucket_name": "auralis-assets" }
   ]
 }
