@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#070d1c">
 <meta name="color-scheme" content="light dark">
@@ -27,6 +27,10 @@
     --veil:rgba(255,255,255,.06);
     --bgimg:url("app-images/bg.webp");
     --pagebg:#000000;
+    --safe-top:env(safe-area-inset-top, 0px);
+    --safe-right:env(safe-area-inset-right, 0px);
+    --safe-bottom:env(safe-area-inset-bottom, 0px);
+    --safe-left:env(safe-area-inset-left, 0px);
     /* Indispensable : sans color-scheme, Android/Chrome applique son propre
        assombrissement automatique (force-dark) quand le telephone est en
        theme sombre, et le fond creme vire au gris-brun. */
@@ -75,7 +79,7 @@
   body[data-view="lib"]{background:var(--pagebg)}
   .appbg::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(var(--bg-rgb),.18), rgba(var(--bg-rgb),.3) 55%, rgba(var(--bg-rgb),.42))}
   .pbg{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none}
-  .app{width:100%; max-width:520px; min-height:100%; display:flex; flex-direction:column; position:relative; z-index:1}
+  .app{width:100%; max-width:520px; min-height:100%; padding:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left); display:flex; flex-direction:column; position:relative; z-index:1}
   /* Meme raison que html/body ci-dessus : `100%` se resout contre le bloc
      conteneur initial, c est-a-dire la GRANDE fenetre (805 px mesures), alors
      que seuls 746 px sont reellement disponibles. Le conteneur depassait donc
@@ -212,7 +216,9 @@
   /* AURALIS_HOME_BENTO_V1
      Accueil approuve : heros editorial, seances hierarchisees et mosaïque. */
   #vHome{min-width:0;width:100%;overflow-x:hidden}
-  #vHome>.bar{padding:16px 18px 13px;border-bottom:1px solid rgba(var(--mauve-rgb),.16);background:linear-gradient(180deg,rgba(var(--bg-rgb),.98),rgba(var(--bg-rgb),.9));backdrop-filter:blur(12px)}
+  /* L'accueil laisse désormais son fond illustré se prolonger derrière le
+     logo et les commandes : aucun bandeau coloré ni séparation horizontale. */
+  #vHome>.bar{padding:16px 18px 13px;border-bottom:0;background:transparent;backdrop-filter:none}
   #vHome .bar .logo{font-size:1.02rem;letter-spacing:.34em}
   #vHome .langbtn,#vHome .iconbtn{width:36px;height:36px;border:1px solid rgba(var(--mauve-rgb),.72);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(var(--pan-rgb,17,26,51),.16);color:var(--mauve);padding:0;font-size:1rem;line-height:1}
   #vHome .iconbtn{flex:0 0 auto}
@@ -1070,7 +1076,7 @@
   #vGeoPlay .actions{margin-top:auto}
   #vGeoPlay .disc{margin-top:8px; font-size:.62rem; line-height:1.35}
 
-  .flashmsg{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); background:var(--pan2); border:1px solid var(--gold); color:var(--gold); font-size:.82rem; font-weight:600; padding:10px 18px; border-radius:12px; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:20; max-width:80%; text-align:center}
+  .flashmsg{position:fixed; left:50%; bottom:calc(26px + var(--safe-bottom)); transform:translateX(-50%) translateY(20px); background:var(--pan2); border:1px solid var(--gold); color:var(--gold); font-size:.82rem; font-weight:600; padding:10px 18px; border-radius:12px; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:20; max-width:80%; text-align:center}
   .flashmsg.show{opacity:1; transform:translateX(-50%) translateY(0)}
 
   /* AURALIS_MEDITATION_MUSIC_MOCKUP_V1 */
@@ -1152,10 +1158,9 @@
      superieure. */
   :root[data-theme="light"] .medtransport button[aria-pressed="true"]{color:var(--cyan)}
   /* AURALIS_GEO_PLAYER_PHOTO_ORBS_V1
-     Les photos carrées des Couleurs, Planètes et Crop Circles deviennent de
-     vrais médaillons : l'image est découpée par l'anneau au lieu de laisser
-     ses quatre coins dépasser sous le halo. Les Flocons et Géométries sacrées
-     conservent volontairement leur présentation actuelle. */
+     Les photos carrées des Couleurs, Planètes, Crop Circles, Géométries
+     sacrées et Flocons deviennent de vrais médaillons : l'image est découpée
+     par l'anneau au lieu de laisser ses quatre coins dépasser sous le halo. */
   #vGeoPlay .stage.photoorb{isolation:isolate}
   #vGeoPlay .stage.photoorb .gstagephoto{
     object-fit:cover;object-position:center;border-radius:50%;clip-path:circle(50% at 50% 50%);
@@ -1164,9 +1169,10 @@
     transition:transform .7s ease,filter .45s ease
   }
   #vGeoPlay .stage.photoorb::after{
-    content:"";position:absolute;z-index:1;width:var(--ph);height:var(--ph);border-radius:50%;
-    border:1px solid rgba(255,255,255,.18);
-    box-shadow:inset 0 0 34px rgba(3,8,22,.3),inset 0 -20px 38px rgba(3,8,22,.16);
+    content:"";position:absolute;z-index:1;width:var(--ph);height:var(--ph);border-radius:50%;padding:2px;
+    background:linear-gradient(135deg,rgba(var(--cyan-rgb),.92),rgba(var(--mauve-rgb),.86));
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
     pointer-events:none
   }
   #vGeoPlay .stage.photoorb.playing .gstagephoto{animation:photoorbbreathe 6s ease-in-out infinite}
@@ -1175,7 +1181,7 @@
     border-color:rgba(77,133,154,.42);box-shadow:inset 0 0 24px rgba(18,39,54,.12),0 0 22px rgba(73,166,193,.13)
   }
   :root[data-theme="light"] #vGeoPlay .stage.photoorb::after{
-    border-color:rgba(255,255,255,.48);box-shadow:inset 0 0 28px rgba(27,52,68,.16),inset 0 -18px 34px rgba(27,52,68,.1)
+    background:linear-gradient(135deg,rgba(var(--cyan-rgb),.78),rgba(var(--mauve-rgb),.72))
   }
   @media(prefers-reduced-motion:reduce){#vGeoPlay .stage.photoorb.playing .gstagephoto{animation:none}}
 
@@ -1296,7 +1302,7 @@
   .guide-dialog{position:fixed;inset:0;width:100%;height:100%;height:100svh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;color:var(--txt);overflow:hidden}
   .guide-dialog:not([open]),.guide-dialog [hidden]{display:none}
   .guide-dialog::backdrop{background:rgba(var(--bg-rgb),.66)}
-  .guide-bounds{position:absolute;inset:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));pointer-events:none;visibility:hidden}
+  .guide-bounds{position:absolute;inset:calc(16px + var(--safe-top)) calc(16px + var(--safe-right)) calc(16px + var(--safe-bottom)) calc(16px + var(--safe-left));pointer-events:none;visibility:hidden}
   .guide-card{position:absolute;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:440px;max-height:calc(100% - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;padding:24px;border:1px solid var(--line2);border-radius:24px;background:var(--pan);box-shadow:0 16px 64px var(--shadow);overflow-wrap:anywhere}
   .guide-kicker{margin:0 0 10px;color:var(--cyan);font-size:.74rem;font-weight:700;letter-spacing:.1em}
   .guide-card h2{font:700 1.4rem/1.25 -apple-system,"Segoe UI",sans-serif;margin:0 0 12px;color:var(--txt)}
@@ -1314,9 +1320,6 @@
   @media(max-width:360px),(max-height:600px){.guide-card{padding:18px}.guide-card h2{font-size:1.2rem}.guide-card p.guide-copy{font-size:.93rem;margin-bottom:14px}}
   /* AURALIS_ONBOARDING_CSS_END */
 </style>
-</head>
-<body>
-
 <script>
 /* Thème appliqué avant le premier rendu, sinon l'app clignote en sombre puis passe en clair. */
 (function(){
@@ -1325,6 +1328,8 @@
   document.documentElement.setAttribute("data-theme",t);
 })();
 </script>
+</head>
+<body>
 
 <div class="appbg" id="appbg" aria-hidden="true"></div>
 <canvas class="pbg" id="pbg" aria-hidden="true"></canvas>
@@ -3196,20 +3201,12 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
 
   var INSTR={
    sine:{name:{fr:"Sinus",en:"Sine",es:"Seno"},env:"bell"},
-   guitar:{name:{fr:"Guitare",en:"Guitar",es:"Guitarra"},partials:[1,0.55,0.35,0.28,0.18,0.12,0.08,0.05],env:"pluck",lp:3500},
-   sax:{name:{fr:"Saxophone",en:"Saxophone",es:"Saxofón"},partials:[1,0.75,0.5,0.55,0.32,0.35,0.2,0.22,0.12,0.09],env:"sustain",atk:0.06,rel:0.1,vib:{rate:5,depth:4}},
-   piano:{name:{fr:"Piano",en:"Piano",es:"Piano"},partials:[1,0.6,0.4,0.28,0.2,0.15,0.1,0.08,0.05],env:"piano",lp:4800},
-   violin:{name:{fr:"Violon",en:"Violin",es:"Violín"},partials:[1,0.5,0.33,0.25,0.2,0.16,0.14,0.12,0.1,0.08],env:"sustain",atk:0.09,rel:0.12,lp:5200,vib:{rate:6,depth:4.5}}
+   sax:{name:{fr:"Saxophone",en:"Saxophone",es:"Saxofón"},partials:[1,0.75,0.5,0.55,0.32,0.35,0.2,0.22,0.12,0.09],env:"sustain",atk:0.06,rel:0.1,vib:{rate:5,depth:4}}
   };
-  var GORDER=["sine","piano","guitar","violin","sax"], _waves={};
+  var GORDER=["sine","sax"], _waves={};
 
   var CHROM4=[[261.63,"C4.wav"],[277.18,"Cs4.wav"],[293.66,"D4.wav"],[311.13,"Ds4.wav"],[329.63,"E4.wav"],[349.23,"F4.wav"],[369.99,"Fs4.wav"],[392.00,"G4.wav"],[415.30,"Gs4.wav"],[440.00,"A4.wav"],[466.16,"As4.wav"],[493.88,"B4.wav"]];
-  // Plage élargie C3→C5 (grave/aigu en mp3, octave médium en wav existant) — partagée piano+guitare — pour minimiser le pitch-shift = son plus propre sur les notes graves (planètes/couleurs).
-  var WIDE_MAP=[[130.81,"C3.mp3"],[138.59,"Cs3.mp3"],[146.83,"D3.mp3"],[155.56,"Ds3.mp3"],[164.81,"E3.mp3"],[174.61,"F3.mp3"],[185.00,"Fs3.mp3"],[196.00,"G3.mp3"],[207.65,"Gs3.mp3"],[220.00,"A3.mp3"],[233.08,"As3.mp3"],[246.94,"B3.mp3"],[261.63,"C4.wav"],[277.18,"Cs4.wav"],[293.66,"D4.wav"],[311.13,"Ds4.wav"],[329.63,"E4.wav"],[349.23,"F4.wav"],[369.99,"Fs4.wav"],[392.00,"G4.wav"],[415.30,"Gs4.wav"],[440.00,"A4.wav"],[466.16,"As4.wav"],[493.88,"B4.wav"],[523.25,"C5.mp3"]];
   var SAMPLES={
-   piano:{base:"app-sounds/piano/",map:WIDE_MAP,buffers:null,loading:false},
-   guitar:{base:"app-sounds/guitar/",map:WIDE_MAP,buffers:null,loading:false},
-   violin:{base:"app-sounds/violin/",map:[[261.63,"C4.wav"],[329.63,"E4.wav"],[392.00,"G4.wav"],[440.00,"A4.wav"],[523.25,"C5.wav"]],buffers:null,loading:false},
    sax:{base:"app-sounds/sax/",map:CHROM4,buffers:null,loading:false}
   };
   function loadSamples(id){ var sm=SAMPLES[id]; if(!sm||sm.buffers||sm.loading)return; sm.loading=true; ensureCtx();
@@ -3414,7 +3411,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function gOpen(i, from){ gStop(true); returnTo=from||"geo"; gp.fig=GEO[i]; gp.figIdx=i; for(var sk in SAMPLES){ loadSamples(sk); }
     $("gTitle").textContent=tn(gp.fig.name); $("gSym").textContent=geoSymbol(gp.fig); $("gRatios").textContent=tn(gp.fig.ratios);
     var ph=$("gPhoto"); if(gp.fig.photo){ var playPhoto=gp.fig.photo; ph.removeAttribute("data-dark"); ph.removeAttribute("data-light"); if(gp.fig.cat==="snowflake"){ph.setAttribute("data-dark",gp.fig.photo);ph.setAttribute("data-light","snow-light-"+gp.fig.photo);playPhoto=curTheme()==="light"?"snow-light-"+gp.fig.photo:gp.fig.photo;} ph.src="app-images/"+playPhoto; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"||gp.fig.cat==="crop"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); ph.removeAttribute("data-dark"); ph.removeAttribute("data-light"); $("gViz").style.visibility="visible"; }
-    if(ph.parentNode){ var photoOrb=!!gp.fig.photo&&(gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="crop"); ph.parentNode.classList.toggle("photobig",!!gp.fig.photo); ph.parentNode.classList.toggle("photoorb",photoOrb); }
+    if(ph.parentNode){ var photoOrb=!!gp.fig.photo&&(gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="crop"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"); ph.parentNode.classList.toggle("photobig",!!gp.fig.photo); ph.parentNode.classList.toggle("photoorb",photoOrb); }
     gProgShow(!!gp.fig.audio); gProgReset();
     $("gPrev").hidden=$("gNext").hidden=!gp.fig.audio;
     var row=$("gRow"); row.innerHTML="";
@@ -3609,9 +3606,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   var GEO_BASE="https://aura-lis.ca/app-sounds/geometrie/";
   var gAudio={ el:null, base:null, pool:null, fade:null, gen:0 };
   function gAudioUrl(base){
-    var a=document.createElement("audio");
-    var ogg=a.canPlayType&&a.canPlayType('audio/ogg; codecs="vorbis"');
-    return GEO_BASE+base+((ogg==="probably"||ogg==="maybe")?".ogg":".m4a");
+    /* Meme contournement que le lecteur Meditation : WebKit iOS 26 annonce
+       OGG/Vorbis compatible, puis echoue avec FormatError au decodage. */
+    return GEO_BASE+base+".m4a";
   }
   function gAudioStop(immediate){
     if(!gAudio.el)return; var el=gAudio.el; gAudio.el=null;
@@ -3638,10 +3635,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("gProgDur").textContent=(dur>0)?fmtMS(dur):"--:--";
     w.setAttribute("aria-valuenow",String(Math.round(pct))); }
   /* Duree de reference : celle inscrite dans GEO (exacte, mesuree a
-     l'encodage par tools/patch_geo_durations.py). Chrome n'annonce sur un
-     .ogg qu'une duree estimee d'apres le debit, fausse de plusieurs dizaines
-     de secondes tant qu'il n'a pas lu assez du flux -- on ne s'en sert qu'en
-     repli, pour une piste sans champ `dur`. */
+     l'encodage par tools/patch_geo_durations.py). On ne se sert de la duree
+     annoncee par le media qu'en repli, pour une piste sans champ `dur`. */
   function gTrackDur(){ if(!gp.fig)return 0;
     if(gp.fig.dur>0)return gp.fig.dur;
     return gp.fig.audio?(gDurCache[gp.fig.audio]||0):0; }
@@ -3689,10 +3684,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
        bien celle demandee. */
     function gProgFresh(){ var cs=el.currentSrc||"";
       return cs===wantSrc || cs.slice(-wantSrc.length)===wantSrc; }
-    /* durationchange autant que loadedmetadata : sur un .ogg, Chrome annonce
-       d abord une duree estimee d apres le debit, puis la corrige quand il a
-       lu assez du flux. Sans ca on affiche — et on met en cache — une duree
-       fausse de plusieurs dizaines de secondes.
+    /* durationchange autant que loadedmetadata : certains moteurs annoncent
+       d abord une duree estimee, puis la corrigent apres lecture du flux.
+       Sans ca on peut afficher — et mettre en cache — une duree fausse.
        timeupdate (~4 fois par seconde) suffit pour la position ; un
        requestAnimationFrame ne ferait que vider la batterie. */
     function gProgPush(){ if(gen!==gAudio.gen||!gProgFresh())return;
@@ -4219,7 +4213,10 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   ];
   /* Lecteur unique reutilise pour les 16 seances. */
   var med={playingId:null,selectedId:"piano_feutre",el:null,pool:null,vol:{},seq:0,repeat:true,filter:"all",q:{on:false,idx:0,order:null}};
-  function medUrl(base){var a=document.createElement("audio"),ogg=a.canPlayType&&a.canPlayType('audio/ogg; codecs="vorbis"');return MED_BASE+base+(ogg==="probably"||ogg==="maybe"?".ogg":".m4a");}
+  /* WebKit iOS 26 annonce OGG/Vorbis via canPlayType(), puis son moteur Cocoa
+     WebM echoue avec FormatError. AAC/M4A est publie pour toutes les pistes et
+     reste le format commun fiable sur iOS, Android et les navigateurs web. */
+  function medUrl(base){return MED_BASE+base+".m4a";}
   function medTrack(id){for(var k=0;k<MEDMUSIC.length;k++)if(MEDMUSIC[k].id===id)return k;return-1;}
   function medSelected(){var i=medTrack(med.selectedId);return MEDMUSIC[i<0?0:i];}
   function medPos(){return med.el&&isFinite(med.el.currentTime)?med.el.currentTime:0;}
