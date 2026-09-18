@@ -2625,42 +2625,48 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
      appui sans que rien ne le signale -- exactement ce qui s est produit. */
   function silenceFailed(e){ if(_silenceWarned)return; _silenceWarned=true;
     console.warn("[Auralis] deverrouillage audio impossible :",(e&&(e.name||e.message))||e); }
-  /* Pont MediaStream -> <audio> pour les modes generes en temps reel
-     (Frequences manuelles, Sequence/Protocoles, Geometrie synthetisee,
-     432 Hz pulse, Binauraux). Sur iOS/WebKit, un AudioContext connecte
-     directement a ctx.destination est suspendu des que l ecran se verrouille,
-     meme avec UIBackgroundModes=audio cote natif -- confirme sur appareil le
-     2026-09-18 (Planetes et Frequences manuelles coupaient, Musiques non).
-     Un <audio> reellement en lecture, lui, continue : on route donc la sortie
-     de ces 5 graphes vers un MediaStreamAudioDestinationNode dont le flux
-     alimente un <audio> cache plutot que vers ctx.destination directement.
-     Les pistes fichier (Musiques, Geometrie/Protocoles audio) n en ont pas
-     besoin, elles utilisent deja un <audio> natif. */
-  var _mediaDest=null, _bridgeAudio=null;
-  function mediaDestination(){ var c=ensureCtx();
-    try{
-      if(!_mediaDest){ _mediaDest=c.createMediaStreamDestination();
-        _bridgeAudio=new Audio(); _bridgeAudio.srcObject=_mediaDest.stream; _bridgeAudio.setAttribute("playsinline","");
-        _bridgeAudio.addEventListener("error",function(){ silenceFailed(_bridgeAudio.error); }); }
-      var pr=_bridgeAudio.play(); if(pr&&pr.catch)pr.catch(silenceFailed);
-    }catch(e){ silenceFailed(e); }
-    return _mediaDest||c.destination; }
-  /* Signale confirme sur iPhone (2026-09-18) : apres un cycle verrouillage
-     puis deverrouillage, un bruit persistant (decrit comme une onde carree)
-     est reste audible meme apres la fermeture de l app -- indice d un pont
-     MediaStream laisse dans un mauvais etat plutot qu un simple oscillateur
-     mal arrete (celui-ci aurait disparu a la fermeture reelle du processus).
-     Par prudence, le pont est demonte des que plus aucun des 5 modes generes
-     n est actif, plutot que garde comme singleton pour toute la session :
-     la prochaine lecture en recree un neuf, propre. Le delai (1000 ms) laisse
-     de la marge au plus long des 5 tails de coupure (jusqu a 900 ms pour la
-     Geometrie avec echo). */
-  function synthBusy(){ return !!((typeof state!=="undefined"&&state.playing)||(typeof seq!=="undefined"&&seq.playing)||(typeof gp!=="undefined"&&gp.playing)||(typeof pulse!=="undefined"&&pulse.playing)||(typeof bin!=="undefined"&&bin.playing)); }
-  function teardownBridgeIfIdle(){ if(synthBusy())return;
-    try{ if(_bridgeAudio){ _bridgeAudio.pause(); _bridgeAudio.srcObject=null; } }catch(e){}
-    _bridgeAudio=null; _mediaDest=null; }
-  function scheduleBridgeTeardown(){ setTimeout(teardownBridgeIfIdle,1000); }
-  function unlockAudio(){ try{ if(!_silence){ _silence=new Audio(SILENCE_URI); _silence.loop=true; _silence.setAttribute("playsinline",""); _silence.addEventListener("error",function(){ silenceFailed(_silence.error); }); } var pr=_silence.play(); if(pr&&pr.catch)pr.catch(silenceFailed); }catch(e){ silenceFailed(e); } ensureCtx(); mediaDestination(); }
+  /* ⛔ N ESSAYEZ PAS DE REBRANCHER UN PONT MediaStream ICI (essaye et retire
+     le 2026-09-18). Sur iOS/WebKit un AudioContext branche sur ctx.destination
+     est suspendu des que l ecran se verrouille, alors qu un <audio> continue :
+     la tentation est donc de router les 5 modes generes vers un
+     MediaStreamAudioDestinationNode alimentant un <audio> cache. Ca marche --
+     le son survit bien au verrouillage -- mais au retour au premier plan le
+     pont reste coince et repete son dernier tampon en boucle : un bruit
+     continu (decrit comme une onde carree) qui survit meme a la fermeture de
+     l app, donc situe sous WebKit, hors de portee du JS. Demonter le pont a
+     l arret n y change rien (verifie sur appareil).
+     La sortie des modes generes reste donc ctx.destination, et l audio en
+     arriere-plan sur iOS passe par le plugin natif (voir NativeTone plus bas).
+     Les pistes fichier (Musiques, Geometrie/Protocoles audio) n ont jamais eu
+     le probleme : elles utilisent deja un <audio> natif. */
+  function unlockAudio(){ try{ if(!_silence){ _silence=new Audio(SILENCE_URI); _silence.loop=true; _silence.setAttribute("playsinline",""); _silence.addEventListener("error",function(){ silenceFailed(_silence.error); }); } var pr=_silence.play(); if(pr&&pr.catch)pr.catch(silenceFailed); }catch(e){ silenceFailed(e); } ensureCtx(); }
+  /* Synthese native (iOS uniquement) -- plugin AuralisTone, voir
+     ios/App/App/AuralisTone.swift. Les 5 modes generes se ramenent tous a un
+     banc de voix sinusoidales {f: frequence, g: gain, p: panoramique} plus un
+     tremolo optionnel ; toute la logique de minuterie et d interface reste
+     ici, le natif ne produit que le son.
+     Chaque methode renvoie false si le plugin est absent (Android, web, ou
+     enregistrement rate) : les appelants enchainent alors sur le graphe Web
+     Audio habituel. Une panne du plugin degrade donc vers le comportement
+     actuel au lieu de rendre l app muette. */
+  var NativeTone=(function(){
+    var P=null, probed=false;
+    function plug(){ if(!probed){ probed=true;
+      try{ var C=window.Capacitor;
+        if(C&&C.getPlatform&&C.getPlatform()==="ios"&&C.Plugins&&C.Plugins.AuralisTone) P=C.Plugins.AuralisTone;
+      }catch(e){}
+      if(!P&&window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==="ios")
+        console.warn("[Auralis] plugin AuralisTone introuvable : repli sur Web Audio (pas de son ecran verrouille)");
+    } return P; }
+    function call(m,a){ var p=plug(); if(!p)return false;
+      try{ var r=p[m](a||{}); if(r&&r.catch)r.catch(function(e){ console.warn("[Auralis] AuralisTone."+m+" :",e); }); }
+      catch(e){ console.warn("[Auralis] AuralisTone."+m+" :",e); return false; }
+      return true; }
+    return { on:function(){ return !!plug(); },
+      start:function(o){ return call("start",o); },
+      update:function(o){ return call("update",o); },
+      stop:function(o){ return call("stop",o); } };
+  })();
   /* Point d entree unique de toute lecture : deverrouille, attend la reprise
      du contexte, puis demarre. Le drapeau evite qu un second appui pendant
      l attente n empile une deuxieme lecture (oscillateurs en double). */
@@ -2935,7 +2941,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("mInput").addEventListener("input",function(){ var v=parseFloat(this.value); if(!isNaN(v))setManual(v); });
   Array.prototype.forEach.call(document.querySelectorAll(".fine button"),function(b){ b.addEventListener("click",function(){ if(state.cur&&state.cur.manual)setManual(state.cur.f+parseFloat(b.getAttribute("data-d"))); }); });
 
-  $("vol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("volLbl").textContent=this.value; $("sVol").value=this.value; $("sVolLbl").textContent=this.value; if(sMaster&&ctx)sMaster.gain.setTargetAtTime(state.playing?state.vol:0,ctx.currentTime,0.02); });
+  $("vol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("volLbl").textContent=this.value; $("sVol").value=this.value; $("sVolLbl").textContent=this.value;
+    if(!NativeTone.update({master:state.vol,glideMs:20}) && sMaster && ctx)sMaster.gain.setTargetAtTime(state.playing?state.vol:0,ctx.currentTime,0.02); });
 
   function playerMinuteUnit(){return (lang==="zh"||lang==="zht")?"分":lang==="lo"?"ນາທີ":lang==="hi"?"मि":"min";}
   var tEl=$("timer"),OPTS=[10,20,30],tHandle=null,tRemain=0;
@@ -2951,13 +2958,19 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       pause: function(){ stopSingle(false); }, stop: function(){ stopSingle(false); },
       play:  function(){ if(!state.playing) startSingle(); } });
     var ti=ctx.currentTime,f=state.cur.f;
-    sMaster=ctx.createGain(); sMaster.gain.setValueAtTime(0.0001,ti); sMaster.gain.linearRampToValueAtTime(state.vol,ti+0.05); sMaster.connect(mediaDestination()); sOscs=[];
-    var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(f,ti);o.connect(sMaster);o.start();sOscs.push(o);
+    if(!NativeTone.start({voices:[{f:f,g:1,p:0}],master:state.vol,fadeMs:50})){
+      sMaster=ctx.createGain(); sMaster.gain.setValueAtTime(0.0001,ti); sMaster.gain.linearRampToValueAtTime(state.vol,ti+0.05); sMaster.connect(ctx.destination); sOscs=[];
+      var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(f,ti);o.connect(sMaster);o.start();sOscs.push(o);
+    }
     state.playing=true; setBtn(true); armTimer(); }
-  function stopSingle(immediate){ clearInterval(tHandle);tHandle=null; if(!ctx||!sMaster){state.playing=false;setBtn(false);return;}
-    var ti=ctx.currentTime,m=sMaster,os=sOscs; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
-    setTimeout(function(){os.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?30:90);
-    sMaster=null;sOscs=[];state.playing=false;setBtn(false); naSweep(); ST.stop(); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; scheduleBridgeTeardown(); }
+  /* Meme forme que stopSeq/gStop/pulseStop/binStop : le demontage Web Audio
+     est conditionnel, le nettoyage d etat ne l est pas. Sous synthese native
+     sMaster reste null -- sans ca, l ancien retour anticipe sautait naSweep()
+     et ST.stop() et laissait la notification systeme affichee. */
+  function stopSingle(immediate){ clearInterval(tHandle);tHandle=null; NativeTone.stop({fadeMs:immediate?20:60});
+    if(ctx&&sMaster){ var ti=ctx.currentTime,m=sMaster,os=sOscs; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
+      setTimeout(function(){os.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?30:90); }
+    sMaster=null;sOscs=[];state.playing=false;setBtn(false); naSweep(); ST.stop(); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; }
   function live(){ if(!state.playing||!ctx||!state.cur||!sOscs[0])return; sOscs[0].frequency.setTargetAtTime(state.cur.f,ctx.currentTime,0.03); }
   function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=""; b.setAttribute("aria-label",on?t("pause"):t("play")); $("pStatus").textContent=t(on?"freq_playing":"freq_ready"); $("vPlay").classList.toggle("isplaying",on); $("viz").parentNode.classList.toggle("playing",on); setBg(on); }
   $("play").addEventListener("click",function(){ if(state.playing){ unlockAudio(); stopSingle(false); } else startWhenReady(startSingle); });
@@ -3000,7 +3013,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     var s0=seq.p.s[0]; $("sHz").textContent=s0.f.toFixed(2); $("sStep").textContent="1/"+seq.p.s.length+" · "+stepName(s0); $("sClock").textContent=""; $("sBar").style.width="0%"; highlight(0); setSeqBtn(false); show("seq"); }
   function highlight(active){ seq.p.s.forEach(function(x,k){ var li=$("st"+k); if(!li)return; li.classList.toggle("active",k===active); li.classList.toggle("done",k<active); }); }
   $("sBack").addEventListener("click",function(){ stopSeq(false); show(returnTo); });
-  $("sVol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("sVolLbl").textContent=this.value; $("vol").value=this.value; $("volLbl").textContent=this.value; if(seq.master&&ctx)seq.master.gain.setTargetAtTime(seq.playing?state.vol:0,ctx.currentTime,0.02); });
+  $("sVol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("sVolLbl").textContent=this.value; $("vol").value=this.value; $("volLbl").textContent=this.value;
+    if(!NativeTone.update({master:state.vol,glideMs:20}) && seq.master && ctx)seq.master.gain.setTargetAtTime(seq.playing?state.vol:0,ctx.currentTime,0.02); });
   $("sPlay").addEventListener("click",function(){ if(seq.playing){ unlockAudio(); stopSeq(false); } else startWhenReady(startSeq); });
   function setSeqBtn(on){ var b=$("sPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("seq_start"); $("sViz").parentNode.classList.toggle("playing",on); if(seqVisual)seqVisual.sync(); setBg(on); }
   function startSeq(){ if(!seq.p)return; ensureCtx();
@@ -3011,20 +3025,26 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       pause: function(){ stopSeq(false); }, stop: function(){ stopSeq(false); },
       play:  function(){ if(!seq.playing) startSeq(); } });
     var ti=ctx.currentTime; if(seq.idx>=seq.p.s.length){seq.idx=0;seq.elapsed=0;}
-    seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(mediaDestination());
-    seq.osc=ctx.createOscillator(); seq.osc.type="sine"; seq.osc.frequency.setValueAtTime(seq.p.s[seq.idx].f,ti); seq.osc.connect(seq.master); seq.osc.start();
+    if(!NativeTone.start({voices:[{f:seq.p.s[seq.idx].f,g:1,p:0}],master:state.vol,fadeMs:50})){
+      seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(ctx.destination);
+      seq.osc=ctx.createOscillator(); seq.osc.type="sine"; seq.osc.frequency.setValueAtTime(seq.p.s[seq.idx].f,ti); seq.osc.connect(seq.master); seq.osc.start();
+    }
     seq.remain=seq.p.s[seq.idx].m*60; seq.playing=true; setSeqBtn(true); updSeqUI(); seq.timer=setInterval(seqTick,1000);
     var li=$("st"+seq.idx); if(li){ li.classList.remove("sweep"); void li.offsetWidth; li.classList.add("sweep"); } }
   function seqTick(){ seq.remain--; seq.elapsed++;
     if(seq.remain<=0){ seq.idx++; if(seq.idx>=seq.p.s.length){ stopSeq(false); $("sClock").textContent=t("seq_done"); $("sBar").style.width="100%"; highlight(-1); return; }
-      seq.osc.frequency.setTargetAtTime(seq.p.s[seq.idx].f,ctx.currentTime,0.06); seq.remain=seq.p.s[seq.idx].m*60; }
+      /* Glissando de 60 ms entre deux etapes : identique des deux cotes, un
+         saut net de frequence s entend comme un clic. */
+      if(!NativeTone.update({voices:[{f:seq.p.s[seq.idx].f,g:1,p:0}],glideMs:60}) && seq.osc)
+        seq.osc.frequency.setTargetAtTime(seq.p.s[seq.idx].f,ctx.currentTime,0.06);
+      seq.remain=seq.p.s[seq.idx].m*60; }
     updSeqUI(); }
   function updSeqUI(){ var s=seq.p.s[seq.idx]; $("sHz").textContent=s.f.toFixed(2); $("sStep").textContent=(seq.idx+1)+"/"+seq.p.s.length+" · "+stepName(s);
     var mm=Math.floor(seq.remain/60),ss=seq.remain%60; $("sClock").textContent=mm+":"+(ss<10?"0":"")+ss; $("sBar").style.width=Math.min(100,(seq.elapsed/seq.total)*100)+"%"; highlight(seq.idx); }
-  function stopSeq(immediate){ clearInterval(seq.timer);seq.timer=null;
+  function stopSeq(immediate){ clearInterval(seq.timer);seq.timer=null; NativeTone.stop({fadeMs:immediate?20:60});
     if(ctx&&seq.master){ var ti=ctx.currentTime,m=seq.master,o=seq.osc; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
       setTimeout(function(){try{o.stop();o.disconnect();}catch(e){}try{m.disconnect();}catch(e){}},immediate?30:90); }
-    seq.master=null;seq.osc=null;seq.playing=false;setSeqBtn(false); naSweep(); ST.stop(); scheduleBridgeTeardown(); }
+    seq.master=null;seq.osc=null;seq.playing=false;setSeqBtn(false); naSweep(); ST.stop(); }
 
 
   // Decorative motion at a comfortable visual pace; independent of audio synthesis.
@@ -3485,7 +3505,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("gModePure").addEventListener("click",function(){ gSetPulsed(false); });
   $("gDur").addEventListener("input",function(){ var bpm=parseInt(this.value,10); gp.dur=60/bpm; $("gDurLbl").textContent=bpm+" "+unitText("unit_bpm","bpm")+" · "+gp.dur.toFixed(2)+" "+unitText("unit_second","s"); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } });
   $("gVol").addEventListener("input",function(){ gp.vol=parseInt(this.value,10)/100; $("gVolLbl").textContent=this.value;
-    if(gp.master&&ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02);
+    if(!NativeTone.update({master:gp.vol,glideMs:20}) && gp.master && ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02);
     /* figures a piste enregistree (streaming HTML5 Audio, sans gp.master) :
        le curseur ne touchait que le synthetiseur -- silencieux sur ces
        17 figures. On pilote directement le volume de l element audio. */
@@ -3756,9 +3776,25 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     });
     if(gp.fig.audio){ gPlayAudio(); return; }
     gPlaySynth(); }
-  function gPlaySynth(){ var t=ctx.currentTime+0.06;
+  /* Synthese native : reservee aux figures a une seule note -- soit les 20
+     planetes/couleurs, les seules qui atteignent encore gPlaySynth (les 40
+     figures Geometrie ont toutes une piste audio et passent par gPlayAudio).
+     Une figure multi-notes sans piste audio retomberait sur Web Audio et son
+     sequenceur d accords plutot que d etre jouee tronquee. */
+  function gPlaySynthNative(){
+    if(!NativeTone.on()||!gp.fig||gp.fig.notes.length!==1) return false;
+    var vs=[{f:noteFreq(gp.fig.notes[0]),g:0.85,p:0}];
+    (gp.fig.drone||[]).forEach(function(dr){ vs.push({f:noteFreq(dr[0]),g:dr[1]*0.3,p:0}); });
+    /* Mode pulse : cote Web Audio la note est re-declenchee a chaque cycle
+       avec l enveloppe GENV. Ici un tremolo sinusoidal de meme periode donne
+       la meme pulsation a l oreille sans avoir a porter l enveloppe. */
+    var tr=gp.pulsed?{rate:1/gp.dur,base:0.5,depth:0.5}:null;
+    if(!NativeTone.start({voices:vs,master:gp.vol,fadeMs:60,trem:tr})) return false;
+    gp.cycleStart=ctx?ctx.currentTime:0; gp.playing=true; gSetBtn(true);
+    return true; }
+  function gPlaySynth(){ if(gPlaySynthNative())return; var t=ctx.currentTime+0.06;
     gp.master=ctx.createGain(); gp.master.gain.setValueAtTime(0.0001,t); gp.master.gain.linearRampToValueAtTime(gp.vol,t+0.05);
-    gp.dry=ctx.createGain(); gp.dry.gain.value=1; gp.master.connect(gp.dry); gp.dry.connect(mediaDestination());
+    gp.dry=ctx.createGain(); gp.dry.gain.value=1; gp.master.connect(gp.dry); gp.dry.connect(ctx.destination);
     // écho et réverb retirés (2026-07-20 puis 2026-08-29)
     /* Bourdon tenu : seulement pour les figures a note unique (planetes,
        couleurs). Sur une figure harmonisee il tiendrait Do+Mi+Sol en continu
@@ -3784,13 +3820,13 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
         if(gQueueOn()&&gQueueNext())return;
         gStop(false); }, cl*1000+120); }
     } }
-  function gStop(immediate){ gAudioStop(immediate); if(gp.timer){ clearInterval(gp.timer); clearTimeout(gp.timer); gp.timer=null; }
+  function gStop(immediate){ gAudioStop(immediate); NativeTone.stop({fadeMs:immediate?20:120}); if(gp.timer){ clearInterval(gp.timer); clearTimeout(gp.timer); gp.timer=null; }
     if(ctx&&gp.master){ var t=ctx.currentTime,m=gp.master,ds=gp.drones,dy=gp.dry,dl=gp.delayNode,fb=gp.feedback,ew=gp.echoWet,ef=gp.echoFilter;
       try{m.gain.cancelScheduledValues(t);m.gain.setValueAtTime(m.gain.value,t);m.gain.linearRampToValueAtTime(0.0001,t+(immediate?0.02:0.12));}catch(e){}
       try{ if(fb)fb.gain.setValueAtTime(0,t); }catch(e){}
       var tail=immediate?60:(gp.echoAmt>0?900:220);
       setTimeout(function(){ ds.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}}); [m,dy,dl,fb,ew,ef].forEach(function(nd){ if(nd){try{nd.disconnect();}catch(e){}} }); }, tail); }
-    gp.master=null; gp.drones=[]; gp.dry=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.echoFilter=null; gp.playing=false; gSetBtn(false); gProgReset(); naSweep(); ST.stop(); scheduleBridgeTeardown(); }
+    gp.master=null; gp.drones=[]; gp.dry=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.echoFilter=null; gp.playing=false; gSetBtn(false); gProgReset(); naSweep(); ST.stop(); }
   function gCurrentIndex(){ if(gAudio.el)return -1; if(!gp.playing||!ctx||!gp.fig)return -1; var el=ctx.currentTime-gp.cycleStart; if(el<0)return -1; var i=Math.floor(el/gp.dur); return (i>=0&&i<gp.fig.notes.length)?i:-1; }
 
   function drawShape(g,W,H,type,on,phase,fig){
@@ -3960,7 +3996,13 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       pause: function(){ pulseStop(false); }, stop: function(){ pulseStop(false); },
       play:  function(){ if(!pulse.playing) pulseStart(); } });
     var t=ctx.currentTime+0.05;
-    pulse.master=ctx.createGain(); pulse.master.gain.setValueAtTime(0.0001,t); pulse.master.gain.linearRampToValueAtTime(pulse.vol,t+0.08); pulse.master.connect(mediaDestination());
+    /* base 0.65 / profondeur 0.35 : l amplitude oscille entre 0,30 et 1,00,
+       exactement la plage du trem Web Audio ci-dessous (offset continu 0,65
+       + LFO d amplitude 0,35). */
+    if(NativeTone.start({voices:[{f:432,g:1,p:0}],master:pulse.vol,fadeMs:80,
+        trem:{rate:pulse.bpm/60,base:0.65,depth:0.35}})){
+      pulse.playing=true; pulseSetBtn(true); return; }
+    pulse.master=ctx.createGain(); pulse.master.gain.setValueAtTime(0.0001,t); pulse.master.gain.linearRampToValueAtTime(pulse.vol,t+0.08); pulse.master.connect(ctx.destination);
     pulse.osc=ctx.createOscillator(); pulse.osc.type="sine"; pulse.osc.frequency.setValueAtTime(432,t);
     pulse.trem=ctx.createGain(); pulse.trem.gain.setValueAtTime(0.65,t);
     pulse.dc=ctx.createConstantSource(); pulse.dc.offset.setValueAtTime(0.65,t);
@@ -3970,11 +4012,11 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     pulse.osc.connect(pulse.trem); pulse.trem.connect(pulse.master);
     pulse.osc.start(t); pulse.lfo.start(t); pulse.dc.start(t);
     pulse.playing=true; pulseSetBtn(true); }
-  function pulseStop(immediate){ if(!ctx||!pulse.master){ pulse.playing=false; pulseSetBtn(false); return; }
-    var ti=ctx.currentTime,m=pulse.master,o=pulse.osc,l=pulse.lfo,d=pulse.dc;
-    try{ m.gain.cancelScheduledValues(ti); m.gain.setValueAtTime(m.gain.value,ti); m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.02:0.08)); }catch(e){}
-    setTimeout(function(){ [o,l,d].forEach(function(nd){ try{nd.stop();nd.disconnect();}catch(e){} }); try{m.disconnect();}catch(e){} }, immediate?40:140);
-    pulse.master=null; pulse.osc=null; pulse.trem=null; pulse.dc=null; pulse.lfo=null; pulse.lfoGain=null; pulse.playing=false; pulseSetBtn(false); naSweep(); ST.stop(); scheduleBridgeTeardown(); }
+  function pulseStop(immediate){ NativeTone.stop({fadeMs:immediate?20:80});
+    if(ctx&&pulse.master){ var ti=ctx.currentTime,m=pulse.master,o=pulse.osc,l=pulse.lfo,d=pulse.dc;
+      try{ m.gain.cancelScheduledValues(ti); m.gain.setValueAtTime(m.gain.value,ti); m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.02:0.08)); }catch(e){}
+      setTimeout(function(){ [o,l,d].forEach(function(nd){ try{nd.stop();nd.disconnect();}catch(e){} }); try{m.disconnect();}catch(e){} }, immediate?40:140); }
+    pulse.master=null; pulse.osc=null; pulse.trem=null; pulse.dc=null; pulse.lfo=null; pulse.lfoGain=null; pulse.playing=false; pulseSetBtn(false); naSweep(); ST.stop(); }
   function pulseUpdTitle(){ $("pulseTitle").textContent=t("pulse_base")+" @ "+pulse.bpm+" "+unitText("unit_bpm","bpm"); }
   function openPulse(from,bpm){ pulseStop(true); returnTo=from||"home";
     if(typeof bpm==="number"){ pulse.bpm=Math.max(40,Math.min(120,bpm)); }
@@ -3983,7 +4025,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("pBack").addEventListener("click",function(){ pulseStop(false); show(returnTo); });
   $("pBpm").addEventListener("input",function(){ pulse.bpm=parseInt(this.value,10); $("pBpmVal").textContent=pulse.bpm+" "+unitText("unit_bpm","bpm"); $("pBpmNum").textContent=pulse.bpm; pulseUpdTitle();
     if(pulse.playing){ if(pulse.lfo&&ctx)pulse.lfo.frequency.setTargetAtTime(pulse.bpm/60,ctx.currentTime,0.05); $("pViz").parentNode.style.setProperty("--pulse-dur",(60/pulse.bpm).toFixed(3)+"s"); } });
-  $("pVol").addEventListener("input",function(){ pulse.vol=parseInt(this.value,10)/100; $("pVolLbl").textContent=this.value; if(pulse.master&&ctx)pulse.master.gain.setTargetAtTime(pulse.playing?pulse.vol:0,ctx.currentTime,0.02); });
+  $("pVol").addEventListener("input",function(){ pulse.vol=parseInt(this.value,10)/100; $("pVolLbl").textContent=this.value;
+    if(!NativeTone.update({master:pulse.vol,glideMs:20}) && pulse.master && ctx)pulse.master.gain.setTargetAtTime(pulse.playing?pulse.vol:0,ctx.currentTime,0.02); });
   $("pPlay").addEventListener("click",function(){ if(pulse.playing){ unlockAudio(); pulseStop(false); } else startWhenReady(pulseStart); });
 
   // ================= BINAURAUX =================
@@ -4018,20 +4061,23 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function binStart(){ if(bin.playing)return; ensureCtx(); unlockAudio(); if(bin.remaining<=0)bin.remaining=bin.duration*60;
     ST.play("bin",bin.intent?bin.intent.key:"binaural");
     NA.start(nativeText("notification_binaural",t("bin_playing")),t("bin_int_"+(bin.intent||BIN_INTENTS[0]).key),{pause:function(){binStop(false,true);},stop:function(){binStop(false,false);},play:function(){if(!bin.playing)binStart();}});
-    var ti=ctx.currentTime; bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(.0001,ti); bin.master.gain.linearRampToValueAtTime(bin.vol,ti+.05); bin.master.connect(mediaDestination());
-    bin.oscA=ctx.createOscillator(); bin.oscA.type="sine"; bin.oscA.frequency.setValueAtTime(bin.f1,ti); bin.oscB=ctx.createOscillator(); bin.oscB.type="sine"; bin.oscB.frequency.setValueAtTime(bin.f2,ti);
-    var pa=ctx.createStereoPanner(),pb=ctx.createStereoPanner(); pa.pan.setValueAtTime(-1,ti); pb.pan.setValueAtTime(1,ti); bin.oscA.connect(pa); pa.connect(bin.master); bin.oscB.connect(pb); pb.connect(bin.master); bin.oscA.start(ti); bin.oscB.start(ti);
+    var ti=ctx.currentTime;
+    if(!NativeTone.start({voices:[{f:bin.f1,g:1,p:-1},{f:bin.f2,g:1,p:1}],master:bin.vol,fadeMs:50})){
+      bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(.0001,ti); bin.master.gain.linearRampToValueAtTime(bin.vol,ti+.05); bin.master.connect(ctx.destination);
+      bin.oscA=ctx.createOscillator(); bin.oscA.type="sine"; bin.oscA.frequency.setValueAtTime(bin.f1,ti); bin.oscB=ctx.createOscillator(); bin.oscB.type="sine"; bin.oscB.frequency.setValueAtTime(bin.f2,ti);
+      var pa=ctx.createStereoPanner(),pb=ctx.createStereoPanner(); pa.pan.setValueAtTime(-1,ti); pb.pan.setValueAtTime(1,ti); bin.oscA.connect(pa); pa.connect(bin.master); bin.oscB.connect(pb); pb.connect(bin.master); bin.oscA.start(ti); bin.oscB.start(ti);
+    }
     bin.startedAt=Date.now(); binSetPlayState(true); $("binCountdown").textContent=binFormat(bin.remaining); clearInterval(bin.timerId); bin.timerId=setInterval(binTick,250); setBg(true);
   }
   function binStop(immediate,preserveTime){
-    if(bin.playing&&preserveTime)binTick(); clearInterval(bin.timerId); bin.timerId=null;
+    if(bin.playing&&preserveTime)binTick(); clearInterval(bin.timerId); bin.timerId=null; NativeTone.stop({fadeMs:immediate?20:60});
     if(ctx&&bin.master){ var ti=ctx.currentTime,m=bin.master,a=bin.oscA,b=bin.oscB; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(.0001,ti+(immediate?.02:.06));}catch(e){} setTimeout(function(){[a,b].forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?40:120); }
-    bin.master=null; bin.oscA=null; bin.oscB=null; binSetPlayState(false); if(!preserveTime)bin.remaining=bin.duration*60; $("binCountdown").textContent=""; setBg(false); naSweep(); ST.stop(); scheduleBridgeTeardown();
-  }
+    bin.master=null; bin.oscA=null; bin.oscB=null; binSetPlayState(false); if(!preserveTime)bin.remaining=bin.duration*60; $("binCountdown").textContent=""; setBg(false); naSweep(); ST.stop();  }
   $("binPlay").addEventListener("click",function(){ if(bin.playing)binStop(false,true); else startWhenReady(binStart); });
   $("binRestart").addEventListener("click",function(){ binStop(true,false); bin.remaining=bin.duration*60; startWhenReady(binStart); });
   $("binTimerJump").addEventListener("click",function(){ $("binDurationRow").scrollIntoView({behavior:prefersReduce?"auto":"smooth",block:"center"}); this.classList.remove("flash"); void this.offsetWidth; this.classList.add("flash"); });
-  $("binVol").addEventListener("input",function(){ bin.vol=parseInt(this.value,10)/100; if(bin.master&&ctx)bin.master.gain.setTargetAtTime(bin.vol,ctx.currentTime,.02); });
+  $("binVol").addEventListener("input",function(){ bin.vol=parseInt(this.value,10)/100;
+    if(!NativeTone.update({master:bin.vol,glideMs:20}) && bin.master && ctx)bin.master.gain.setTargetAtTime(bin.vol,ctx.currentTime,.02); });
   Array.prototype.forEach.call($("binDurations").children,function(b){ b.addEventListener("click",function(){ var resume=bin.playing; binStop(true,false); bin.duration=parseInt(this.getAttribute("data-min"),10); bin.remaining=bin.duration*60; binUpdateUi(); if(resume)startWhenReady(binStart); }); });
 
   // ---------- favoris = constructeur de séquence (façon boîtier) ----------
