@@ -2645,6 +2645,21 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       var pr=_bridgeAudio.play(); if(pr&&pr.catch)pr.catch(silenceFailed);
     }catch(e){ silenceFailed(e); }
     return _mediaDest||c.destination; }
+  /* Signale confirme sur iPhone (2026-09-18) : apres un cycle verrouillage
+     puis deverrouillage, un bruit persistant (decrit comme une onde carree)
+     est reste audible meme apres la fermeture de l app -- indice d un pont
+     MediaStream laisse dans un mauvais etat plutot qu un simple oscillateur
+     mal arrete (celui-ci aurait disparu a la fermeture reelle du processus).
+     Par prudence, le pont est demonte des que plus aucun des 5 modes generes
+     n est actif, plutot que garde comme singleton pour toute la session :
+     la prochaine lecture en recree un neuf, propre. Le delai (1000 ms) laisse
+     de la marge au plus long des 5 tails de coupure (jusqu a 900 ms pour la
+     Geometrie avec echo). */
+  function synthBusy(){ return !!((typeof state!=="undefined"&&state.playing)||(typeof seq!=="undefined"&&seq.playing)||(typeof gp!=="undefined"&&gp.playing)||(typeof pulse!=="undefined"&&pulse.playing)||(typeof bin!=="undefined"&&bin.playing)); }
+  function teardownBridgeIfIdle(){ if(synthBusy())return;
+    try{ if(_bridgeAudio){ _bridgeAudio.pause(); _bridgeAudio.srcObject=null; } }catch(e){}
+    _bridgeAudio=null; _mediaDest=null; }
+  function scheduleBridgeTeardown(){ setTimeout(teardownBridgeIfIdle,1000); }
   function unlockAudio(){ try{ if(!_silence){ _silence=new Audio(SILENCE_URI); _silence.loop=true; _silence.setAttribute("playsinline",""); _silence.addEventListener("error",function(){ silenceFailed(_silence.error); }); } var pr=_silence.play(); if(pr&&pr.catch)pr.catch(silenceFailed); }catch(e){ silenceFailed(e); } ensureCtx(); mediaDestination(); }
   /* Point d entree unique de toute lecture : deverrouille, attend la reprise
      du contexte, puis demarre. Le drapeau evite qu un second appui pendant
@@ -2942,7 +2957,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function stopSingle(immediate){ clearInterval(tHandle);tHandle=null; if(!ctx||!sMaster){state.playing=false;setBtn(false);return;}
     var ti=ctx.currentTime,m=sMaster,os=sOscs; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
     setTimeout(function(){os.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?30:90);
-    sMaster=null;sOscs=[];state.playing=false;setBtn(false); naSweep(); ST.stop(); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; }
+    sMaster=null;sOscs=[];state.playing=false;setBtn(false); naSweep(); ST.stop(); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; scheduleBridgeTeardown(); }
   function live(){ if(!state.playing||!ctx||!state.cur||!sOscs[0])return; sOscs[0].frequency.setTargetAtTime(state.cur.f,ctx.currentTime,0.03); }
   function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=""; b.setAttribute("aria-label",on?t("pause"):t("play")); $("pStatus").textContent=t(on?"freq_playing":"freq_ready"); $("vPlay").classList.toggle("isplaying",on); $("viz").parentNode.classList.toggle("playing",on); setBg(on); }
   $("play").addEventListener("click",function(){ if(state.playing){ unlockAudio(); stopSingle(false); } else startWhenReady(startSingle); });
@@ -3009,7 +3024,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function stopSeq(immediate){ clearInterval(seq.timer);seq.timer=null;
     if(ctx&&seq.master){ var ti=ctx.currentTime,m=seq.master,o=seq.osc; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
       setTimeout(function(){try{o.stop();o.disconnect();}catch(e){}try{m.disconnect();}catch(e){}},immediate?30:90); }
-    seq.master=null;seq.osc=null;seq.playing=false;setSeqBtn(false); naSweep(); ST.stop(); }
+    seq.master=null;seq.osc=null;seq.playing=false;setSeqBtn(false); naSweep(); ST.stop(); scheduleBridgeTeardown(); }
 
 
   // Decorative motion at a comfortable visual pace; independent of audio synthesis.
@@ -3775,7 +3790,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       try{ if(fb)fb.gain.setValueAtTime(0,t); }catch(e){}
       var tail=immediate?60:(gp.echoAmt>0?900:220);
       setTimeout(function(){ ds.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}}); [m,dy,dl,fb,ew,ef].forEach(function(nd){ if(nd){try{nd.disconnect();}catch(e){}} }); }, tail); }
-    gp.master=null; gp.drones=[]; gp.dry=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.echoFilter=null; gp.playing=false; gSetBtn(false); gProgReset(); naSweep(); ST.stop(); }
+    gp.master=null; gp.drones=[]; gp.dry=null; gp.delayNode=null; gp.feedback=null; gp.echoWet=null; gp.echoFilter=null; gp.playing=false; gSetBtn(false); gProgReset(); naSweep(); ST.stop(); scheduleBridgeTeardown(); }
   function gCurrentIndex(){ if(gAudio.el)return -1; if(!gp.playing||!ctx||!gp.fig)return -1; var el=ctx.currentTime-gp.cycleStart; if(el<0)return -1; var i=Math.floor(el/gp.dur); return (i>=0&&i<gp.fig.notes.length)?i:-1; }
 
   function drawShape(g,W,H,type,on,phase,fig){
@@ -3959,7 +3974,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     var ti=ctx.currentTime,m=pulse.master,o=pulse.osc,l=pulse.lfo,d=pulse.dc;
     try{ m.gain.cancelScheduledValues(ti); m.gain.setValueAtTime(m.gain.value,ti); m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.02:0.08)); }catch(e){}
     setTimeout(function(){ [o,l,d].forEach(function(nd){ try{nd.stop();nd.disconnect();}catch(e){} }); try{m.disconnect();}catch(e){} }, immediate?40:140);
-    pulse.master=null; pulse.osc=null; pulse.trem=null; pulse.dc=null; pulse.lfo=null; pulse.lfoGain=null; pulse.playing=false; pulseSetBtn(false); naSweep(); ST.stop(); }
+    pulse.master=null; pulse.osc=null; pulse.trem=null; pulse.dc=null; pulse.lfo=null; pulse.lfoGain=null; pulse.playing=false; pulseSetBtn(false); naSweep(); ST.stop(); scheduleBridgeTeardown(); }
   function pulseUpdTitle(){ $("pulseTitle").textContent=t("pulse_base")+" @ "+pulse.bpm+" "+unitText("unit_bpm","bpm"); }
   function openPulse(from,bpm){ pulseStop(true); returnTo=from||"home";
     if(typeof bpm==="number"){ pulse.bpm=Math.max(40,Math.min(120,bpm)); }
@@ -4011,7 +4026,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function binStop(immediate,preserveTime){
     if(bin.playing&&preserveTime)binTick(); clearInterval(bin.timerId); bin.timerId=null;
     if(ctx&&bin.master){ var ti=ctx.currentTime,m=bin.master,a=bin.oscA,b=bin.oscB; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(.0001,ti+(immediate?.02:.06));}catch(e){} setTimeout(function(){[a,b].forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?40:120); }
-    bin.master=null; bin.oscA=null; bin.oscB=null; binSetPlayState(false); if(!preserveTime)bin.remaining=bin.duration*60; $("binCountdown").textContent=""; setBg(false); naSweep(); ST.stop();
+    bin.master=null; bin.oscA=null; bin.oscB=null; binSetPlayState(false); if(!preserveTime)bin.remaining=bin.duration*60; $("binCountdown").textContent=""; setBg(false); naSweep(); ST.stop(); scheduleBridgeTeardown();
   }
   $("binPlay").addEventListener("click",function(){ if(bin.playing)binStop(false,true); else startWhenReady(binStart); });
   $("binRestart").addEventListener("click",function(){ binStop(true,false); bin.remaining=bin.duration*60; startWhenReady(binStart); });
