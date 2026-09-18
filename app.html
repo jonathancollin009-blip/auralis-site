@@ -2625,7 +2625,27 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
      appui sans que rien ne le signale -- exactement ce qui s est produit. */
   function silenceFailed(e){ if(_silenceWarned)return; _silenceWarned=true;
     console.warn("[Auralis] deverrouillage audio impossible :",(e&&(e.name||e.message))||e); }
-  function unlockAudio(){ try{ if(!_silence){ _silence=new Audio(SILENCE_URI); _silence.loop=true; _silence.setAttribute("playsinline",""); _silence.addEventListener("error",function(){ silenceFailed(_silence.error); }); } var pr=_silence.play(); if(pr&&pr.catch)pr.catch(silenceFailed); }catch(e){ silenceFailed(e); } ensureCtx(); }
+  /* Pont MediaStream -> <audio> pour les modes generes en temps reel
+     (Frequences manuelles, Sequence/Protocoles, Geometrie synthetisee,
+     432 Hz pulse, Binauraux). Sur iOS/WebKit, un AudioContext connecte
+     directement a ctx.destination est suspendu des que l ecran se verrouille,
+     meme avec UIBackgroundModes=audio cote natif -- confirme sur appareil le
+     2026-09-18 (Planetes et Frequences manuelles coupaient, Musiques non).
+     Un <audio> reellement en lecture, lui, continue : on route donc la sortie
+     de ces 5 graphes vers un MediaStreamAudioDestinationNode dont le flux
+     alimente un <audio> cache plutot que vers ctx.destination directement.
+     Les pistes fichier (Musiques, Geometrie/Protocoles audio) n en ont pas
+     besoin, elles utilisent deja un <audio> natif. */
+  var _mediaDest=null, _bridgeAudio=null;
+  function mediaDestination(){ var c=ensureCtx();
+    try{
+      if(!_mediaDest){ _mediaDest=c.createMediaStreamDestination();
+        _bridgeAudio=new Audio(); _bridgeAudio.srcObject=_mediaDest.stream; _bridgeAudio.setAttribute("playsinline","");
+        _bridgeAudio.addEventListener("error",function(){ silenceFailed(_bridgeAudio.error); }); }
+      var pr=_bridgeAudio.play(); if(pr&&pr.catch)pr.catch(silenceFailed);
+    }catch(e){ silenceFailed(e); }
+    return _mediaDest||c.destination; }
+  function unlockAudio(){ try{ if(!_silence){ _silence=new Audio(SILENCE_URI); _silence.loop=true; _silence.setAttribute("playsinline",""); _silence.addEventListener("error",function(){ silenceFailed(_silence.error); }); } var pr=_silence.play(); if(pr&&pr.catch)pr.catch(silenceFailed); }catch(e){ silenceFailed(e); } ensureCtx(); mediaDestination(); }
   /* Point d entree unique de toute lecture : deverrouille, attend la reprise
      du contexte, puis demarre. Le drapeau evite qu un second appui pendant
      l attente n empile une deuxieme lecture (oscillateurs en double). */
@@ -2916,7 +2936,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       pause: function(){ stopSingle(false); }, stop: function(){ stopSingle(false); },
       play:  function(){ if(!state.playing) startSingle(); } });
     var ti=ctx.currentTime,f=state.cur.f;
-    sMaster=ctx.createGain(); sMaster.gain.setValueAtTime(0.0001,ti); sMaster.gain.linearRampToValueAtTime(state.vol,ti+0.05); sMaster.connect(ctx.destination); sOscs=[];
+    sMaster=ctx.createGain(); sMaster.gain.setValueAtTime(0.0001,ti); sMaster.gain.linearRampToValueAtTime(state.vol,ti+0.05); sMaster.connect(mediaDestination()); sOscs=[];
     var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(f,ti);o.connect(sMaster);o.start();sOscs.push(o);
     state.playing=true; setBtn(true); armTimer(); }
   function stopSingle(immediate){ clearInterval(tHandle);tHandle=null; if(!ctx||!sMaster){state.playing=false;setBtn(false);return;}
@@ -2976,7 +2996,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       pause: function(){ stopSeq(false); }, stop: function(){ stopSeq(false); },
       play:  function(){ if(!seq.playing) startSeq(); } });
     var ti=ctx.currentTime; if(seq.idx>=seq.p.s.length){seq.idx=0;seq.elapsed=0;}
-    seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(ctx.destination);
+    seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(mediaDestination());
     seq.osc=ctx.createOscillator(); seq.osc.type="sine"; seq.osc.frequency.setValueAtTime(seq.p.s[seq.idx].f,ti); seq.osc.connect(seq.master); seq.osc.start();
     seq.remain=seq.p.s[seq.idx].m*60; seq.playing=true; setSeqBtn(true); updSeqUI(); seq.timer=setInterval(seqTick,1000);
     var li=$("st"+seq.idx); if(li){ li.classList.remove("sweep"); void li.offsetWidth; li.classList.add("sweep"); } }
@@ -3723,7 +3743,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     gPlaySynth(); }
   function gPlaySynth(){ var t=ctx.currentTime+0.06;
     gp.master=ctx.createGain(); gp.master.gain.setValueAtTime(0.0001,t); gp.master.gain.linearRampToValueAtTime(gp.vol,t+0.05);
-    gp.dry=ctx.createGain(); gp.dry.gain.value=1; gp.master.connect(gp.dry); gp.dry.connect(ctx.destination);
+    gp.dry=ctx.createGain(); gp.dry.gain.value=1; gp.master.connect(gp.dry); gp.dry.connect(mediaDestination());
     // écho et réverb retirés (2026-07-20 puis 2026-08-29)
     /* Bourdon tenu : seulement pour les figures a note unique (planetes,
        couleurs). Sur une figure harmonisee il tiendrait Do+Mi+Sol en continu
@@ -3925,7 +3945,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       pause: function(){ pulseStop(false); }, stop: function(){ pulseStop(false); },
       play:  function(){ if(!pulse.playing) pulseStart(); } });
     var t=ctx.currentTime+0.05;
-    pulse.master=ctx.createGain(); pulse.master.gain.setValueAtTime(0.0001,t); pulse.master.gain.linearRampToValueAtTime(pulse.vol,t+0.08); pulse.master.connect(ctx.destination);
+    pulse.master=ctx.createGain(); pulse.master.gain.setValueAtTime(0.0001,t); pulse.master.gain.linearRampToValueAtTime(pulse.vol,t+0.08); pulse.master.connect(mediaDestination());
     pulse.osc=ctx.createOscillator(); pulse.osc.type="sine"; pulse.osc.frequency.setValueAtTime(432,t);
     pulse.trem=ctx.createGain(); pulse.trem.gain.setValueAtTime(0.65,t);
     pulse.dc=ctx.createConstantSource(); pulse.dc.offset.setValueAtTime(0.65,t);
@@ -3983,7 +4003,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function binStart(){ if(bin.playing)return; ensureCtx(); unlockAudio(); if(bin.remaining<=0)bin.remaining=bin.duration*60;
     ST.play("bin",bin.intent?bin.intent.key:"binaural");
     NA.start(nativeText("notification_binaural",t("bin_playing")),t("bin_int_"+(bin.intent||BIN_INTENTS[0]).key),{pause:function(){binStop(false,true);},stop:function(){binStop(false,false);},play:function(){if(!bin.playing)binStart();}});
-    var ti=ctx.currentTime; bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(.0001,ti); bin.master.gain.linearRampToValueAtTime(bin.vol,ti+.05); bin.master.connect(ctx.destination);
+    var ti=ctx.currentTime; bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(.0001,ti); bin.master.gain.linearRampToValueAtTime(bin.vol,ti+.05); bin.master.connect(mediaDestination());
     bin.oscA=ctx.createOscillator(); bin.oscA.type="sine"; bin.oscA.frequency.setValueAtTime(bin.f1,ti); bin.oscB=ctx.createOscillator(); bin.oscB.type="sine"; bin.oscB.frequency.setValueAtTime(bin.f2,ti);
     var pa=ctx.createStereoPanner(),pb=ctx.createStereoPanner(); pa.pan.setValueAtTime(-1,ti); pb.pan.setValueAtTime(1,ti); bin.oscA.connect(pa); pa.connect(bin.master); bin.oscB.connect(pb); pb.connect(bin.master); bin.oscA.start(ti); bin.oscB.start(ti);
     bin.startedAt=Date.now(); binSetPlayState(true); $("binCountdown").textContent=binFormat(bin.remaining); clearInterval(bin.timerId); bin.timerId=setInterval(binTick,250); setBg(true);
