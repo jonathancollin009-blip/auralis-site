@@ -2723,18 +2723,21 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       update:function(o){ return call("update",o); },
       stop:function(o){ return call("stop",o); } };
   })();
-  /* Pont vers l abonnement natif (AuralisStore.swift, StoreKit 2). L app est
-     entierement verrouillee tant qu aucun abonnement actif n est trouve --
-     voir openPaywall()/bootGate() plus bas. Android n a pas encore son
-     plugin (Google Play Billing) : sur cette plateforme on() renvoie false
-     et l app reste ouverte sans mur, faute d autre choix pour l instant --
-     NE PAS PUBLIER l APK sur le Play Store tant que ce plugin n existe pas,
-     sinon l abonnement n y sera jamais applique. */
+  /* Pont vers l abonnement natif -- AuralisStore.swift (StoreKit 2) sur iOS,
+     AuralisBillingPlugin.java (Google Play Billing) sur Android, meme nom de
+     plugin "AuralisStore" et meme contrat JS des deux cotes (status/purchase/
+     restore, memes champs en retour). L app est entierement verrouillee tant
+     qu aucun abonnement actif n est trouve -- voir openPaywall()/bootGate()
+     plus bas. Sur le web (aucun Capacitor), le plugin est absent et on()
+     renvoie false : l app reste ouverte sans mur, volontairement -- le site
+     public n est pas concerne par le paywall natif (decision Jonathan,
+     2026-09-18 : le site cesse d etre public le jour du lancement plutot que
+     d etre verrouille comme l app). */
   var NativeStore=(function(){
     var P=null, probed=false;
     function plug(){ if(!probed){ probed=true;
       try{ var C=window.Capacitor;
-        if(C&&C.getPlatform&&C.getPlatform()==="ios"&&C.Plugins&&C.Plugins.AuralisStore) P=C.Plugins.AuralisStore;
+        if(C&&C.Plugins&&C.Plugins.AuralisStore) P=C.Plugins.AuralisStore;
       }catch(e){}
     } return P; }
     function call(m,a){ var p=plug(); if(!p)return null; try{ return p[m](a||{}); }catch(e){ return Promise.reject(e); } }
