@@ -3373,11 +3373,14 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function gSetDelayMs(ms){ gp.delayMs=ms; if(gp.delayNode&&ctx){ gp.delayNode.delayTime.setTargetAtTime(ms/1000,ctx.currentTime,0.03); } }
   var GENV=new Float32Array(64); for(var gk=0;gk<64;gk++){ GENV[gk]=Math.sin(Math.PI*gk/63); }
 
+  /* Saxophone retire le 2026-09-19 (decision Jonathan) : il ne reste qu un
+     seul instrument. buildScreen() masque alors toute la section Instrument
+     plutot que d afficher un unique bouton toujours actif -- voir
+     GORDER.length<=1 plus bas. */
   var INSTR={
-   sine:{name:{fr:"Sinus",en:"Sine",es:"Seno"},env:"bell"},
-   sax:{name:{fr:"Saxophone",en:"Saxophone",es:"Saxofón"},partials:[1,0.75,0.5,0.55,0.32,0.35,0.2,0.22,0.12,0.09],env:"sustain",atk:0.06,rel:0.1,vib:{rate:5,depth:4}}
+   sine:{name:{fr:"Sinus",en:"Sine",es:"Seno"},env:"bell"}
   };
-  var GORDER=["sine","sax"], _waves={};
+  var GORDER=["sine"], _waves={};
 
   var CHROM4=[[261.63,"C4.wav"],[277.18,"Cs4.wav"],[293.66,"D4.wav"],[311.13,"Ds4.wav"],[329.63,"E4.wav"],[349.23,"F4.wav"],[369.99,"Fs4.wav"],[392.00,"G4.wav"],[415.30,"Gs4.wav"],[440.00,"A4.wav"],[466.16,"As4.wav"],[493.88,"B4.wav"]];
   var SAMPLES={
@@ -3603,7 +3606,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
        Son libelle ne s'affiche que la ou le releve central ne dit pas deja
        la meme chose (planetes et couleurs n'ont qu'une note). */
     $("gNow").hidden=!musUI; $("gRow").hidden=false; $("gNotesLabel").hidden=musUI;
-    $("gInstrLabel").hidden=!musUI; $("gInstr").hidden=!musUI;
+    var showInstr = musUI && GORDER.length>1;
+    $("gInstrLabel").hidden=!showInstr; $("gInstr").hidden=!showInstr;
     gUpdateModeUI(); gSetBtn(false); show("geoPlay"); }
   $("gBack").addEventListener("click",function(){ gQueueClear(); gStop(false); show(returnTo); });
   $("gLoopOn").addEventListener("click",function(){ gSetLoop(true); }); $("gLoopOff").addEventListener("click",function(){ gSetLoop(false); });
