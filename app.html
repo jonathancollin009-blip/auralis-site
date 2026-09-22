@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Auralis — App (test)</title>
+<title>Auralis</title>
 <style>
   :root{
     --bg:#070d1c; --pan:#111a33; --pan2:#18223f; --line:#26325a; --line2:#334066;
@@ -1339,6 +1339,67 @@
   .freq-method-link{align-self:flex-start;margin:12px 18px 0;background:transparent;border:0;color:var(--cyan);font:inherit;font-size:.85rem;min-height:44px;padding:8px 0;text-align:start;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
   @media(max-width:360px),(max-height:600px){.guide-card{padding:18px}.guide-card h2{font-size:1.2rem}.guide-card p.guide-copy{font-size:.93rem;margin-bottom:14px}}
   /* AURALIS_ONBOARDING_CSS_END */
+
+  /* AURALIS_FREQUENCY_DESCRIPTION_NAVY_V1 */
+  #vPlay{background:#101b32}
+  #vPlay .freqplaybar{background:inherit}
+  #vPlay .freqplayer{padding-bottom:max(24px,env(safe-area-inset-bottom));gap:0}
+  #vPlay .pplayheading{flex:none;text-align:center;margin:0 0 18px;overflow-wrap:anywhere}
+  #vPlay .pplayheading b{display:block;font-size:clamp(1.6rem,7vw,2.3rem);line-height:1.15;font-weight:600}
+  #vPlay .pplayheading .pcat{display:inline-block;margin-top:10px;padding:5px 16px;border:1px solid var(--line);border-radius:99px;background:var(--pan)}
+  #vPlay .pdescription{flex:none;margin:18px 0 20px;padding:18px;border:1px solid var(--line2);border-radius:20px;background:var(--pan);overflow-wrap:anywhere}
+  #vPlay .pdescription[hidden]{display:none}
+  #vPlay .pdescription h3{margin:0 0 10px;font-size:1rem;font-weight:600;color:var(--txt)}
+  #vPlay .pdescription .pdesc{flex:none;max-height:none;height:auto;overflow:visible;margin:0;font-size:.88rem;line-height:1.6;text-shadow:none;color:var(--txt)}
+  #vPlay .pdescription .pdinfo{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);color:var(--dim);font-size:.74rem;line-height:1.5;font-style:normal}
+  #vPlay .pdescription button{display:block;margin-top:8px;padding:10px 0;min-height:44px;border:0;background:none;color:var(--cyan);font:inherit;font-size:.85rem;text-align:left;cursor:pointer}
+  #vPlay .pdescription button:focus-visible{outline:2px solid var(--cyan);outline-offset:4px;border-radius:4px}
+  #vPlay .cymimg.cymplate,#vPlay .cymimg.freqpersonal,#vPlay .stage canvas{width:min(29svh,72vw,300px);height:min(29svh,72vw,300px)}
+  #vPlay .play,#vPlay .play.on{background:var(--cyan);color:#071321;box-shadow:0 0 22px rgba(var(--cyan-rgb),.15)}
+  #vPlay .pplaytransport{margin-top:20px}
+  #vPlay .pplayvolume{margin:24px 0 12px}
+  #vPlay .pplayfooter{display:none}
+  #vPlay .disc{font-size:.7rem;line-height:1.5;opacity:1}
+  :root[data-theme="light"] #vPlay{background:var(--bg)}
+  :root[data-theme="light"] #vPlay .freqplaybar{background:inherit}
+  @media(min-width:600px){#vPlay .freqplayer{width:min(100%,560px);align-self:center}}
+
+
+  /* AURALIS_FREQUENCY_CATEGORY_PHOTOS_V1
+     Une seule photo WebP par catégorie, réutilisée par toutes ses fréquences. */
+  #vLib .freqlist{grid-template-columns:1fr;gap:12px;padding:2px 18px 26px}
+  #vLib .freqcard{display:block;min-height:0;height:146px;border-radius:20px;background:#0b162b;box-shadow:0 15px 30px -24px rgba(0,0,0,.95)}
+  #vLib .freqart{position:absolute;inset:0;height:auto;background:#0b162b}
+  #vLib .freqphoto{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+  #vLib .freqart::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,14,31,.98) 0%,rgba(5,14,31,.9) 35%,rgba(5,14,31,.56) 58%,rgba(5,14,31,.08) 100%)}
+  #vLib .freqmeta{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;width:100%;height:100%;min-height:0;padding:16px 70px 16px 20px;background:none}
+  #vLib .freqmeta .nm{display:-webkit-box;width:min(68%,480px);font-family:inherit;font-size:1.18rem;font-weight:600;line-height:1.12;color:#f5f7ff;white-space:normal;overflow:hidden;text-overflow:ellipsis;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+  #vLib .freqmeta .cat{max-width:65%;color:color-mix(in srgb,var(--fc) 78%,white);font-size:.72rem;line-height:1.2}
+  #vLib .freqmeta .hz{color:#8ee8fb;font-size:.88rem;font-weight:650}
+  #vLib .freqgo{right:14px;top:50%;width:38px;height:38px;transform:translateY(-50%);border-color:rgba(255,255,255,.55);background:rgba(5,14,31,.62);color:#fff;backdrop-filter:blur(5px)}
+  :root[data-theme="light"] #vLib .freqcard{background:#0b162b;box-shadow:0 15px 30px -23px rgba(39,43,65,.48)}
+  :root[data-theme="light"] #vLib .freqmeta{background:none}
+  :root[data-theme="light"] #vLib .freqgo{background:rgba(5,14,31,.62);color:#fff}
+  @media(max-width:355px){#vLib .freqlist{gap:9px;padding-left:11px;padding-right:11px}#vLib .freqcard{height:132px;min-height:0}#vLib .freqart{height:auto}#vLib .freqmeta{min-height:0;padding:13px 58px 13px 14px}#vLib .freqmeta .nm{font-size:1rem}#vLib .freqmeta .cat{font-size:.65rem}#vLib .freqmeta .hz{font-size:.8rem}#vLib .freqgo{top:50%;right:10px;width:34px;height:34px}}
+
+
+  /* AURALIS_BINAURAL_CATEGORY_PHOTOS_V1
+     Quatre ambiances photographiques, chacune liée à sa bande binaurale. */
+  #vBinInput .binintents button{display:block;min-height:174px;padding:0;background:#0b162b}
+  #vBinInput .binintents button[aria-pressed="true"]{padding:0;border:2px solid var(--cyan)}
+  #vBinInput .biart{position:absolute;inset:0;display:block;width:auto;height:auto}
+  #vBinInput .biart img{display:block;width:100%;height:100%;object-fit:cover}
+  #vBinInput .biart::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,11,27,.02) 25%,rgba(4,11,27,.28) 55%,rgba(4,11,27,.95) 100%)}
+  #vBinInput .bicopy{position:absolute;z-index:1;left:13px;right:10px;bottom:12px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left}
+  #vBinInput .bititle{color:#f5f7ff;font-size:.92rem;line-height:1.15;text-shadow:0 2px 10px rgba(0,0,0,.65)}
+  #vBinInput .bidesc{color:#c5d2ef;font-size:.7rem;text-shadow:0 2px 9px rgba(0,0,0,.75)}
+  #vBinInput .bincheck{right:9px;top:9px}
+  :root[data-theme="light"] #vBinInput .binintents button{background:#0b162b;border-color:#aabbd7;box-shadow:0 14px 30px -26px rgba(30,52,90,.58)}
+  :root[data-theme="light"] #vBinInput .binintents button[aria-pressed="true"]{padding:0;border-color:#18b9d2}
+  :root[data-theme="light"] #vBinInput .binintents .bititle{color:#fff}
+  :root[data-theme="light"] #vBinInput .binintents .bidesc{color:#d5def1}
+  @media(max-width:360px){#vBinInput .binintents button{min-height:158px;padding:0}#vBinInput .binintents button[aria-pressed="true"]{padding:0}#vBinInput .bicopy{left:10px;bottom:10px}#vBinInput .bititle{font-size:.8rem}#vBinInput .bidesc{font-size:.62rem}}
+
 </style>
 <script>
 /* Thème appliqué avant le premier rendu, sinon l'app clignote en sombre puis passe en clair. */
@@ -1488,9 +1549,10 @@
     <div class="bar freqplaybar"><button class="backbtn" id="back" aria-label="Retour">‹</button><h2 id="pTitle">—</h2><button class="pplayinfo" id="pInfoBtn" type="button" aria-label="Détails de la fréquence"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11.2v5.4"/><path d="M12 7.7v.9"/></svg></button><button class="pplaytheme" id="pThemeBtn" type="button" aria-label="Thème clair ou sombre">☀</button></div>
     <div class="player freqplayer">
       <span class="pplaybrand" aria-hidden="true">AURALIS</span>
+      <div class="pplayheading"><b id="pName">—</b><span class="pcat" id="pcat"></span></div>
       <div class="stage" id="pStage"><canvas id="viz" width="400" height="400" aria-hidden="true"></canvas><img class="cymimg" id="cymImg" alt="" hidden></div>
       <div class="readout pplayreadout"><div class="hz"><span id="hzval">0</span><span class="u">Hz</span></div><div class="pplaystatus"><i aria-hidden="true"></i><span id="pStatus">—</span></div></div>
-      <div class="pplaymeta"><b id="pName">—</b><span class="pcat" id="pcat"></span><p class="pdesc" id="pDesc"></p></div>
+      <section class="pdescription" id="pDescription" aria-labelledby="pDescriptionTitle"><h3 id="pDescriptionTitle"></h3><p class="pdesc" id="pDesc"></p><button id="pMethodLink" type="button"></button></section>
       <div id="manualWrap" hidden>
         <p class="label" id="hzLabel" style="margin-bottom:8px"></p>
         <input class="mInput" id="mInput" type="number" inputmode="decimal" step="0.01" min="20" max="1000" value="100.00" aria-label="Hz">
@@ -1499,7 +1561,6 @@
           <button data-d="0.01">+0.01</button><button data-d="0.1">+0.1</button><button data-d="1">+1</button><button data-d="10">+10</button><button data-d="100">+100</button>
         </div>
       </div>
-      <div class="ctl pplayvolume"><div class="row"><span class="label" id="volLabel"></span><input type="range" id="vol" min="0" max="100" step="1" value="50"><span class="v"><span id="volLbl">50</span> %</span></div></div>
       <p class="label pplaytimerlabel" id="timerLabel"></p>
       <div class="timer pplaytimer" id="timer"></div><div class="tclock" id="tclock"></div>
       <div class="pplaytransport">
@@ -1507,6 +1568,7 @@
         <button class="play" id="play"></button>
         <button class="pplayside" id="pTimerQuick" type="button" aria-label="Minuteur"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6M12 5v2m6.2.2 1.4-1.4M12 7a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm0 3v4l2.6 1.6"/></svg></button>
       </div>
+      <div class="ctl pplayvolume"><div class="row"><span class="label" id="volLabel"></span><input type="range" id="vol" min="0" max="100" step="1" value="50"><span class="v"><span id="volLbl">50</span> %</span></div></div>
       <p class="pplayfooter" id="pFooter"></p>
       <p class="disc" id="discSingle"></p>
     </div>
@@ -2978,8 +3040,10 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     });
     $("count").textContent=t("freq_count").replace("{n}",arr.length);
     if(!arr.length){ list.innerHTML='<p class="empty">'+t("none_freq")+'</p>'; return; }
+    var categoryPhotos={"Endogène":"freq-category-endogene.webp","Phyto":"freq-category-phyto.webp","Huiles ess.":"freq-category-huiles.webp","Élément":"freq-category-element.webp","Acide aminé":"freq-category-amine.webp"};
+    $("freqExplore").textContent=state.filter==="Toutes"?t("freq_explore"):t("f_"+state.filter);
     arr.forEach(function(m){ var cs=catShort(m.c),b=document.createElement("button"); b.className="freqcard "+cs;
-      b.innerHTML='<span class="freqart">'+freqWave(m)+'</span><span class="freqmeta"><b class="nm">'+htmlText(tn(m.n))+'</b><small class="cat">'+htmlText(t("f_"+m.c))+'</small><span class="hz">'+m.f.toFixed(4)+' Hz</span><i class="freqgo" aria-hidden="true">›</i></span>';
+      b.innerHTML='<span class="freqart"><img class="freqphoto" src="app-images/'+categoryPhotos[m.c]+'" alt="" loading="lazy" decoding="async"></span><span class="freqmeta"><b class="nm">'+htmlText(tn(m.n))+'</b><small class="cat">'+htmlText(t("f_"+m.c))+'</small><span class="hz">'+formatPlayerHz(m.f,4)+' Hz</span><i class="freqgo" aria-hidden="true">›</i></span>';
       b.addEventListener("click",function(){if(favBuild)favPickFreq(m);else openPlayer(m,"lib");}); list.appendChild(b);
     });
     var foot=document.createElement("p"); foot.className="freqfoot"; foot.textContent=t("freq_footer"); list.appendChild(foot);
@@ -2994,6 +3058,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     var _dd=(!manual&&MOLDESC[m.n])?MOLDESC[m.n]:null, _pd=$("pDesc"); _pd.textContent="";
     if(_dd){ var _pt=document.createElement("span"); _pt.className="pdtxt"; _pt.textContent=translatedDescription(m.n,_dd); _pd.appendChild(_pt);
       var _pi=document.createElement("span"); _pi.className="pdinfo"; _pi.textContent=t("desc_info"); _pd.appendChild(_pi); }
+    $("pDescription").hidden=manual||!_dd;
+    $("pDescriptionTitle").textContent=t("freq_details");
+    $("pMethodLink").textContent=t("guide_method_link")+" ›";
     $("hzval").textContent=formatPlayerHz(m.f,manual?2:4); if(manual)$("mInput").value=m.f.toFixed(2);
     setCymatic(manual?null:m.f,manual?null:FREQ_ART[m.n]);
     setTimer(20); setBtn(false); show("play");
@@ -3049,6 +3116,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       var pi=document.createElement("span"); pi.className="pdinfo"; pi.textContent=t("desc_info"); pd.appendChild(pi); }
     show("freqInfo"); }
   $("pInfoBtn").addEventListener("click",openFreqInfo);
+  $("pMethodLink").addEventListener("click",openFreqInfo);
   $("fiBack").addEventListener("click",function(){ show("play"); });
   function formatPlayerHz(v,d){ try{return Number(v).toLocaleString(languageTag(),{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:false});}catch(e){return Number(v).toFixed(d);} }
 
@@ -4155,11 +4223,24 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   // ================= BINAURAUX =================
   var bin={f1:0,f2:0,vol:0.5,playing:false,master:null,oscA:null,oscB:null,intent:null,duration:20,remaining:1200,startedAt:0,timerId:null};
   var BIN_INTENTS=[
-    {key:"sleep",beat:2,col:"#46d8fa"},
-    {key:"focus",beat:10,col:"#a467ff"},
-    {key:"relax",beat:6,col:"#79d8fa"},
-    {key:"meditate",beat:18,col:"#9960ef"}
+    {key:"sleep",beat:2,band:"delta",photo:"binaural-delta.webp",col:"#46d8fa"},
+    {key:"focus",beat:10,band:"alpha",photo:"binaural-alpha.webp",col:"#a467ff"},
+    {key:"relax",beat:6,band:"theta",photo:"binaural-theta.webp",col:"#79d8fa"},
+    {key:"meditate",beat:18,band:"beta",photo:"binaural-beta.webp",col:"#9960ef"}
   ];
+  var BIN_BAND_NAMES={
+    fr:{delta:"Delta",alpha:"Alpha",theta:"Thêta",beta:"Bêta"},
+    en:{delta:"Delta",alpha:"Alpha",theta:"Theta",beta:"Beta"},
+    es:{delta:"Delta",alpha:"Alfa",theta:"Theta",beta:"Beta"},
+    de:{delta:"Delta",alpha:"Alpha",theta:"Theta",beta:"Beta"},
+    it:{delta:"Delta",alpha:"Alfa",theta:"Teta",beta:"Beta"},
+    lo:{delta:"ເດລຕາ",alpha:"ອັລຟາ",theta:"ເທຕາ",beta:"ເບຕາ"},
+    hi:{delta:"डेल्टा",alpha:"अल्फ़ा",theta:"थीटा",beta:"बीटा"},
+    zh:{delta:"δ 波",alpha:"α 波",theta:"θ 波",beta:"β 波"},
+    zht:{delta:"δ 波",alpha:"α 波",theta:"θ 波",beta:"β 波"}
+  };
+  function binBandLabel(p){var names=BIN_BAND_NAMES[lang]||BIN_BAND_NAMES.en;return names[p.band]||p.band;}
+  function binIntentTitle(p){return t("bin_int_"+p.key)+" ("+binBandLabel(p)+")";}
   function binReset(){ bin.intent=BIN_INTENTS[0]; bin.f1=107; bin.f2=109; bin.duration=20; bin.remaining=1200; bin.startedAt=0; }
   function binWave(seed){
     var a=seed%3,b=(seed+1)%3;
@@ -4167,13 +4248,13 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   }
   function renderBinPresets(){ var el=$("binPresets"); if(!el)return; el.innerHTML="";
     BIN_INTENTS.forEach(function(p,i){ var b=document.createElement("button"); b.type="button"; b.style.color=p.col; b.setAttribute("aria-pressed",bin.intent===p?"true":"false");
-      b.innerHTML='<span class="bincheck">✓</span><span class="biart">'+binWave(i)+'</span><span class="bititle">'+htmlText(t("bin_int_"+p.key))+'</span><span class="bidesc">'+htmlText(t("bin_int_"+p.key+"_d"))+'</span>';
+      b.innerHTML='<span class="bincheck">✓</span><span class="biart"><img src="app-images/'+p.photo+'" alt="" loading="lazy" decoding="async"></span><span class="bicopy"><span class="bititle">'+htmlText(binIntentTitle(p))+'</span><span class="bidesc">'+htmlText(t("bin_int_"+p.key+"_d"))+'</span></span>';
       b.addEventListener("click",function(){ var resume=bin.playing; binStop(true,false); bin.intent=p; bin.f1=108-p.beat/2; bin.f2=108+p.beat/2; bin.remaining=bin.duration*60; renderBinPresets(); binUpdateUi(); if(resume)startWhenReady(binStart); }); el.appendChild(b);
     }); }
   function binFormat(seconds){ var s=Math.max(0,Math.ceil(seconds)),m=Math.floor(s/60); return String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
   function binSetPlayState(on){ bin.playing=!!on; var b=$("binPlay"); b.setAttribute("aria-pressed",on?"true":"false"); b.setAttribute("aria-label",on?t("pause"):t("play")); }
   function binUpdateUi(){
-    var p=bin.intent||BIN_INTENTS[0]; $("binSessionTitle").textContent=t("bin_int_"+p.key); $("binIntentTag").textContent=t("bin_playing");
+    var p=bin.intent||BIN_INTENTS[0]; $("binSessionTitle").textContent=binIntentTitle(p); $("binIntentTag").textContent=t("bin_playing");
     Array.prototype.forEach.call($("binDurations").children,function(b){ b.setAttribute("aria-pressed",parseInt(b.getAttribute("data-min"),10)===bin.duration?"true":"false"); b.textContent=b.getAttribute("data-min")+" "+unitText("unit_minute_short","min"); });
     $("binCountdown").textContent=bin.playing?binFormat(bin.remaining):""; binSetPlayState(bin.playing);
   }
@@ -4183,7 +4264,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function binTick(){ if(!bin.playing)return; bin.remaining=Math.max(0,bin.remaining-(Date.now()-bin.startedAt)/1000); bin.startedAt=Date.now(); $("binCountdown").textContent=binFormat(bin.remaining); if(bin.remaining<=0){ binStop(false,false); bin.remaining=bin.duration*60; binUpdateUi(); } }
   function binStart(){ if(bin.playing)return; ensureCtx(); unlockAudio(); if(bin.remaining<=0)bin.remaining=bin.duration*60;
     ST.play("bin",bin.intent?bin.intent.key:"binaural");
-    NA.start(nativeText("notification_binaural",t("bin_playing")),t("bin_int_"+(bin.intent||BIN_INTENTS[0]).key),{pause:function(){binStop(false,true);},stop:function(){binStop(false,false);},play:function(){if(!bin.playing)binStart();}});
+    NA.start(nativeText("notification_binaural",t("bin_playing")),binIntentTitle(bin.intent||BIN_INTENTS[0]),{pause:function(){binStop(false,true);},stop:function(){binStop(false,false);},play:function(){if(!bin.playing)binStart();}});
     var ti=ctx.currentTime;
     if(!NativeTone.start({voices:[{f:bin.f1,g:1,p:-1},{f:bin.f2,g:1,p:1}],master:bin.vol,fadeMs:50})){
       bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(.0001,ti); bin.master.gain.linearRampToValueAtTime(bin.vol,ti+.05); bin.master.connect(ctx.destination);
