@@ -929,6 +929,57 @@
   :root[data-theme="light"] .bindurations>svg,
   :root[data-theme="light"] .bindurations .binlabel,
   :root[data-theme="light"] .bindurationopts button{color:var(--dim)}
+  /* AURALIS_BIN_MANUAL_V1 : frequences personnalisees (une par oreille) */
+  #vBinManual{min-width:0;width:100%;overflow-x:hidden}
+  #vBinManual .bar{background:linear-gradient(180deg,var(--bg) 62%,rgba(var(--bg-rgb),.82))}
+  :root[data-theme="light"] #vBinManual .bar{background:linear-gradient(180deg,rgba(250,243,234,.98) 58%,rgba(250,243,234,.82));border-bottom:1px solid rgba(199,186,219,.22)}
+  .binmancard{position:relative;display:flex;flex-direction:column;gap:11px;width:100%;margin-top:4px;padding:15px 14px;border:1.5px dashed var(--cyan);border-radius:20px;background:linear-gradient(135deg,rgba(var(--cyan-rgb),.10),rgba(var(--mauve-rgb),.10));box-shadow:0 0 0 4px rgba(var(--cyan-rgb),.07);color:var(--txt);font:inherit;text-align:left;cursor:pointer;transition:transform .12s ease}
+  .binmancard:active{transform:scale(.98)}
+  .binmannew{position:absolute;top:-10px;right:14px;padding:3px 9px;border-radius:999px;background:var(--gold);color:#1a1405;font-size:.64rem;font-weight:800;letter-spacing:.1em}
+  .binmanhead{display:flex;align-items:center;gap:10px}
+  .binmanhead svg{width:26px;height:26px;flex:0 0 auto;color:var(--cyan)}
+  .binmanhead b{flex:1;font-size:1rem;font-weight:700}
+  .binmanchev{color:var(--cyan);font-size:1.5rem;line-height:1}
+  .binmansub{color:var(--dim);font-size:.84rem;line-height:1.35}
+  .binmanviz{display:flex;align-items:center;gap:8px}
+  .binmanviz svg{flex:1;min-width:20px;height:34px}
+  .binmanear{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:76px;max-width:40%;padding:7px 8px;border:1px solid var(--line);border-radius:14px;background:rgba(var(--bg-rgb),.55);text-align:center}
+  .binmanear small{color:var(--dimmer);font-size:.62rem;font-weight:700;line-height:1.2}
+  .binmanear strong{font-size:1rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .binmanear.l strong{color:var(--cyan)} .binmanear.r strong{color:var(--mauve)}
+  .binears{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+  .binear{--c:var(--cyan);--crgb:var(--cyan-rgb);display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0;padding:13px 10px 12px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(155deg,rgba(17,26,51,.9),rgba(8,17,37,.88));transition:border-color .2s,box-shadow .2s}
+  .binear.r{--c:var(--mauve);--crgb:var(--mauve-rgb)}
+  .binear:focus-within{border-color:var(--c);box-shadow:0 0 0 3px rgba(var(--crgb),.2)}
+  .binearlab{display:flex;align-items:center;gap:7px;color:var(--dim);font-size:.78rem;font-weight:600;text-align:center}
+  .binearlab i{flex:0 0 auto;width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 8px rgba(var(--crgb),.6)}
+  .binhz{display:flex;align-items:baseline;justify-content:center;gap:4px;width:100%}
+  .binhz input{width:100%;min-width:0;padding:2px 0;border:0;border-bottom:1.5px solid var(--line2);border-radius:0;background:transparent;color:var(--txt);font:inherit;font-size:1.75rem;font-weight:600;text-align:center;font-variant-numeric:tabular-nums;outline:none}
+  .binhz input:focus{border-bottom-color:var(--c)}
+  .binhz span{color:var(--dim);font-size:.85rem}
+  .binstep{display:flex;gap:6px;width:100%}
+  .binstep button{flex:1;height:44px;border:1px solid var(--line2);border-radius:13px;background:var(--pan2);color:var(--txt);font:inherit;font-size:1.3rem;line-height:1;cursor:pointer}
+  .binstep button:active{transform:scale(.96)}
+  .binrange{margin:10px 0 0;text-align:center;color:var(--dimmer);font-size:.74rem}
+  .binbeat{display:flex;flex-direction:column;gap:10px;margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(155deg,rgba(17,26,51,.9),rgba(8,17,37,.88))}
+  .binbeatrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .binbeatrow span{color:var(--dim);font-size:.84rem}
+  .binbeatrow strong{color:var(--gold);font-size:1.5rem;font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .binband{margin-top:-6px;color:var(--dim);font-size:.8rem;min-height:1.2em}
+  .bingauge{position:relative;height:8px;border:1px solid var(--line);border-radius:99px;background:var(--pan2)}
+  .bingauge b{position:absolute;left:0;top:-1px;bottom:-1px;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--mauve));transition:width .2s}
+  .bingauge em{position:absolute;top:-5px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 10px var(--cyan);transform:translateX(-50%);transition:left .2s}
+  .binticks{display:flex;justify-content:space-between;gap:8px;color:var(--dimmer);font-size:.7rem;text-align:center}
+  .binmsg{margin:0;min-height:1.2em;color:var(--dim);font-size:.82rem}
+  .binmsg.bad{color:#e08a8a}
+  .binchips{display:flex;flex-wrap:wrap;gap:8px}
+  .binchips button{flex:1;min-width:64px;min-height:44px;padding:6px;border:1px solid var(--line2);border-radius:999px;background:transparent;color:var(--txt);font:inherit;font-size:.8rem;cursor:pointer}
+  .binchips button small{display:block;color:var(--dimmer);font-size:.66rem}
+  .binmainplay:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+  :root[data-theme="light"] .binear,:root[data-theme="light"] .binbeat{border-color:#d9d0e8;background:linear-gradient(155deg,rgba(255,255,255,.88),rgba(252,248,251,.8))}
+  :root[data-theme="light"] .binstep button{border-color:#d7cce6;background:rgba(255,255,255,.7)}
+  :root[data-theme="light"] .binmsg.bad{color:#b34a4a}
+  :root[data-theme="light"] .binmanear{background:rgba(255,255,255,.6)}
   /* AURALIS_BINAURAL_LIGHT_V1
      Version claire approuvee : ivoire nacre, cyan doux et lavande. */
   :root[data-theme="light"] #vBinInput .bar{background:linear-gradient(180deg,rgba(250,243,234,.98) 58%,rgba(250,243,234,.82));border-bottom:1px solid rgba(199,186,219,.22)}
@@ -1697,6 +1748,8 @@
       <div class="binheadphones"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="13" width="4" height="7" rx="2"/><rect x="17" y="13" width="4" height="7" rx="2"/></svg><span id="binHeadphones">—</span></div>
       <div class="binsectionhead"><h3 id="binPresetsLabel">—</h3></div>
       <div class="binintents" id="binPresets"></div>
+      <div class="binsectionhead"><h3 id="binManOr">—</h3></div>
+      <button type="button" class="binmancard" id="binManOpen"><span class="binmannew" id="binManNew">—</span><span class="binmanhead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M4 12h16M4 17h7"/><circle cx="17" cy="7" r="2.2"/><circle cx="14" cy="17" r="2.2"/></svg><b id="binManCardT">—</b><span class="binmanchev" aria-hidden="true">›</span></span><span class="binmansub" id="binManCardD">—</span><span class="binmanviz"><span class="binmanear l"><small id="binManVizL">—</small><strong id="binManVizLv">100 Hz</strong></span><svg viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="binManGrad" x1="0" x2="1"><stop stop-color="#7fd8f0"/><stop offset="1" stop-color="#b98fe0"/></linearGradient></defs><path d="M0 17 C10 2 20 2 30 17 S50 32 60 17 S80 2 90 17 S110 32 120 17" fill="none" stroke="url(#binManGrad)" stroke-width="2.2"/></svg><span class="binmanear r"><small id="binManVizR">—</small><strong id="binManVizRv">104 Hz</strong></span></span></button>
       <div class="binsession" id="binSessionPanel">
         <h3 class="binsessiontitle" id="binSessionTitle">—</h3>
         <p class="binintenttag" id="binIntentTag"></p>
@@ -1712,6 +1765,27 @@
         <p class="bincomfort"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="5" r="2"/><path d="M12 7v6M8 11l4 2 4-2M6 19c2-3 4-4 6-4s4 1 6 4M4 21c2-1 4-1 8 0s6 1 8 0"/></svg><span id="binComfort">—</span></p>
         <p class="disc" id="discBin"></p>
       </div>
+    </div>
+  </section>
+
+  <section class="view" id="vBinManual">
+    <div class="bar"><button class="backbtn" id="binManBack" aria-label="Retour">‹</button><h2 id="binManTitle">—</h2><button class="bintheme" id="binManTheme" aria-label="Thème clair ou sombre">☾</button></div>
+    <div class="binlanding" id="binManBody">
+      <div class="binintro"><span class="binhero-brand">AURALIS</span><h3 id="binManH">—</h3><p id="binManHint"></p></div>
+      <div class="binears">
+        <div class="binear l"><div class="binearlab"><i></i><span id="binManL">—</span></div><div class="binhz"><input id="binFL" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="done"><span>Hz</span></div><div class="binstep"><button type="button" data-e="L" data-d="-1" aria-label="−1 Hz">−</button><button type="button" data-e="L" data-d="1" aria-label="+1 Hz">+</button></div></div>
+        <div class="binear r"><div class="binearlab"><i></i><span id="binManR">—</span></div><div class="binhz"><input id="binFR" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="done"><span>Hz</span></div><div class="binstep"><button type="button" data-e="R" data-d="-1" aria-label="−1 Hz">−</button><button type="button" data-e="R" data-d="1" aria-label="+1 Hz">+</button></div></div>
+      </div>
+      <p class="binrange" id="binManRange"></p>
+      <div class="binbeat">
+        <div class="binbeatrow"><span id="binManBeatL">—</span><strong id="binManBeat">—</strong></div>
+        <div class="binband" id="binManBand"></div>
+        <div class="bingauge" aria-hidden="true"><b id="binManGb"></b><em id="binManGm"></em></div>
+        <div class="binticks"><span>0</span><span id="binManMax">—</span><span>30</span></div>
+        <p class="binmsg" id="binManMsg" aria-live="polite"></p>
+        <div class="binchips" id="binManChips"><button type="button" data-b="2">2 Hz<small data-band="delta"></small></button><button type="button" data-b="6">6 Hz<small data-band="theta"></small></button><button type="button" data-b="10">10 Hz<small data-band="alpha"></small></button><button type="button" data-b="18">18 Hz<small data-band="beta"></small></button></div>
+      </div>
+      <div id="binManSlot"></div>
     </div>
   </section>
 
@@ -2740,8 +2814,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     document.documentElement.setAttribute("data-theme",th);
     var b=document.getElementById("themeBtn");
     if(b){ b.textContent=(th==="light")?"☾":"☀"; b.setAttribute("aria-label",ariaText((th==="light")?"Passer au thème sombre":"Passer au thème clair")); }
-    var bb=document.getElementById("binThemeBtn");
-    if(bb){ bb.textContent=(th==="light")?"☾":"☀"; bb.setAttribute("aria-label",ariaText((th==="light")?"Passer au thème sombre":"Passer au thème clair")); }
+    ["binThemeBtn","binManTheme"].forEach(function(id){ var bb=document.getElementById(id);
+    if(bb){ bb.textContent=(th==="light")?"☾":"☀"; bb.setAttribute("aria-label",ariaText((th==="light")?"Passer au thème sombre":"Passer au thème clair")); } });
     var mb=document.getElementById("medThemeBtn");
     if(mb){ mb.textContent=(th==="light")?"☾":"☀"; mb.setAttribute("aria-label",ariaText((th==="light")?"Passer au thème sombre":"Passer au thème clair")); }
     var prb=document.getElementById("protThemeBtn");
@@ -2921,9 +2995,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   // ---------- nav ----------
   var returnTo="lib";
   var curView="home";
-  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, favList:1, settings:1, method:1, medmusic:1,
+  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, binManual:2, favList:1, settings:1, method:1, medmusic:1,
     play:2, freqInfo:3, seq:2, geoPlay:2, binError:2, favKeypad:2, favNext:2, favRecap:2, favName:2};
-  function show(v){ if(v!=="medmusic"&&typeof medFullHide==="function")medFullHide(); ST.screen(v); ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMedmusic","vFreqInfo","vPaywall"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
+  function show(v){ if(v!=="medmusic"&&typeof medFullHide==="function")medFullHide(); ST.screen(v); ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinManual","vBinError","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMedmusic","vFreqInfo","vPaywall"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
     $("chainBtn").hidden=!!favBuild;
     if(v==="home"){ animHomeCards(); }
     else { var back=(NAV_LEVEL[v]||0)<(NAV_LEVEL[curView]||0);
@@ -3014,6 +3088,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("favKbOk").textContent=i18nGet("terms","OK","OK");
     $("gNotesLabel").textContent=t("geo_notes");
     $("binMaxgap2").textContent=t("bin_maxgap");
+    if(binMan)binManTexts();
     $("binErrTitle").textContent=t("bin_err_title"); $("binRetry").textContent=t("bin_retry");
     if($("binPresets")){ $("binPageTitle").textContent=t("home_bin"); $("binStepTitle").textContent=t("bin_tune_title"); $("binPickHint").textContent=t("bin_pick_hint"); $("binPresetsLabel").textContent=t("bin_presets_label"); $("binHeadphones").textContent=t("bin_headphones"); $("binRestartLabel").textContent=t("bin_retry"); $("binTimerLabel").textContent=t("timer_label"); $("binDurationLabel").textContent=t("fav_dur_title"); $("binComfort").textContent=t("bin_comfort"); renderBinPresets(); binUpdateUi(); }
     $("favAddMore").textContent=t("fav_add_more"); $("favPlaySel").textContent=t("fav_play_sel"); $("favNextCancel").textContent=t("fav_cancel");
@@ -4306,17 +4381,17 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function binFormat(seconds){ var s=Math.max(0,Math.ceil(seconds)),m=Math.floor(s/60); return String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
   function binSetPlayState(on){ bin.playing=!!on; var b=$("binPlay"); b.setAttribute("aria-pressed",on?"true":"false"); b.setAttribute("aria-label",on?t("pause"):t("play")); }
   function binUpdateUi(){
-    var p=bin.intent||BIN_INTENTS[0]; $("binSessionTitle").textContent=binIntentTitle(p); $("binIntentTag").textContent=t("bin_playing");
+    $("binSessionTitle").textContent=binTitle(); $("binIntentTag").textContent=t("bin_playing");
     Array.prototype.forEach.call($("binDurations").children,function(b){ b.setAttribute("aria-pressed",parseInt(b.getAttribute("data-min"),10)===bin.duration?"true":"false"); b.textContent=b.getAttribute("data-min")+" "+unitText("unit_minute_short","min"); });
     $("binCountdown").textContent=bin.playing?binFormat(bin.remaining):""; binSetPlayState(bin.playing);
   }
-  function openBinInput(){ binStop(true,false); binReset(); returnTo="home"; renderBinPresets(); binUpdateUi(); show("binInput"); }
+  function openBinInput(){ binStop(true,false); bin.manual=false; $("binPlay").disabled=false; document.querySelector("#vBinInput .binlanding").appendChild($("binSessionPanel")); if(binMan)binManCard(); binReset(); returnTo="home"; renderBinPresets(); binUpdateUi(); show("binInput"); }
   $("binBack").addEventListener("click",function(){ binStop(true,false); show("home"); });
   $("binThemeBtn").addEventListener("click",toggleTheme);
   function binTick(){ if(!bin.playing)return; bin.remaining=Math.max(0,bin.remaining-(Date.now()-bin.startedAt)/1000); bin.startedAt=Date.now(); $("binCountdown").textContent=binFormat(bin.remaining); if(bin.remaining<=0){ binStop(false,false); bin.remaining=bin.duration*60; binUpdateUi(); } }
-  function binStart(){ if(bin.playing)return; ensureCtx(); unlockAudio(); if(bin.remaining<=0)bin.remaining=bin.duration*60;
-    ST.play("bin",bin.intent?bin.intent.key:"binaural");
-    NA.start(nativeText("notification_binaural",t("bin_playing")),binIntentTitle(bin.intent||BIN_INTENTS[0]),{pause:function(){binStop(false,true);},stop:function(){binStop(false,false);},play:function(){if(!bin.playing)binStart();}});
+  function binStart(){ if(bin.playing||(bin.manual&&!binManCheck()))return; ensureCtx(); unlockAudio(); if(bin.remaining<=0)bin.remaining=bin.duration*60;
+    ST.play("bin",bin.manual?"manual":(bin.intent?bin.intent.key:"binaural"));
+    NA.start(nativeText("notification_binaural",t("bin_playing")),binTitle(),{pause:function(){binStop(false,true);},stop:function(){binStop(false,false);},play:function(){if(!bin.playing)binStart();}});
     var ti=ctx.currentTime;
     if(!NativeTone.start({voices:[{f:bin.f1,g:1,p:-1},{f:bin.f2,g:1,p:1}],master:bin.vol,fadeMs:50})){
       bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(.0001,ti); bin.master.gain.linearRampToValueAtTime(bin.vol,ti+.05); bin.master.connect(ctx.destination);
@@ -4335,6 +4410,82 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("binVol").addEventListener("input",function(){ bin.vol=parseInt(this.value,10)/100;
     if(!NativeTone.update({master:bin.vol,glideMs:20}) && bin.master && ctx)bin.master.gain.setTargetAtTime(bin.vol,ctx.currentTime,.02); });
   Array.prototype.forEach.call($("binDurations").children,function(b){ b.addEventListener("click",function(){ var resume=bin.playing; binStop(true,false); bin.duration=parseInt(this.getAttribute("data-min"),10); bin.remaining=bin.duration*60; binUpdateUi(); if(resume)startWhenReady(binStart); }); });
+
+  /* AURALIS_BIN_MANUAL_V1 : une frequence choisie pour chaque oreille. */
+  var BIN_MAN_MIN=20,BIN_MAN_MAX=500,BIN_MAN_GAP=30;
+  var BIN_MAN_TXT={
+    fr:{title:"Fréquences personnalisées",or:"Ou réglez vous-même",card:"Choisissez la fréquence de chaque oreille.",nw:"NOUVEAU",h:"Une fréquence par oreille",hint:"Entrez les deux valeurs de votre choix.",l:"Oreille gauche",r:"Oreille droite",range:"Chaque oreille : de 20 à 500 Hz",beat:"Battement perçu",empty:"Entrez une valeur pour chaque oreille.",rng:"Chaque oreille doit être entre 20 et 500 Hz.",gap:"Écart de {d} Hz : le maximum est 30 Hz.",same:"Les deux valeurs sont identiques : aucun battement."},
+    en:{title:"Custom frequencies",or:"Or set your own",card:"Choose the frequency for each ear.",nw:"NEW",h:"One frequency per ear",hint:"Enter the two values you want.",l:"Left ear",r:"Right ear",range:"Each ear: 20 to 500 Hz",beat:"Perceived beat",empty:"Enter a value for each ear.",rng:"Each ear must be between 20 and 500 Hz.",gap:"Gap of {d} Hz: the maximum is 30 Hz.",same:"Both values are the same: no beat."},
+    es:{title:"Frecuencias personalizadas",or:"O ajústalas tú mismo",card:"Elige la frecuencia de cada oído.",nw:"NUEVO",h:"Una frecuencia por oído",hint:"Introduce los dos valores que quieras.",l:"Oído izquierdo",r:"Oído derecho",range:"Cada oído: de 20 a 500 Hz",beat:"Batido percibido",empty:"Introduce un valor para cada oído.",rng:"Cada oído debe estar entre 20 y 500 Hz.",gap:"Diferencia de {d} Hz: el máximo es 30 Hz.",same:"Los dos valores son iguales: no hay batido."},
+    de:{title:"Eigene Frequenzen",or:"Oder selbst einstellen",card:"Wähle die Frequenz für jedes Ohr.",nw:"NEU",h:"Eine Frequenz pro Ohr",hint:"Gib die beiden gewünschten Werte ein.",l:"Linkes Ohr",r:"Rechtes Ohr",range:"Pro Ohr: 20 bis 500 Hz",beat:"Wahrgenommene Schwebung",empty:"Gib für jedes Ohr einen Wert ein.",rng:"Jedes Ohr muss zwischen 20 und 500 Hz liegen.",gap:"Abstand von {d} Hz: das Maximum ist 30 Hz.",same:"Beide Werte sind gleich: keine Schwebung."},
+    it:{title:"Frequenze personalizzate",or:"Oppure regola tu",card:"Scegli la frequenza per ogni orecchio.",nw:"NUOVO",h:"Una frequenza per orecchio",hint:"Inserisci i due valori che preferisci.",l:"Orecchio sinistro",r:"Orecchio destro",range:"Ogni orecchio: da 20 a 500 Hz",beat:"Battimento percepito",empty:"Inserisci un valore per ogni orecchio.",rng:"Ogni orecchio deve essere tra 20 e 500 Hz.",gap:"Differenza di {d} Hz: il massimo è 30 Hz.",same:"I due valori sono uguali: nessun battimento."},
+    lo:{title:"ຄວາມຖີ່ແບບກຳນົດເອງ",or:"ຫຼື ຕັ້ງເອງ",card:"ເລືອກຄວາມຖີ່ສຳລັບແຕ່ລະຫູ.",nw:"ໃໝ່",h:"ໜຶ່ງຄວາມຖີ່ຕໍ່ຫູ",hint:"ປ້ອນສອງຄ່າທີ່ທ່ານຕ້ອງການ.",l:"ຫູຊ້າຍ",r:"ຫູຂວາ",range:"ແຕ່ລະຫູ: 20 ຫາ 500 Hz",beat:"ຈັງຫວະທີ່ຮັບຮູ້",empty:"ປ້ອນຄ່າສຳລັບແຕ່ລະຫູ.",rng:"ແຕ່ລະຫູຕ້ອງຢູ່ລະຫວ່າງ 20 ແລະ 500 Hz.",gap:"ຄວາມຕ່າງ {d} Hz: ສູງສຸດແມ່ນ 30 Hz.",same:"ສອງຄ່າເທົ່າກັນ: ບໍ່ມີຈັງຫວະ."},
+    hi:{title:"अपनी आवृत्तियाँ",or:"या स्वयं सेट करें",card:"हर कान के लिए आवृत्ति चुनें।",nw:"नया",h:"हर कान के लिए एक आवृत्ति",hint:"अपनी पसंद के दोनों मान दर्ज करें।",l:"बायाँ कान",r:"दायाँ कान",range:"हर कान: 20 से 500 Hz",beat:"महसूस होने वाली बीट",empty:"हर कान के लिए एक मान दर्ज करें।",rng:"हर कान 20 से 500 Hz के बीच होना चाहिए।",gap:"{d} Hz का अंतर: अधिकतम 30 Hz है।",same:"दोनों मान समान हैं: कोई बीट नहीं।"},
+    zh:{title:"自定义频率",or:"或自行设置",card:"为每只耳朵选择频率。",nw:"新",h:"每只耳朵一个频率",hint:"输入你想要的两个数值。",l:"左耳",r:"右耳",range:"每只耳朵：20 至 500 Hz",beat:"感知节拍",empty:"请为每只耳朵输入数值。",rng:"每只耳朵须在 20 至 500 Hz 之间。",gap:"差值 {d} Hz：最大为 30 Hz。",same:"两个数值相同：没有节拍。"},
+    zht:{title:"自訂頻率",or:"或自行設定",card:"為每隻耳朵選擇頻率。",nw:"新",h:"每隻耳朵一個頻率",hint:"輸入你想要的兩個數值。",l:"左耳",r:"右耳",range:"每隻耳朵：20 至 500 Hz",beat:"感知節拍",empty:"請為每隻耳朵輸入數值。",rng:"每隻耳朵須在 20 至 500 Hz 之間。",gap:"差值 {d} Hz：最大為 30 Hz。",same:"兩個數值相同：沒有節拍。"}
+  };
+  function bmT(k){var d=BIN_MAN_TXT[lang]||BIN_MAN_TXT.en;return d[k]||BIN_MAN_TXT.en[k];}
+  var binMan={l:100,r:104};
+  try{var bmSaved=JSON.parse(localStorage.getItem("auralis_bin_manual")||"null");if(bmSaved&&isFinite(bmSaved.l)&&isFinite(bmSaved.r)){binMan.l=+bmSaved.l;binMan.r=+bmSaved.r;}}catch(e){}
+  function bmComma(){return /^(fr|es|de|it)$/.test(lang);}
+  function bmFmt(v){var s=String(Math.round(v*100)/100);return bmComma()?s.replace(".",","):s;}
+  function bmNum(el){var v=parseFloat(String(el.value).replace(",",".").replace(/\s/g,""));return isFinite(v)?v:NaN;}
+  function bmClamp(v){return Math.min(BIN_MAN_MAX,Math.max(BIN_MAN_MIN,v));}
+  function bmBand(b){return b<.05?null:b<4?"delta":b<8?"theta":b<13?"alpha":"beta";}
+  function binTitle(){return bin.manual?bmT("title"):binIntentTitle(bin.intent||BIN_INTENTS[0]);}
+  function binManCard(){$("binManVizLv").textContent=bmFmt(binMan.l)+" Hz";$("binManVizRv").textContent=bmFmt(binMan.r)+" Hz";}
+  function binManCheck(){
+    var a=bmNum($("binFL")),b=bmNum($("binFR")),ok=true,msg="";
+    if(!isFinite(a)||!isFinite(b)){ok=false;msg=bmT("empty");}
+    else if(a<BIN_MAN_MIN||a>BIN_MAN_MAX||b<BIN_MAN_MIN||b>BIN_MAN_MAX){ok=false;msg=bmT("rng");}
+    var d=isFinite(a)&&isFinite(b)?Math.abs(a-b):NaN;
+    if(ok&&d>BIN_MAN_GAP){ok=false;msg=bmT("gap").replace("{d}",bmFmt(d));}
+    if(ok&&d<.05)msg=bmT("same");
+    $("binManBeat").textContent=isFinite(d)?bmFmt(d)+" Hz":"—";
+    var band=ok?bmBand(d):null; $("binManBand").textContent=band?(BIN_BAND_NAMES[lang]||BIN_BAND_NAMES.en)[band]:"";
+    var pc=isFinite(d)?Math.min(d/BIN_MAN_GAP,1)*100:0; $("binManGb").style.width=pc+"%"; $("binManGm").style.left=pc+"%";
+    var m=$("binManMsg"); m.textContent=msg; m.classList.toggle("bad",!ok);
+    $("binPlay").disabled=!ok;
+    if(ok){ binMan.l=a; binMan.r=b; bin.f1=a; bin.f2=b;
+      try{localStorage.setItem("auralis_bin_manual",JSON.stringify(binMan));}catch(e){}
+      if(bin.playing){ if(!NativeTone.update({voices:[{f:a,g:1,p:-1},{f:b,g:1,p:1}],glideMs:60})&&ctx&&bin.oscA){ bin.oscA.frequency.setTargetAtTime(a,ctx.currentTime,.03); bin.oscB.frequency.setTargetAtTime(b,ctx.currentTime,.03); } } }
+    else if(bin.playing) binStop(false,true);
+    return ok;
+  }
+  function binManFill(){ $("binFL").value=bmFmt(binMan.l); $("binFR").value=bmFmt(binMan.r); binManCheck(); }
+  function binManTexts(){
+    $("binManOr").textContent=bmT("or"); $("binManNew").textContent=bmT("nw"); $("binManCardT").textContent=bmT("title"); $("binManCardD").textContent=bmT("card");
+    $("binManVizL").textContent=bmT("l"); $("binManVizR").textContent=bmT("r"); binManCard();
+    $("binManTitle").textContent=bmT("title"); $("binManH").textContent=bmT("h"); $("binManHint").textContent=bmT("hint");
+    $("binManL").textContent=bmT("l"); $("binManR").textContent=bmT("r"); $("binFL").setAttribute("aria-label",bmT("l")+" (Hz)"); $("binFR").setAttribute("aria-label",bmT("r")+" (Hz)");
+    $("binManRange").textContent=bmT("range"); $("binManBeatL").textContent=bmT("beat"); $("binManMax").textContent=t("bin_maxgap");
+    Array.prototype.forEach.call(document.querySelectorAll("#binManChips small"),function(el){el.textContent=(BIN_BAND_NAMES[lang]||BIN_BAND_NAMES.en)[el.getAttribute("data-band")];});
+    if(curView==="binManual")binManFill();
+  }
+  function openBinManual(){
+    binStop(true,false); bin.manual=true; bin.remaining=bin.duration*60;
+    $("binManSlot").appendChild($("binSessionPanel")); binManFill(); binUpdateUi(); show("binManual");
+  }
+  function closeBinManual(){
+    binStop(true,false); bin.manual=false; $("binPlay").disabled=false;
+    var p=bin.intent||BIN_INTENTS[0]; bin.f1=108-p.beat/2; bin.f2=108+p.beat/2;
+    document.querySelector("#vBinInput .binlanding").appendChild($("binSessionPanel"));
+    binManCard(); binUpdateUi(); show("binInput");
+  }
+  $("binManOpen").addEventListener("click",openBinManual);
+  $("binManBack").addEventListener("click",closeBinManual);
+  $("binManTheme").addEventListener("click",toggleTheme);
+  ["binFL","binFR"].forEach(function(id){ var el=$(id);
+    el.addEventListener("input",binManCheck);
+    el.addEventListener("blur",function(){var v=bmNum(el);if(isFinite(v)){el.value=bmFmt(bmClamp(v));binManCheck();}});
+    el.addEventListener("keydown",function(e){if(e.key==="Enter")el.blur();}); });
+  Array.prototype.forEach.call(document.querySelectorAll("#vBinManual .binstep button"),function(b){ b.addEventListener("click",function(){
+    var el=$(b.getAttribute("data-e")==="L"?"binFL":"binFR"),v=bmNum(el); if(!isFinite(v))v=b.getAttribute("data-e")==="L"?binMan.l:binMan.r;
+    el.value=bmFmt(bmClamp(Math.round((v+parseFloat(b.getAttribute("data-d")))*100)/100)); binManCheck(); }); });
+  Array.prototype.forEach.call(document.querySelectorAll("#binManChips button"),function(b){ b.addEventListener("click",function(){
+    var a=bmNum($("binFL")); if(!isFinite(a))return; a=bmClamp(a); var r=a+parseFloat(b.getAttribute("data-b")); if(r>BIN_MAN_MAX){r=BIN_MAN_MAX;a=r-parseFloat(b.getAttribute("data-b"));}
+    $("binFL").value=bmFmt(a); $("binFR").value=bmFmt(r); binManCheck(); }); });
+  binManTexts();
 
   // ---------- favoris = constructeur de séquence (façon boîtier) ----------
   var favJustSaved=-1;
