@@ -803,6 +803,12 @@
   @keyframes cymbreathe{0%,100%{transform:scale(1)} 50%{transform:scale(1.025)}}
   .stage.cymon .readout{position:static; margin-top:14px}
   @media (prefers-reduced-motion: reduce){ .stage.cymon.playing .cymimg{animation:none} }
+  /* calque des grains de sable (cf. CymFx) : colle sur la plaque, meme respiration */
+  #pStage canvas.cymgrain{display:none;position:absolute;width:0;height:0;pointer-events:none;border-radius:50%;
+    filter:brightness(1.025) contrast(1.035) saturate(.82)}
+  #vPlay #pStage.cymon canvas.cymgrain.on{display:block}
+  #vPlay .stage.cymon.playing canvas.cymgrain{animation:cymbreathe 6s ease-in-out infinite}
+  @media (prefers-reduced-motion: reduce){ #vPlay .stage.cymon.playing canvas.cymgrain{animation:none} }
   .readout{position:absolute; text-align:center; pointer-events:none}
   .hz{font-size:2.4rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums}
   .hz .u{font-size:.9rem; font-weight:600; color:var(--dim); margin-left:3px}
@@ -1581,7 +1587,7 @@
     <div class="player freqplayer">
       <span class="pplaybrand" aria-hidden="true">AURALIS</span>
       <div class="pplayheading"><b id="pName">—</b><span class="pcat" id="pcat"></span></div>
-      <div class="stage" id="pStage"><canvas id="viz" width="400" height="400" aria-hidden="true"></canvas><img class="cymimg" id="cymImg" alt="" hidden></div>
+      <div class="stage" id="pStage"><canvas id="viz" width="400" height="400" aria-hidden="true"></canvas><img class="cymimg" id="cymImg" alt="" hidden><canvas class="cymgrain" id="cymGrain" aria-hidden="true"></canvas></div>
       <div class="readout pplayreadout"><div class="hz"><span id="hzval">0</span><span class="u">Hz</span></div><div class="pplaystatus"><i aria-hidden="true"></i><span id="pStatus">—</span></div></div>
       <section class="pdescription" id="pDescription" aria-labelledby="pDescriptionTitle"><h3 id="pDescriptionTitle"></h3><p class="pdesc" id="pDesc"></p><button id="pMethodLink" type="button"></button></section>
       <div id="manualWrap" hidden>
@@ -3119,12 +3125,13 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function setCymatic(hz,personal){
     var img=$("cymImg"),stage=$("pStage");
     img.classList.toggle("freqpersonal",!!personal); img.classList.toggle("cymplate",hz!=null&&!personal);
+    if(typeof CymFx!=="undefined")CymFx.off();
     if(hz==null){img.hidden=true;img.removeAttribute("src");stage.classList.remove("cymon");return;}
     img.onerror=function(){
       if(personal){personal=null;img.classList.remove("freqpersonal");img.classList.add("cymplate");img.src="app-images/cym/"+hz.toFixed(4)+".webp";return;}
       img.hidden=true;stage.classList.remove("cymon");
     };
-    img.onload=function(){img.hidden=false;stage.classList.add("cymon");};
+    img.onload=function(){img.hidden=false;stage.classList.add("cymon");if(typeof CymFx!=="undefined"&&!personal)CymFx.load(hz);};
     img.src=personal?"app-images/"+personal:"app-images/cym/"+hz.toFixed(4)+".webp";
   }
 
@@ -3204,7 +3211,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       setTimeout(function(){os.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?30:90); }
     sMaster=null;sOscs=[];state.playing=false;setBtn(false); naSweep(); ST.stop(); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; }
   function live(){ if(!state.playing||!ctx||!state.cur||!sOscs[0])return; sOscs[0].frequency.setTargetAtTime(state.cur.f,ctx.currentTime,0.03); }
-  function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=""; b.setAttribute("aria-label",on?t("pause"):t("play")); $("pStatus").textContent=t(on?"freq_playing":"freq_ready"); $("vPlay").classList.toggle("isplaying",on); $("viz").parentNode.classList.toggle("playing",on); setBg(on); }
+  function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=""; b.setAttribute("aria-label",on?t("pause"):t("play")); $("pStatus").textContent=t(on?"freq_playing":"freq_ready"); $("vPlay").classList.toggle("isplaying",on); $("viz").parentNode.classList.toggle("playing",on); if(typeof CymFx!=="undefined")CymFx.play(on); setBg(on); }
   $("play").addEventListener("click",function(){ if(state.playing){ unlockAudio(); stopSingle(false); } else startWhenReady(startSingle); });
   $("pRestart").addEventListener("click",function(){ if(state.playing)armTimer(); else setTimer(state.timerMin||20); });
   $("pTimerQuick").addEventListener("click",function(){ var i=OPTS.indexOf(state.timerMin); setTimer(OPTS[(i+1)%OPTS.length]); if(state.playing)armTimer(); });
@@ -4510,7 +4517,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("setVol").value=settings.vol; $("setVolVal").textContent=settings.vol; }
   $("setBtn").addEventListener("click",function(){ show("settings"); renderSettings(); });
   $("setBack").addEventListener("click",function(){ show("home"); });
-  Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.addEventListener("click",function(){ settings.anim=b.getAttribute("data-v"); saveSettings(); if(Particles)Particles.setLevel(settings.anim); if(seqVisual)seqVisual.sync(); if(BinWaves)BinWaves.kick(); if(PianoKeys)PianoKeys.kick(); renderSettings(); }); });
+  Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.addEventListener("click",function(){ settings.anim=b.getAttribute("data-v"); saveSettings(); if(Particles)Particles.setLevel(settings.anim); if(seqVisual)seqVisual.sync(); if(BinWaves)BinWaves.kick(); if(PianoKeys)PianoKeys.kick(); if(typeof CymFx!=="undefined")CymFx.sync(); renderSettings(); }); });
   // sélecteur de langue des Réglages : peuplé par fillLangList (clics câblés à la création)
   $("setVol").addEventListener("input",function(){ settings.vol=parseInt(this.value,10); $("setVolVal").textContent=settings.vol; applyDefaultVolume(settings.vol); saveSettings(); });
 
@@ -4894,6 +4901,112 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     document.addEventListener("visibilitychange",kick);window.addEventListener("resize",kick);document.addEventListener("scroll",kick,{capture:true,passive:true});
     if(mq.addEventListener)mq.addEventListener("change",kick);
     return {kick:kick};
+  })();
+  /* Grains de sable qui sautillent sur une plaque de Chladni (image intacte dessous).
+     Les grains sont detectes dans l'image : petits points clairs au bord des lignes
+     ou isoles. Pendant la vibration, chacun fait de petits sauts autour de sa place
+     (en revenant vers la ligne) ; sa place d'origine est masquee quand il la quitte. */
+  var CymGrains=(function(){
+    var N=800,EXTRA=520;
+    function rnd(seed){var s=seed>>>0||1;return function(){s^=s<<13;s^=s>>>17;s^=s<<5;return (s>>>0)/4294967296;};}
+    function analyse(img,seed){
+      var n=img.naturalWidth,c=document.createElement("canvas");c.width=c.height=n;
+      var x=c.getContext("2d");x.drawImage(img,0,0,n,n);var d=x.getImageData(0,0,n,n).data;
+      var L=new Float32Array(n*n),i,j,k;
+      for(i=0;i<n*n;i++)L[i]=(d[4*i]*.3+d[4*i+1]*.59+d[4*i+2]*.11)/255;
+      var inner=[];for(j=0;j<n;j+=4)for(i=0;i<n;i+=4){var dx=i/n-.5,dy=j/n-.5;if(dx*dx+dy*dy<.12)inner.push(L[j*n+i]);}
+      inner.sort(function(a,b){return a-b;});var pl=inner[Math.floor(inner.length*.3)];
+      /* densite de sable (moyenne sur 9x9) par image integrale */
+      var I=new Float32Array((n+1)*(n+1));
+      for(j=0;j<n;j++){var row=0;for(i=0;i<n;i++){row+=L[j*n+i]>pl+.12?1:0;I[(j+1)*(n+1)+i+1]=I[j*(n+1)+i+1]+row;}}
+      function D(i,j){var a=Math.max(i-4,0),b=Math.max(j-4,0),e=Math.min(i+5,n),f=Math.min(j+5,n);
+        return (I[f*(n+1)+e]-I[b*(n+1)+e]-I[f*(n+1)+a]+I[b*(n+1)+a])/((e-a)*(f-b));}
+      var cand=[],R=n*.415;
+      for(j=3;j<n-3;j++)for(i=3;i<n-3;i++){var dx=i-n/2,dy=j-n/2;if(dx*dx+dy*dy>R*R)continue;
+        k=j*n+i;var v=L[k];if(v<pl+.16)continue;
+        if(v<L[k-1]||v<L[k+1]||v<L[k-n]||v<L[k+n])continue;
+        var dd=D(i,j);if(dd<.03||dd>.5)continue;cand.push([i,j,dd]);}
+      var r=rnd(seed),g=[];
+      for(k=cand.length-1;k>0;k--){var m=Math.floor(r()*(k+1)),t=cand[k];cand[k]=cand[m];cand[m]=t;}
+      for(k=0;k<Math.min(N,cand.length);k++){var p=cand[k];i=p[0];j=p[1];var q=4*(j*n+i);
+        /* couleur de la plaque autour : le plus sombre de 8 points a 3 px */
+        var bg=null,bl=9;for(var a=0;a<8;a++){var u=Math.round(i+3*Math.cos(a*.785)),w=Math.round(j+3*Math.sin(a*.785)),o=w*n+u;if(L[o]<bl){bl=L[o];bg=[d[4*o],d[4*o+1],d[4*o+2]];}}
+        var gx=D(i+3,j)-D(i-3,j),gy=D(i,j+3)-D(i,j-3),gl=Math.hypot(gx,gy)||1;
+        g.push({x:i+.5,y:j+.5,col:"rgb("+d[q]+","+d[q+1]+","+d[q+2]+")",
+          bg:"rgb("+bg[0]+","+bg[1]+","+bg[2]+")",iso:1-Math.min(p[2]/.5,1),
+          tx:gx/gl,ty:gy/gl,ox:0,oy:0,fx:0,fy:0,nx:0,ny:0,t0:0,dur:0,wait:r()*.6,z:0,sz:1});}
+      /* sable ajoute : surtout au pied des lignes, un peu disperse ailleurs.
+         Couleurs prises sur de vrais grains de l'image, toujours visible. */
+      var cols=g.map(function(G){return G.col;}),nx=0,tries=0;
+      while(cols.length&&nx<EXTRA&&tries<EXTRA*60){tries++;
+        i=3+Math.floor(r()*(n-6));j=3+Math.floor(r()*(n-6));var dx=i-n/2,dy=j-n/2;if(dx*dx+dy*dy>R*R)continue;
+        if(L[j*n+i]>pl+.1)continue;var dd=D(i,j),near=dd>.02&&dd<.45;
+        if(!near&&r()>.18)continue;
+        var gx=D(i+3,j)-D(i-3,j),gy=D(i,j+3)-D(i,j-3),gl=Math.hypot(gx,gy)||1;
+        g.push({x:i+r(),y:j+r(),col:cols[Math.floor(r()*cols.length)],bg:null,extra:true,iso:.8,
+          tx:near?gx/gl:0,ty:near?gy/gl:0,ox:0,oy:0,fx:0,fy:0,nx:0,ny:0,t0:0,dur:0,wait:r()*.6,z:0,sz:.7+r()*.45,al:.7+r()*.3});nx++;}
+      return {n:n,g:g,r:r};
+    }
+    function attach(img,cv,seed,place){
+      var st=null,amp=0,level=1,on=false,raf=0,last=0,ctx=cv.getContext("2d");
+      function ready(){if(!st&&img.naturalWidth){try{st=analyse(img,seed);}catch(e){st={n:1,g:[],r:Math.random};}}return st;}
+      function step(G,dt,A){var r=st.r;
+        if(G.dur>0){G.t0+=dt;var u=Math.min(G.t0/G.dur,1),e=u*u*(3-2*u);
+          G.ox=G.fx+(G.nx-G.fx)*e;G.oy=G.fy+(G.ny-G.fy)*e;G.z=Math.sin(Math.PI*u);
+          if(u>=1){G.dur=0;G.z=0;G.wait=(.15+r()*.7)/(A*(.6+G.iso));}return;}
+        if(A<.05){if(Math.abs(G.ox)+Math.abs(G.oy)<.02){G.ox=G.oy=0;G.wait=r()*.3;return;}G.wait=Math.min(G.wait,.2);}
+        G.wait-=dt;if(G.wait>0)return;
+        G.fx=G.ox;G.fy=G.oy;
+        if(A<.05){G.nx=0;G.ny=0;}
+        else{var rad=(1.2+2.8*r())*A*(.6+.8*G.iso),an=r()*6.2832;
+          G.nx=G.ox*.35+Math.cos(an)*rad+G.tx*rad*.45;G.ny=G.oy*.35+Math.sin(an)*rad+G.ty*rad*.45;}
+        G.t0=0;G.dur=.1+r()*.12;}
+      function draw(dt){
+        if(place)place();
+        var dpr=Math.min(window.devicePixelRatio||1,2),W=Math.round(cv.clientWidth*dpr);if(!W)return;
+        if(cv.width!==W){cv.width=cv.height=W;}
+        ctx.clearRect(0,0,W,W);if(!ready()||!st.g.length)return;
+        var s=W/st.n,A=amp*level*1.1,rg=Math.max(.75*s,.9),moving=false;
+        st.g.forEach(function(G){step(G,dt,A);if(Math.abs(G.ox)+Math.abs(G.oy)>.05||G.dur>0)moving=true;});
+        st.g.forEach(function(G){if(G.extra)return;var off=Math.min(Math.hypot(G.ox,G.oy)/1.2,1);if(off<.02)return;
+          ctx.globalAlpha=off;ctx.fillStyle=G.bg;ctx.beginPath();ctx.arc(G.x*s,G.y*s,rg*1.45,0,6.2832);ctx.fill();});
+        ctx.globalAlpha=1;
+        st.g.forEach(function(G){var off=Math.hypot(G.ox,G.oy);if(!G.extra&&off<.02&&!G.dur)return;
+          var jx=0,jy=0;if(A>.05){jx=(st.r()-.5)*.5*A;jy=(st.r()-.5)*.5*A;}
+          ctx.globalAlpha=G.extra?G.al:1;
+          ctx.fillStyle=G.col;ctx.beginPath();ctx.arc((G.x+G.ox+jx)*s,(G.y+G.oy+jy-G.z*.8)*s,rg*G.sz*(1+.3*G.z),0,6.2832);ctx.fill();});
+        ctx.globalAlpha=1;
+        return moving;}
+      function frame(now){raf=0;var dt=last?Math.min((now-last)/1000,.1):0;last=now;
+        amp+=((on?1:0)-amp)*Math.min(dt/.4,1);if(!on&&amp<.01)amp=0;
+        var moving=draw(dt);if(on||moving)raf=requestAnimationFrame(frame);else last=0;}
+      function kick(){if(!raf)raf=requestAnimationFrame(frame);}
+      kick();
+      return {destroy:function(){on=false;if(raf)cancelAnimationFrame(raf);raf=0;ctx.clearRect(0,0,cv.width,cv.height);},redraw:kick,play:function(b){on=!!b;kick();},level:function(v){level=v;},_step:function(dt){last=0;on=true;amp=1;draw(dt);}};
+    }
+    return {attach:attach};
+  })();
+
+  /* AURALIS_CYM_GRAINS_V1 : les grains de la plaque de Chladni sautillent pendant
+     la lecture. L image reste intacte dessous ; un calque ne dessine que les
+     grains (detectes dans l image) et quelques grains ajoutes. A l arret, ils
+     reviennent a leur place. Les photos personnalisees ne sont pas touchees. */
+  var CymFx=(function(){
+    var img=$("cymImg"),cv=$("cymGrain"),ctl=null,playing=false,curHz=null,
+        mq=window.matchMedia?window.matchMedia("(prefers-reduced-motion: reduce)"):{matches:false};
+    function allowed(){return settings.anim!=="off"&&!mq.matches;}
+    function place(){var w=img.clientWidth;cv.style.width=cv.style.height=w+"px";
+      cv.style.left=(img.offsetLeft+img.clientLeft)+"px";cv.style.top=(img.offsetTop+img.clientTop)+"px";}
+    function drop(){if(ctl){ctl.destroy();ctl=null;}cv.classList.remove("on");}
+    function load(hz){curHz=hz;drop();
+      if(hz==null||!allowed()||img.hidden||!img.classList.contains("cymplate")||!img.naturalWidth)return;
+      ctl=CymGrains.attach(img,cv,Math.round(hz*10000),place);
+      ctl.level(settings.anim==="reduced"?.5:1);ctl.play(playing);cv.classList.add("on");}
+    function sync(){if(!allowed())drop();else if(!ctl)load(curHz);else ctl.level(settings.anim==="reduced"?.5:1);}
+    if(mq.addEventListener)mq.addEventListener("change",sync);
+    window.addEventListener("resize",function(){if(ctl)ctl.redraw();});
+    return {load:load,off:function(){curHz=null;drop();},sync:sync,
+      play:function(b){playing=!!b;if(ctl)ctl.play(playing);}};
   })();
   PianoKeys.kick();
   applyDefaultVolume(settings.vol);
