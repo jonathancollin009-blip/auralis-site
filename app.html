@@ -844,6 +844,10 @@
   .binlanding{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:2px 16px 30px;-webkit-overflow-scrolling:touch}
   .binhero{position:relative;aspect-ratio:1200/520;min-height:170px;overflow:hidden;border-radius:24px}
   .binhero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  /* Ondes animees par WebGL (BINWAVES) : canevas glisse juste apres la photo,
+     sous le voile ; il n'apparait qu'une fois le premier rendu fait. */
+  .bwcanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .6s ease}
+  .bwcanvas.on{opacity:1}
   .binhero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,9,22,.02) 38%,rgba(4,9,22,.62))}
   .binintro{text-align:center;padding:17px 8px 2px}
   .binhero-brand{display:block;margin-bottom:7px;color:var(--dim);font-size:.61rem;font-weight:800;letter-spacing:.52em}
@@ -4465,7 +4469,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("setVol").value=settings.vol; $("setVolVal").textContent=settings.vol; }
   $("setBtn").addEventListener("click",function(){ show("settings"); renderSettings(); });
   $("setBack").addEventListener("click",function(){ show("home"); });
-  Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.addEventListener("click",function(){ settings.anim=b.getAttribute("data-v"); saveSettings(); if(Particles)Particles.setLevel(settings.anim); if(seqVisual)seqVisual.sync(); renderSettings(); }); });
+  Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.addEventListener("click",function(){ settings.anim=b.getAttribute("data-v"); saveSettings(); if(Particles)Particles.setLevel(settings.anim); if(seqVisual)seqVisual.sync(); if(BinWaves)BinWaves.kick(); renderSettings(); }); });
   // sélecteur de langue des Réglages : peuplé par fillLangList (clics câblés à la création)
   $("setVol").addEventListener("input",function(){ settings.vol=parseInt(this.value,10); $("setVolVal").textContent=settings.vol; applyDefaultVolume(settings.vol); saveSettings(); });
 
@@ -4646,6 +4650,99 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   })();
   GUIDE.init();
   /* AURALIS_ONBOARDING_JS_END */
+
+  /* BINWAVES : les ondes derriere le casque (carte Binauraux de l'accueil et
+     photo du haut de l'ecran Binauraux) ondulent doucement. Un shader WebGL
+     relit la photo et decale les pixels verticalement selon trois sinusoides
+     qui voyagent vers la droite ; une lueur court le long des ondes. Un masque
+     super-ellipse adouci, propre a chaque photo, garde le casque et son reflet
+     immobiles. Photo fixe si Animations = Desactivees, si l'appareil demande
+     de reduire les animations, ou sans WebGL. Pause hors ecran / arriere-plan. */
+  var BinWaves=(function(){
+    var MASKS={"367.webp":[0.593,0.55,0.18,0.62],"372.webp":[0.64,0.55,0.165,0.62]}; /* cx,cy,rx,ry (0..1 de la photo) */
+    var VS="attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}";
+    var FS=["precision mediump float;varying vec2 v;",
+      "uniform sampler2D u_img;uniform vec2 u_sc,u_of;uniform float u_t,u_light;uniform vec4 u_mask;",
+      "void main(){vec2 uv=v*u_sc+u_of;",
+      " vec2 q=(uv-u_mask.xy)/u_mask.zw;q*=q;q*=q;float m=smoothstep(1.,1.25,pow(q.x+q.y,.25));",
+      " float ey=smoothstep(0.,.18,uv.y)*smoothstep(1.,.82,uv.y);float x=uv.x*6.2832;",
+      " float w=.55*sin(x*1.55-u_t*.85)+.32*sin(x*2.6-u_t*.55+uv.y*2.4)+.38*sin(x*.75-u_t*.32+1.3);",
+      " vec2 s=uv+vec2(.005*sin(x*1.1-u_t*.45+uv.y*4.)*m,.026*w*m*ey);",
+      " vec4 c=texture2D(u_img,clamp(s,.001,.999));",
+      " float sat=max(c.r,max(c.g,c.b))-min(c.r,min(c.g,c.b));",
+      " float k=m*.32*(.5+.5*sin(x*2.2-u_t*1.6))*smoothstep(.1,.45,sat);",
+      " c.rgb=mix(c.rgb*(1.+k),1.-(1.-c.rgb)*(1.+k),u_light);gl_FragColor=vec4(c.rgb,1.);}"].join("\n");
+    var mq=window.matchMedia?window.matchMedia("(prefers-reduced-motion: reduce)"):{matches:false};
+    var all=[],raf=0,t=0,last=0;
+    function allowed(){return settings.anim!=="off"&&!mq.matches;}
+    function sh(gl,type,src){var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return gl.getShaderParameter(s,gl.COMPILE_STATUS)?s:null;}
+    function attach(box){
+      var img=box&&box.querySelector("img");if(!img)return;
+      var cv=document.createElement("canvas");cv.className="bwcanvas";cv.setAttribute("aria-hidden","true");
+      var gl=cv.getContext("webgl",{alpha:false,antialias:false});if(!gl)return;
+      var vs=sh(gl,gl.VERTEX_SHADER,VS),fs=sh(gl,gl.FRAGMENT_SHADER,FS);if(!vs||!fs)return;
+      var pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);
+      if(!gl.getProgramParameter(pr,gl.LINK_STATUS))return;
+      gl.useProgram(pr);gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());
+      gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+      var loc=gl.getAttribLocation(pr,"p");gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+      var U={};["u_sc","u_of","u_t","u_light","u_mask"].forEach(function(n){U[n]=gl.getUniformLocation(pr,n);});
+      gl.bindTexture(gl.TEXTURE_2D,gl.createTexture());
+      [[gl.TEXTURE_MIN_FILTER,gl.LINEAR],[gl.TEXTURE_MAG_FILTER,gl.LINEAR],[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE]].forEach(function(a){gl.texParameteri(gl.TEXTURE_2D,a[0],a[1]);});
+      img.insertAdjacentElement("afterend",cv);
+      var st={box:box,img:img,cv:cv,gl:gl,U:U,src:"",iw:0,ih:0,ready:false,visible:true,key:""};
+      if("IntersectionObserver" in window)new IntersectionObserver(function(e){st.visible=e[0].isIntersecting;kick();}).observe(box);
+      all.push(st);
+    }
+    /* Recharge la texture quand le theme change la photo. */
+    function load(st){
+      var src=st.img.getAttribute("src")||"";if(src===st.src)return;
+      st.src=src;st.ready=false;st.cv.classList.remove("on");
+      var file=src.split("/").pop(),mk=MASKS[file];if(!mk)return;
+      st.loading=true;
+      var im=new Image();
+      im.onerror=function(){if(st.src===src)st.loading=false;};
+      im.onload=function(){if(st.src!==src)return;var gl=st.gl;st.loading=false;
+        try{gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,im);}catch(e){return;} /* file:// : image refusee par WebGL, photo fixe */
+        st.iw=im.naturalWidth;st.ih=im.naturalHeight;st.key="";
+        gl.uniform4fv(st.U.u_mask,mk);gl.uniform1f(st.U.u_light,file==="372.webp"?1:0);st.ready=true;kick();};
+      im.src=src;
+    }
+    function draw(st){
+      var gl=st.gl,dpr=Math.min(window.devicePixelRatio||1,2),W=Math.round(st.box.clientWidth*dpr),H=Math.round(st.box.clientHeight*dpr);
+      if(!W||!H)return;
+      /* Equivalent de object-fit:cover, object-position compris (photo calee a droite en clair). */
+      var pos=getComputedStyle(st.img).objectPosition.split(" "),key=W+"x"+H+pos.join("");
+      if(key!==st.key){st.key=key;st.cv.width=W;st.cv.height=H;gl.viewport(0,0,W,H);
+        var ac=W/H,ai=st.iw/st.ih,sx=1,sy=1;if(ac>ai)sy=ai/ac;else sx=ac/ai;
+        var fx=/%$/.test(pos[0])?parseFloat(pos[0])/100:.5,fy=/%$/.test(pos[1]||"")?parseFloat(pos[1])/100:.5;
+        gl.uniform2f(st.U.u_sc,sx,sy);gl.uniform2f(st.U.u_of,(1-sx)*fx,(1-sy)*fy);}
+      gl.uniform1f(st.U.u_t,t);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+      st.cv.classList.add("on");
+    }
+    function frame(now){
+      raf=0;if(!allowed()){all.forEach(function(st){st.cv.classList.remove("on");st.src="";});return;}
+      if(document.hidden)return;
+      var dt=last?Math.min((now-last)/1000,.1):0;last=now;
+      t+=dt*(settings.anim==="reduced"?.45:1);
+      var busy=false;
+      all.forEach(function(st){load(st);if(st.ready&&st.visible&&st.box.clientWidth){draw(st);busy=true;}});
+      if(busy||all.some(function(st){return st.loading;}))raf=requestAnimationFrame(frame);
+      else last=0;
+    }
+    function kick(){if(!raf){last=0;raf=requestAnimationFrame(frame);}}
+    function init(){
+      attach(document.querySelector('.hscard[data-go="bin"]'));attach(document.querySelector(".binhero"));
+      document.addEventListener("visibilitychange",kick);
+      if(mq.addEventListener)mq.addEventListener("change",kick);
+      /* Changement de theme ou de vue : la photo ou la taille change, on relance. */
+      if("MutationObserver" in window)all.forEach(function(st){new MutationObserver(kick).observe(st.img,{attributes:true,attributeFilter:["src"]});});
+      window.addEventListener("resize",kick);
+      kick();
+    }
+    return {init:init,kick:kick};
+  })();
+  BinWaves.init();
   applyDefaultVolume(settings.vol);
   applyLang(); bootGate();
 })();
