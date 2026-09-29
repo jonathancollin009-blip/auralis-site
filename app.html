@@ -848,6 +848,8 @@
      sous le voile ; il n'apparait qu'une fois le premier rendu fait. */
   .bwcanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .6s ease}
   .bwcanvas.on{opacity:1}
+  .medart .pkcanvas{transform:scale(1.015);transition:opacity .6s ease,transform .35s ease}
+  .medcard:active .medart .pkcanvas{transform:scale(1.05)}
   .binhero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,9,22,.02) 38%,rgba(4,9,22,.62))}
   .binintro{text-align:center;padding:17px 8px 2px}
   .binhero-brand{display:block;margin-bottom:7px;color:var(--dim);font-size:.61rem;font-weight:800;letter-spacing:.52em}
@@ -4508,7 +4510,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("setVol").value=settings.vol; $("setVolVal").textContent=settings.vol; }
   $("setBtn").addEventListener("click",function(){ show("settings"); renderSettings(); });
   $("setBack").addEventListener("click",function(){ show("home"); });
-  Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.addEventListener("click",function(){ settings.anim=b.getAttribute("data-v"); saveSettings(); if(Particles)Particles.setLevel(settings.anim); if(seqVisual)seqVisual.sync(); if(BinWaves)BinWaves.kick(); renderSettings(); }); });
+  Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.addEventListener("click",function(){ settings.anim=b.getAttribute("data-v"); saveSettings(); if(Particles)Particles.setLevel(settings.anim); if(seqVisual)seqVisual.sync(); if(BinWaves)BinWaves.kick(); if(PianoKeys)PianoKeys.kick(); renderSettings(); }); });
   // sélecteur de langue des Réglages : peuplé par fillLangList (clics câblés à la création)
   $("setVol").addEventListener("input",function(){ settings.vol=parseInt(this.value,10); $("setVolVal").textContent=settings.vol; applyDefaultVolume(settings.vol); saveSettings(); });
 
@@ -4563,16 +4565,16 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function medQNext(){if(!med.q.on||!med.q.order)return;if(med.q.idx+1>=med.q.order.length){medQClear();return;}med.q.idx++;medQLabel();medPlay(MEDMUSIC[med.q.order[med.q.idx]]);}
   function medQStart(){if(med.q.on){medQClear();medStopCurrent();return;}var order=[];for(var k=0;k<MEDMUSIC.length;k++)if(med.filter==="all"||MEDMUSIC[k].cat===med.filter)order.push(k);if(SHUF.on("med"))order=shuffled(order);med.q.on=true;med.q.idx=0;med.q.order=order;medQLabel();medPlay(MEDMUSIC[order[0]]);}
   function medSetVol(s,pct){med.vol[s.id]=pct;if(med.el&&med.playingId===s.id)med.el.volume=Math.max(0,Math.min(1,pct/100));}
-  function medRender(){var box=$("medTracks");if(!box)return;box.innerHTML="";var shown=0;MEDMUSIC.forEach(function(s){if(med.filter!=="all"&&s.cat!==med.filter)return;shown++;if(med.vol[s.id]===undefined)med.vol[s.id]=s.vol;var card=document.createElement("article");card.className="medcard"+(med.playingId===s.id?" playing":"")+(med.selectedId===s.id?" selected":"");card.id="medCard_"+s.id;card.style.setProperty("--tc",s.tc);card.innerHTML='<div class="medart"><img alt=""></div><div class="medcardbody"><b></b><i></i></div><button class="medcardplay" id="medPlay_'+s.id+'" type="button">'+(medIsOn(s)?"❚❚":"▶")+'</button>';medSetCover(card.querySelector("img"),s);card.querySelector("b").textContent=t(s.key);card.querySelector("i").textContent=t(s.sub);var pl=card.querySelector("button");pl.setAttribute("aria-label",t(s.key));pl.addEventListener("click",function(e){e.stopPropagation();medToggle(s);});card.addEventListener("click",function(){medOpenTrack(s);});box.appendChild(card);});$("medCount").textContent=shown+" / "+MEDMUSIC.length;}
+  function medRender(){var box=$("medTracks");if(!box)return;box.innerHTML="";var shown=0;MEDMUSIC.forEach(function(s){if(med.filter!=="all"&&s.cat!==med.filter)return;shown++;if(med.vol[s.id]===undefined)med.vol[s.id]=s.vol;var card=document.createElement("article");card.className="medcard"+(med.playingId===s.id?" playing":"")+(med.selectedId===s.id?" selected":"");card.id="medCard_"+s.id;card.style.setProperty("--tc",s.tc);card.innerHTML='<div class="medart"><img alt=""></div><div class="medcardbody"><b></b><i></i></div><button class="medcardplay" id="medPlay_'+s.id+'" type="button">'+(medIsOn(s)?"❚❚":"▶")+'</button>';medSetCover(card.querySelector("img"),s);card.querySelector("b").textContent=t(s.key);card.querySelector("i").textContent=t(s.sub);var pl=card.querySelector("button");pl.setAttribute("aria-label",t(s.key));pl.addEventListener("click",function(e){e.stopPropagation();medToggle(s);});card.addEventListener("click",function(){medOpenTrack(s);});box.appendChild(card);});$("medCount").textContent=shown+" / "+MEDMUSIC.length;if(typeof PianoKeys!=="undefined"&&PianoKeys)PianoKeys.kick();}
   function medApplyLang(){if(!$("medTitle"))return;$("medTitle").textContent=t("med_title");$("medHeroTitle").textContent=t("med_hero_title");$("medHeroSub").textContent=t("med_hero_sub");$("medDiscover").textContent=t("med_discover");$("medTakeTime").textContent=t("med_take_time");$("medNote").textContent=t("med_note");var keys=["med_filter_all","med_filter_nature","med_filter_instruments","med_filter_voyages"];Array.prototype.forEach.call($("medFilters").children,function(b,i){b.textContent=t(keys[i]);});$("medPrev").setAttribute("aria-label",t("nav_prev"));$("medNext").setAttribute("aria-label",t("nav_next"));$("medShuffle").setAttribute("aria-label",t("shuffle"));$("medRepeat").setAttribute("aria-label",t("med_repeat"));medQLabel();medRender();medUpdateDock();}
   function openMedMusic(){medApplyLang();show("medmusic");}
   /* ---- Lecteur plein ecran ---- */
   var MFULL_PLAY='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z"/></svg>',MFULL_PAUSE='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.3"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.3"/></svg>',medFullPrevFocus=null;
   function medFullSync(){var f=$("medFull");if(!f||f.hidden)return;var s=medSelected(),img=$("medFullImg"),src="app-images/"+(curTheme()==="light"?s.light:s.cover),on=medIsOn(s);
     $("medFullTitle").textContent=t(s.key);$("medFullSub").textContent=t("med_moment");
-    if(img.getAttribute("src")!==src){img._want=src;img.classList.add("swap");var n=new Image();n.onload=n.onerror=function(){if(img._want!==src)return;img.setAttribute("src",src);requestAnimationFrame(function(){img.classList.remove("swap");});};n.src=src;}
+    if(img.getAttribute("src")!==src){img._want=src;img.classList.add("swap");var n=new Image();n.onload=n.onerror=function(){if(img._want!==src)return;img.setAttribute("src",src);requestAnimationFrame(function(){img.classList.remove("swap");if(typeof PianoKeys!=="undefined"&&PianoKeys)PianoKeys.kick();});};n.src=src;}
     $("medFullPlay").innerHTML=on?MFULL_PAUSE:MFULL_PLAY;$("medFullPlay").setAttribute("aria-label",on?t("pause"):t("play").replace(/^[▶■]\s*/,""));
-    $("medFullPrev").setAttribute("aria-label",t("nav_prev"));$("medFullNext").setAttribute("aria-label",t("nav_next"));}
+    $("medFullPrev").setAttribute("aria-label",t("nav_prev"));$("medFullNext").setAttribute("aria-label",t("nav_next"));if(typeof PianoKeys!=="undefined"&&PianoKeys)PianoKeys.kick();}
   function medFullShow(){var f=$("medFull");if(!f)return;medFullPrevFocus=document.activeElement;f.hidden=false;medFullSync();var s=medSelected();medProgSet(med.playingId===s.id?medPos():0,s.dur);try{$("medFullPlay").focus({preventScroll:true});}catch(e){}}
   function medFullHide(){var f=$("medFull");if(!f||f.hidden)return;f.hidden=true;try{if(medFullPrevFocus&&medFullPrevFocus.focus)medFullPrevFocus.focus({preventScroll:true});}catch(e){}}
   function medOpenTrack(s){if(med.playingId!==s.id){medQClear();medPlay(s);}else if(med.paused)medResume();med.selectedId=s.id;medFullShow();}
@@ -4802,6 +4804,84 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     return {init:init,kick:kick};
   })();
   BinWaves.init();
+  /* Touches animees sur la pochette « Piano feutre » (carte + lecteur plein ecran).
+     piano-keymap.png : R = touche blanche x5, G = dessus 100 / face 200, B = largeur px.
+     Melodie visuelle de 10 s en boucle. Memes regles que BinWaves. */
+  var PianoKeys=(function(){
+    var FILE="music-piano-feutre-v1.webp";
+    var VS="attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}";
+    var FS=["precision mediump float;varying vec2 v;",
+      "uniform sampler2D u_img,u_map;uniform vec2 u_sc,u_of,u_px;uniform float u_press[24];",
+      "float kid(vec4 m){return floor(m.r*51.+.5);}",
+      "void main(){vec2 uv=v*u_sc+u_of;vec4 m=texture2D(u_map,uv);float k=kid(m);float a=0.;",
+      " for(int i=0;i<24;i++){if(float(i+1)==k)a=u_press[i];}",
+      " vec2 q=uv;float sh=1.;",
+      " if(a>0.){q.y-=a*.19*m.b*255.*u_px.y;float k2=kid(texture2D(u_map,q));",
+      "  if(k2!=k)sh=.38;sh*=1.-a*(m.g>.6?.2:.13);}",
+      " vec4 c=texture2D(u_img,clamp(q,.001,.999));gl_FragColor=vec4(c.rgb*sh,1.);}"].join("\n");
+    /* [debut s, touche 1..24, duree s] ; tout est relache avant 10 s */
+    var NOTES=[[.2,4,3.6],[.2,9,1.1],[1.45,11,1.1],[2.7,13,1.3],[4.2,6,3.3],[4.2,10,1.1],[5.45,12,1.3],[7.0,5,2.4],[7.0,9,2.4],[7.0,12,2.4]];
+    var LOOP=10,ATK=.14,REL=.4,press=new Float32Array(24);
+    var mq=window.matchMedia?window.matchMedia("(prefers-reduced-motion: reduce)"):{matches:false};
+    var photo=null,map=null,loaded=0,failed=false,slots={},raf=0,t=0,last=0;
+    function allowed(){return settings.anim!=="off"&&!mq.matches&&!failed;}
+    function levels(tt){press.fill(0);NOTES.forEach(function(n){var d=tt-n[0],v=0;if(d<0)return;
+      if(d<ATK)v=1-Math.pow(1-d/ATK,2);else if(d<n[2])v=1;else if(d<n[2]+REL){var r=(d-n[2])/REL;v=1-r*r*(3-2*r);}
+      press[n[1]-1]=Math.max(press[n[1]-1],v);});return press;}
+    function assets(){if(photo)return;photo=new Image();map=new Image();
+      [photo,map].forEach(function(im){im.onload=function(){loaded++;kick();};im.onerror=function(){failed=true;};});
+      photo.src="app-images/"+FILE;map.src="app-images/piano-keymap.png";}
+    function sh(gl,type,src){var o=gl.createShader(type);gl.shaderSource(o,src);gl.compileShader(o);return gl.getShaderParameter(o,gl.COMPILE_STATUS)?o:null;}
+    function tex(gl,unit,im,f){gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,gl.createTexture());
+      [[gl.TEXTURE_MIN_FILTER,f],[gl.TEXTURE_MAG_FILTER,f],[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE]].forEach(function(a){gl.texParameteri(gl.TEXTURE_2D,a[0],a[1]);});
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,im);}
+    function makeSlot(){
+      var cv=document.createElement("canvas");cv.className="bwcanvas pkcanvas";cv.setAttribute("aria-hidden","true");
+      var gl=cv.getContext("webgl",{alpha:false,antialias:false});if(!gl)return null;
+      var vs=sh(gl,gl.VERTEX_SHADER,VS),fs=sh(gl,gl.FRAGMENT_SHADER,FS);if(!vs||!fs)return null;
+      var pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);if(!gl.getProgramParameter(pr,gl.LINK_STATUS))return null;
+      gl.useProgram(pr);gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+      var loc=gl.getAttribLocation(pr,"p");gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+      try{tex(gl,0,photo,gl.LINEAR);tex(gl,1,map,gl.NEAREST);}catch(e){return null;} /* file:// : photo fixe */
+      var U=function(n){return gl.getUniformLocation(pr,n);};
+      gl.uniform1i(U("u_img"),0);gl.uniform1i(U("u_map"),1);gl.uniform2f(U("u_px"),1/photo.naturalWidth,1/photo.naturalHeight);
+      return {cv:cv,gl:gl,uP:U("u_press"),uS:U("u_sc"),uO:U("u_of"),key:""};
+    }
+    function draw(st,img){
+      var gl=st.gl,dpr=Math.min(window.devicePixelRatio||1,2),W=Math.round(img.clientWidth*dpr),H=Math.round(img.clientHeight*dpr);if(!W||!H)return false;
+      var pos=getComputedStyle(img).objectPosition.split(" "),key=W+"x"+H+pos.join("");
+      if(key!==st.key){st.key=key;st.cv.width=W;st.cv.height=H;gl.viewport(0,0,W,H);
+        var ac=W/H,ai=photo.naturalWidth/photo.naturalHeight,sx=1,sy=1;if(ac>ai)sy=ai/ac;else sx=ac/ai;
+        var fx=/%$/.test(pos[0])?parseFloat(pos[0])/100:.5,fy=/%$/.test(pos[1]||"")?parseFloat(pos[1])/100:.5;
+        gl.uniform2f(st.uS,sx,sy);gl.uniform2f(st.uO,(1-sx)*fx,(1-sy)*fy);}
+      gl.uniform1fv(st.uP,levels(t));gl.drawArrays(gl.TRIANGLE_STRIP,0,4);return true;
+    }
+    function target(name){var img;
+      if(name==="card"){var f=document.getElementById("medFull");img=f&&!f.hidden?null:document.querySelector('.medart img[src$="'+FILE+'"]');}
+      else{img=document.getElementById("medFullImg");if(!img||!/music-piano-feutre-v1\.webp$/.test(img.getAttribute("src")||"")||img.classList.contains("swap"))img=null;}
+      if(!img||!img.offsetParent)return null;var r=img.getBoundingClientRect();
+      return r.width>0&&r.bottom>0&&r.top<window.innerHeight?img:null;}
+    function hideAll(){Object.keys(slots).forEach(function(n){if(slots[n])slots[n].cv.classList.remove("on");});}
+    function frame(now){
+      raf=0;if(!allowed()){hideAll();last=0;return;}
+      if(document.hidden){last=0;return;}
+      var want=target("card")||target("full");if(!want){hideAll();last=0;return;}
+      assets();if(loaded<2){last=0;return;}
+      var dt=last?Math.min((now-last)/1000,.1):0;last=now;
+      t=(t+dt*(settings.anim==="reduced"?.6:1))%LOOP;
+      ["card","full"].forEach(function(n){var img=target(n),st=slots[n];
+        if(!img){if(st)st.cv.classList.remove("on");return;}
+        if(st===undefined)st=slots[n]=makeSlot();if(!st)return;
+        if(st.cv.previousElementSibling!==img){st.key="";img.insertAdjacentElement("afterend",st.cv);}
+        if(draw(st,img))st.cv.classList.add("on");});
+      raf=requestAnimationFrame(frame);
+    }
+    function kick(){if(!raf){last=0;raf=requestAnimationFrame(frame);}}
+    document.addEventListener("visibilitychange",kick);window.addEventListener("resize",kick);document.addEventListener("scroll",kick,{capture:true,passive:true});
+    if(mq.addEventListener)mq.addEventListener("change",kick);
+    return {kick:kick};
+  })();
+  PianoKeys.kick();
   applyDefaultVolume(settings.vol);
   applyLang(); bootGate();
 })();
