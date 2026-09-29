@@ -1163,6 +1163,31 @@
   .medtake{margin:17px 0 2px;text-align:center;color:var(--dim);font-family:Georgia,"Times New Roman",serif;font-size:.82rem}
   .medtake::before,.medtake::after{content:"";display:inline-block;width:34px;height:1px;margin:0 10px;background:rgba(var(--gold-rgb),.65);vertical-align:middle}
   .mednote{font-size:.65rem;color:var(--dimmer);text-align:center;margin:14px 8px 0;line-height:1.4}
+  /* Lecteur plein ecran des Musiques : la pochette occupe toute la page. Sombre dans les deux themes (c'est une photo). */
+  .meddocktop{cursor:pointer}
+  .mfull{position:fixed;top:0;bottom:0;left:0;right:0;z-index:15;max-width:520px;margin:0 auto;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;background:#04091a;color:#f3f6ff;overscroll-behavior:contain;animation:mfullIn .28s ease both}
+  .mfull[hidden]{display:none}
+  @keyframes mfullIn{from{opacity:0}to{opacity:1}}
+  .mfullimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .4s ease}
+  .mfullimg.swap{opacity:0}
+  .mfullshade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,16,.6) 0%,rgba(2,6,16,0) 24%,rgba(2,6,16,0) 40%,rgba(2,6,16,.72) 68%,rgba(2,6,16,.95) 100%);pointer-events:none}
+  .mfulltop{position:relative;padding:calc(var(--safe-top) + 14px) 18px 0}
+  .mfull .mfullback{background:rgba(6,12,28,.45);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:50%;backdrop-filter:blur(6px)}
+  .mfullbody{position:relative;display:flex;flex-direction:column;gap:20px;padding:0 24px calc(var(--safe-bottom) + 30px)}
+  .mfulltitle b{display:block;font-size:1.65rem;line-height:1.15;text-wrap:balance;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+  .mfulltitle i{display:block;margin-top:6px;font-style:normal;font-size:.86rem;color:#c9d6f0;text-shadow:0 1px 8px rgba(0,0,0,.7)}
+  .mfullprog .medpbar{height:4px;background:rgba(255,255,255,.25)}
+  .mfullprog .medptimes{margin-top:7px;color:#c9d6f0;font-size:.72rem}
+  .mfullctl{display:flex;align-items:center;justify-content:center;gap:26px}
+  .mfullctl button{display:grid;place-items:center;padding:0;border-radius:50%;color:#fff;cursor:pointer;backdrop-filter:blur(6px);-webkit-tap-highlight-color:transparent;transition:transform .12s ease}
+  .mfullctl button:active{transform:scale(.93)}
+  .mfullctl svg{width:26px;height:26px;fill:currentColor}
+  .mfullskip{width:58px;height:58px;border:1.5px solid rgba(255,255,255,.55);background:rgba(6,12,28,.42)}
+  .mfullmain{width:82px;height:82px;border:2px solid #47d9fb;background:rgba(71,217,251,.18);color:#47d9fb!important;box-shadow:0 0 34px -8px #47d9fb}
+  .mfullctl .mfullmain svg{width:34px;height:34px}
+  .mfull button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+  @media(max-height:640px){.mfullbody{gap:14px;padding-bottom:calc(var(--safe-bottom) + 18px)}.mfullmain{width:70px;height:70px}.mfullskip{width:52px;height:52px}.mfulltitle b{font-size:1.4rem}}
+  @media(prefers-reduced-motion:reduce){.mfull{animation:none}.mfullimg{transition:none}}
   @media(max-width:360px){.medpage{padding-left:11px;padding-right:11px}.medgrid{gap:8px}.medcardbody{left:9px}.medcardbody b{font-size:.82rem}.medcardbody i{font-size:.62rem}.medfilters{gap:6px}.medfilters button{padding-left:11px;padding-right:11px}}
   @media(prefers-reduced-motion:reduce){.medart img{transition:none}}
   /* Meme defaut que l'ecran Binauraux (corrige la veille) : les icones de
@@ -1757,7 +1782,7 @@
       <div class="medqueue"><button class="geoallbtn" id="medPlayAll"><span class="gaico" id="medPlayAllIco" aria-hidden="true">▶</span><span id="medPlayAllLbl">—</span></button><span class="medcount" id="medCount"></span></div>
       <div class="medgrid" id="medTracks"></div>
       <div class="meddock" id="medDock">
-        <div class="meddocktop"><div class="meddockart"><img id="medDockImg" src="app-images/366.webp" data-light="371.webp" alt=""></div><div class="meddockmeta"><b id="medDockTitle">—</b><i id="medDockSub">—</i></div></div>
+        <div class="meddocktop" id="medDockTop" role="button" tabindex="0"><div class="meddockart"><img id="medDockImg" src="app-images/366.webp" data-light="371.webp" alt=""></div><div class="meddockmeta"><b id="medDockTitle">—</b><i id="medDockSub">—</i></div></div>
         <svg class="medwave" viewBox="0 0 400 52" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="medWaveGrad" x1="0" x2="1"><stop stop-color="#47d9fb"/><stop offset="1" stop-color="#a86cff"/></linearGradient></defs><path d="M2 26 L12 26 18 22 24 31 31 14 38 38 46 9 54 42 63 18 72 34 82 12 91 39 101 20 111 31 123 17 134 36 146 21 158 32 171 14 184 39 198 18 212 35 226 11 240 42 254 16 268 36 282 8 296 43 310 15 324 35 338 12 352 39 366 20 380 31 398 26" stroke="url(#medWaveGrad)" stroke-width="2.4"/><path d="M2 26H398" stroke="url(#medWaveGrad)" stroke-width=".7" opacity=".3"/></svg>
         <div class="medprogress" id="medDockProgress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="medpbar"><i></i></div><div class="medptimes"><span>0:00</span><span>--:--</span></div></div>
         <div class="medtransport"><button id="medShuffle" type="button" aria-pressed="false"><span aria-hidden="true">🔀</span></button><button id="medPrev" type="button">⏮</button><button class="medmainplay" id="medMainPlay" type="button">▶</button><button id="medNext" type="button">⏭</button><button id="medRepeat" type="button" aria-pressed="true">↻</button></div>
@@ -1767,6 +1792,20 @@
       <p class="mednote" id="medNote"></p>
     </div>
   </section>
+  <div class="mfull" id="medFull" role="dialog" aria-modal="true" aria-labelledby="medFullTitle" hidden>
+    <img class="mfullimg" id="medFullImg" alt="">
+    <div class="mfullshade"></div>
+    <div class="mfulltop"><button class="backbtn mfullback" id="medFullClose" type="button" aria-label="Retour">‹</button></div>
+    <div class="mfullbody">
+      <div class="mfulltitle"><b id="medFullTitle">—</b><i id="medFullSub">—</i></div>
+      <div class="mfullprog" id="medFullProg" aria-hidden="true"><div class="medpbar"><i></i></div><div class="medptimes"><span>0:00</span><span>--:--</span></div></div>
+      <div class="mfullctl">
+        <button class="mfullskip" id="medFullPrev" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2.2v14H6zM19 5.6v12.8a.8.8 0 0 1-1.25.66L9.4 12.66a.8.8 0 0 1 0-1.32l8.35-5.4A.8.8 0 0 1 19 5.6z"/></svg></button>
+        <button class="mfullmain" id="medFullPlay" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z"/></svg></button>
+        <button class="mfullskip" id="medFullNext" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.8 5H18v14h-2.2zM5 5.6v12.8a.8.8 0 0 0 1.25.66l8.35-5.4a.8.8 0 0 0 0-1.32L6.25 5.94A.8.8 0 0 0 5 5.6z"/></svg></button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- AURALIS_ONBOARDING_HTML_START -->
@@ -2876,7 +2915,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   var curView="home";
   var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, favList:1, settings:1, method:1, medmusic:1,
     play:2, freqInfo:3, seq:2, geoPlay:2, binError:2, favKeypad:2, favNext:2, favRecap:2, favName:2};
-  function show(v){ ST.screen(v); ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMedmusic","vFreqInfo","vPaywall"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
+  function show(v){ if(v!=="medmusic"&&typeof medFullHide==="function")medFullHide(); ST.screen(v); ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinError","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMedmusic","vFreqInfo","vPaywall"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
     $("chainBtn").hidden=!!favBuild;
     if(v==="home"){ animHomeCards(); }
     else { var back=(NAV_LEVEL[v]||0)<(NAV_LEVEL[curView]||0);
@@ -4501,38 +4540,58 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     {id:"sanctuaire_tropical_paisible",key:"med_sanctuaire_tropical_paisible",sub:"med_sanctuaire_tropical_paisible_sub",cat:"nature",tc:"#8fe0a8",base:"sanctuaire_tropical_paisible",dur:191.03,vol:60,cover:"music-sanctuaire-tropical-paisible-v1.webp",light:"music-sanctuaire-tropical-paisible-v1.webp"}
   ];
   /* Lecteur unique reutilise pour les 16 seances. */
-  var med={playingId:null,selectedId:"piano_feutre",el:null,pool:null,vol:{},seq:0,repeat:true,filter:"all",q:{on:false,idx:0,order:null}};
+  var med={playingId:null,paused:false,selectedId:"piano_feutre",el:null,pool:null,vol:{},seq:0,repeat:true,filter:"all",q:{on:false,idx:0,order:null}};
   /* WebKit iOS 26 annonce OGG/Vorbis via canPlayType(), puis son moteur Cocoa
      WebM echoue avec FormatError. AAC/M4A est publie pour toutes les pistes et
      reste le format commun fiable sur iOS, Android et les navigateurs web. */
   function medUrl(base){return MED_BASE+base+".m4a";}
   function medTrack(id){for(var k=0;k<MEDMUSIC.length;k++)if(MEDMUSIC[k].id===id)return k;return-1;}
+  function medIsOn(s){return med.playingId===s.id&&!med.paused;}
   function medSelected(){var i=medTrack(med.selectedId);return MEDMUSIC[i<0?0:i];}
   function medPos(){return med.el&&isFinite(med.el.currentTime)?med.el.currentTime:0;}
-  function medProgSet(cur,dur){var d=$("medDockProgress");if(!d)return;var pct=dur>0?Math.max(0,Math.min(100,cur/dur*100)):0;d.querySelector(".medpbar i").style.width=pct.toFixed(2)+"%";var sp=d.querySelectorAll(".medptimes span");sp[0].textContent=fmtMS(cur);sp[1].textContent=dur>0?fmtMS(dur):"--:--";d.setAttribute("aria-valuenow",String(Math.round(pct)));}
+  function medProgSet(cur,dur){var d=$("medDockProgress");if(!d)return;var pct=dur>0?Math.max(0,Math.min(100,cur/dur*100)):0;d.querySelector(".medpbar i").style.width=pct.toFixed(2)+"%";var sp=d.querySelectorAll(".medptimes span");sp[0].textContent=fmtMS(cur);sp[1].textContent=dur>0?fmtMS(dur):"--:--";d.setAttribute("aria-valuenow",String(Math.round(pct)));var fp=$("medFullProg");if(fp){fp.querySelector(".medpbar i").style.width=pct.toFixed(2)+"%";var fs=fp.querySelectorAll(".medptimes span");fs[0].textContent=fmtMS(cur);fs[1].textContent=dur>0?fmtMS(dur):"--:--";}}
   function medSetCover(img,s){img.setAttribute("src","app-images/"+(curTheme()==="light"?s.light:s.cover));img.setAttribute("data-dark",s.cover);img.setAttribute("data-light",s.light);}
-  function medUpdateDock(){var s=medSelected();$("medDockTitle").textContent=t(s.key);$("medDockSub").textContent=t("med_moment");medSetCover($("medDockImg"),s);$("medDockVol").value=med.vol[s.id]===undefined?s.vol:med.vol[s.id];$("medMainPlay").textContent=med.playingId===s.id?"❚❚":"▶";$("medMainPlay").setAttribute("aria-label",med.playingId===s.id?t("pause"):t("play"));$("medRepeat").setAttribute("aria-pressed",med.repeat?"true":"false");}
-  function medStopCurrent(){var el=med.el;med.el=null;if(el){try{el.onended=null;el.ontimeupdate=null;el.onerror=null;el.onloadedmetadata=null;el.ondurationchange=null;el.onplaying=null;el.pause();}catch(e){}}var prev=med.playingId;med.playingId=null;if(prev){var b=$("medPlay_"+prev);if(b)b.textContent="▶";var c=$("medCard_"+prev);if(c)c.classList.remove("playing");}medProgSet(0,medSelected().dur);medUpdateDock();naSweep();ST.stop();}
-  function medPlay(s){medStopCurrent();med.selectedId=s.id;unlockAudio();ST.play("music",s.id);NA.start(t(s.key),nativeText("notification_music",t("home_med")),{pause:function(){medQClear();medStopCurrent();},stop:function(){medQClear();medStopCurrent();},play:function(){if(!med.playingId)medPlay(s);},next:function(){medNavGo(1);},previous:function(){medNavGo(-1);}});var el=med.pool||(med.pool=new Audio()),myseq=++med.seq,wantSrc=medUrl(s.base),wantDur=s.dur>0?s.dur:0;el.src=wantSrc;el.loop=med.repeat&&!med.q.on;el.volume=Math.max(0,Math.min(1,(med.vol[s.id]===undefined?s.vol:med.vol[s.id])/100));el.preload="auto";function fresh(){var cs=el.currentSrc||"";return cs===wantSrc||cs.slice(-wantSrc.length)===wantSrc;}function push(){if(myseq!==med.seq||!fresh())return;var d=wantDur||el.duration;if(!isFinite(d)||d<=0)return;medProgSet(el.currentTime,d);}el.onloadedmetadata=push;el.ondurationchange=push;el.ontimeupdate=push;el.onended=function(){if(myseq!==med.seq)return;medStopCurrent();medQNext();};el.onerror=function(){if(myseq!==med.seq)return;flashMsg(t("mix_err"));medQClear();medStopCurrent();};var slow=setTimeout(function(){if(myseq===med.seq&&med.el===el&&el.paused)flashMsg(t("mix_loading"));},500);el.onplaying=function(){clearTimeout(slow);};med.el=el;med.playingId=s.id;var p=el.play();if(p&&p.catch)p.catch(function(){if(myseq===med.seq&&el.onerror)el.onerror();});medRender();medUpdateDock();}
-  function medToggle(s){if(med.playingId===s.id){medQClear();medStopCurrent();return;}medQClear();medPlay(s);}
+  function medUpdateDock(){var s=medSelected();$("medDockTitle").textContent=t(s.key);$("medDockSub").textContent=t("med_moment");medSetCover($("medDockImg"),s);$("medDockVol").value=med.vol[s.id]===undefined?s.vol:med.vol[s.id];$("medMainPlay").textContent=medIsOn(s)?"❚❚":"▶";$("medMainPlay").setAttribute("aria-label",medIsOn(s)?t("pause"):t("play").replace(/^[▶■]\s*/,""));$("medDockTop").setAttribute("aria-label",t(s.key));$("medRepeat").setAttribute("aria-pressed",med.repeat?"true":"false");medFullSync();}
+  function medStopCurrent(){med.paused=false;var el=med.el;med.el=null;if(el){try{el.onended=null;el.ontimeupdate=null;el.onerror=null;el.onloadedmetadata=null;el.ondurationchange=null;el.onplaying=null;el.pause();}catch(e){}}var prev=med.playingId;med.playingId=null;if(prev){var b=$("medPlay_"+prev);if(b)b.textContent="▶";var c=$("medCard_"+prev);if(c)c.classList.remove("playing");}medProgSet(0,medSelected().dur);medUpdateDock();naSweep();ST.stop();}
+  function medPlay(s){medStopCurrent();med.selectedId=s.id;unlockAudio();ST.play("music",s.id);NA.start(t(s.key),nativeText("notification_music",t("home_med")),{pause:function(){medQClear();medStopCurrent();},stop:function(){medQClear();medStopCurrent();},play:function(){if(med.paused)medResume();else if(!med.playingId)medPlay(s);},next:function(){medNavGo(1);},previous:function(){medNavGo(-1);}});var el=med.pool||(med.pool=new Audio()),myseq=++med.seq,wantSrc=medUrl(s.base),wantDur=s.dur>0?s.dur:0;el.src=wantSrc;el.loop=med.repeat&&!med.q.on;el.volume=Math.max(0,Math.min(1,(med.vol[s.id]===undefined?s.vol:med.vol[s.id])/100));el.preload="auto";function fresh(){var cs=el.currentSrc||"";return cs===wantSrc||cs.slice(-wantSrc.length)===wantSrc;}function push(){if(myseq!==med.seq||!fresh())return;var d=wantDur||el.duration;if(!isFinite(d)||d<=0)return;medProgSet(el.currentTime,d);}el.onloadedmetadata=push;el.ondurationchange=push;el.ontimeupdate=push;el.onended=function(){if(myseq!==med.seq)return;medStopCurrent();medQNext();};el.onerror=function(){if(myseq!==med.seq)return;flashMsg(t("mix_err"));medQClear();medStopCurrent();};var slow=setTimeout(function(){if(myseq===med.seq&&med.el===el&&el.paused)flashMsg(t("mix_loading"));},500);el.onplaying=function(){clearTimeout(slow);};med.el=el;med.playingId=s.id;var p=el.play();if(p&&p.catch)p.catch(function(){if(myseq===med.seq&&el.onerror)el.onerror();});medRender();medUpdateDock();}
+  function medPause(){if(!med.el||!med.playingId||med.paused)return;med.paused=true;try{med.el.pause();}catch(e){}ST.stop();medRender();medUpdateDock();}
+  function medResume(){if(!med.el||!med.playingId||!med.paused)return false;med.paused=false;var p=med.el.play();if(p&&p.catch)p.catch(function(){med.paused=true;medRender();medUpdateDock();});ST.play("music",med.playingId);medRender();medUpdateDock();return true;}
+  function medToggle(s){if(med.playingId===s.id){if(med.paused)medResume();else medPause();return;}medQClear();medPlay(s);}
   function medNavGo(delta){var i=medTrack(med.playingId||med.selectedId);if(i<0)return;if(delta<0&&med.playingId&&medPos()>3){medPlay(MEDMUSIC[i]);return;}if(med.q.on&&med.q.order){var n=med.q.order.length,p=(med.q.idx+delta+n)%n;med.q.idx=p;medQLabel();medPlay(MEDMUSIC[med.q.order[p]]);return;}medPlay(MEDMUSIC[(i+delta+MEDMUSIC.length)%MEDMUSIC.length]);}
   function medQLabel(){var ic=$("medPlayAllIco"),lb=$("medPlayAllLbl");if(!ic||!lb)return;var n=med.q.order?med.q.order.length:MEDMUSIC.length;if(med.q.on){ic.textContent="■";lb.textContent=t("stop").replace(/^[■▶]\s*/,"")+" · "+(med.q.idx+1)+"/"+n;}else{ic.textContent="▶";lb.textContent=t("geo_playall");}}
   function medQClear(){med.q.on=false;med.q.idx=0;med.q.order=null;medQLabel();}
   function medQNext(){if(!med.q.on||!med.q.order)return;if(med.q.idx+1>=med.q.order.length){medQClear();return;}med.q.idx++;medQLabel();medPlay(MEDMUSIC[med.q.order[med.q.idx]]);}
   function medQStart(){if(med.q.on){medQClear();medStopCurrent();return;}var order=[];for(var k=0;k<MEDMUSIC.length;k++)if(med.filter==="all"||MEDMUSIC[k].cat===med.filter)order.push(k);if(SHUF.on("med"))order=shuffled(order);med.q.on=true;med.q.idx=0;med.q.order=order;medQLabel();medPlay(MEDMUSIC[order[0]]);}
   function medSetVol(s,pct){med.vol[s.id]=pct;if(med.el&&med.playingId===s.id)med.el.volume=Math.max(0,Math.min(1,pct/100));}
-  function medRender(){var box=$("medTracks");if(!box)return;box.innerHTML="";var shown=0;MEDMUSIC.forEach(function(s){if(med.filter!=="all"&&s.cat!==med.filter)return;shown++;if(med.vol[s.id]===undefined)med.vol[s.id]=s.vol;var card=document.createElement("article");card.className="medcard"+(med.playingId===s.id?" playing":"")+(med.selectedId===s.id?" selected":"");card.id="medCard_"+s.id;card.style.setProperty("--tc",s.tc);card.innerHTML='<div class="medart"><img alt=""></div><div class="medcardbody"><b></b><i></i></div><button class="medcardplay" id="medPlay_'+s.id+'" type="button">'+(med.playingId===s.id?"❚❚":"▶")+'</button>';medSetCover(card.querySelector("img"),s);card.querySelector("b").textContent=t(s.key);card.querySelector("i").textContent=t(s.sub);var pl=card.querySelector("button");pl.setAttribute("aria-label",t(s.key));pl.addEventListener("click",function(e){e.stopPropagation();medToggle(s);});card.addEventListener("click",function(){medToggle(s);});box.appendChild(card);});$("medCount").textContent=shown+" / "+MEDMUSIC.length;}
+  function medRender(){var box=$("medTracks");if(!box)return;box.innerHTML="";var shown=0;MEDMUSIC.forEach(function(s){if(med.filter!=="all"&&s.cat!==med.filter)return;shown++;if(med.vol[s.id]===undefined)med.vol[s.id]=s.vol;var card=document.createElement("article");card.className="medcard"+(med.playingId===s.id?" playing":"")+(med.selectedId===s.id?" selected":"");card.id="medCard_"+s.id;card.style.setProperty("--tc",s.tc);card.innerHTML='<div class="medart"><img alt=""></div><div class="medcardbody"><b></b><i></i></div><button class="medcardplay" id="medPlay_'+s.id+'" type="button">'+(medIsOn(s)?"❚❚":"▶")+'</button>';medSetCover(card.querySelector("img"),s);card.querySelector("b").textContent=t(s.key);card.querySelector("i").textContent=t(s.sub);var pl=card.querySelector("button");pl.setAttribute("aria-label",t(s.key));pl.addEventListener("click",function(e){e.stopPropagation();medToggle(s);});card.addEventListener("click",function(){medOpenTrack(s);});box.appendChild(card);});$("medCount").textContent=shown+" / "+MEDMUSIC.length;}
   function medApplyLang(){if(!$("medTitle"))return;$("medTitle").textContent=t("med_title");$("medHeroTitle").textContent=t("med_hero_title");$("medHeroSub").textContent=t("med_hero_sub");$("medDiscover").textContent=t("med_discover");$("medTakeTime").textContent=t("med_take_time");$("medNote").textContent=t("med_note");var keys=["med_filter_all","med_filter_nature","med_filter_instruments","med_filter_voyages"];Array.prototype.forEach.call($("medFilters").children,function(b,i){b.textContent=t(keys[i]);});$("medPrev").setAttribute("aria-label",t("nav_prev"));$("medNext").setAttribute("aria-label",t("nav_next"));$("medShuffle").setAttribute("aria-label",t("shuffle"));$("medRepeat").setAttribute("aria-label",t("med_repeat"));medQLabel();medRender();medUpdateDock();}
   function openMedMusic(){medApplyLang();show("medmusic");}
+  /* ---- Lecteur plein ecran ---- */
+  var MFULL_PLAY='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z"/></svg>',MFULL_PAUSE='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.3"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.3"/></svg>',medFullPrevFocus=null;
+  function medFullSync(){var f=$("medFull");if(!f||f.hidden)return;var s=medSelected(),img=$("medFullImg"),src="app-images/"+(curTheme()==="light"?s.light:s.cover),on=medIsOn(s);
+    $("medFullTitle").textContent=t(s.key);$("medFullSub").textContent=t("med_moment");
+    if(img.getAttribute("src")!==src){img._want=src;img.classList.add("swap");var n=new Image();n.onload=n.onerror=function(){if(img._want!==src)return;img.setAttribute("src",src);requestAnimationFrame(function(){img.classList.remove("swap");});};n.src=src;}
+    $("medFullPlay").innerHTML=on?MFULL_PAUSE:MFULL_PLAY;$("medFullPlay").setAttribute("aria-label",on?t("pause"):t("play").replace(/^[▶■]\s*/,""));
+    $("medFullPrev").setAttribute("aria-label",t("nav_prev"));$("medFullNext").setAttribute("aria-label",t("nav_next"));}
+  function medFullShow(){var f=$("medFull");if(!f)return;medFullPrevFocus=document.activeElement;f.hidden=false;medFullSync();var s=medSelected();medProgSet(med.playingId===s.id?medPos():0,s.dur);try{$("medFullPlay").focus({preventScroll:true});}catch(e){}}
+  function medFullHide(){var f=$("medFull");if(!f||f.hidden)return;f.hidden=true;try{if(medFullPrevFocus&&medFullPrevFocus.focus)medFullPrevFocus.focus({preventScroll:true});}catch(e){}}
+  function medOpenTrack(s){if(med.playingId!==s.id){medQClear();medPlay(s);}else if(med.paused)medResume();med.selectedId=s.id;medFullShow();}
+  $("medFullClose").addEventListener("click",medFullHide);
+  $("medFullPlay").addEventListener("click",function(){medToggle(medSelected());});
+  $("medFullPrev").addEventListener("click",function(){medNavGo(-1);});
+  $("medFullNext").addEventListener("click",function(){medNavGo(1);});
+  $("medDockTop").addEventListener("click",medFullShow);
+  $("medDockTop").addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();medFullShow();}});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")medFullHide();});
   $("medPlayAll").addEventListener("click",medQStart);
   $("medShuffle").addEventListener("click",function(){var on=SHUF.toggle("med");if(med.q.on&&med.q.order)med.q.order=requeueTail(med.q.order,med.q.idx,on);});
   $("medPrev").addEventListener("click",function(){medNavGo(-1);});$("medNext").addEventListener("click",function(){medNavGo(1);});
-  $("medMainPlay").addEventListener("click",function(){var s=medSelected();if(med.playingId===s.id){medQClear();medStopCurrent();}else medToggle(s);});
+  $("medMainPlay").addEventListener("click",function(){medToggle(medSelected());});
   $("medRepeat").addEventListener("click",function(){med.repeat=!med.repeat;this.setAttribute("aria-pressed",med.repeat?"true":"false");if(med.el)med.el.loop=med.repeat&&!med.q.on;});
   $("medDockVol").addEventListener("input",function(){medSetVol(medSelected(),parseInt(this.value,10));});
   $("medThemeBtn").addEventListener("click",toggleTheme);
   Array.prototype.forEach.call($("medFilters").children,function(b){b.addEventListener("click",function(){med.filter=this.getAttribute("data-cat");Array.prototype.forEach.call($("medFilters").children,function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});medQClear();medRender();medQLabel();});});
-  $("medBack").addEventListener("click",function(){medQClear();medStopCurrent();show("home");});
+  $("medBack").addEventListener("click",function(){medFullHide();medQClear();medStopCurrent();show("home");});
   SHUF.paint();medProgSet(0,medSelected().dur);medApplyLang();
 
   makeViz("viz",function(){return state.playing;});
