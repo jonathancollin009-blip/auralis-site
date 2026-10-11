@@ -902,6 +902,31 @@
   .bincontrol>svg{width:22px;height:22px;color:#b9c9ea}
   .bincontrol .binlabel{color:#b9c9ea;font-size:.8rem}
   .bincontrol input{min-width:0}
+  /* AURALIS_BIN_CAT_V1 : page d une categorie, liste de ses musiques */
+  #vBinCat{min-width:0;width:100%;overflow-x:hidden}
+  #vBinCat .bar{background:linear-gradient(180deg,var(--bg) 62%,rgba(var(--bg-rgb),.82))}
+  :root[data-theme="light"] #vBinCat .bar{background:linear-gradient(180deg,rgba(250,243,234,.98) 58%,rgba(250,243,234,.82));border-bottom:1px solid rgba(199,186,219,.22)}
+  .bincathero{position:relative;height:132px;overflow:hidden;border-radius:24px;background:#0b162b}
+  .bincathero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .bincathero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,11,27,.05) 20%,rgba(4,11,27,.9))}
+  .bincathero p{position:absolute;z-index:1;left:16px;right:16px;bottom:13px;margin:0;color:#e3eaf9;font-size:.86rem;line-height:1.3;text-shadow:0 2px 9px rgba(0,0,0,.75)}
+  .bintracks{display:flex;flex-direction:column;gap:8px}
+  .bintracks button{display:grid;grid-template-columns:40px minmax(0,1fr) 24px;align-items:center;gap:12px;min-height:60px;padding:9px 16px 9px 10px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,rgba(17,26,51,.94),rgba(8,16,35,.88));color:var(--txt);font:inherit;text-align:left;cursor:pointer;transition:transform .12s ease,border-color .18s ease,box-shadow .18s ease}
+  .bintracks button:active{transform:scale(.98)}
+  .bintracks button[aria-pressed="true"]{border-color:var(--cyan);box-shadow:0 0 24px -14px var(--cyan)}
+  .bintrart{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(var(--cyan-rgb),.12);color:var(--cyan)}
+  .bintrart svg{width:19px;height:19px}
+  .bintrname{font-size:.95rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bintrstate{display:flex;color:var(--dim)}
+  .bintrstate svg{width:22px;height:22px}
+  .bintrstate .bintrpause,.bintracks button.playing .bintrplay{display:none}
+  .bintracks button.playing .bintrpause{display:block}
+  .bintracks button[aria-pressed="true"] .bintrstate{color:var(--cyan)}
+  :root[data-theme="light"] .bintracks button{border-color:#d9d0e8;background:linear-gradient(145deg,rgba(255,255,255,.88),rgba(251,248,252,.76));color:#142548;box-shadow:0 14px 30px -28px rgba(70,65,105,.72),inset 0 1px rgba(255,255,255,.95)}
+  :root[data-theme="light"] .bintracks button[aria-pressed="true"]{border-color:#18b9d2;box-shadow:0 0 0 1px rgba(24,185,210,.18),0 14px 30px -23px rgba(24,185,210,.72),inset 0 1px rgba(255,255,255,.96)}
+  :root[data-theme="light"] .bintrart{background:rgba(24,185,210,.14);color:#1489a8}
+  :root[data-theme="light"] .bintrstate{color:#566a8e}
+  :root[data-theme="light"] .bintracks button[aria-pressed="true"] .bintrstate{color:#1489a8}
   .bindurations{position:relative;display:grid;grid-template-columns:27px 78px 1fr;align-items:center;gap:9px;margin-top:17px}
   .bindurations>svg{width:22px;height:22px;color:#b9c9ea}
   .bindurations .binlabel{color:#b9c9ea;font-size:.8rem}
@@ -1771,6 +1796,16 @@
       <div class="binintents" id="binPresets"></div>
       <div class="binsectionhead"><h3 id="binManOr">—</h3></div>
       <button type="button" class="binmancard" id="binManOpen"><span class="binmannew" id="binManNew">—</span><span class="binmanhead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M4 12h16M4 17h7"/><circle cx="17" cy="7" r="2.2"/><circle cx="14" cy="17" r="2.2"/></svg><b id="binManCardT">—</b><span class="binmanchev" aria-hidden="true">›</span></span><span class="binmansub" id="binManCardD">—</span><span class="binmanviz"><span class="binmanear l"><small id="binManVizL">—</small><strong id="binManVizLv">100 Hz</strong></span><svg viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="binManGrad" x1="0" x2="1"><stop stop-color="#7fd8f0"/><stop offset="1" stop-color="#b98fe0"/></linearGradient></defs><path d="M0 17 C10 2 20 2 30 17 S50 32 60 17 S80 2 90 17 S110 32 120 17" fill="none" stroke="url(#binManGrad)" stroke-width="2.2"/></svg><span class="binmanear r"><small id="binManVizR">—</small><strong id="binManVizRv">104 Hz</strong></span></span></button>
+    </div>
+  </section>
+
+  <section class="view" id="vBinCat">
+    <div class="bar"><button class="backbtn" id="binCatBack" aria-label="Retour">‹</button><h2 id="binCatTitle">—</h2><button class="bintheme" id="binCatTheme" aria-label="Thème clair ou sombre">☾</button></div>
+    <div class="binlanding">
+      <div class="bincathero"><img id="binCatPhoto" src="app-images/binaural-delta.webp" alt=""><p id="binCatDesc"></p></div>
+      <div class="binsectionhead"><h3 id="binTracksLabel">—</h3></div>
+      <div class="bintracks" id="binTracks"></div>
+      <div id="binCatSlot">
       <div class="binsession" id="binSessionPanel">
         <h3 class="binsessiontitle" id="binSessionTitle">—</h3>
         <p class="binintenttag" id="binIntentTag"></p>
@@ -1785,6 +1820,7 @@
         <p class="bincountdown" id="binCountdown"></p>
         <p class="bincomfort"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="5" r="2"/><path d="M12 7v6M8 11l4 2 4-2M6 19c2-3 4-4 6-4s4 1 6 4M4 21c2-1 4-1 8 0s6 1 8 0"/></svg><span id="binComfort">—</span></p>
         <p class="disc" id="discBin"></p>
+      </div>
       </div>
     </div>
   </section>
@@ -2855,7 +2891,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     document.documentElement.setAttribute("data-theme",th);
     var b=document.getElementById("themeBtn");
     if(b){ b.textContent=(th==="light")?"☾":"☀"; b.setAttribute("aria-label",ariaText((th==="light")?"Passer au thème sombre":"Passer au thème clair")); }
-    ["binThemeBtn","binManTheme"].forEach(function(id){ var bb=document.getElementById(id);
+    ["binThemeBtn","binCatTheme","binManTheme"].forEach(function(id){ var bb=document.getElementById(id);
     if(bb){ bb.textContent=(th==="light")?"☾":"☀"; bb.setAttribute("aria-label",ariaText((th==="light")?"Passer au thème sombre":"Passer au thème clair")); } });
     var mb=document.getElementById("medThemeBtn");
     if(mb){ mb.textContent=(th==="light")?"☾":"☀"; mb.setAttribute("aria-label",ariaText((th==="light")?"Passer au thème sombre":"Passer au thème clair")); }
@@ -3064,9 +3100,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   // ---------- nav ----------
   var returnTo="lib";
   var curView="home";
-  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, binManual:2, favList:1, settings:1, method:1, medmusic:1,
+  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, binCat:2, binManual:2, favList:1, settings:1, method:1, medmusic:1,
     play:2, freqInfo:3, seq:2, geoPlay:2, binError:2, favKeypad:2, favNext:2, favRecap:2, favName:2};
-  function show(v){ if(v!=="medmusic"&&typeof medFullHide==="function")medFullHide(); ST.screen(v); ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinManual","vBinError","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMedmusic","vFreqInfo","vPaywall"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
+  function show(v){ if(v!=="medmusic"&&typeof medFullHide==="function")medFullHide(); ST.screen(v); ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinCat","vBinManual","vBinError","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMedmusic","vFreqInfo","vPaywall"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
     $("chainBtn").hidden=!!favBuild;
     if(v==="home"){ animHomeCards(); }
     else { var back=(NAV_LEVEL[v]||0)<(NAV_LEVEL[curView]||0);
@@ -4437,24 +4473,116 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   };
   function binBandLabel(p){var names=BIN_BAND_NAMES[lang]||BIN_BAND_NAMES.en;return names[p.band]||p.band;}
   function binIntentTitle(p){return t("bin_int_"+p.key)+" ("+binBandLabel(p)+")";}
-  function binReset(){ bin.intent=BIN_INTENTS[0]; bin.f1=107; bin.f2=109; bin.duration=20; bin.remaining=1200; bin.startedAt=0; }
+  function binReset(){ bin.intent=BIN_INTENTS[0]; bin.track=null; bin.f1=107; bin.f2=109; bin.duration=20; bin.remaining=1200; bin.startedAt=0; }
   function binWave(seed){
     var a=seed%3,b=(seed+1)%3;
     return '<svg class="biwave" viewBox="0 0 150 55" preserveAspectRatio="none" aria-hidden="true"><path d="M1 29 C18 '+(7+a*5)+' 30 '+(49-b*4)+' 49 29 S80 '+(5+b*5)+' 99 29 S130 '+(49-a*4)+' 149 29"/><path d="M1 29 C22 '+(15+b*3)+' 35 '+(42-a*2)+' 55 29 S88 '+(14+a*3)+' 107 29 S137 '+(43-b*2)+' 149 29"/></svg>';
   }
   function renderBinPresets(){ var el=$("binPresets"); if(!el)return; el.innerHTML="";
-    BIN_INTENTS.forEach(function(p,i){ var b=document.createElement("button"); b.type="button"; b.style.color=p.col; b.setAttribute("aria-pressed",bin.intent===p?"true":"false");
+    BIN_INTENTS.forEach(function(p,i){ var b=document.createElement("button"); b.type="button"; b.style.color=p.col; b.setAttribute("aria-pressed","false");
       b.innerHTML='<span class="bincheck">✓</span><span class="biart"><img src="app-images/'+p.photo+'" alt="" loading="lazy" decoding="async"></span><span class="bicopy"><span class="bititle">'+htmlText(binIntentTitle(p))+'</span><span class="bidesc">'+htmlText(t("bin_int_"+p.key+"_d"))+'</span></span>';
-      b.addEventListener("click",function(){ var resume=bin.playing; binStop(true,false); bin.intent=p; bin.f1=108-p.beat/2; bin.f2=108+p.beat/2; bin.remaining=bin.duration*60; renderBinPresets(); binUpdateUi(); if(resume)startWhenReady(binStart); }); el.appendChild(b);
+      b.addEventListener("click",function(){ openBinCat(p); }); el.appendChild(b);
     }); }
   function binFormat(seconds){ var s=Math.max(0,Math.ceil(seconds)),m=Math.floor(s/60); return String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
-  function binSetPlayState(on){ bin.playing=!!on; var b=$("binPlay"); b.setAttribute("aria-pressed",on?"true":"false"); b.setAttribute("aria-label",on?t("pause"):t("play")); }
+  function binSetPlayState(on){ bin.playing=!!on; var b=$("binPlay"); b.setAttribute("aria-pressed",on?"true":"false"); b.setAttribute("aria-label",on?t("pause"):t("play")); binCatMark(); }
   function binUpdateUi(){
-    $("binSessionTitle").textContent=binTitle(); $("binIntentTag").textContent=t("bin_playing");
+    $("binSessionTitle").textContent=binTitle(); $("binIntentTag").textContent=(!bin.manual&&bin.track)?binTrackName(bin.track):t("bin_playing");
     Array.prototype.forEach.call($("binDurations").children,function(b){ b.setAttribute("aria-pressed",parseInt(b.getAttribute("data-min"),10)===bin.duration?"true":"false"); b.textContent=b.getAttribute("data-min")+" "+unitText("unit_minute_short","min"); });
     $("binCountdown").textContent=bin.playing?binFormat(bin.remaining):""; binSetPlayState(bin.playing);
+    var mk=binMusicAvail(); if(mk&&!NativeTone.on())binMusicLoad(mk);
+    binCatRender();
   }
-  function openBinInput(){ binStop(true,false); bin.manual=false; $("binPlay").disabled=false; document.querySelector("#vBinInput .binlanding").appendChild($("binSessionPanel")); if(binMan)binManCard(); binReset(); returnTo="home"; renderBinPresets(); binUpdateUi(); show("binInput"); }
+  /* AURALIS_BIN_MUSIC_V1 : musique de fond en boucle derriere les battements.
+     La piste choisie sur la page de la categorie (bin.track, voir BIN_TRACKS)
+     joue <id>_loop.flac, diffuse depuis le site (bucket R2, comme les Musiques ;
+     rien n est embarque dans l app)
+     (boucle preparee par tools/loopfade.py, accordee en La 432 comme la porteuse
+     a 108 Hz). FLAC et non m4a/ogg : le nombre d echantillons est exact, donc
+     AudioBufferSourceNode.loop raccorde sans trou.
+     iOS : Web Audio se tait ecran verrouille (voir NativeTone) alors qu un
+     <audio> continue ; la musique y passe donc par <id>_bed.m4a, la meme
+     boucle mise bout a bout sur 5 min et deja attenuee (iOS ignore
+     audio.volume, le curseur n y regle que les battements).
+     Les battements sont baisses quand la musique joue pour que la somme ne
+     sature pas a plein volume. Si le fichier manque, les battements jouent seuls. */
+  var BIN_MUSIC_DIR="https://aura-lis.ca/app-sounds/binaural/", BIN_MUSIC_TONE=.695, BIN_MUSIC_LEVEL=.647;
+  var binMusic={buf:{},src:null,gain:null,el:null,gen:0};
+  function binMusicAvail(){ return (!bin.manual&&bin.track)?bin.track.id:null; }
+  function binMusicKey(){ return binMusicAvail(); }
+  function binToneVol(){ return bin.vol*(binMusicKey()?BIN_MUSIC_TONE:1); }
+  function binMusicLoad(key){
+    if(!binMusic.buf[key])binMusic.buf[key]=new Promise(function(res){
+      function fail(){ delete binMusic.buf[key]; res(null); }
+      var xhr=new XMLHttpRequest(); xhr.open("GET",BIN_MUSIC_DIR+key+"_loop.flac",true); xhr.responseType="arraybuffer";
+      xhr.onload=function(){ if((xhr.status===200||xhr.status===0)&&xhr.response){ try{ ensureCtx().decodeAudioData(xhr.response,res,fail); }catch(e){ fail(); } } else fail(); };
+      xhr.onerror=fail; xhr.send(); });
+    return binMusic.buf[key]; }
+  function binMusicStart(){ var key=binMusicKey(), gen=++binMusic.gen; if(!key)return;
+    if(NativeTone.on()){ var el=binMusic.el, u=BIN_MUSIC_DIR+key+"_bed.m4a";
+      if(!el){ el=binMusic.el=new Audio(); el.loop=true; el.setAttribute("playsinline",""); }
+      if(el.getAttribute("src")!==u)el.setAttribute("src",u); try{ el.currentTime=0; }catch(e){}
+      var pr=el.play(); if(pr&&pr.catch)pr.catch(function(e){ console.warn("[Auralis] musique binaurale :",(e&&e.name)||e); }); return; }
+    binMusicLoad(key).then(function(buf){ if(!buf||gen!==binMusic.gen||!bin.playing||!ctx)return;
+      var ti=ctx.currentTime,g=ctx.createGain(),s=ctx.createBufferSource(); s.buffer=buf; s.loop=true;
+      g.gain.setValueAtTime(.0001,ti); g.gain.linearRampToValueAtTime(bin.vol*BIN_MUSIC_LEVEL,ti+1.5);
+      s.connect(g); g.connect(ctx.destination); s.start(ti); binMusic.src=s; binMusic.gain=g; }); }
+  function binMusicStop(immediate){ binMusic.gen++;
+    if(binMusic.el){ try{ binMusic.el.pause(); }catch(e){} }
+    if(ctx&&binMusic.gain){ var ti=ctx.currentTime,g=binMusic.gain,s=binMusic.src,d=immediate?.03:.6;
+      try{g.gain.cancelScheduledValues(ti);g.gain.setValueAtTime(g.gain.value,ti);g.gain.linearRampToValueAtTime(.0001,ti+d);}catch(e){}
+      setTimeout(function(){try{s.stop();s.disconnect();}catch(e){}try{g.disconnect();}catch(e){}},d*1000+40); }
+    binMusic.src=null; binMusic.gain=null; }
+  function binVolApply(){
+    if(!NativeTone.update({master:binToneVol(),glideMs:20}) && bin.master && ctx)bin.master.gain.setTargetAtTime(binToneVol(),ctx.currentTime,.02);
+    if(binMusic.gain&&ctx){ var ti=ctx.currentTime; try{binMusic.gain.gain.cancelScheduledValues(ti);}catch(e){} binMusic.gain.gain.setTargetAtTime(bin.vol*BIN_MUSIC_LEVEL,ti,.05); } }
+  /* AURALIS_BIN_CAT_V1 : chaque categorie (bande) a sa page et sa liste de
+     musiques. Pour ajouter une musique : deposer <id>_loop.flac et
+     <id>_bed.m4a dans le bucket R2 (app-sounds/binaural/) puis ajouter {id:"<id>"} a la
+     bande. name:{fr:..,en:..} est facultatif ; sans lui la piste s affiche
+     « Musique N ». La premiere piste de la bande est choisie a l ouverture. */
+  var BIN_TRACKS={
+    delta:[{id:"delta_1"}],
+    theta:[{id:"theta_1"}],
+    alpha:[{id:"alpha_1"}],
+    beta:[{id:"beta_1"}]
+  };
+  var BIN_CAT_TXT={
+    fr:{track:"Musique",head:"Choisissez votre musique"},
+    en:{track:"Music",head:"Choose your music"},
+    es:{track:"Música",head:"Elige tu música"},
+    de:{track:"Musik",head:"Wähle deine Musik"},
+    it:{track:"Musica",head:"Scegli la tua musica"},
+    lo:{track:"ດົນຕີ",head:"ເລືອກດົນຕີຂອງທ່ານ"},
+    hi:{track:"संगीत",head:"अपना संगीत चुनें"},
+    zh:{track:"音乐",head:"选择你的音乐"},
+    zht:{track:"音樂",head:"選擇你的音樂"}
+  };
+  function bcT(k){ return (BIN_CAT_TXT[lang]||BIN_CAT_TXT.en)[k]; }
+  function binTracks(){ return (bin.intent&&BIN_TRACKS[bin.intent.band])||[]; }
+  function binTrackName(tr){ var n=tr.name&&(tr.name[lang]||tr.name.en); return n||(bcT("track")+" "+(binTracks().indexOf(tr)+1)); }
+  function binCatMark(){ var el=$("binTracks"); if(!el)return; var l=binTracks();
+    Array.prototype.forEach.call(el.children,function(b,i){ var sel=!bin.manual&&l[i]===bin.track;
+      b.setAttribute("aria-pressed",sel?"true":"false"); b.classList.toggle("playing",sel&&bin.playing); }); }
+  function binCatRender(){ var el=$("binTracks"), p=bin.intent||BIN_INTENTS[0]; if(!el)return;
+    $("binCatTitle").textContent=binIntentTitle(p); $("binCatDesc").textContent=t("bin_int_"+p.key+"_d"); $("binTracksLabel").textContent=bcT("head");
+    var ph="app-images/"+p.photo; if($("binCatPhoto").getAttribute("src")!==ph)$("binCatPhoto").setAttribute("src",ph);
+    el.innerHTML="";
+    binTracks().forEach(function(tr){ var b=document.createElement("button"); b.type="button";
+      b.innerHTML='<span class="bintrart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></span><span class="bintrname">'+htmlText(binTrackName(tr))+'</span><span class="bintrstate" aria-hidden="true"><svg class="bintrplay" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="bintrpause" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg></span>';
+      b.addEventListener("click",function(){
+        if(bin.track===tr){ if(bin.playing)binStop(false,true); else startWhenReady(binStart); return; }
+        /* Changement de musique en cours de seance : les battements et la
+           minuterie continuent, seule la musique fond vers la nouvelle. */
+        binMusicStop(false); bin.track=tr; binUpdateUi();
+        if(bin.playing){ binMusicStart(); NA.start(nativeText("notification_binaural",t("bin_playing")),binTitle(),{pause:function(){binStop(false,true);},stop:function(){binStop(false,false);},play:function(){if(!bin.playing)binStart();}}); }
+        else startWhenReady(binStart); });
+      el.appendChild(b); });
+    binCatMark(); }
+  function openBinCat(p){ binStop(true,false); bin.manual=false; bin.intent=p; bin.f1=108-p.beat/2; bin.f2=108+p.beat/2; bin.remaining=bin.duration*60;
+    bin.track=binTracks()[0]||null; $("binPlay").disabled=false; $("binCatSlot").appendChild($("binSessionPanel")); binUpdateUi(); show("binCat"); }
+  $("binCatBack").addEventListener("click",function(){ binStop(true,false); show("binInput"); });
+  $("binCatTheme").addEventListener("click",toggleTheme);
+  function openBinInput(){ binStop(true,false); bin.manual=false; $("binPlay").disabled=false; if(binMan)binManCard(); binReset(); returnTo="home"; renderBinPresets(); binUpdateUi(); show("binInput"); }
   $("binBack").addEventListener("click",function(){ binStop(true,false); show("home"); });
   $("binThemeBtn").addEventListener("click",toggleTheme);
   function binTick(){ if(!bin.playing)return; bin.remaining=Math.max(0,bin.remaining-(Date.now()-bin.startedAt)/1000); bin.startedAt=Date.now(); $("binCountdown").textContent=binFormat(bin.remaining); if(bin.remaining<=0){ binStop(false,false); bin.remaining=bin.duration*60; binUpdateUi(); } }
@@ -4462,22 +4590,21 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     ST.play("bin",bin.manual?"manual":(bin.intent?bin.intent.key:"binaural"));
     NA.start(nativeText("notification_binaural",t("bin_playing")),binTitle(),{pause:function(){binStop(false,true);},stop:function(){binStop(false,false);},play:function(){if(!bin.playing)binStart();}});
     var ti=ctx.currentTime;
-    if(!NativeTone.start({voices:[{f:bin.f1,g:1,p:-1},{f:bin.f2,g:1,p:1}],master:bin.vol,fadeMs:50})){
-      bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(.0001,ti); bin.master.gain.linearRampToValueAtTime(bin.vol,ti+.05); bin.master.connect(ctx.destination);
+    if(!NativeTone.start({voices:[{f:bin.f1,g:1,p:-1},{f:bin.f2,g:1,p:1}],master:binToneVol(),fadeMs:50})){
+      bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(.0001,ti); bin.master.gain.linearRampToValueAtTime(binToneVol(),ti+.05); bin.master.connect(ctx.destination);
       bin.oscA=ctx.createOscillator(); bin.oscA.type="sine"; bin.oscA.frequency.setValueAtTime(bin.f1,ti); bin.oscB=ctx.createOscillator(); bin.oscB.type="sine"; bin.oscB.frequency.setValueAtTime(bin.f2,ti);
       var pa=ctx.createStereoPanner(),pb=ctx.createStereoPanner(); pa.pan.setValueAtTime(-1,ti); pb.pan.setValueAtTime(1,ti); bin.oscA.connect(pa); pa.connect(bin.master); bin.oscB.connect(pb); pb.connect(bin.master); bin.oscA.start(ti); bin.oscB.start(ti);
     }
-    bin.startedAt=Date.now(); binSetPlayState(true); $("binCountdown").textContent=binFormat(bin.remaining); clearInterval(bin.timerId); bin.timerId=setInterval(binTick,250); setBg(true);
+    bin.startedAt=Date.now(); binSetPlayState(true); $("binCountdown").textContent=binFormat(bin.remaining); clearInterval(bin.timerId); bin.timerId=setInterval(binTick,250); setBg(true); binMusicStart();
   }
   function binStop(immediate,preserveTime){
-    if(bin.playing&&preserveTime)binTick(); clearInterval(bin.timerId); bin.timerId=null; NativeTone.stop({fadeMs:immediate?20:60});
+    if(bin.playing&&preserveTime)binTick(); clearInterval(bin.timerId); bin.timerId=null; NativeTone.stop({fadeMs:immediate?20:60}); binMusicStop(immediate);
     if(ctx&&bin.master){ var ti=ctx.currentTime,m=bin.master,a=bin.oscA,b=bin.oscB; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(.0001,ti+(immediate?.02:.06));}catch(e){} setTimeout(function(){[a,b].forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?40:120); }
     bin.master=null; bin.oscA=null; bin.oscB=null; binSetPlayState(false); if(!preserveTime)bin.remaining=bin.duration*60; $("binCountdown").textContent=""; setBg(false); naSweep(); ST.stop();  }
   $("binPlay").addEventListener("click",function(){ if(bin.playing)binStop(false,true); else startWhenReady(binStart); });
   $("binRestart").addEventListener("click",function(){ binStop(true,false); bin.remaining=bin.duration*60; startWhenReady(binStart); });
   $("binTimerJump").addEventListener("click",function(){ $("binDurationRow").scrollIntoView({behavior:prefersReduce?"auto":"smooth",block:"center"}); this.classList.remove("flash"); void this.offsetWidth; this.classList.add("flash"); });
-  $("binVol").addEventListener("input",function(){ bin.vol=parseInt(this.value,10)/100;
-    if(!NativeTone.update({master:bin.vol,glideMs:20}) && bin.master && ctx)bin.master.gain.setTargetAtTime(bin.vol,ctx.currentTime,.02); });
+  $("binVol").addEventListener("input",function(){ bin.vol=parseInt(this.value,10)/100; binVolApply(); });
   Array.prototype.forEach.call($("binDurations").children,function(b){ b.addEventListener("click",function(){ var resume=bin.playing; binStop(true,false); bin.duration=parseInt(this.getAttribute("data-min"),10); bin.remaining=bin.duration*60; binUpdateUi(); if(resume)startWhenReady(binStart); }); });
 
   /* AURALIS_BIN_MANUAL_V1 : une frequence choisie pour chaque oreille. */
@@ -4538,7 +4665,6 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function closeBinManual(){
     binStop(true,false); bin.manual=false; $("binPlay").disabled=false;
     var p=bin.intent||BIN_INTENTS[0]; bin.f1=108-p.beat/2; bin.f2=108+p.beat/2;
-    document.querySelector("#vBinInput .binlanding").appendChild($("binSessionPanel"));
     binManCard(); binUpdateUi(); show("binInput");
   }
   $("binManOpen").addEventListener("click",openBinManual);
@@ -4838,7 +4964,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     var tours={
       lib:[{target:"search",key:"search"},{target:"freqMethodBtn",key:"method"}],
       play:[{target:"play",key:"play"},{target:"vol",key:"volume"},{target:"timer",key:"duration"}],
-      binInput:[{target:"binHeadphones",key:"headphones"},{target:"binDurations",key:"binaural"}],
+      binInput:[{target:"binHeadphones",key:"headphones"}],
+      binCat:[{target:"binDurations",key:"binaural"}],
       seq:[{target:"sStep",key:"sequence"},{target:"sPlay",key:"sequence_play"}]
     };
     try{

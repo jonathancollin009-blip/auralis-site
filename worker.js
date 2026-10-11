@@ -227,7 +227,11 @@ load(7);
    handler doit se comporter comme un vrai serveur de fichiers -- notamment
    repondre aux requetes Range, sans quoi le seek et le chargement progressif
    des pistes casseraient silencieusement dans <audio>. */
-const R2_PREFIXES = ["app-sounds/geometrie/", "app-sounds/meditation/"];
+/* app-sounds/binaural/ (2026-10-11) : boucles de musique du mode Binauraux.
+   L'app les charge par XHR pour Web Audio (boucle sans trou), donc depuis une
+   autre origine dans l'app native (https://localhost) : d'ou l'en-tete CORS
+   ci-dessous, sans lequel la musique resterait muette sur Android. */
+const R2_PREFIXES = ["app-sounds/geometrie/", "app-sounds/meditation/", "app-sounds/binaural/"];
 
 function parseRange(header) {
   if (!header) return undefined;
@@ -247,6 +251,7 @@ async function handleAudioFromR2(request, env, key) {
       head.writeHttpMetadata(headers);
       headers.set("etag", head.httpEtag);
       headers.set("accept-ranges", "bytes");
+      headers.set("access-control-allow-origin", "*");
       headers.set("content-length", String(head.size));
       headers.set("cache-control", "public, max-age=31536000, immutable");
       return new Response(null, { status: 200, headers });
@@ -267,6 +272,7 @@ async function handleAudioFromR2(request, env, key) {
     object.writeHttpMetadata(headers);
     headers.set("etag", object.httpEtag);
     headers.set("accept-ranges", "bytes");
+    headers.set("access-control-allow-origin", "*");
     // Le nom de fichier encode deja le contenu (pistes figees une fois publiees) :
     // cache long cote navigateur et edge Cloudflare.
     headers.set("cache-control", "public, max-age=31536000, immutable");

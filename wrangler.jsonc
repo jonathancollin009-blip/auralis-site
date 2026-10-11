@@ -26,7 +26,7 @@
     // encore a ce chemin et n'invoque jamais worker.js -- le routage vers R2
     // deviendrait dependant de la suppression effective des fichiers du
     // depot, un etat fragile et invisible en relisant juste le code.
-    "run_worker_first": ["/app-sounds/geometrie/*", "/app-sounds/meditation/*"]
+    "run_worker_first": ["/app-sounds/geometrie/*", "/app-sounds/meditation/*", "/app-sounds/binaural/*"]
   },
   // Cree automatiquement au premier `writeDataPoint()` -- aucune etape de
   // provisionnement manuelle requise, contrairement a D1/KV/R2.
