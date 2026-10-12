@@ -4869,6 +4869,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   }
   function closeBinPlayer(){
     if($("binTimerDialog").open)$("binTimerDialog").close();
+    binStop(true,false);
     show("binCat");
     var b=$("binTracks").querySelector('[data-track="'+(bin.track?bin.track.id:"")+'"]');
     if(b)b.focus({preventScroll:true});
