@@ -1578,6 +1578,56 @@
  #binTracksCount{font-size:.68rem}
 }
 
+/* AURALIS_BIN_FULL_PLAYER_V1 */
+#vBinPlayer{position:fixed;inset:0;z-index:15;max-width:520px;margin:0 auto;height:100svh;min-height:0;overflow:hidden;background:#070d1c;color:#f3f6ff}
+#vBinPlayer.on{display:flex;flex-direction:column}
+.binplayerart{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 35%;pointer-events:none}
+.binplayershade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,8,20,.28),transparent 24%,transparent 43%,rgba(3,8,20,.62) 64%,rgba(3,8,20,.95) 100%);pointer-events:none}
+.binplayertop{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(var(--safe-top) + 14px) 18px 0}
+#binPlayerBack{width:48px;height:48px;flex-shrink:0;color:#fff;border:1px solid rgba(255,255,255,.35);background:rgba(7,13,28,.45);border-radius:50%;backdrop-filter:blur(12px)}
+.binplayerheadphones{font-size:.72rem;line-height:1.4;color:#f3f6ff;padding:8px 12px;border:1px solid rgba(255,255,255,.2);border-radius:24px;background:rgba(7,13,28,.55);max-width:68%;text-align:right}
+#binPlayerSlot{position:relative;margin-top:auto;max-height:calc(100% - 88px - var(--safe-top));overflow-y:auto;overscroll-behavior:contain;padding:26px 24px calc(var(--safe-bottom) + 20px)}
+#vBinPlayer #binSessionPanel{padding:0;margin:0;border:0;border-radius:0;background:none;box-shadow:none;color:#f3f6ff}
+#vBinPlayer #binSessionPanel:before,#vBinPlayer #binSessionPanel:after{display:none}
+#vBinPlayer .binsessiontitle{font-size:clamp(1.65rem,6vw,2.1rem);line-height:1.18;letter-spacing:-.025em;color:#fff;text-align:left;margin:0 0 9px}
+#vBinPlayer .binintenttag{color:#e0e8f4;font-size:.98rem;line-height:1.4;text-align:left;margin:0 0 22px}
+#vBinPlayer .binwaveviz,#vBinPlayer .bincomfort,#vBinPlayer .disc{display:none}
+#vBinPlayer .bincontrol{margin:0 0 12px;grid-template-columns:22px auto minmax(70px,1fr);color:#e0e8f4;gap:10px}
+#vBinPlayer .binlabel{color:#e0e8f4;font-size:.82rem}
+#vBinPlayer #binVol{width:100%;min-width:0;height:36px;accent-color:#7fd8f0;background:transparent}
+#vBinPlayer #binVol::-webkit-slider-runnable-track{height:6px;border:0;border-radius:8px;background:linear-gradient(90deg,#7fd8f0,#b98fe0)}
+#vBinPlayer #binVol::-webkit-slider-thumb{margin-top:-8px}
+#vBinPlayer #binVol::-moz-range-track{height:6px;border:0;border-radius:8px;background:linear-gradient(90deg,#7fd8f0,#b98fe0)}
+#vBinPlayer .bintransport{position:relative;display:flex;justify-content:center;align-items:center;min-height:100px;margin:8px 0}
+#vBinPlayer #binPlay{width:90px!important;height:90px;flex:none;border:2px solid #7fd8f0!important;background:rgba(28,81,102,.38)!important;color:#7fd8f0!important;box-shadow:0 0 25px rgba(80,209,242,.17)}
+#vBinPlayer #binTimerJump{position:absolute;right:0;top:50%;transform:translateY(-50%);max-width:26%;min-width:48px;min-height:64px;color:#e0e8f4;gap:6px;font-size:.72rem}
+#vBinPlayer #binTimerJump .binsideicon{width:48px;height:48px;border:1px solid rgba(255,255,255,.55);color:#fff;background:rgba(7,13,28,.3)}
+#vBinPlayer #binTimerJump[data-active="true"] .binsideicon{border-color:#7fd8f0;background:rgba(28,81,102,.65);color:#7fd8f0}
+#vBinPlayer #binCountdown{color:#e0e8f4;font-size:.82rem;line-height:1.4;min-height:1.4em;margin:6px 0 0;text-align:center}
+#binTimerDialog{width:calc(100% - 32px);max-width:440px;max-height:85svh;box-sizing:border-box;padding:24px;border:1px solid var(--line,rgba(127,216,240,.3));border-radius:24px;background:var(--pan);color:var(--txt);box-shadow:0 24px 90px rgba(0,0,0,.5);overflow-y:auto}
+#binTimerDialog:not([open]){display:none}
+#binTimerDialog::backdrop{background:rgba(2,6,16,.65);backdrop-filter:blur(8px)}
+#binTimerDialog h3{margin:0 0 10px;font-size:1.2rem}
+#binTimerDialog .bintimerhint{color:var(--dim);font-size:.88rem;line-height:1.5;margin:0 0 18px}
+#binTimerDialog #binDurationRow{display:block;margin:0}
+#binTimerDialog #binDurations{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#binTimerDialog #binDurations button{min-height:48px;padding:10px 6px;white-space:normal;font-size:.88rem;background:var(--bg);color:var(--txt);border:1px solid var(--line,rgba(127,216,240,.25));border-radius:14px}
+#binTimerDialog #binDurations button[data-min="0"]{grid-column:1/-1}
+#binTimerDialog #binDurations button[aria-pressed="true"]{border:2px solid #309eba;background:var(--pan2);color:var(--txt)}
+.bintimercustom{margin-top:20px}
+.bintimercustom label{display:block;margin-bottom:8px;color:var(--dim);font-size:.85rem}
+.bintimercustomrow{display:flex;gap:10px;align-items:center}
+#binTimerMinutes{min-width:0;width:100%;box-sizing:border-box;min-height:48px;padding:10px 12px;border-radius:12px;border:1px solid var(--line,rgba(127,216,240,.3));background:var(--bg);color:var(--txt);font:inherit}
+#binTimerApply,#binTimerClose{min-height:48px;border-radius:12px;padding:10px 14px;white-space:normal;font:inherit}
+#binTimerApply{background:#7fd8f0;color:#070d1c;border:0}
+#binTimerClose{display:block;width:100%;margin-top:18px;background:transparent;border:1px solid var(--line,rgba(127,216,240,.3));color:var(--txt)}
+#binTimerError{margin:8px 0 0;font-size:.83rem;color:var(--txt)}
+#binTimerError:empty{display:none}
+#vBinPlayer button:focus-visible,#binTimerDialog button:focus-visible,#binTimerDialog input:focus-visible{outline:3px solid #7fd8f0;outline-offset:3px}
+#vBinManual .bintransport{grid-template-columns:1fr 1fr}
+@media(max-height:650px){#binPlayerSlot{padding:18px 20px calc(var(--safe-bottom) + 12px)}#vBinPlayer .binintenttag{margin-bottom:12px}#vBinPlayer #binPlay{width:74px!important;height:74px}#vBinPlayer .bintransport{min-height:82px}#vBinPlayer .binsessiontitle{font-size:1.55rem}}
+@media(orientation:landscape) and (max-height:520px){#vBinPlayer{max-width:none}.binplayerart{object-position:center 35%}#binPlayerSlot{width:48%;box-sizing:border-box;align-self:flex-end;background:linear-gradient(90deg,transparent,rgba(3,8,20,.7));max-height:calc(100% - 72px)}#vBinPlayer .binsessiontitle{font-size:1.25rem}#vBinPlayer .binintenttag{font-size:.8rem;margin-bottom:8px}#vBinPlayer .bincontrol{margin-bottom:2px}#vBinPlayer #binPlay{width:62px!important;height:62px}#vBinPlayer .bintransport{min-height:68px;margin:0}}
+
 </style>
 <script>
 /* Thème appliqué avant le premier rendu, sinon l'app clignote en sombre puis passe en clair. */
@@ -1858,25 +1908,44 @@
       <div class="binheadphones"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="13" width="4" height="7" rx="2"/><rect x="17" y="13" width="4" height="7" rx="2"/></svg><span id="binCatHeadphones"></span></div>
       <div class="binsectionhead"><h3 id="binTracksLabel">—</h3><span id="binTracksCount"></span></div>
       <div class="bintracks" id="binTracks"></div>
-      <div id="binCatSlot">
+    </div>
+  </section>
+
+  <section class="view" id="vBinPlayer" aria-labelledby="binSessionTitle">
+    <img class="binplayerart" id="binPlayerPhoto" alt="" decoding="async">
+    <div class="binplayershade" aria-hidden="true"></div>
+    <div class="binplayertop"><button class="backbtn" id="binPlayerBack" type="button" aria-label="Retour">‹</button><span class="binplayerheadphones" id="binPlayerHeadphones"></span></div>
+    <div id="binPlayerSlot">
       <div class="binsession" id="binSessionPanel">
         <h3 class="binsessiontitle" id="binSessionTitle">—</h3>
         <p class="binintenttag" id="binIntentTag"></p>
         <svg class="binwaveviz" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="binWaveGrad" x1="0" x2="1"><stop stop-color="#47d9fb"/><stop offset="1" stop-color="#9c63ff"/></linearGradient></defs><path d="M2 30 C18 30 23 8 37 30 S58 52 74 30 S94 4 108 30 S130 55 146 30 S168 12 182 30 S205 42 218 30 S238 17 252 30 S270 7 286 30 S306 49 321 30 S342 13 357 30 S378 40 398 30" stroke="url(#binWaveGrad)" stroke-width="3"/><path d="M2 30 C30 22 43 38 68 30 S104 18 130 30 S168 42 194 30 S232 18 258 30 S296 42 322 30 S360 20 398 30" stroke="url(#binWaveGrad)" stroke-width="1.2" opacity=".42"/></svg>
-        <div class="bintransport">
-          <button id="binRestart" type="button"><span class="binsideicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v6h6"/><path d="M5.5 15a7 7 0 1 0 .5-7"/></svg></span><span id="binRestartLabel">—</span></button>
-          <button class="binmainplay" id="binPlay" type="button" aria-pressed="false"><svg class="binplayicon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="binpauseicon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg></button>
-          <button class="bintimer" id="binTimerJump" type="button"><span class="binsideicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v5l3 2M9 2h6M12 5V2"/></svg></span><span id="binTimerLabel">—</span></button>
-        </div>
         <div class="bincontrol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg><span class="binlabel" id="binVolLabel">—</span><input type="range" id="binVol" min="0" max="100" step="1" value="50"></div>
-        <div class="bindurations" id="binDurationRow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg><span class="binlabel" id="binDurationLabel">—</span><div class="bindurationopts" id="binDurations"><button type="button" data-min="10">10 min</button><button type="button" data-min="20" aria-pressed="true">20 min</button><button type="button" data-min="30">30 min</button></div></div>
+        <div class="bintransport">
+          <button class="binmainplay" id="binPlay" type="button" aria-pressed="false"><svg class="binplayicon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="binpauseicon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg></button>
+          <button class="bintimer" id="binTimerJump" type="button" aria-haspopup="dialog" aria-controls="binTimerDialog" aria-expanded="false"><span class="binsideicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v5l3 2M9 2h6M12 5V2"/></svg></span><span id="binTimerLabel">—</span></button>
+        </div>
         <p class="bincountdown" id="binCountdown"></p>
         <p class="bincomfort"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="5" r="2"/><path d="M12 7v6M8 11l4 2 4-2M6 19c2-3 4-4 6-4s4 1 6 4M4 21c2-1 4-1 8 0s6 1 8 0"/></svg><span id="binComfort">—</span></p>
         <p class="disc" id="discBin"></p>
       </div>
-      </div>
     </div>
   </section>
+  <dialog id="binTimerDialog" aria-labelledby="binDurationLabel" aria-describedby="binTimerHint">
+    <h3 id="binDurationLabel"></h3>
+    <p class="bintimerhint" id="binTimerHint"></p>
+    <div id="binDurationRow"><div class="bindurationopts" id="binDurations">
+      <button type="button" data-min="0" aria-pressed="true"></button>
+      <button type="button" data-min="10"></button><button type="button" data-min="20"></button><button type="button" data-min="30"></button>
+      <button type="button" data-min="45"></button><button type="button" data-min="60"></button><button type="button" data-min="90"></button>
+    </div></div>
+    <form class="bintimercustom" id="binTimerCustom" novalidate>
+      <label id="binTimerCustomLabel" for="binTimerMinutes"></label>
+      <div class="bintimercustomrow"><input id="binTimerMinutes" type="number" inputmode="numeric" min="1" max="1440" step="1" aria-describedby="binTimerError"><button type="submit" id="binTimerApply"></button></div>
+      <p id="binTimerError" role="alert"></p>
+    </form>
+    <button type="button" id="binTimerClose"></button>
+  </dialog>
 
   <section class="view" id="vBinManual">
     <div class="bar"><button class="backbtn" id="binManBack" aria-label="Retour">‹</button><h2 id="binManTitle">—</h2><button class="bintheme" id="binManTheme" aria-label="Thème clair ou sombre">☾</button></div>
@@ -3153,9 +3222,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   // ---------- nav ----------
   var returnTo="lib";
   var curView="home";
-  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, binCat:2, binManual:2, favList:1, settings:1, method:1, medmusic:1,
+  var NAV_LEVEL={home:0, lib:1, protos:1, geo:1, pulse:1, binInput:1, binCat:2, binPlayer:3, binManual:2, favList:1, settings:1, method:1, medmusic:1,
     play:2, freqInfo:3, seq:2, geoPlay:2, binError:2, favKeypad:2, favNext:2, favRecap:2, favName:2};
-  function show(v){ if(v!=="medmusic"&&typeof medFullHide==="function")medFullHide(); ST.screen(v); ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinCat","vBinManual","vBinError","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMedmusic","vFreqInfo","vPaywall"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
+  function show(v){ if(v!=="medmusic"&&typeof medFullHide==="function")medFullHide(); ST.screen(v); ["vHome","vLib","vProtos","vPlay","vSeq","vGeo","vGeoPlay","vPulse","vBinInput","vBinCat","vBinPlayer","vBinManual","vBinError","vFavKeypad","vFavNext","vFavRecap","vFavName","vFavList","vSettings","vMethod","vMedmusic","vFreqInfo","vPaywall"].forEach(function(id){ $(id).classList.toggle("on","v"+cap(v)===id); });
     $("chainBtn").hidden=!!favBuild;
     if(v==="home"){ animHomeCards(); }
     else { var back=(NAV_LEVEL[v]||0)<(NAV_LEVEL[curView]||0);
@@ -3248,7 +3317,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("binMaxgap2").textContent=t("bin_maxgap");
     if(binMan)binManTexts();
     $("binErrTitle").textContent=t("bin_err_title"); $("binRetry").textContent=t("bin_retry");
-    if($("binPresets")){ $("binPageTitle").textContent=t("home_bin"); $("binStepTitle").textContent=t("bin_tune_title"); $("binPickHint").textContent=t("bin_pick_hint"); $("binPresetsLabel").textContent=t("bin_presets_label"); $("binHeadphones").textContent=t("bin_headphones"); $("binRestartLabel").textContent=t("bin_retry"); $("binTimerLabel").textContent=t("timer_label"); $("binDurationLabel").textContent=t("fav_dur_title"); $("binComfort").textContent=t("bin_comfort"); renderBinPresets(); binUpdateUi(); }
+    if($("binPresets")){ $("binPageTitle").textContent=t("home_bin"); $("binStepTitle").textContent=t("bin_tune_title"); $("binPickHint").textContent=t("bin_pick_hint"); $("binPresetsLabel").textContent=t("bin_presets_label"); $("binHeadphones").textContent=t("bin_headphones"); $("binTimerLabel").textContent=t("timer_label"); $("binDurationLabel").textContent=t("timer_label"); $("binComfort").textContent=t("bin_comfort"); renderBinPresets(); binUpdateUi(); }
     $("favAddMore").textContent=t("fav_add_more"); $("favPlaySel").textContent=t("fav_play_sel"); $("favNextCancel").textContent=t("fav_cancel");
     $("favRecapAdd").textContent=t("fav_add"); $("favRecapPlay").textContent=t("fav_play_now"); $("favRecapSave").textContent=t("fav_save_as_fav"); $("favRecapCancel").textContent=t("fav_cancel");
     $("favNameSave").textContent=t("fav_save"); $("favNameInput").placeholder=t("fav_name_ph");
@@ -4506,7 +4575,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("pPlay").addEventListener("click",function(){ if(pulse.playing){ unlockAudio(); pulseStop(false); } else startWhenReady(pulseStart); });
 
   // ================= BINAURAUX =================
-  var bin={f1:0,f2:0,vol:0.5,playing:false,master:null,oscA:null,oscB:null,intent:null,duration:20,remaining:1200,startedAt:0,timerId:null};
+  var bin={f1:0,f2:0,vol:0.5,playing:false,master:null,oscA:null,oscB:null,intent:null,duration:0,remaining:0,startedAt:0,timerId:null,timerDone:false};
   var BIN_INTENTS=[
     {key:"sleep",beat:2,band:"delta",photo:"binaural-delta.webp",col:"#46d8fa"},
     {key:"focus",beat:10,band:"alpha",photo:"binaural-alpha.webp",col:"#a467ff"},
@@ -4526,7 +4595,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   };
   function binBandLabel(p){var names=BIN_BAND_NAMES[lang]||BIN_BAND_NAMES.en;return names[p.band]||p.band;}
   function binIntentTitle(p){return t("bin_int_"+p.key)+" ("+binBandLabel(p)+")";}
-  function binReset(){ bin.intent=BIN_INTENTS[0]; bin.track=null; bin.f1=107; bin.f2=109; bin.duration=20; bin.remaining=1200; bin.startedAt=0; }
+  function binReset(){ bin.intent=BIN_INTENTS[0]; bin.track=null; bin.f1=107; bin.f2=109; bin.duration=0; bin.remaining=0; bin.startedAt=0; bin.timerDone=false; }
   function binWave(seed){
     var a=seed%3,b=(seed+1)%3;
     return '<svg class="biwave" viewBox="0 0 150 55" preserveAspectRatio="none" aria-hidden="true"><path d="M1 29 C18 '+(7+a*5)+' 30 '+(49-b*4)+' 49 29 S80 '+(5+b*5)+' 99 29 S130 '+(49-a*4)+' 149 29"/><path d="M1 29 C22 '+(15+b*3)+' 35 '+(42-a*2)+' 55 29 S88 '+(14+a*3)+' 107 29 S137 '+(43-b*2)+' 149 29"/></svg>';
@@ -4540,11 +4609,11 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function binFormat(seconds){ var s=Math.max(0,Math.ceil(seconds)),m=Math.floor(s/60); return String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
   function binSetPlayState(on){ bin.playing=!!on; var b=$("binPlay"); b.setAttribute("aria-pressed",on?"true":"false"); b.setAttribute("aria-label",on?t("pause"):t("play")); binCatMark(); }
   function binUpdateUi(){
-    $("binSessionTitle").textContent=binTitle(); $("binIntentTag").textContent=(!bin.manual&&bin.track)?binTrackName(bin.track):t("bin_playing");
-    Array.prototype.forEach.call($("binDurations").children,function(b){ b.setAttribute("aria-pressed",parseInt(b.getAttribute("data-min"),10)===bin.duration?"true":"false"); b.textContent=b.getAttribute("data-min")+" "+unitText("unit_minute_short","min"); });
+    $("binSessionTitle").textContent=(!bin.manual&&bin.track)?binTrackName(bin.track):binTitle(); $("binIntentTag").textContent=bin.manual?t("bin_playing"):binTitle();
+    Array.prototype.forEach.call($("binDurations").children,function(b){ b.setAttribute("aria-pressed",parseInt(b.getAttribute("data-min"),10)===bin.duration?"true":"false"); b.textContent=b.getAttribute("data-min")==="0"?bpT("unlimited"):b.getAttribute("data-min")+" "+unitText("unit_minute_short","min"); });
     $("binCountdown").textContent=bin.playing?binFormat(bin.remaining):""; binSetPlayState(bin.playing);
     var mk=binMusicAvail(); if(mk&&!NativeTone.on())binMusicLoad(mk);
-    binCatRender();
+    binCatRender(); binPlayerSync();
   }
   /* AURALIS_BIN_MUSIC_V1 : musique de fond en boucle derriere les battements.
      La piste choisie sur la page de la categorie (bin.track, voir BIN_TRACKS)
@@ -4707,7 +4776,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function binTrackName(tr){ var n=tr.name&&(tr.name[lang]||tr.name.en); return n||(bcT("track")+" "+(binTracks().indexOf(tr)+1)); }
   function binCatMark(){ var el=$("binTracks"); if(!el)return; var l=binTracks();
     Array.prototype.forEach.call(el.children,function(b,i){ var sel=!bin.manual&&l[i]===bin.track;
-      b.setAttribute("aria-pressed",sel?"true":"false"); b.classList.toggle("playing",sel&&bin.playing); b.setAttribute("aria-label",((sel&&bin.playing)?t("pause"):t("play"))+" — "+binTrackName(l[i])); }); }
+      b.setAttribute("aria-pressed",sel?"true":"false"); b.classList.toggle("playing",sel&&bin.playing); b.setAttribute("aria-label",binTrackName(l[i])+" — "+binTitle()); }); }
   function binCatRender(){ var el=$("binTracks"), p=bin.intent||BIN_INTENTS[0]; if(!el)return;
     $("binCatTitle").textContent=binIntentTitle(p); $("binCatDesc").textContent=t("bin_int_"+p.key+"_d"); $("binTracksLabel").textContent=bcT("head"); $("binTracksCount").textContent=binCollectionCount(binTracks().length); $("binCatHeadphones").textContent=t("bin_headphones");
     var ph="app-images/"+p.photo; if($("binCatPhoto").getAttribute("src")!==ph)$("binCatPhoto").setAttribute("src",ph);
@@ -4716,24 +4785,23 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     binTracks().forEach(function(tr){ var b=document.createElement("button"); b.type="button";
       b.setAttribute("data-track",tr.id);
       b.innerHTML='<span class="bintrart"><img src="app-images/'+tr.photo+'" alt="" loading="lazy" decoding="async"></span><span class="bintrcopy"><span class="bintrname">'+htmlText(binTrackName(tr))+'</span><span class="bintrdesc">'+htmlText(t("bin_int_"+p.key+"_d"))+'</span></span><span class="bintrstate" aria-hidden="true"><svg class="bintrplay" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><svg class="bintrpause" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg></span>';
-      b.addEventListener("click",function(){
-        if(bin.track===tr){ if(bin.playing)binStop(false,true); else startWhenReady(binStart); return; }
-        /* Changement de musique en cours de seance : les battements et la
-           minuterie continuent, seule la musique fond vers la nouvelle. */
-        binMusicStop(false); bin.track=tr; binUpdateUi();
-        if(bin.playing){ binMusicStart(); NA.start(nativeText("notification_binaural",t("bin_playing")),binTitle(),{pause:function(){binStop(false,true);},stop:function(){binStop(false,false);},play:function(){if(!bin.playing)binStart();}}); }
-        else startWhenReady(binStart); });
+      b.addEventListener("click",function(){openBinPlayer(tr);});
       el.appendChild(b); });
     binCatMark(); if(focused){var target=el.querySelector('[data-track="'+focused+'"]'); if(target)target.focus({preventScroll:true});} }
-  function openBinCat(p){ binStop(true,false); bin.manual=false; bin.intent=p; bin.f1=108-p.beat/2; bin.f2=108+p.beat/2; bin.remaining=bin.duration*60;
-    bin.track=binTracks()[0]||null; $("binPlay").disabled=false; $("binCatSlot").appendChild($("binSessionPanel")); binUpdateUi(); show("binCat"); }
+  function openBinCat(p){ binStop(true,false); bin.manual=false; bin.intent=p; bin.f1=108-p.beat/2; bin.f2=108+p.beat/2; bin.duration=0; bin.remaining=0; bin.timerDone=false;
+    bin.track=binTracks()[0]||null; $("binPlay").disabled=false; $("binPlayerSlot").appendChild($("binSessionPanel")); binUpdateUi(); show("binCat"); }
   $("binCatBack").addEventListener("click",function(){ binStop(true,false); show("binInput"); });
   $("binCatTheme").addEventListener("click",toggleTheme);
   function openBinInput(){ binStop(true,false); bin.manual=false; $("binPlay").disabled=false; if(binMan)binManCard(); binReset(); returnTo="home"; renderBinPresets(); binUpdateUi(); show("binInput"); }
   $("binBack").addEventListener("click",function(){ binStop(true,false); show("home"); });
   $("binThemeBtn").addEventListener("click",toggleTheme);
-  function binTick(){ if(!bin.playing)return; bin.remaining=Math.max(0,bin.remaining-(Date.now()-bin.startedAt)/1000); bin.startedAt=Date.now(); $("binCountdown").textContent=binFormat(bin.remaining); if(bin.remaining<=0){ binStop(false,false); bin.remaining=bin.duration*60; binUpdateUi(); } }
-  function binStart(){ if(bin.playing||(bin.manual&&!binManCheck()))return; ensureCtx(); unlockAudio(); if(bin.remaining<=0)bin.remaining=bin.duration*60;
+  function binTick(){
+    if(!bin.playing||bin.duration===0)return;
+    var now=Date.now();bin.remaining=Math.max(0,bin.remaining-(now-bin.startedAt)/1000);bin.startedAt=now;
+    if(bin.remaining<=0){binStop(false,false);bin.remaining=0;bin.timerDone=true;}
+    binTimerUi();
+  }
+  function binStart(){ if(bin.playing||(bin.manual&&!binManCheck()))return; ensureCtx(); unlockAudio(); if(bin.duration>0&&bin.remaining<=0)bin.remaining=bin.duration*60; bin.timerDone=false;
     ST.play("bin",bin.manual?"manual":(bin.intent?bin.intent.key:"binaural"));
     NA.start(nativeText("notification_binaural",t("bin_playing")),binTitle(),{pause:function(){binStop(false,true);},stop:function(){binStop(false,false);},play:function(){if(!bin.playing)binStart();}});
     var ti=ctx.currentTime;
@@ -4742,17 +4810,95 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       bin.oscA=ctx.createOscillator(); bin.oscA.type="sine"; bin.oscA.frequency.setValueAtTime(bin.f1,ti); bin.oscB=ctx.createOscillator(); bin.oscB.type="sine"; bin.oscB.frequency.setValueAtTime(bin.f2,ti);
       var pa=ctx.createStereoPanner(),pb=ctx.createStereoPanner(); pa.pan.setValueAtTime(-1,ti); pb.pan.setValueAtTime(1,ti); bin.oscA.connect(pa); pa.connect(bin.master); bin.oscB.connect(pb); pb.connect(bin.master); bin.oscA.start(ti); bin.oscB.start(ti);
     }
-    bin.startedAt=Date.now(); binSetPlayState(true); $("binCountdown").textContent=binFormat(bin.remaining); clearInterval(bin.timerId); bin.timerId=setInterval(binTick,250); setBg(true); binMusicStart();
+    bin.startedAt=Date.now(); binSetPlayState(true); binTimerUi(); clearInterval(bin.timerId); bin.timerId=bin.duration>0?setInterval(binTick,250):null; setBg(true); binMusicStart();
   }
   function binStop(immediate,preserveTime){
     if(bin.playing&&preserveTime)binTick(); clearInterval(bin.timerId); bin.timerId=null; NativeTone.stop({fadeMs:immediate?20:60}); binMusicStop(immediate);
     if(ctx&&bin.master){ var ti=ctx.currentTime,m=bin.master,a=bin.oscA,b=bin.oscB; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(.0001,ti+(immediate?.02:.06));}catch(e){} setTimeout(function(){[a,b].forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?40:120); }
-    bin.master=null; bin.oscA=null; bin.oscB=null; binSetPlayState(false); if(!preserveTime)bin.remaining=bin.duration*60; $("binCountdown").textContent=""; setBg(false); naSweep(); ST.stop();  }
+    bin.master=null; bin.oscA=null; bin.oscB=null; binSetPlayState(false); if(!preserveTime)bin.remaining=bin.duration*60; binTimerUi(); setBg(false); naSweep(); ST.stop();  }
   $("binPlay").addEventListener("click",function(){ if(bin.playing)binStop(false,true); else startWhenReady(binStart); });
-  $("binRestart").addEventListener("click",function(){ binStop(true,false); bin.remaining=bin.duration*60; startWhenReady(binStart); });
-  $("binTimerJump").addEventListener("click",function(){ $("binDurationRow").scrollIntoView({behavior:prefersReduce?"auto":"smooth",block:"center"}); this.classList.remove("flash"); void this.offsetWidth; this.classList.add("flash"); });
+  $("binTimerJump").addEventListener("click",binTimerOpen);
   $("binVol").addEventListener("input",function(){ bin.vol=parseInt(this.value,10)/100; binVolApply(); });
-  Array.prototype.forEach.call($("binDurations").children,function(b){ b.addEventListener("click",function(){ var resume=bin.playing; binStop(true,false); bin.duration=parseInt(this.getAttribute("data-min"),10); bin.remaining=bin.duration*60; binUpdateUi(); if(resume)startWhenReady(binStart); }); });
+  Array.prototype.forEach.call($("binDurations").children,function(b){b.addEventListener("click",function(){binSetDuration(Number(this.getAttribute("data-min")));$("binTimerDialog").close();});});
+
+  /* AURALIS_BIN_FULL_PLAYER_V1: presentation and optional session timer only. */
+  var BIN_PLAYER_COVERS={
+    delta_1:"music-forest-rain-v1.webp",delta_2:"music-ocean-au-clair-de-lune-v1.webp",
+    alpha_1:"binaural-alpha-1-player-v1.webp",alpha_2:"binaural-alpha-2-player-v1.webp",
+    theta_1:"binaural-theta-1-player-v1.webp",theta_2:"binaural-theta-2-player-v1.webp",
+    beta_1:"binaural-beta-1-player-v1.webp",beta_2:"binaural-beta-2-player-v1.webp"
+  };
+  var BIN_PLAYER_TXT={
+    fr:{unlimited:"Sans limite",continuous:"Lecture sans limite",hint:"Choisissez quand la lecture s’arrêtera.",custom:"Durée personnalisée (minutes)",apply:"Appliquer",close:"Fermer",error:"Entrez une durée de 1 à 1 440 minutes.",back:"Retour aux musiques"},
+    en:{unlimited:"Unlimited",continuous:"Unlimited listening",hint:"Choose when playback will stop.",custom:"Custom duration (minutes)",apply:"Apply",close:"Close",error:"Enter a duration from 1 to 1,440 minutes.",back:"Back to music"},
+    es:{unlimited:"Sin límite",continuous:"Reproducción sin límite",hint:"Elige cuándo se detendrá la reproducción.",custom:"Duración personalizada (minutos)",apply:"Aplicar",close:"Cerrar",error:"Introduce entre 1 y 1440 minutos.",back:"Volver a la música"},
+    de:{unlimited:"Unbegrenzt",continuous:"Unbegrenzte Wiedergabe",hint:"Wähle, wann die Wiedergabe endet.",custom:"Eigene Dauer (Minuten)",apply:"Anwenden",close:"Schließen",error:"Gib eine Dauer von 1 bis 1440 Minuten ein.",back:"Zurück zur Musik"},
+    it:{unlimited:"Senza limite",continuous:"Ascolto senza limite",hint:"Scegli quando interrompere la riproduzione.",custom:"Durata personalizzata (minuti)",apply:"Applica",close:"Chiudi",error:"Inserisci una durata da 1 a 1440 minuti.",back:"Torna alla musica"},
+    lo:{unlimited:"ບໍ່ຈຳກັດ",continuous:"ຟັງແບບບໍ່ຈຳກັດເວລາ",hint:"ເລືອກເວລາທີ່ຈະຢຸດຫຼິ້ນ.",custom:"ກຳນົດໄລຍະເວລາ (ນາທີ)",apply:"ນຳໃຊ້",close:"ປິດ",error:"ປ້ອນເວລາຈາກ 1 ຫາ 1440 ນາທີ.",back:"ກັບໄປຫາດົນຕີ"},
+    hi:{unlimited:"असीमित",continuous:"बिना समय सीमा के सुनें",hint:"चुनें कि संगीत कब बंद होगा।",custom:"अपनी अवधि (मिनट)",apply:"लागू करें",close:"बंद करें",error:"1 से 1440 मिनट की अवधि दर्ज करें।",back:"संगीत पर वापस जाएँ"},
+    zh:{unlimited:"不限时",continuous:"不限时播放",hint:"选择停止播放的时间。",custom:"自定义时长（分钟）",apply:"应用",close:"关闭",error:"请输入 1 至 1440 分钟。",back:"返回音乐列表"},
+    zht:{unlimited:"不限時",continuous:"不限時播放",hint:"選擇停止播放的時間。",custom:"自訂時長（分鐘）",apply:"套用",close:"關閉",error:"請輸入 1 至 1440 分鐘。",back:"返回音樂列表"}
+  };
+  function bpT(k){return (BIN_PLAYER_TXT[lang]||BIN_PLAYER_TXT.en)[k]||BIN_PLAYER_TXT.en[k];}
+  function binTimerUi(){
+    var label=bin.duration>0?(bin.timerDone?t("done"):binFormat(bin.remaining)):bpT("continuous");
+    if($("binCountdown").textContent!==label)$("binCountdown").textContent=label;
+    $("binTimerJump").setAttribute("data-active",bin.duration>0?"true":"false");
+    $("binTimerJump").setAttribute("aria-label",t("timer_label")+" — "+(bin.duration>0?bin.duration+" "+unitText("unit_minute_short","min"):bpT("unlimited")));
+  }
+  function binPlayerSync(){
+    $("binPlayerBack").setAttribute("aria-label",bpT("back"));
+    $("binPlayerHeadphones").textContent=t("bin_headphones");
+    $("binTimerHint").textContent=bpT("hint");
+    $("binTimerCustomLabel").textContent=bpT("custom");
+    $("binTimerApply").textContent=bpT("apply");$("binTimerClose").textContent=bpT("close");
+    $("binVol").setAttribute("aria-label",t("volume"));
+    if(!bin.manual&&bin.track){
+      var src="app-images/"+(BIN_PLAYER_COVERS[bin.track.id]||bin.track.photo||bin.intent.photo);
+      if($("binPlayerPhoto").getAttribute("src")!==src)$("binPlayerPhoto").setAttribute("src",src);
+    }
+    binTimerUi();
+  }
+  function openBinPlayer(tr){
+    var changed=bin.track!==tr;
+    if(changed){binStop(true,false);bin.track=tr;bin.duration=0;bin.remaining=0;bin.timerDone=false;}
+    $("binPlayerSlot").appendChild($("binSessionPanel"));
+    binUpdateUi();show("binPlayer");
+    $("binPlay").focus({preventScroll:true});
+    if(!bin.playing)startWhenReady(function(){if(curView==="binPlayer"&&bin.track===tr)binStart();});
+  }
+  function closeBinPlayer(){
+    if($("binTimerDialog").open)$("binTimerDialog").close();
+    show("binCat");
+    var b=$("binTracks").querySelector('[data-track="'+(bin.track?bin.track.id:"")+'"]');
+    if(b)b.focus({preventScroll:true});
+  }
+  function binTimerOpen(){
+    binPlayerSync();$("binTimerError").textContent="";$("binTimerMinutes").value=bin.duration>0?bin.duration:"";
+    $("binTimerJump").setAttribute("aria-expanded","true");
+    if(!$("binTimerDialog").open)$("binTimerDialog").showModal();
+    var selected=$("binDurations").querySelector('[aria-pressed="true"]');
+    (selected||$("binTimerMinutes")).focus();
+  }
+  function binSetDuration(minutes){
+    if(!Number.isInteger(minutes)||minutes<0||minutes>1440)return false;
+    bin.duration=minutes;bin.remaining=minutes*60;bin.startedAt=Date.now();bin.timerDone=false;
+    clearInterval(bin.timerId);bin.timerId=null;
+    if(bin.playing&&minutes>0)bin.timerId=setInterval(binTick,250);
+    binUpdateUi();return true;
+  }
+  $("binPlayerBack").addEventListener("click",closeBinPlayer);
+  $("binTimerClose").addEventListener("click",function(){$("binTimerDialog").close();});
+  $("binTimerDialog").addEventListener("close",function(){$("binTimerJump").setAttribute("aria-expanded","false");});
+  $("binTimerCustom").addEventListener("submit",function(e){
+    e.preventDefault();var n=Number($("binTimerMinutes").value);
+    if(n<1||!binSetDuration(n)){$("binTimerError").textContent=bpT("error");$("binTimerMinutes").focus();return;}
+    $("binTimerDialog").close();
+  });
+  document.addEventListener("keydown",function(e){
+    if(e.key==="Escape"&&curView==="binPlayer"&&!$("binTimerDialog").open){e.preventDefault();closeBinPlayer();}
+  });
+  document.addEventListener("visibilitychange",function(){if(!document.hidden&&bin.playing)binTick();});
 
   /* AURALIS_BIN_MANUAL_V1 : une frequence choisie pour chaque oreille. */
   var BIN_MAN_MIN=20,BIN_MAN_MAX=500,BIN_MAN_GAP=30;
@@ -4806,7 +4952,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     if(curView==="binManual")binManFill();
   }
   function openBinManual(){
-    binStop(true,false); bin.manual=true; bin.remaining=bin.duration*60;
+    binStop(true,false); bin.manual=true; bin.duration=0; bin.remaining=0; bin.timerDone=false;
     $("binManSlot").appendChild($("binSessionPanel")); binManFill(); binUpdateUi(); show("binManual");
   }
   function closeBinManual(){
@@ -5112,7 +5258,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       lib:[{target:"search",key:"search"},{target:"freqMethodBtn",key:"method"}],
       play:[{target:"play",key:"play"},{target:"vol",key:"volume"},{target:"timer",key:"duration"}],
       binInput:[{target:"binHeadphones",key:"headphones"}],
-      binCat:[{target:"binDurations",key:"binaural"}],
+      binCat:[{target:"binTracks",key:"binaural"}],
+      binPlayer:[{target:"binTimerJump",key:"binaural"}],
       seq:[{target:"sStep",key:"sequence"},{target:"sPlay",key:"sequence_play"}]
     };
     try{
