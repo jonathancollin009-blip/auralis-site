@@ -17,3 +17,10 @@
 /app-images/*
   Access-Control-Allow-Origin: *
   Cross-Origin-Resource-Policy: cross-origin
+
+# Versions de l'app (message « nouvelle version », 2026-10-12) : lu par les
+# apps natives a l'ouverture, donc cross-origin. Jamais mis en cache : un
+# changement de numero doit prendre effet tout de suite.
+/app-version.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: no-cache
