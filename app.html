@@ -1293,6 +1293,29 @@
   .mfullskip{width:58px;height:58px;border:1.5px solid rgba(255,255,255,.55);background:rgba(6,12,28,.42)}
   .mfullmain{width:82px;height:82px;border:2px solid #47d9fb;background:rgba(71,217,251,.18);color:#47d9fb!important;box-shadow:0 0 34px -8px #47d9fb}
   .mfullctl .mfullmain svg{width:34px;height:34px}
+  /* AURALIS_MED_TIMER_V1 -- minuterie de l'onglet Musiques (meme fenetre que les Binauraux). */
+  .medtimerbtn{display:inline-flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0;max-width:44%;min-height:43px;padding:0 13px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--dim);font:inherit;font-size:.78rem;font-variant-numeric:tabular-nums;cursor:pointer}
+  .medtimerbtn svg,.mfulltimer svg{flex:0 0 auto;width:18px;height:18px}
+  .medtimerbtn span,.mfulltimer span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .medtimerbtn[data-active="true"]{border-color:var(--cyan);color:var(--cyan);background:rgba(var(--cyan-rgb),.08)}
+  .mfulltimer{display:inline-flex;align-items:center;gap:7px;align-self:center;max-width:100%;min-height:40px;padding:0 16px;border:1px solid rgba(255,255,255,.45);border-radius:999px;background:rgba(6,12,28,.42);color:#e0e8f4;font:inherit;font-size:.82rem;font-variant-numeric:tabular-nums;cursor:pointer;backdrop-filter:blur(6px)}
+  .mfulltimer[data-active="true"]{border-color:#7fd8f0;color:#7fd8f0;background:rgba(28,81,102,.55)}
+  #medTimerDialog{width:calc(100% - 32px);max-width:440px;max-height:85svh;box-sizing:border-box;padding:24px;border:1px solid var(--line,rgba(127,216,240,.3));border-radius:24px;background:var(--pan);color:var(--txt);box-shadow:0 24px 90px rgba(0,0,0,.5);overflow-y:auto}
+  #medTimerDialog:not([open]){display:none}
+  #medTimerDialog::backdrop{background:rgba(2,6,16,.65);backdrop-filter:blur(8px)}
+  #medTimerDialog h3{margin:0 0 10px;font-size:1.2rem}
+  #medTimerDialog .bintimerhint{color:var(--dim);font-size:.88rem;line-height:1.5;margin:0 0 18px}
+  #medDurations{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  #medDurations button{min-height:48px;padding:10px 6px;white-space:normal;font:inherit;font-size:.88rem;background:var(--bg);color:var(--txt);border:1px solid var(--line,rgba(127,216,240,.25));border-radius:14px;cursor:pointer}
+  #medDurations button[data-min="0"]{grid-column:1/-1}
+  #medDurations button[aria-pressed="true"]{border:2px solid #309eba;background:var(--pan2);color:var(--txt)}
+  #medTimerMinutes{min-width:0;width:100%;box-sizing:border-box;min-height:48px;padding:10px 12px;border-radius:12px;border:1px solid var(--line,rgba(127,216,240,.3));background:var(--bg);color:var(--txt);font:inherit}
+  #medTimerApply,#medTimerClose{min-height:48px;border-radius:12px;padding:10px 14px;white-space:normal;font:inherit;cursor:pointer}
+  #medTimerApply{background:#7fd8f0;color:#070d1c;border:0}
+  #medTimerClose{display:block;width:100%;margin-top:18px;background:transparent;border:1px solid var(--line,rgba(127,216,240,.3));color:var(--txt)}
+  #medTimerError{margin:8px 0 0;font-size:.83rem;color:var(--txt)}
+  #medTimerError:empty{display:none}
+  #medTimerDialog button:focus-visible,#medTimerDialog input:focus-visible,.medtimerbtn:focus-visible{outline:3px solid #7fd8f0;outline-offset:3px}
   .mfull button:focus-visible{outline:2px solid #fff;outline-offset:3px}
   @media(max-height:640px){.mfullbody{gap:14px;padding-bottom:calc(var(--safe-bottom) + 18px)}.mfullmain{width:70px;height:70px}.mfullskip{width:52px;height:52px}.mfulltitle b{font-size:1.4rem}}
   @media(prefers-reduced-motion:reduce){.mfull{animation:none}.mfullimg{transition:none}}
@@ -2058,7 +2081,7 @@
       <div class="medhero"><img src="app-images/368.webp" data-light="373.webp" alt=""><div class="medherocopy"><span class="medbrand">AURALIS</span><h3 id="medHeroTitle">—</h3><p id="medHeroSub">—</p></div></div>
       <div class="medfilters" id="medFilters" role="group"><button type="button" data-cat="all" aria-pressed="true">—</button><button type="button" data-cat="nature" aria-pressed="false">—</button><button type="button" data-cat="instruments" aria-pressed="false">—</button><button type="button" data-cat="voyages" aria-pressed="false">—</button></div>
       <div class="medsectionhead"><h3 id="medDiscover">—</h3></div>
-      <div class="medqueue"><button class="geoallbtn" id="medPlayAll"><span class="gaico" id="medPlayAllIco" aria-hidden="true">▶</span><span id="medPlayAllLbl">—</span></button><span class="medcount" id="medCount"></span></div>
+      <div class="medqueue"><button class="geoallbtn" id="medPlayAll"><span class="gaico" id="medPlayAllIco" aria-hidden="true">▶</span><span id="medPlayAllLbl">—</span></button><button class="medtimerbtn" id="medTimerBtn" type="button" aria-haspopup="dialog" aria-controls="medTimerDialog" aria-expanded="false" data-active="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v5l3 2M9 2h6M12 5V2"/></svg><span id="medTimerLbl">—</span></button><span class="medcount" id="medCount"></span></div>
       <div class="medgrid" id="medTracks"></div>
       <div class="meddock" id="medDock">
         <div class="meddocktop" id="medDockTop" role="button" tabindex="0"><div class="meddockart"><img id="medDockImg" src="app-images/366.webp" data-light="371.webp" alt=""></div><div class="meddockmeta"><b id="medDockTitle">—</b><i id="medDockSub">—</i></div></div>
@@ -2083,8 +2106,24 @@
         <button class="mfullmain" id="medFullPlay" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z"/></svg></button>
         <button class="mfullskip" id="medFullNext" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.8 5H18v14h-2.2zM5 5.6v12.8a.8.8 0 0 0 1.25.66l8.35-5.4a.8.8 0 0 0 0-1.32L6.25 5.94A.8.8 0 0 0 5 5.6z"/></svg></button>
       </div>
+      <button class="mfulltimer" id="medFullTimer" type="button" aria-haspopup="dialog" aria-controls="medTimerDialog" aria-expanded="false" data-active="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v5l3 2M9 2h6M12 5V2"/></svg><span id="medFullTimerLbl">—</span></button>
     </div>
   </div>
+  <dialog id="medTimerDialog" aria-labelledby="medTimerTitle" aria-describedby="medTimerHint">
+    <h3 id="medTimerTitle"></h3>
+    <p class="bintimerhint" id="medTimerHint"></p>
+    <div id="medDurations">
+      <button type="button" data-min="0" aria-pressed="true"></button>
+      <button type="button" data-min="10"></button><button type="button" data-min="20"></button><button type="button" data-min="30"></button>
+      <button type="button" data-min="45"></button><button type="button" data-min="60"></button><button type="button" data-min="90"></button>
+    </div>
+    <form class="bintimercustom" id="medTimerCustom" novalidate>
+      <label id="medTimerCustomLabel" for="medTimerMinutes"></label>
+      <div class="bintimercustomrow"><input id="medTimerMinutes" type="number" inputmode="numeric" min="1" max="1440" step="1" aria-describedby="medTimerError"><button type="submit" id="medTimerApply"></button></div>
+      <p id="medTimerError" role="alert"></p>
+    </form>
+    <button type="button" id="medTimerClose"></button>
+  </dialog>
 </div>
 
 <!-- AURALIS_ONBOARDING_HTML_START -->
@@ -4739,40 +4778,48 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   "delta": [
     {
       "id": "delta_1",
+      "name": {"fr": "Brume des fougères", "en": "Fern Mist", "es": "Bruma de helechos", "de": "Farnnebel", "it": "Nebbia tra le felci", "zh": "蕨林薄雾", "zht": "蕨林薄霧", "hi": "फ़र्न की धुंध"},
       "photo": "music-forest-rain-v1.webp"
     },
     {
       "id": "delta_2",
+      "name": {"fr": "Marée lunaire", "en": "Lunar Tide", "es": "Marea lunar", "de": "Mondflut", "it": "Marea lunare", "zh": "月光潮汐", "zht": "月光潮汐", "hi": "चाँदनी ज्वार"},
       "photo": "music-ocean-au-clair-de-lune-v1.webp"
     }
   ],
   "theta": [
     {
       "id": "theta_1",
+      "name": {"fr": "Cristal des sous-bois", "en": "Woodland Crystal", "es": "Cristal del bosque", "de": "Waldkristall", "it": "Cristallo del sottobosco", "zh": "林间水晶", "zht": "林間水晶", "hi": "वन का स्फटिक"},
       "photo": "binaural-theta-1-v1.webp"
     },
     {
       "id": "theta_2",
+      "name": {"fr": "L’arbre ancien", "en": "The Ancient Tree", "es": "El árbol ancestral", "de": "Der alte Baum", "it": "L’albero antico", "zh": "古树", "zht": "古樹", "hi": "प्राचीन वृक्ष"},
       "photo": "binaural-theta-2-v1.webp"
     }
   ],
   "alpha": [
     {
       "id": "alpha_1",
+      "name": {"fr": "Handpan au ruisseau", "en": "Handpan by the Stream", "es": "Handpan junto al arroyo", "de": "Handpan am Bach", "it": "Handpan sul ruscello", "zh": "溪畔手碟", "zht": "溪畔手碟", "hi": "धारा किनारे हैंडपैन"},
       "photo": "binaural-alpha-1-v1.webp"
     },
     {
       "id": "alpha_2",
+      "name": {"fr": "Lac de l’équilibre", "en": "Lake of Balance", "es": "Lago del equilibrio", "de": "See des Gleichgewichts", "it": "Lago dell’equilibrio", "zh": "平衡之湖", "zht": "平衡之湖", "hi": "संतुलन की झील"},
       "photo": "binaural-alpha-2-v1.webp"
     }
   ],
   "beta": [
     {
       "id": "beta_1",
+      "name": {"fr": "Crête à l’aube", "en": "Ridge at Dawn", "es": "Cresta al amanecer", "de": "Grat im Morgengrauen", "it": "Cresta all’alba", "zh": "晨曦山脊", "zht": "晨曦山脊", "hi": "भोर में पर्वत शिखर"},
       "photo": "binaural-beta-1-v1.webp"
     },
     {
       "id": "beta_2",
+      "name": {"fr": "L’élan de la vague", "en": "Rising Wave", "es": "El impulso de la ola", "de": "Schwung der Welle", "it": "Lo slancio dell’onda", "zh": "浪潮之势", "zht": "浪潮之勢", "hi": "लहर का वेग"},
       "photo": "binaural-beta-2-v1.webp"
     }
   ]
@@ -5277,7 +5324,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function medSetCover(img,s){img.setAttribute("src","app-images/"+(curTheme()==="light"?s.light:s.cover));img.setAttribute("data-dark",s.cover);img.setAttribute("data-light",s.light);}
   function medUpdateDock(){var s=medSelected();$("medDockTitle").textContent=t(s.key);$("medDockSub").textContent=t("med_moment");medSetCover($("medDockImg"),s);$("medDockVol").value=med.vol[s.id]===undefined?s.vol:med.vol[s.id];$("medMainPlay").textContent=medIsOn(s)?"❚❚":"▶";$("medMainPlay").setAttribute("aria-label",medIsOn(s)?t("pause"):t("play").replace(/^[▶■]\s*/,""));$("medDockTop").setAttribute("aria-label",t(s.key));$("medRepeat").setAttribute("aria-pressed",med.repeat?"true":"false");medFullSync();}
   function medStopCurrent(){med.paused=false;var el=med.el;med.el=null;if(el){try{el.onended=null;el.ontimeupdate=null;el.onerror=null;el.onloadedmetadata=null;el.ondurationchange=null;el.onplaying=null;el.pause();}catch(e){}}var prev=med.playingId;med.playingId=null;if(prev){var b=$("medPlay_"+prev);if(b)b.textContent="▶";var c=$("medCard_"+prev);if(c)c.classList.remove("playing");}medProgSet(0,medSelected().dur);medUpdateDock();naSweep();ST.stop();}
-  function medPlay(s){medStopCurrent();med.selectedId=s.id;unlockAudio();ST.play("music",s.id);NA.start(t(s.key),nativeText("notification_music",t("home_med")),{pause:function(){medQClear();medStopCurrent();},stop:function(){medQClear();medStopCurrent();},play:function(){if(med.paused)medResume();else if(!med.playingId)medPlay(s);},next:function(){medNavGo(1);},previous:function(){medNavGo(-1);}});var el=med.pool||(med.pool=new Audio()),myseq=++med.seq,wantSrc=medUrl(s.base),wantDur=s.dur>0?s.dur:0;el.src=wantSrc;el.loop=med.repeat&&!med.q.on;el.volume=Math.max(0,Math.min(1,(med.vol[s.id]===undefined?s.vol:med.vol[s.id])/100));el.preload="auto";function fresh(){var cs=el.currentSrc||"";return cs===wantSrc||cs.slice(-wantSrc.length)===wantSrc;}function push(){if(myseq!==med.seq||!fresh())return;var d=wantDur||el.duration;if(!isFinite(d)||d<=0)return;medProgSet(el.currentTime,d);}el.onloadedmetadata=push;el.ondurationchange=push;el.ontimeupdate=push;el.onended=function(){if(myseq!==med.seq)return;medStopCurrent();medQNext();};el.onerror=function(){if(myseq!==med.seq)return;flashMsg(t("mix_err"));medQClear();medStopCurrent();};var slow=setTimeout(function(){if(myseq===med.seq&&med.el===el&&el.paused)flashMsg(t("mix_loading"));},500);el.onplaying=function(){clearTimeout(slow);};med.el=el;med.playingId=s.id;var p=el.play();if(p&&p.catch)p.catch(function(){if(myseq===med.seq&&el.onerror)el.onerror();});medRender();medUpdateDock();}
+  function medPlay(s){medStopCurrent();medTimerRearm();med.selectedId=s.id;unlockAudio();ST.play("music",s.id);NA.start(t(s.key),nativeText("notification_music",t("home_med")),{pause:function(){medQClear();medStopCurrent();},stop:function(){medQClear();medStopCurrent();},play:function(){if(med.paused)medResume();else if(!med.playingId)medPlay(s);},next:function(){medNavGo(1);},previous:function(){medNavGo(-1);}});var el=med.pool||(med.pool=new Audio()),myseq=++med.seq,wantSrc=medUrl(s.base),wantDur=s.dur>0?s.dur:0;el.src=wantSrc;el.loop=med.repeat&&!med.q.on;el.volume=Math.max(0,Math.min(1,(med.vol[s.id]===undefined?s.vol:med.vol[s.id])/100));el.preload="auto";function fresh(){var cs=el.currentSrc||"";return cs===wantSrc||cs.slice(-wantSrc.length)===wantSrc;}function push(){medTimerTick();if(myseq!==med.seq||!fresh())return;var d=wantDur||el.duration;if(!isFinite(d)||d<=0)return;medProgSet(el.currentTime,d);}el.onloadedmetadata=push;el.ondurationchange=push;el.ontimeupdate=push;el.onended=function(){if(myseq!==med.seq)return;medStopCurrent();medQNext();};el.onerror=function(){if(myseq!==med.seq)return;flashMsg(t("mix_err"));medQClear();medStopCurrent();};var slow=setTimeout(function(){if(myseq===med.seq&&med.el===el&&el.paused)flashMsg(t("mix_loading"));},500);el.onplaying=function(){clearTimeout(slow);};med.el=el;med.playingId=s.id;var p=el.play();if(p&&p.catch)p.catch(function(){if(myseq===med.seq&&el.onerror)el.onerror();});medRender();medUpdateDock();}
   function medPause(){if(!med.el||!med.playingId||med.paused)return;med.paused=true;try{med.el.pause();}catch(e){}ST.stop();medRender();medUpdateDock();}
   function medResume(){if(!med.el||!med.playingId||!med.paused)return false;med.paused=false;var p=med.el.play();if(p&&p.catch)p.catch(function(){med.paused=true;medRender();medUpdateDock();});ST.play("music",med.playingId);medRender();medUpdateDock();return true;}
   function medToggle(s){if(med.playingId===s.id){if(med.paused)medResume();else medPause();return;}medQClear();medPlay(s);}
@@ -5288,7 +5335,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function medQStart(){if(med.q.on){medQClear();medStopCurrent();return;}var order=[];for(var k=0;k<MEDMUSIC.length;k++)if(med.filter==="all"||MEDMUSIC[k].cat===med.filter)order.push(k);if(SHUF.on("med"))order=shuffled(order);med.q.on=true;med.q.idx=0;med.q.order=order;medQLabel();medPlay(MEDMUSIC[order[0]]);}
   function medSetVol(s,pct){med.vol[s.id]=pct;if(med.el&&med.playingId===s.id)med.el.volume=Math.max(0,Math.min(1,pct/100));}
   function medRender(){var box=$("medTracks");if(!box)return;box.innerHTML="";var shown=0;MEDMUSIC.forEach(function(s){if(med.filter!=="all"&&s.cat!==med.filter)return;shown++;if(med.vol[s.id]===undefined)med.vol[s.id]=s.vol;var card=document.createElement("article");card.className="medcard"+(med.playingId===s.id?" playing":"")+(med.selectedId===s.id?" selected":"");card.id="medCard_"+s.id;card.style.setProperty("--tc",s.tc);card.innerHTML='<div class="medart"><img alt=""></div><div class="medcardbody"><b></b><i></i></div><button class="medcardplay" id="medPlay_'+s.id+'" type="button">'+(medIsOn(s)?"❚❚":"▶")+'</button>';medSetCover(card.querySelector("img"),s);card.querySelector("b").textContent=t(s.key);card.querySelector("i").textContent=t(s.sub);var pl=card.querySelector("button");pl.setAttribute("aria-label",t(s.key));pl.addEventListener("click",function(e){e.stopPropagation();medToggle(s);});card.addEventListener("click",function(){medOpenTrack(s);});box.appendChild(card);});$("medCount").textContent=shown+" / "+MEDMUSIC.length;if(typeof PianoKeys!=="undefined"&&PianoKeys)PianoKeys.kick();}
-  function medApplyLang(){if(!$("medTitle"))return;$("medTitle").textContent=t("med_title");$("medHeroTitle").textContent=t("med_hero_title");$("medHeroSub").textContent=t("med_hero_sub");$("medDiscover").textContent=t("med_discover");$("medTakeTime").textContent=t("med_take_time");$("medNote").textContent=t("med_note");var keys=["med_filter_all","med_filter_nature","med_filter_instruments","med_filter_voyages"];Array.prototype.forEach.call($("medFilters").children,function(b,i){b.textContent=t(keys[i]);});$("medPrev").setAttribute("aria-label",t("nav_prev"));$("medNext").setAttribute("aria-label",t("nav_next"));$("medShuffle").setAttribute("aria-label",t("shuffle"));$("medRepeat").setAttribute("aria-label",t("med_repeat"));medQLabel();medRender();medUpdateDock();}
+  function medApplyLang(){if(!$("medTitle"))return;$("medTitle").textContent=t("med_title");$("medHeroTitle").textContent=t("med_hero_title");$("medHeroSub").textContent=t("med_hero_sub");$("medDiscover").textContent=t("med_discover");$("medTakeTime").textContent=t("med_take_time");$("medNote").textContent=t("med_note");var keys=["med_filter_all","med_filter_nature","med_filter_instruments","med_filter_voyages"];Array.prototype.forEach.call($("medFilters").children,function(b,i){b.textContent=t(keys[i]);});$("medPrev").setAttribute("aria-label",t("nav_prev"));$("medNext").setAttribute("aria-label",t("nav_next"));$("medShuffle").setAttribute("aria-label",t("shuffle"));$("medRepeat").setAttribute("aria-label",t("med_repeat"));medQLabel();medRender();medUpdateDock();medTimerUi();}
   function openMedMusic(){medApplyLang();show("medmusic");}
   /* ---- Lecteur plein ecran ---- */
   var MFULL_PLAY='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6a1 1 0 0 0 1.5.86l11-6.8a1 1 0 0 0 0-1.72l-11-6.8A1 1 0 0 0 8 5.2z"/></svg>',MFULL_PAUSE='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.3"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.3"/></svg>',medFullPrevFocus=null;
@@ -5306,8 +5353,64 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("medFullNext").addEventListener("click",function(){medNavGo(1);});
   $("medDockTop").addEventListener("click",medFullShow);
   $("medDockTop").addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();medFullShow();}});
-  document.addEventListener("keydown",function(e){if(e.key==="Escape")medFullHide();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("medTimerDialog").open)medFullHide();});
   $("medPlayAll").addEventListener("click",medQStart);
+  /* AURALIS_MED_TIMER_V1 -- minuterie de l'onglet Musiques.
+     Une seule pour toute la section : elle arrete la musique en cours, seule
+     (meme en repetition) ou dans la file « Tout faire jouer ». Comme aux
+     Binauraux, le decompte n'avance que pendant la lecture, et il se calcule
+     a l'horloge reelle : si le JavaScript a dormi (ecran verrouille), le
+     prochain passage rattrape le temps ecoule au lieu de prendre du retard.
+     Appelee aussi par timeupdate, qui continue tant que le son joue. */
+  var medTm={min:0,remain:0,last:0,id:null,done:false};
+  function medTmOn(){return !!(med.el&&med.playingId&&!med.paused);}
+  function medTmBase(){var s=MEDMUSIC[medTrack(med.playingId)];if(!s)return 1;var v=med.vol[s.id]===undefined?s.vol:med.vol[s.id];return Math.max(0,Math.min(1,v/100));}
+  function medTimerTick(){
+    if(medTm.min<=0||medTm.done)return;
+    var now=Date.now();if(medTmOn())medTm.remain=Math.max(0,medTm.remain-(now-medTm.last)/1000);medTm.last=now;
+    if(medTm.remain<=0){medTm.done=true;medTm.remain=0;medQClear();medStopCurrent();}
+    /* Fondu sur les 10 dernieres secondes. Sans effet sur iOS (volume en
+       lecture seule) : l'arret y est net, ce qui reste acceptable. */
+    else if(medTmOn()&&medTm.remain<10){try{med.el.volume=medTmBase()*medTm.remain/10;}catch(e){}}
+    medTimerUi();
+  }
+  /* Relance une minuterie arrivee a terme quand on rejoue une musique. */
+  function medTimerRearm(){if(medTm.min>0&&medTm.done){medTm.done=false;medTm.remain=medTm.min*60;medTm.last=Date.now();medTimerUi();}}
+  function medTimerUi(){
+    if(!$("medTimerLbl"))return;
+    var label=medTm.min>0?(medTm.done?t("done"):binFormat(medTm.remain)):t("timer_label"),on=medTm.min>0?"true":"false",
+        aria=t("timer_label")+" — "+(medTm.min>0?medTm.min+" "+unitText("unit_minute_short","min"):bpT("unlimited"));
+    [["medTimerBtn","medTimerLbl"],["medFullTimer","medFullTimerLbl"]].forEach(function(p){var b=$(p[0]);if(!b)return;if($(p[1]).textContent!==label)$(p[1]).textContent=label;b.setAttribute("data-active",on);b.setAttribute("aria-label",aria);});
+  }
+  function medSetTimer(minutes){
+    if(!Number.isInteger(minutes)||minutes<0||minutes>1440)return false;
+    medTm.min=minutes;medTm.remain=minutes*60;medTm.last=Date.now();medTm.done=false;
+    clearInterval(medTm.id);medTm.id=minutes>0?setInterval(medTimerTick,250):null;
+    if(medTmOn())try{med.el.volume=medTmBase();}catch(e){}
+    medTimerUi();return true;
+  }
+  var medTimerOpener=null;
+  function medTimerOpen(e){
+    medTimerOpener=e&&e.currentTarget||null;
+    $("medTimerTitle").textContent=t("timer_label");$("medTimerHint").textContent=bpT("hint");$("medTimerCustomLabel").textContent=bpT("custom");
+    $("medTimerApply").textContent=bpT("apply");$("medTimerClose").textContent=bpT("close");$("medTimerError").textContent="";
+    $("medTimerMinutes").value=medTm.min>0?medTm.min:"";
+    Array.prototype.forEach.call($("medDurations").children,function(b){var m=parseInt(b.getAttribute("data-min"),10);b.setAttribute("aria-pressed",m===medTm.min?"true":"false");b.textContent=m===0?bpT("unlimited"):m+" "+unitText("unit_minute_short","min");});
+    if(medTimerOpener)medTimerOpener.setAttribute("aria-expanded","true");
+    if(!$("medTimerDialog").open)$("medTimerDialog").showModal();
+    ($("medDurations").querySelector('[aria-pressed="true"]')||$("medTimerMinutes")).focus();
+  }
+  $("medTimerBtn").addEventListener("click",medTimerOpen);
+  $("medFullTimer").addEventListener("click",medTimerOpen);
+  Array.prototype.forEach.call($("medDurations").children,function(b){b.addEventListener("click",function(){medSetTimer(Number(this.getAttribute("data-min")));$("medTimerDialog").close();});});
+  $("medTimerCustom").addEventListener("submit",function(e){
+    e.preventDefault();var n=Number($("medTimerMinutes").value);
+    if(n<1||!medSetTimer(n)){$("medTimerError").textContent=bpT("error");$("medTimerMinutes").focus();return;}
+    $("medTimerDialog").close();
+  });
+  $("medTimerClose").addEventListener("click",function(){$("medTimerDialog").close();});
+  $("medTimerDialog").addEventListener("close",function(){if(medTimerOpener){medTimerOpener.setAttribute("aria-expanded","false");try{medTimerOpener.focus({preventScroll:true});}catch(e){}}medTimerOpener=null;});
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)medTimerTick();});
   $("medShuffle").addEventListener("click",function(){var on=SHUF.toggle("med");if(med.q.on&&med.q.order)med.q.order=requeueTail(med.q.order,med.q.idx,on);});
   $("medPrev").addEventListener("click",function(){medNavGo(-1);});$("medNext").addEventListener("click",function(){medNavGo(1);});
   $("medMainPlay").addEventListener("click",function(){medToggle(medSelected());});
