@@ -807,8 +807,12 @@
   #pStage canvas.cymgrain{display:none;position:absolute;width:0;height:0;pointer-events:none;border-radius:50%;
     filter:brightness(1.025) contrast(1.035) saturate(.82)}
   #vPlay #pStage.cymon canvas.cymgrain.on{display:block}
-  #vPlay .stage.cymon.playing canvas.cymgrain{animation:cymbreathe 6s ease-in-out infinite}
-  @media (prefers-reduced-motion: reduce){ #vPlay .stage.cymon.playing canvas.cymgrain{animation:none} }
+  /* Plaque de sable immobile pendant la lecture : seuls les grains bougent
+     (CymFx). La respiration (cymbreathe) faisait battre la plaque comme un
+     coeur -- retiree a la demande de Jonathan le 2026-10-15. Les photos
+     personnalisees (.freqpersonal) gardent leur respiration. */
+  #vPlay .stage.cymon.playing .cymimg.cymplate,
+  #vPlay .stage.cymon.playing canvas.cymgrain{animation:none}
   .readout{position:absolute; text-align:center; pointer-events:none}
   .hz{font-size:2.4rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums}
   .hz .u{font-size:.9rem; font-weight:600; color:var(--dim); margin-left:3px}
