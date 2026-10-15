@@ -250,6 +250,23 @@ canvas{
      contrairement a la barre flottante qu'il remplace. */
   #expFab{display:block}
 }
+/* AURALIS_SAND_STUDIO_UI_V1 */
+[hidden]{display:none!important}
+#sandCanvas{position:absolute;inset:0;pointer-events:none;display:none}
+.sandmode #sandCanvas{display:block}
+.sandmode #cv{opacity:0}
+.signaturemode #physicalSettings{display:none}
+button:disabled,input:disabled,select:disabled{opacity:.38;cursor:default}
+.sandintro{padding:12px;border:1px solid #39616b;border-radius:12px;background:linear-gradient(135deg,#112b38,#171e35);margin:10px 0}
+.sandintro strong{font-size:13px;color:#d0eef2;display:block;margin-bottom:4px}
+.sandintro p{font-size:11px;line-height:1.5;color:#a8b9ca;margin:4px 0}
+#sandState{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);max-width:88%;padding:7px 13px;border:1px solid #29394a;border-radius:24px;color:#bbccd9;background:rgba(7,13,28,.88);font-size:12px;text-align:center;pointer-events:none;display:none}
+.sandmode #sandState{display:block}
+.sandmode #hud{color:#b7c9d7}
+body[data-sand-busy="1"] #sandState{color:#7fd8f0}
+#sandOptions .hint{color:#a9b9cb}
+#sandOptions .grid2{margin-top:12px}
+@media(max-width:860px){#sandState{bottom:10px;left:10px;max-width:calc(100% - 135px);transform:none;font-size:10px}#hud{max-width:95%}}
 </style>
 </head>
 <body>
@@ -257,6 +274,7 @@ canvas{
 <div id="panel">
   <h1>Atelier Cymatique<small>Auralis — figures de Chladni paramétrables</small></h1>
 
+  <div class="sandintro"><strong>Du sable, une fréquence, une empreinte.</strong><p>Explore les figures, choisis ta composition, puis exporte ta plaque.</p></div>
   <div class="grid2">
     <button class="btn primary" id="bRandom">🎲 Surprends-moi</button>
     <button class="btn" id="bReset">↺ Réinitialiser</button>
@@ -270,6 +288,7 @@ canvas{
         <input type="range" id="freq" min="20" max="600" step="0.01" value="120">
       </div>
       <select id="freqPick"><option value="">— Choisir une fréquence Auralis —</option></select>
+      <div id="physicalSettings">
       <div class="row">
         <label>Rayon de la plaque (a) <b id="vA">0.100 m</b></label>
         <input type="range" id="pA" min="0.02" max="0.4" step="0.001" value="0.1">
@@ -284,6 +303,23 @@ canvas{
       </div>
       <p class="hint">c/a fixe où tombent les résonances. Le repère ci-dessous montre les modes qui répondent le plus fort à la fréquence choisie.</p>
       <div id="modeInfo" class="hint" style="color:var(--dim)"></div>
+      </div>
+    </div>
+  </details>
+
+  <details open id="sandOptions">
+    <summary>Sable réaliste</summary>
+    <div class="body">
+      <label class="check"><input type="checkbox" id="pSignature"> Signature par fréquence</label>
+      <p class="hint" id="signatureNote"></p>
+      <div class="grid2"><button class="btn" id="bFreqPrev" aria-label="Fréquence précédente">‹ Précédente</button><button class="btn" id="bFreqNext" aria-label="Fréquence suivante">Suivante ›</button></div>
+      <div class="row"><label for="pSandAmount">Quantité de sable <b id="vSandAmount"></b></label><input id="pSandAmount" type="range" min="40" max="180" step="5"></div>
+      <div class="row"><label for="pSandSize">Taille des grains <b id="vSandSize"></b></label><input id="pSandSize" type="range" min="0.5" max="2.2" step="0.1"></div>
+      <div class="row"><label for="pSandRelief">Relief des dépôts <b id="vSandRelief"></b></label><input id="pSandRelief" type="range" min="0" max="150" step="5"></div>
+      <div class="row"><label for="pSandLight">Direction de la lumière <b id="vSandLight"></b></label><input id="pSandLight" type="range" min="0" max="360" step="5"></div>
+      <div class="row"><label for="pSandWarm">Sable blanc → beige <b id="vSandWarm"></b></label><input id="pSandWarm" type="range" min="0" max="100" step="5"></div>
+      <div class="grid2"><button class="btn primary" id="bRenderSand">Finaliser le sable</button><button class="btn" id="bSandVariant">Autre composition</button></div>
+      <p class="hint">La même fréquence et la même variante retrouvent toujours la même figure. Les images gardées et les liens conservent tous les réglages.</p>
     </div>
   </details>
 
@@ -328,6 +364,7 @@ canvas{
         <option value="3">Interférence — anneaux concentriques</option>
         <option value="4">Relief — métal éclairé</option>
         <option value="5">Vitrail — cellules pleines</option>
+        <option value="6">Sable réaliste — plaque anthracite</option>
       </select>
       <div class="row">
         <label>Épaisseur du trait <b id="vW">2.0 px</b></label>
@@ -457,9 +494,11 @@ canvas{
 <div id="stage">
   <div id="wrap">
     <canvas id="cv"></canvas>
+    <canvas id="sandCanvas" aria-label="Plaque anthracite et grains de sable"></canvas>
     <div id="hud"></div>
   </div>
   <button id="expFab" title="Exporter le PNG">⬇ Exporter</button>
+  <div id="sandState" role="status" aria-live="polite"></div>
   <div id="toast"></div>
   <div id="err"></div>
 </div>
@@ -700,7 +739,8 @@ function besselZero(n,m){
 const DEF={
   freq:120, a:0.1, c:10, q:20,
   nmax:8, mmax:8, k:24, sym:0, phase:0, seed:1, onlyEven:false,
-  style:0, w:2, halo:45, exp:1, gamma:1, grain:5, vig:0,
+  style:6, w:2, halo:45, exp:1, gamma:1, grain:5, vig:0,
+  signature:true, sandAmount:100, sandSize:1, sandRelief:85, sandLight:135, sandWarm:60,
   pal:"auralis", cols:["#050814","#121842","#482d91","#8c6edc","#96dcf5"],
   bias:0.5, invert:false,
   zoom:1, rot:0, ox:0, oy:0, mask:true, ring:false,
@@ -1132,6 +1172,7 @@ function draw(w,h){
 let DRAFT_CAP=420, FINAL_CAP=1400;
 const forcedCap=new URLSearchParams(location.search).get("test");
 function calibrate(){
+  if(P.style===6){FINAL_CAP=1000;DRAFT_CAP=280;return;}
   if(forcedCap){
     FINAL_CAP=Math.max(64,parseInt(forcedCap,10)||220);
     DRAFT_CAP=FINAL_CAP;
@@ -1169,6 +1210,8 @@ function renderDims(css,cap){
 
 let dirtyModes=true;
 function render(final){
+  if(P.style===6){if(dirtyModes){computeModes();dirtyModes=false;}sandSchedule(final);return;}
+  sandControls();
   if(dirtyModes){ computeModes(); dirtyModes=false; }
   setUniforms();
   gl.uniform1f(U.u_bgAlpha,1);
@@ -1184,6 +1227,7 @@ function render(final){
 let anim=null;              // boucle d'animation (lue par schedule)
 let raf=null, sharpTimer=null;
 function schedule(modes){
+  sandCancel();sandControls();
   if(modes) dirtyModes=true;
   clearTimeout(sharpTimer);
   if(!raf) raf=requestAnimationFrame(()=>{ raf=null; render(false); });
@@ -1277,6 +1321,11 @@ $("freqOk").addEventListener("click",()=>{
 
 // (id du curseur, clé de P, id de l'affichage, fonction de formatage, recalcul des modes ?)
 const SLIDERS=[
+  ["pSandAmount","sandAmount","vSandAmount",v=>v+" %",false],
+  ["pSandSize","sandSize","vSandSize",v=>v.toFixed(1)+"×",false],
+  ["pSandRelief","sandRelief","vSandRelief",v=>v+" %",false],
+  ["pSandLight","sandLight","vSandLight",v=>v+"°",false],
+  ["pSandWarm","sandWarm","vSandWarm",v=>v+" %",false],
   ["pA","a","vA",v=>v.toFixed(3)+" m",true],
   ["pC","c","vC",v=>v.toFixed(1)+" m/s",true],
   ["pQ","q","vQ",v=>String(Math.round(v)),true],
@@ -1313,13 +1362,13 @@ SLIDERS.forEach(([id,key,disp,fmt,rem])=>{
   });
 });
 
-const CHECKS=[["pOnlyEven","onlyEven",true],["pInvert","invert",false],
+const CHECKS=[["pSignature","signature",true],["pOnlyEven","onlyEven",true],["pInvert","invert",false],
               ["pMask","mask",false],["pRing","ring",false],["pTransp","transp",false]];
 CHECKS.forEach(([id,key,rem])=>{
   $(id).addEventListener("change",()=>{ P[key]=$(id).checked; schedule(rem); });
 });
 
-$("pStyle").addEventListener("change",()=>{ P.style=parseInt($("pStyle").value,10); schedule(false); });
+$("pStyle").addEventListener("change",()=>{ P.style=parseInt($("pStyle").value,10); if(P.style===6&&anim){cancelAnimationFrame(anim);anim=null;$("bPlay").textContent="▶ Animer les phases";} schedule(false); });
 $("pFormat").addEventListener("change",()=>{ P.format=$("pFormat").value; schedule(false); });
 $("pSize").addEventListener("change",()=>{ P.size=$("pSize").value; schedule(false); });
 
@@ -1443,6 +1492,7 @@ $("bReset").addEventListener("click",()=>{
 
 const R=(a,b)=>a+Math.random()*(b-a);
 $("bRandom").addEventListener("click",()=>{
+  if(P.style===6){P.seed=Math.floor(Math.random()*999)+1;syncUI();schedule(true);return;}
   P.freq=+R(40,320).toFixed(2);
   P.a=+R(0.05,0.25).toFixed(3);
   P.c=+R(4,35).toFixed(1);
@@ -1477,7 +1527,7 @@ function withSize(w,h,alphaBg,fn){
   draw(sw,sh);
 }
 function exportName(ext){
-  const st=["sable","encre","champ","interference","relief","vitrail"][P.style];
+  const st=["sable","encre","champ","interference","relief","vitrail","sable-realiste"][P.style];
   return `cymatique_${fmtFreq(P.freq).replace(".","_")}hz_${st}_s${P.seed}.${ext}`;
 }
 function download(url,name){
@@ -1487,6 +1537,11 @@ function download(url,name){
 }
 $("bExport").addEventListener("click",()=>{
   const d=dimsFor(parseInt(P.size,10));
+  if(P.style===6){
+    if(sandExportBusy)return;
+    if(dirtyModes){computeModes();dirtyModes=false;}
+    sandRender(d.w,d.h,true);return;
+  }
   const maxTex=gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
   if(Math.max(d.w,d.h)>maxTex){ toast("Trop grand pour cette carte ("+maxTex+" px max)"); return; }
   toast("Rendu en cours…");
@@ -1540,6 +1595,15 @@ function renderGal(){
   });
 }
 $("bSave").addEventListener("click",()=>{
+  if(P.style===6){
+    if(sandReadyKey!==JSON.stringify(P)){toast("Laisse le sable terminer avant de garder l’image.");return;}
+    const thumbCanvas=document.createElement("canvas");thumbCanvas.width=200;thumbCanvas.height=200;
+    const ctx=thumbCanvas.getContext("2d");ctx.fillStyle="#070d1c";ctx.fillRect(0,0,200,200);
+    const sc=200/Math.max(sandCanvas.width,sandCanvas.height),ww=sandCanvas.width*sc,hh=sandCanvas.height*sc;
+    ctx.drawImage(sandCanvas,(200-ww)/2,(200-hh)/2,ww,hh);
+    const g=loadGal();g.unshift({p:JSON.parse(JSON.stringify(P)),thumb:thumbCanvas.toDataURL("image/jpeg",.85),at:Date.now()});
+    saveGal(g.slice(0,60));renderGal();toast("Ajouté à la galerie");return;
+  }
   withSize(200,200,1,()=>{
     const thumb=cv.toDataURL("image/jpeg",0.72);
     const g=loadGal();
@@ -1550,6 +1614,7 @@ $("bSave").addEventListener("click",()=>{
 
 // ---- animation ----
 $("bPlay").addEventListener("click",()=>{
+  if(P.style===6)return;
   if(anim){ cancelAnimationFrame(anim); anim=null; $("bPlay").textContent="▶ Animer les phases"; render(true); return; }
   $("bPlay").textContent="⏸ Mettre en pause";
   let last=performance.now();
@@ -1621,13 +1686,21 @@ window.addEventListener("resize",()=>schedule(false));
 function sanitize(p){
   const out=Object.assign({},DEF,p);
   ["freq","a","c","q","nmax","mmax","k","sym","phase","seed","style",
-   "w","halo","exp","gamma","grain","vig","bias","zoom","rot","ox","oy","t","spd"]
+   "w","halo","exp","gamma","grain","vig","bias","zoom","rot","ox","oy","t","spd",
+   "sandAmount","sandSize","sandRelief","sandLight","sandWarm"]
     .forEach(key=>{
       const v=parseFloat(out[key]);
       out[key]=isFinite(v)?v:DEF[key];
     });
   ["onlyEven","invert","mask","ring","transp"].forEach(k=>out[k]=!!out[k]);
+  // Old gallery entries and links retain their previous rendering mode.
+  out.signature=p.signature===true;
+  if(p.style===undefined)out.style=0;
+  const bounds={sandAmount:[40,180],sandSize:[.5,2.2],sandRelief:[0,150],sandLight:[0,360],sandWarm:[0,100],freq:[.1,20000],seed:[1,999],sym:[0,12],nmax:[0,14],mmax:[1,12],k:[1,48],zoom:[.3,3],ox:[-1,1],oy:[-1,1],w:[.3,12],exp:[.1,4],gamma:[.2,3],style:[0,6]};
+  Object.entries(bounds).forEach(([key,b])=>out[key]=Math.max(b[0],Math.min(b[1],out[key])));
+  ["style","seed","sym","nmax","mmax","k"].forEach(k=>out[k]=Math.round(out[k]));
   out.size=String(out.size);
+  if(!["512","1024","2048","3072","4096"].includes(out.size))out.size=DEF.size;
   if(!Array.isArray(out.cols)||out.cols.length!==5||
      !out.cols.every(c=>typeof c==="string"&&/^#[0-9a-fA-F]{6}$/.test(c))){
     out.cols=DEF.cols.slice();
@@ -1636,6 +1709,275 @@ function sanitize(p){
   if(!["1:1","16:9","9:16","4:3","1024x600"].includes(out.format)) out.format=DEF.format;
   return out;
 }
+
+/* AURALIS_SAND_STUDIO_V1 — deterministic compositions and particle rendering.
+   The original WebGL renderer remains available as styles 0–5.
+   No external requests: the worker is built from this document. */
+function frequencySeed(hz, variant){
+  let h=2166136261;
+  for(const c of (Number(hz).toFixed(4)+"/"+variant+"/auralis-v1")){
+    h=Math.imul(h^c.charCodeAt(0),16777619);
+  }
+  return h>>>0;
+}
+
+function sandModes(p){
+  if(p.signature){
+    const r=mulberry(frequencySeed(p.freq,p.seed));
+    const n=p.sym>0?Math.round(p.sym):3+Math.floor(r()*6);
+    const m=1+Math.floor(r()*3);
+    const rotation=r()*Math.PI*2;
+    // Three compatible modes keep a readable silhouette. The isotropic
+    // component closes petals instead of leaving only straight spokes.
+    return [
+      {n,alpha:besselZero(n,m),w:1,ph:rotation},
+      {n:0,alpha:besselZero(0,m+1),w:.075+r()*.22,ph:0},
+      {n,alpha:besselZero(n,m===3?2:m+1),w:.12+r()*.32,ph:rotation+(r()-.5)*.55},
+      {n:n<=7?n*2:n,alpha:besselZero(n<=7?n*2:n,1),w:.08+r()*.23,ph:rotation*2}
+    ];
+  }
+  const rnd=mulberry(p.seed*7919+13);
+  return MODES.map(md=>({n:md.n,alpha:md.alpha,w:md.w/(MODES[0]?.w||1),
+    ph:rnd()*2*Math.PI*(p.phase/100)+p.t*(md.n+1)*.5}));
+}
+
+// Worker: cache a field, migrate particles towards its nodes, then shade
+// individual grains and the accumulated sand. No WebGL float texture needed.
+function sandWorkerMain(){
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  self.onmessage=function(event){
+    const {p,modes,width:W,height:H,transparent}=event.data;
+    const seed=frequencySeed(p.freq,p.seed),rnd=mulberry(seed);
+    const G=384, pitch=2/(G-1), cells=G*G;
+    const field=new Float32Array(cells),gx=new Float32Array(cells),gy=new Float32Array(cells);
+    self.postMessage({progress:"Recherche des lignes nodales…"});
+    // Bessel functions are sampled radially just once, never per particle.
+    const tables=modes.map(md=>{
+      const a=new Float32Array(4097); for(let i=0;i<a.length;i++)a[i]=besselJn(md.n,md.alpha*i/4096);
+      return a;
+    });
+    let maxField=0;
+    for(let y=0;y<G;y++)for(let x=0;x<G;x++){
+      const xx=x*pitch-1, yy=y*pitch-1, rr=Math.hypot(xx,yy);
+      if(rr>1)continue;
+      const th=Math.atan2(yy,xx), ri=rr*4096, j=Math.min(4095,ri|0), t=ri-j;
+      let z=0;
+      for(let k=0;k<modes.length;k++){
+        const md=modes[k],a=tables[k];
+        z+=(a[j]*(1-t)+a[j+1]*t)*md.w*Math.cos(md.n*th+md.ph);
+      }
+      field[y*G+x]=z; maxField=Math.max(maxField,Math.abs(z));
+    }
+    for(let i=0;i<cells;i++)field[i]/=Math.max(.00001,maxField);
+    for(let y=1;y<G-1;y++)for(let x=1;x<G-1;x++){
+      const i=y*G+x;gx[i]=(field[i+1]-field[i-1])/(2*pitch);gy[i]=(field[i+G]-field[i-G])/(2*pitch);
+    }
+    function sample(a,x,y){
+      const xx=clamp((x+1)/pitch,1,G-2.001), yy=clamp((y+1)/pitch,1,G-2.001);
+      const ix=xx|0, iy=yy|0, tx=xx-ix,ty=yy-iy,i=iy*G+ix;
+      return (a[i]*(1-tx)+a[i+1]*tx)*(1-ty)+(a[i+G]*(1-tx)+a[i+G+1]*tx)*ty;
+    }
+    const N=Math.round(130000*p.sandAmount/100);
+    const px=new Float32Array(N),py=new Float32Array(N),sizes=new Float32Array(N),tones=new Float32Array(N);
+    for(let i=0;i<N;i++){
+      const r=Math.sqrt(rnd())*.982,th=rnd()*Math.PI*2;
+      px[i]=r*Math.cos(th);py[i]=r*Math.sin(th);
+      sizes[i]=.6+rnd()*.85;tones[i]=rnd();
+    }
+    for(let step=0;step<76;step++){
+      if(step%19===0)self.postMessage({progress:"Le sable se dépose… "+Math.round(step/76*100)+" %"});
+      const cooling=Math.pow(1-step/76,1.5);
+      for(let i=0;i<N;i++){
+        // A small proportion is left in transit on the plate.
+        if(i%113===0)continue;
+        let x=px[i],y=py[i];const z=sample(field,x,y),dx=sample(gx,x,y),dy=sample(gy,x,y),g2=dx*dx+dy*dy;
+        const d=clamp(z/(g2+.045),-.06,.06)*.47;
+        let vx=-d*dx,vy=-d*dy,len=Math.hypot(vx,vy);
+        if(len>.035){vx*=.035/len;vy*=.035/len;}
+        const agitation=Math.min(.012,Math.abs(z)*.065)*cooling+.00012;
+        x+=vx+(rnd()-.5)*agitation; y+=vy+(rnd()-.5)*agitation;
+        const r=Math.hypot(x,y);if(r>.987){x*=.987/r;y*=.987/r;}
+        px[i]=x;py[i]=y;
+      }
+    }
+    self.postMessage({progress:"Éclairage des grains…"});
+    // Deposition map: local thickness comes from the catchment of each node.
+    function deposit(){
+      let density=new Float32Array(cells);
+      for(let i=0;i<N;i++){
+      const x=clamp((px[i]+1)/pitch,1,G-2.01), y=clamp((py[i]+1)/pitch,1,G-2.01);
+      const ix=x|0,iy=y|0,tx=x-ix,ty=y-iy,k=iy*G+ix;
+      density[k]+=(1-tx)*(1-ty);density[k+1]+=tx*(1-ty);density[k+G]+=(1-tx)*ty;density[k+G+1]+=tx*ty;
+      }
+      for(let pass=0;pass<3;pass++){
+      const b=new Float32Array(cells);
+      for(let y=1;y<G-1;y++)for(let x=1;x<G-1;x++){
+        const k=y*G+x;b[k]=(density[k]*4+density[k-1]+density[k+1]+density[k-G]+density[k+G])/8;
+      }
+        density=b;
+      }
+      return density;
+    }
+    let density=deposit();
+    // Grain-level positional jitter opens up a variable-width mound at each node.
+    // The same physical positions are used for preview, export and gallery.
+    for(let i=0;i<N;i++){
+      const den=sample(density,px[i],py[i]);
+      const clump=.72+.23*Math.sin(px[i]*67+py[i]*23)+.16*Math.cos(py[i]*91-px[i]*39);
+      const spread=(.003+Math.sqrt(den)*.0021)*clump*p.w/2;
+      const t=rnd()*Math.PI*2, rad=Math.sqrt(-2*Math.log(Math.max(.00001,rnd())))*spread;
+      px[i]+=Math.cos(t)*rad;py[i]+=Math.sin(t)*rad;
+    }
+    density=deposit();
+    const pixels=new Uint8ClampedArray(W*H*4),short=Math.min(W,H);
+    const radius=short*.455*p.zoom, cx=W/2-p.ox*radius,cy=H/2+p.oy*radius;
+    const rot=p.rot*Math.PI/180,co=Math.cos(rot),si=Math.sin(rot);
+    const light=p.sandLight*Math.PI/180,lx=Math.cos(light),ly=Math.sin(light);
+    const fieldLightX=co*lx-si*ly,fieldLightY=si*lx+co*ly;
+    const bump=p.sandRelief/100, exposure=p.exp;
+    const hash=(x,y)=>{let z=Math.imul(x+17,374761393)^Math.imul(y+seed,668265263);z=Math.imul(z^(z>>>13),1274126177);return ((z^(z>>>16))>>>0)/4294967296;};
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+      const sx=(x-cx)/radius,sy=(cy-y)/radius,rr=Math.hypot(sx,sy),i=(y*W+x)*4;
+      if(rr>1.012){
+        const halo=Math.exp(-Math.pow((rr-1)/.12,2))*.8;
+        pixels[i]=7+halo*7;pixels[i+1]=12+halo*15;pixels[i+2]=20+halo*19;pixels[i+3]=transparent?0:255;continue;
+      }
+      const xx=co*sx-si*sy,yy=si*sx+co*sy,grain=hash(x,y);
+      const d=sample(density,xx,yy);
+      const ddx=(sample(density,xx+pitch,yy)-sample(density,xx-pitch,yy));
+      const ddy=(sample(density,xx,yy+pitch)-sample(density,xx,yy-pitch));
+      const shadow=sample(density,xx+fieldLightX*.012,yy+fieldLightY*.012);
+      const sheen=8*Math.exp(-((sx-lx*.45)**2+(sy-ly*.45)**2)/.7);
+      let base=39+sheen+grain*7+hash((x/9)|0,y)*1.8-rr*rr*5;
+      base-=Math.min(11,shadow*1.8)*bump;
+      if(rr>.981){
+        const edge=(rr-.981)/.031;
+        base=43+32*Math.sin(edge*Math.PI)+19*(sx*lx+sy*ly)+grain*8;
+      }
+      let coverage=clamp((d-.15)/12,0,.55);
+      if(rr>.978)coverage=0;
+      const moundLight=clamp(-(ddx*fieldLightX+ddy*fieldLightY)*3,-32,22)*bump;
+      const sand=[155+moundLight,145+moundLight,127+moundLight];
+      for(let c=0;c<3;c++){
+        const metal=base+(c===2?1:0);
+        pixels[i+c]=clamp(255*Math.pow(((1-coverage)*metal+coverage*sand[c])/255*exposure,1/p.gamma),0,255);
+      }
+      pixels[i+3]=255;
+    }
+    function dot(x,y,r,t,shadow,mound){
+      const minx=Math.max(0,Math.floor(x-r-1)),maxx=Math.min(W-1,Math.ceil(x+r+1));
+      const miny=Math.max(0,Math.floor(y-r-1)),maxy=Math.min(H-1,Math.ceil(y+r+1));
+      for(let yy=miny;yy<=maxy;yy++)for(let xx=minx;xx<=maxx;xx++){
+        const dx=(xx-x)/r,dy=(yy-y)/(r*.82),q=Math.hypot(dx,dy);
+        if(q>1.5)continue;
+        const a=clamp((1.35-q)*Math.max(.75,r),0,1)*(shadow?.29:1),j=(yy*W+xx)*4;
+        const lit=shadow?0:clamp((-dx*lx+dy*ly)*24,-29,29)*bump;
+        const warm=p.sandWarm/100;
+        const col=shadow?[12,12,13]:[199+t*44+lit,196+t*39-warm*20+lit,185+t*43-warm*33+lit];
+        for(let c=0;c<3;c++)pixels[j+c]=pixels[j+c]*(1-a)+clamp(col[c]*exposure*(shadow?1:mound),0,255)*a;
+        pixels[j+3]=255;
+      }
+    }
+    const gs=short/1050*p.sandSize;
+    // Cast all shadows first, then light the grains: later grains should not
+    // incorrectly darken the previously illuminated top of the mound.
+    for(let pass=0;pass<2;pass++)for(let i=0;i<N;i++){
+      const x=px[i],y=py[i];if(x*x+y*y>.962)continue;
+      const sx=co*x+si*y,sy=-si*x+co*y;
+      const xx=cx+sx*radius,yy=cy-sy*radius,r=Math.max(.38,sizes[i]*gs);
+      if(pass===0)dot(xx-lx*r*1.1,yy+ly*r*1.1,r*1.3,tones[i],true,1);
+      else{
+        const dx=(sample(density,x+pitch,y)-sample(density,x-pitch,y))*.25;
+        const dy=(sample(density,x,y+pitch)-sample(density,x,y-pitch))*.25;
+        const diffuse=clamp((-dx*fieldLightX-dy*fieldLightY+.36)/Math.sqrt(dx*dx+dy*dy+1),0,1);
+        const shade=1-bump+bump*(.66+.43*diffuse);
+        dot(xx,yy,r,tones[i],false,shade);
+      }
+    }
+    self.postMessage({pixels:pixels.buffer,width:W,height:H},[pixels.buffer]);
+  };
+}
+
+const sandCanvas=document.getElementById("sandCanvas");
+let sandWorker=null,sandTimer=null,sandRevision=0,sandReadyKey="",sandExportBusy=false;
+const sandWorkerSource=[besselJ0,besselJ1,besselJn,mulberry,frequencySeed].map(f=>f.toString()).join("\n")+"\n("+sandWorkerMain.toString()+")();";
+const sandWorkerURL=URL.createObjectURL(new Blob([sandWorkerSource],{type:"text/javascript"}));
+function sandCancel(){
+  clearTimeout(sandTimer);sandRevision++;
+  if(sandWorker){sandWorker.terminate();sandWorker=null;}
+  sandExportBusy=false;
+  document.body.dataset.sandBusy="0";
+}
+function sandControls(){
+  const active=P.style===6;
+  if(active&&anim){cancelAnimationFrame(anim);anim=null;$("bPlay").textContent="▶ Animer les phases";}
+  document.body.classList.toggle("sandmode",active);
+  $("sandOptions").hidden=!active;
+  $("bPlay").disabled=active;
+  $("bRenderSand").disabled=!active;
+  // Unused palette/halo controls must not imply they affect physical sand.
+  for(const id of ["pH","pGr","pVig","palPick","c0","c1","c2","c3","c4","pBias","pInvert","pMask","pRing"]){$(id).disabled=active;}
+  const signature=active&&P.signature;
+  document.body.classList.toggle("signaturemode",signature);
+  for(const id of ["pA","pC","pQ","pNmax","pMmax","pK","pPh","pOnlyEven","pT"]){$(id).disabled=signature;}
+  $("signatureNote").textContent=P.signature?
+    "Une composition stable pour chaque fréquence, même lorsque deux valeurs sont très proches. Interprétation artistique inspirée des lignes nodales.":
+    "Les modes de la membrane déterminent la figure. Des fréquences voisines peuvent donner des formes proches.";
+}
+function sandRender(width,height,exporting=false){
+  sandCancel();
+  if(exporting){clearTimeout(sharpTimer);if(raf){cancelAnimationFrame(raf);raf=null;}}
+  const revision=sandRevision, recipe=JSON.parse(JSON.stringify(P)), modes=sandModes(recipe);
+  const filename=exportName("png");
+  const key=JSON.stringify(recipe)+"/"+width+"/"+height;
+  sandExportBusy=exporting;document.body.dataset.sandBusy="1";
+  $("sandState").textContent="Le sable se met en place…";
+  const w=new Worker(sandWorkerURL);sandWorker=w;
+  w.onmessage=e=>{
+    if(revision!==sandRevision)return;
+    const result=e.data;
+    if(result.progress){$("sandState").textContent=result.progress;return;}
+    const out=document.createElement("canvas");out.width=result.width;out.height=result.height;
+    out.getContext("2d").putImageData(new ImageData(new Uint8ClampedArray(result.pixels),result.width,result.height),0,0);
+    w.terminate();sandWorker=null;sandExportBusy=false;document.body.dataset.sandBusy="0";
+    if(exporting){
+      out.toBlob(blob=>{
+        if(!blob){toast("L’export n’a pas abouti. Réessaie avec une image plus petite.");return;}
+        const url=URL.createObjectURL(blob);download(url,filename);setTimeout(()=>URL.revokeObjectURL(url),60000);
+        toast("Image exportée");
+      },"image/png");
+      $("sandState").textContent="Image prête à exporter";
+    }else{
+      sandCanvas.width=result.width;sandCanvas.height=result.height;
+      sandCanvas.getContext("2d").drawImage(out,0,0);sandReadyKey=JSON.stringify(recipe);
+      sandCanvas.dataset.recipe=key;$("sandState").textContent="Image prête · "+fmtFreq(recipe.freq)+" Hz";
+      document.body.dataset.sandReady="1";
+    }
+  };
+  w.onerror=e=>{if(revision!==sandRevision)return;sandCancel();$("sandState").textContent="Rendu interrompu. Appuie sur Finaliser pour réessayer.";console.error(e.message);};
+  w.postMessage({p:recipe,modes,width,height,transparent:exporting&&recipe.transp});
+}
+function sandSchedule(final){
+  sandControls();sandCancel();document.body.dataset.sandReady="0";
+  const css=cssDims();
+  cv.style.width=css.w+"px";cv.style.height=css.h+"px";
+  sandCanvas.style.width=css.w+"px";sandCanvas.style.height=css.h+"px";
+  $("hud").textContent=fmtFreq(P.freq)+" Hz · "+(P.signature?"Signature Auralis":"Modes de la membrane");
+  $("sandState").textContent="Ajuste la figure, puis laisse le sable se poser…";
+  const cap=forcedCap?Math.max(64,parseInt(forcedCap)||200):Math.min(1200,Math.max(768,css.w*(devicePixelRatio||1)));
+  const d=renderDims(css,cap);
+  // Render at least 768 px for a grain-resolved preview on small phones.
+  const scale=forcedCap?1:Math.max(1,768/Math.min(d.w,d.h));
+  sandTimer=setTimeout(()=>sandRender(Math.round(d.w*scale),Math.round(d.h*scale)),final?0:280);
+}
+$("bRenderSand").addEventListener("click",()=>sandSchedule(true));
+$("bSandVariant").addEventListener("click",()=>{P.seed=P.seed%999+1;syncUI();schedule(true);});
+for(const [id,delta] of [["bFreqPrev",-1],["bFreqNext",1]])$(id).addEventListener("click",()=>{
+  let i=FREQS.findIndex(f=>Math.abs(f.hz-P.freq)<.00001);
+  i=(i+delta+FREQS.length)%FREQS.length;fpick.value=String(i);setFreq(FREQS[i].hz,"liste");
+});
+window.addEventListener("beforeunload",()=>{sandCancel();URL.revokeObjectURL(sandWorkerURL);});
+
 
 if(location.hash.length>10){
   try{ P=sanitize(decodeP(location.hash.slice(1))); }
