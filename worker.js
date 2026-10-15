@@ -179,6 +179,7 @@ const STATS_HTML = `<!doctype html><html lang="fr"><head><meta charset="utf-8">
   table{width:100%;border-collapse:collapse;font-size:.86rem}
   th{text-align:left;color:var(--dim);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;padding:4px 6px;border-bottom:1px solid var(--line)}
   td{padding:6px 6px;white-space:nowrap;border-bottom:1px solid #ffffff0c}
+  th.num{text-align:right}
   td.num{text-align:right;font-variant-numeric:tabular-nums;color:var(--cyan)}
   .empty{color:var(--dim);font-size:.85rem;padding:6px 8px}
   .err{color:#f5a3a3}
@@ -201,7 +202,7 @@ function table(headers, rows, empty){
   if(!rows.length) return el("p","empty",empty);
   var t=document.createElement("table");
   var thead=document.createElement("thead"), tr=document.createElement("tr");
-  headers.forEach(function(h){ tr.appendChild(el("th",null,h)); }); thead.appendChild(tr); t.appendChild(thead);
+  headers.forEach(function(h,i){ tr.appendChild(el("th", i>0?"num":null, h)); }); thead.appendChild(tr); t.appendChild(thead);
   var tbody=document.createElement("tbody");
   rows.forEach(function(r){ var row=document.createElement("tr");
     r.forEach(function(c,i){ row.appendChild(el("td", i>0?"num":null, String(c))); }); tbody.appendChild(row); });
