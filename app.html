@@ -11,6 +11,19 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>Auralis Fréquences &amp; sons</title>
 <style>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#070d1c">
+<meta name="color-scheme" content="light dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Auralis</title>
+<style>
   :root{
     --bg:#070d1c; --pan:#111a33; --pan2:#18223f; --line:#26325a; --line2:#334066;
     --cyan:#7fd8f0; --mauve:#b98fe0; --gold:#e9c96a;
@@ -3139,6 +3152,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     return { on:function(){ return !!plug(); },
       start:function(o){ return call("start",o); },
       update:function(o){ return call("update",o); },
+      sequence:function(o){ return call("sequence",o); },
       stop:function(o){ return call("stop",o); } };
   })();
   /* Pont vers l abonnement natif -- AuralisStore.swift (StoreKit 2) sur iOS,
@@ -3576,7 +3590,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("protThemeBtn").addEventListener("click",toggleTheme);
   $("protoStart").addEventListener("click",function(){openSeq(protoPick,"protos");});
   $("protoPulse").addEventListener("click",function(){openPulse("protos");});
-  var seq={p:null,idx:0,protoIdx:null,remain:0,timer:null,master:null,osc:null,playing:false,total:0,elapsed:0};
+  var seq={p:null,idx:0,protoIdx:null,remain:0,timer:null,master:null,osc:null,playing:false,total:0,elapsed:0,runStart:0,runOffset:0,native:false};
   function openSeq(source, from){ stopSeq(true); returnTo=from||"protos";
     seq.p=(typeof source==="number")?PROTOS[source]:source; seq.protoIdx=(typeof source==="number")?source:null;
     seq.idx=0; seq.playing=false; seq.total=seq.p.s.reduce(function(a,x){return a+x.m*60;},0); seq.elapsed=0;
@@ -3597,21 +3611,44 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     NA.start(pname(seq.p), nativeText("notification_protocol",t("protos_head")), {
       pause: function(){ stopSeq(false); }, stop: function(){ stopSeq(false); },
       play:  function(){ if(!seq.playing) startSeq(); } });
-    var ti=ctx.currentTime; if(seq.idx>=seq.p.s.length){seq.idx=0;seq.elapsed=0;}
-    if(!NativeTone.start({voices:[{f:seq.p.s[seq.idx].f,g:1,p:0}],master:state.vol,fadeMs:50})){
+    var ti=ctx.currentTime; if(seq.idx>=seq.p.s.length)seq.idx=0;
+    seq.native=NativeTone.start({voices:[{f:seq.p.s[seq.idx].f,g:1,p:0}],master:state.vol,fadeMs:50});
+    if(!seq.native){
       seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(ctx.destination);
       seq.osc=ctx.createOscillator(); seq.osc.type="sine"; seq.osc.frequency.setValueAtTime(seq.p.s[seq.idx].f,ti); seq.osc.connect(seq.master); seq.osc.start();
     }
-    seq.remain=seq.p.s[seq.idx].m*60; seq.playing=true; setSeqBtn(true); updSeqUI(); seq.timer=setInterval(seqTick,1000);
+    /* Reprise au debut de l etape en cours, comme avant ; mais le temps se
+       mesure desormais a l horloge reelle (voir seqPos). */
+    seq.runOffset=seqStepEnd(seq.idx-1); seq.runStart=Date.now(); seq.elapsed=seq.runOffset; seq.remain=seqStepEnd(seq.idx)-seq.runOffset;
+    seq.playing=true; seqSyncNative(); setSeqBtn(true); updSeqUI(); seq.timer=setInterval(seqTick,1000);
     var li=$("st"+seq.idx); if(li){ li.classList.remove("sweep"); void li.offsetWidth; li.classList.add("sweep"); } }
-  function seqTick(){ seq.remain--; seq.elapsed++;
-    if(seq.remain<=0){ seq.idx++; if(seq.idx>=seq.p.s.length){ stopSeq(false); $("sClock").textContent=t("seq_done"); $("sBar").style.width="100%"; highlight(-1); return; }
+  /* Fin (en secondes depuis le debut du protocole) de l etape k ; -1 -> 0. */
+  function seqStepEnd(k){ var e=0; for(var j=0;j<=k&&j<seq.p.s.length;j++)e+=seq.p.s[j].m*60; return e; }
+  /* Position dans le protocole d apres l horloge reelle, pas d apres le
+     nombre d appels de seqTick : ecran verrouille, iOS gele le JavaScript et
+     Android peut espacer les minuteries -- compter les appels figeait alors
+     le protocole (signale par des clients iPhone, confirme 2026-10-15). */
+  function seqPos(){ return seq.runOffset+Math.floor((Date.now()-seq.runStart)/1000); }
+  /* iOS : on confie au plugin natif tout le reste du protocole, qu il enchaine
+     lui-meme pendant que le JavaScript dort. Renvoye a chaque reprise de
+     premier plan pour realigner le natif sur l horloge reelle. Sans effet sur
+     un binaire dont le plugin ne connait pas encore "sequence". */
+  function seqSyncNative(){ if(!seq.playing||!seq.native)return;
+    var pos=seqPos(),steps=[];
+    for(var k=0;k<seq.p.s.length;k++){ var end=seqStepEnd(k); if(end>pos)steps.push({f:seq.p.s[k].f,d:end-Math.max(pos,end-seq.p.s[k].m*60)}); }
+    NativeTone.sequence({steps:steps}); }
+  function seqTick(){ if(!seq.playing)return;
+    var pos=seqPos(),n=seq.p.s.length;
+    if(pos>=seq.total){ seq.idx=n; stopSeq(false); $("sClock").textContent=t("seq_done"); $("sBar").style.width="100%"; highlight(-1); return; }
+    var k=0; while(k<n-1&&pos>=seqStepEnd(k))k++;
+    if(k!==seq.idx){ seq.idx=k;
       /* Glissando de 60 ms entre deux etapes : identique des deux cotes, un
          saut net de frequence s entend comme un clic. */
-      if(!NativeTone.update({voices:[{f:seq.p.s[seq.idx].f,g:1,p:0}],glideMs:60}) && seq.osc)
-        seq.osc.frequency.setTargetAtTime(seq.p.s[seq.idx].f,ctx.currentTime,0.06);
-      seq.remain=seq.p.s[seq.idx].m*60; }
+      if(!NativeTone.update({voices:[{f:seq.p.s[k].f,g:1,p:0}],glideMs:60}) && seq.osc)
+        seq.osc.frequency.setTargetAtTime(seq.p.s[k].f,ctx.currentTime,0.06); }
+    seq.elapsed=pos; seq.remain=seqStepEnd(k)-pos;
     updSeqUI(); }
+  document.addEventListener("visibilitychange",function(){ if(!document.hidden&&seq.playing){ seqTick(); seqSyncNative(); } });
   function updSeqUI(){ var s=seq.p.s[seq.idx]; $("sHz").textContent=s.f.toFixed(2); $("sStep").textContent=(seq.idx+1)+"/"+seq.p.s.length+" · "+stepName(s);
     var mm=Math.floor(seq.remain/60),ss=seq.remain%60; $("sClock").textContent=mm+":"+(ss<10?"0":"")+ss; $("sBar").style.width=Math.min(100,(seq.elapsed/seq.total)*100)+"%"; highlight(seq.idx); }
   function stopSeq(immediate){ clearInterval(seq.timer);seq.timer=null; NativeTone.stop({fadeMs:immediate?20:60});
@@ -3739,17 +3776,17 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
    {name:"Icosaèdre",ic:"◉",shape:"metatron",cat:"sacred",photo:"sacred-icosaedre-v2.webp",sym:{fr:"20 faces · l'eau",en:"20 faces · water",es:"20 caras · el agua"},ratios:"pentatonique",notes:["Do","Mi","Ré","Sol","Mi","La","Sol","Do′"],audio:"icosaedre",dur:130.90,drone:[["Do",0.3],["Sol",0.18]]},
    {name:"Torus",ic:"◎",shape:"metatron",cat:"sacred",photo:"sacred-torus-v2.webp",sym:{fr:"Le flux · monte par le centre, redescend par l'extérieur",en:"The flow · up through the center, down around the outside",es:"El flujo · sube por el centro, baja por el exterior"},ratios:"boucle fermée",notes:["Do","Mi","Sol","Do′","Si","La","Fa","Ré"],audio:"torus",dur:182.80,drone:[["Do",0.3],["Sol",0.18]]},
    {name:"Sri Yantra",ic:"🕉️",shape:"sriyantra",cat:"sacred",photo:"sacred-sriyantra-v2.webp",sym:{fr:"9 triangles · le son primordial",en:"9 triangles · the primordial sound",es:"9 triángulos · el sonido primordial"},ratios:"gamme ascendante",notes:["Do","Ré","Mi","Fa","Sol","La","Si","Do′"],audio:"sri_yantra",dur:244.36,drone:[["Do",0.28],["Sol",0.18]]},
-   {name:"Spirale Double",ic:"☯",shape:"yinyang",cat:"crop",photo:"crop-spirale-double-v2.webp",sym:{fr:"Spirale double · dualité",en:"Double spiral · duality",es:"Espiral doble · dualidad"},ratios:"2:1 · octave",notes:["Do","Sol","Do′","Sol","Do","Sol","Do′","Sol"],audio:"spirale_double",dur:152.00,drone:[["Do",0.3],["Sol",0.2]]},
+   {name:"Spirale Double",ic:"☯",shape:"yinyang",cat:"crop",photo:"crop-spirale-double-square-v3.webp",sym:{fr:"Spirale double · dualité",en:"Double spiral · duality",es:"Espiral doble · dualidad"},ratios:"2:1 · octave",notes:["Do","Sol","Do′","Sol","Do","Sol","Do′","Sol"],audio:"spirale_double",dur:152.00,drone:[["Do",0.3],["Sol",0.2]]},
    {name:"Rosace Solaire",ic:"✺",shape:"rosace",cat:"crop",photo:"crop-rosace-solaire-v2.webp",sym:{fr:"Rosace solaire · mandala rayonnant",en:"Solar rosette · radiant mandala",es:"Rosetón solar · mandala radiante"},ratios:"accord majeur rayonnant",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do","Sol"],audio:"rosace_solaire",dur:182.89,drone:[["Do",0.28],["Sol",0.18]]},
-   {name:"Amas de Bulles",ic:"🫧",shape:"bubbles",cat:"crop",photo:"crop-amas-bulles-v2.webp",sym:{fr:"Amas de bulles · spirale double",en:"Bubble cluster · double spiral",es:"Racimo de burbujas · espiral doble"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Sol","Mi","Ré"],audio:"amas_de_bulles",dur:96.76,drone:[["Do",0.3],["Sol",0.18]]},
+   {name:"Amas de Bulles",ic:"🫧",shape:"bubbles",cat:"crop",photo:"crop-amas-bulles-square-v3.webp",sym:{fr:"Amas de bulles · spirale double",en:"Bubble cluster · double spiral",es:"Racimo de burbujas · espiral doble"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Sol","Mi","Ré"],audio:"amas_de_bulles",dur:96.76,drone:[["Do",0.3],["Sol",0.18]]},
    {name:"Pentagramme Rayonnant",ic:"✦",shape:"pentastar",cat:"crop",photo:"crop-pentagramme-v2.webp",sym:{fr:"Symétrie 5 · étoile rayonnante",en:"5-fold · radiant star",es:"Simetría 5 · estrella radiante"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La"],audio:"pentagramme_rayonnant",dur:182.07,drone:[["Do",0.3],["La",0.15]]},
    {name:"Spirale Dorée · Système",ic:"☄️",shape:"fibonacci",cat:"crop",photo:"crop-spirale-doree-v2.webp",sym:{fr:"Suite de Fibonacci · nombre d'or",en:"Fibonacci sequence · golden ratio",es:"Secuencia de Fibonacci · número áureo"},ratios:"φ ≈ 1.618",notes:["Do","Ré","Mi","Sol","Do′","Sol","Mi","Ré"],audio:"spirale_doree",dur:132.25,drone:[["Do",0.3],["Sol",0.15]]},
    {name:"Réseau Cristallin",ic:"❄️",shape:"lattice",cat:"crop",photo:"crop-reseau-cristallin-v2.webp",sym:{fr:"Symétrie 4 · réseau cristallin",en:"4-fold · crystal lattice",es:"Simetría 4 · red cristalina"},ratios:"accord majeur en treillis",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do","Mi"],audio:"reseau_cristallin",dur:66.08,drone:[["Do",0.3],["Mi",0.15],["Sol",0.15]]},
-   {name:"Spirale Ailée",ic:"🌊",shape:"wingspiral",cat:"crop",photo:"crop-spirale-ailee-v2.webp",sym:{fr:"Spirale ailée · méandre grec",en:"Winged spiral · Greek meander",es:"Espiral alada · meandro griego"},ratios:"4:3 · méandre",notes:["Do","Fa","Do","Fa","Sol","Do′","Fa","Do"],audio:"spirale_ailee",dur:183.25,drone:[["Do",0.3],["Fa",0.18]]},
-   {name:"Galaxie de Bulles",ic:"🌌",shape:"spiralbubbles",cat:"crop",photo:"crop-galaxie-bulles-v2.webp",sym:{fr:"Spirale logarithmique · croissance",en:"Logarithmic spiral · growth",es:"Espiral logarítmica · crecimiento"},ratios:"suite de Fibonacci",notes:["Do","Ré","Mi","Sol","La","Do′"],audio:"galaxie_de_bulles",dur:182.60,drone:[["Do",0.28],["Sol",0.16]]},
-   {name:"Noyau et Satellites",ic:"⚛️",shape:"nucleus3",cat:"crop",photo:"crop-noyau-satellites-v2.webp",sym:{fr:"Noyau et 3 satellites · orbite",en:"Nucleus and 3 satellites · orbit",es:"Núcleo y 3 satélites · órbita"},ratios:"triade orbitale",notes:["Do","Mi","Do","Sol","Do","La","Do"],audio:"noyau_et_satellites",dur:126.01,drone:[["Do",0.32]]},
-   {name:"Nautile Doré",ic:"🐚",shape:"nautilus",cat:"crop",photo:"crop-nautile-dore-v2.webp",sym:{fr:"Spirale logarithmique · nombre d'or",en:"Logarithmic spiral · golden ratio",es:"Espiral logarítmica · número áureo"},ratios:"φ ≈ 1.618",notes:["Do′","Si","La","Sol","Fa","Mi","Ré","Do"],audio:"nautile_dore_2",dur:183.21,drone:[["Do",0.3],["Sol",0.15]]},
-   {name:"Modèle Atomique",ic:"🪐",shape:"atom2",cat:"crop",photo:"crop-modele-atomique-v2.webp",sym:{fr:"Noyau et 2 satellites · orbite double",en:"Nucleus and 2 satellites · double orbit",es:"Núcleo y 2 satélites · órbita doble"},ratios:"dyade orbitale",notes:["Do","Sol","Do","La","Do","Sol","Do","La"],audio:"modele_atomique",dur:106.90,drone:[["Do",0.32]]},
+   {name:"Spirale Ailée",ic:"🌊",shape:"wingspiral",cat:"crop",photo:"crop-spirale-ailee-square-v3.webp",sym:{fr:"Spirale ailée · méandre grec",en:"Winged spiral · Greek meander",es:"Espiral alada · meandro griego"},ratios:"4:3 · méandre",notes:["Do","Fa","Do","Fa","Sol","Do′","Fa","Do"],audio:"spirale_ailee",dur:183.25,drone:[["Do",0.3],["Fa",0.18]]},
+   {name:"Galaxie de Bulles",ic:"🌌",shape:"spiralbubbles",cat:"crop",photo:"crop-galaxie-bulles-square-v3.webp",sym:{fr:"Spirale logarithmique · croissance",en:"Logarithmic spiral · growth",es:"Espiral logarítmica · crecimiento"},ratios:"suite de Fibonacci",notes:["Do","Ré","Mi","Sol","La","Do′"],audio:"galaxie_de_bulles",dur:182.60,drone:[["Do",0.28],["Sol",0.16]]},
+   {name:"Noyau et Satellites",ic:"⚛️",shape:"nucleus3",cat:"crop",photo:"crop-noyau-satellites-square-v3.webp",sym:{fr:"Noyau et 3 satellites · orbite",en:"Nucleus and 3 satellites · orbit",es:"Núcleo y 3 satélites · órbita"},ratios:"triade orbitale",notes:["Do","Mi","Do","Sol","Do","La","Do"],audio:"noyau_et_satellites",dur:126.01,drone:[["Do",0.32]]},
+   {name:"Nautile Doré",ic:"🐚",shape:"nautilus",cat:"crop",photo:"crop-nautile-dore-square-v3.webp",sym:{fr:"Spirale logarithmique · nombre d'or",en:"Logarithmic spiral · golden ratio",es:"Espiral logarítmica · número áureo"},ratios:"φ ≈ 1.618",notes:["Do′","Si","La","Sol","Fa","Mi","Ré","Do"],audio:"nautile_dore_2",dur:183.21,drone:[["Do",0.3],["Sol",0.15]]},
+   {name:"Modèle Atomique",ic:"🪐",shape:"atom2",cat:"crop",photo:"crop-modele-atomique-square-v3.webp",sym:{fr:"Noyau et 2 satellites · orbite double",en:"Nucleus and 2 satellites · double orbit",es:"Núcleo y 2 satélites · órbita doble"},ratios:"dyade orbitale",notes:["Do","Sol","Do","La","Do","Sol","Do","La"],audio:"modele_atomique",dur:106.90,drone:[["Do",0.32]]},
    {name:"Stellaire",ic:"❄",shape:"lattice",cat:"snowflake",photo:"stellaire.webp",sym:{fr:"Symétrie 6 · l'étoile de glace",en:"6-fold · the ice star",es:"Simetría 6 · la estrella de hielo"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′"],audio:"stellaire",dur:182.15,drone:[["Do",0.3],["Sol",0.18]]},
    {name:"Dendritique",ic:"❆",shape:"lattice",cat:"snowflake",photo:"dendritique.webp",sym:{fr:"Symétrie 6 · branches ramifiées",en:"6-fold · branching arms",es:"Simetría 6 · ramas ramificadas"},ratios:"pentatonique",notes:["Do","Ré","Mi","Sol","La","Do′","La","Sol"],audio:"dendritique",dur:74.64,drone:[["Do",0.3],["Sol",0.18]]},
    {name:"Étoile Spectaculaire",ic:"✶",shape:"lattice",cat:"snowflake",photo:"etoilespec.webp",sym:{fr:"12 pointes · étoile rayonnante",en:"12 points · radiant star",es:"12 puntas · estrella radiante"},ratios:"accord majeur rayonnant",notes:["Do","Mi","Sol","Do′","Sol","Mi","Do"],audio:"etoile_spectaculaire",dur:121.12,drone:[["Do",0.28],["Sol",0.18]]},
@@ -3784,17 +3821,17 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   /* Nouvelles formations visuelles. Leur musique sera ajoutee plus tard;
      elles restent hors de GEO pour ne jamais tomber sur la synthese de repli. */
   var CROP_PENDING=[
-   {name:"Spirale d’Avebury",pending:true,cat:"crop",photo:"crop-avebury-1996.webp",sym:{fr:"Windmill Hill · 1996",en:"Windmill Hill · 1996",es:"Windmill Hill · 1996"}},
-   {name:"Anneau de Crooked Soley",pending:true,cat:"crop",photo:"crop-crooked-soley-2002.webp",sym:{fr:"Crooked Soley · 2002",en:"Crooked Soley · 2002",es:"Crooked Soley · 2002"}},
-   {name:"Disque de Shelford",pending:true,cat:"crop",photo:"crop-shelford-2001.webp",sym:{fr:"Great Shelford · 2001",en:"Great Shelford · 2001",es:"Great Shelford · 2001"}},
-   {name:"Labyrinthe de Barbury",pending:true,cat:"crop",photo:"crop-barbury-2008.webp",sym:{fr:"Barbury Castle · 2008",en:"Barbury Castle · 2008",es:"Barbury Castle · 2008"}},
-   {name:"Trois Oiseaux",pending:true,cat:"crop",photo:"crop-trois-oiseaux-2003.webp",sym:{fr:"Wiltshire · 2003",en:"Wiltshire · 2003",es:"Wiltshire · 2003"}},
-   {name:"Triskèle Circulaire",pending:true,cat:"crop",photo:"crop-triskele.webp",sym:{fr:"Triskèle · trois cycles",en:"Triskelion · three cycles",es:"Trisquel · tres ciclos"}},
-   {name:"Spirale de Roundway",pending:true,cat:"crop",photo:"crop-roundway-2009.webp",sym:{fr:"Roundway · 2009",en:"Roundway · 2009",es:"Roundway · 2009"}},
-   {name:"Rosace de Colza",pending:true,cat:"crop",photo:"crop-all-cannings.webp",sym:{fr:"All Cannings · Wiltshire",en:"All Cannings · Wiltshire",es:"All Cannings · Wiltshire"}},
-   {name:"Cinq Spirales",pending:true,cat:"crop",photo:"crop-cinq-spirales.webp",sym:{fr:"Symétrie 5 · Roundway Hill",en:"5-fold · Roundway Hill",es:"Simetría 5 · Roundway Hill"}},
-   {name:"Rosace Entrelacée",pending:true,cat:"crop",photo:"crop-rosace-entrelacee.webp",sym:{fr:"Devizes · Wiltshire",en:"Devizes · Wiltshire",es:"Devizes · Wiltshire"}},
-   {name:"Yin Yang",pending:true,cat:"crop",photo:"crop-yin-yang.webp",sym:{fr:"Windmill Hill · dualité",en:"Windmill Hill · duality",es:"Windmill Hill · dualidad"}}
+   {name:"Spirale d’Avebury",pending:true,cat:"crop",photo:"crop-avebury-1996-square-v3.webp",sym:{fr:"Windmill Hill · 1996",en:"Windmill Hill · 1996",es:"Windmill Hill · 1996"}},
+   {name:"Anneau de Crooked Soley",pending:true,cat:"crop",photo:"crop-crooked-soley-2002-square-v3.webp",sym:{fr:"Crooked Soley · 2002",en:"Crooked Soley · 2002",es:"Crooked Soley · 2002"}},
+   {name:"Disque de Shelford",pending:true,cat:"crop",photo:"crop-shelford-2001-square-v3.webp",sym:{fr:"Great Shelford · 2001",en:"Great Shelford · 2001",es:"Great Shelford · 2001"}},
+   {name:"Labyrinthe de Barbury",pending:true,cat:"crop",photo:"crop-barbury-2008-square-v3.webp",sym:{fr:"Barbury Castle · 2008",en:"Barbury Castle · 2008",es:"Barbury Castle · 2008"}},
+   {name:"Trois Oiseaux",pending:true,cat:"crop",photo:"crop-trois-oiseaux-2003-square-v3.webp",sym:{fr:"Wiltshire · 2003",en:"Wiltshire · 2003",es:"Wiltshire · 2003"}},
+   {name:"Triskèle Circulaire",pending:true,cat:"crop",photo:"crop-triskele-square-v3.webp",sym:{fr:"Triskèle · trois cycles",en:"Triskelion · three cycles",es:"Trisquel · tres ciclos"}},
+   {name:"Spirale de Roundway",pending:true,cat:"crop",photo:"crop-roundway-2009-square-v3.webp",sym:{fr:"Roundway · 2009",en:"Roundway · 2009",es:"Roundway · 2009"}},
+   {name:"Rosace de Colza",pending:true,cat:"crop",photo:"crop-all-cannings-square-v3.webp",sym:{fr:"All Cannings · Wiltshire",en:"All Cannings · Wiltshire",es:"All Cannings · Wiltshire"}},
+   {name:"Cinq Spirales",pending:true,cat:"crop",photo:"crop-cinq-spirales-square-v3.webp",sym:{fr:"Symétrie 5 · Roundway Hill",en:"5-fold · Roundway Hill",es:"Simetría 5 · Roundway Hill"}},
+   {name:"Rosace Entrelacée",pending:true,cat:"crop",photo:"crop-rosace-entrelacee-square-v3.webp",sym:{fr:"Devizes · Wiltshire",en:"Devizes · Wiltshire",es:"Devizes · Wiltshire"}},
+   {name:"Yin Yang",pending:true,cat:"crop",photo:"crop-yin-yang-square-v3.webp",sym:{fr:"Windmill Hill · dualité",en:"Windmill Hill · duality",es:"Windmill Hill · dualidad"}}
   ];
   var SNOW_I18N={
     fr:{hero:"La musique du cristal",sub:"Explorez leurs formes. Écoutez leurs harmonies.",choose:"Choisir un flocon",count:"10 formes",footer:"Un instant de contemplation."},
