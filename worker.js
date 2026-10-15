@@ -16,6 +16,12 @@
  *   {t:"screen", s:"<ecran>"}
  *   {t:"play",   k:"<freq|music|geo|proto|pulse|bin>", id:"<slug>"}
  *   {t:"end",    k:"<meme>",                            id:"<slug>", sec:<ecoute reelle>}
+ *   {t:"open",   v:"<version de l'app>"}   (une fois par lancement, depuis la 1.0.3)
+ *
+ * blob4 = plateforme, deduite de l'en-tete Origin de la requete (aucune donnee
+ * de l'appareil) : l'app Android tourne sur https://localhost, l'app iPhone
+ * sur capacitor://localhost, la version web sur aura-lis.ca. Ajoute le
+ * 2026-10-14 ; les evenements plus anciens ont un blob4 vide.
  *
  * `end` est ce qui compte le plus : une lecture coupee a 40 s et une lecture
  * ecoutee jusqu'au bout ont le meme evenement `play`, seul `end.sec` distingue
@@ -30,6 +36,14 @@ function clip(v) {
   return typeof v === "string" ? v.slice(0, MAX_STR) : "";
 }
 
+function platformOf(request) {
+  const o = request.headers.get("Origin") || "";
+  if (o === "https://localhost" || o === "http://localhost") return "android";
+  if (o.startsWith("capacitor://") || o.startsWith("ionic://")) return "ios";
+  if (/^https:\/\/([a-z0-9-]+\.)*aura-lis\.ca$/.test(o)) return "web";
+  return "autre";
+}
+
 async function handleEvents(request, env) {
   const len = Number(request.headers.get("content-length") || 0);
   if (len > MAX_BODY) return new Response("payload too large", { status: 413 });
@@ -41,15 +55,16 @@ async function handleEvents(request, env) {
     return new Response("bad json", { status: 400 });
   }
   const events = Array.isArray(body && body.events) ? body.events.slice(0, MAX_EVENTS) : [];
+  const plat = platformOf(request);
   if (!events.length) return new Response(null, { status: 204 });
 
   for (const e of events) {
     const t = clip(e && e.t);
-    if (t !== "screen" && t !== "play" && t !== "end") continue;
+    if (t !== "screen" && t !== "play" && t !== "end" && t !== "open") continue;
 
-    const blobs = t === "screen"
-      ? ["screen", clip(e.s), ""]
-      : [t, clip(e.k), clip(e.id)];
+    const blobs = t === "screen" ? ["screen", clip(e.s), "", plat]
+      : t === "open" ? ["open", clip(e.v), "", plat]
+      : [t, clip(e.k), clip(e.id), plat];
     const doubles = t === "end" && isFinite(e.sec) ? [Math.max(0, Number(e.sec))] : [0];
 
     try {
@@ -126,12 +141,18 @@ async function handleStatsData(request, env) {
   const raw = url.searchParams.get("range");
   const days = raw === "1" ? 1 : raw === "30" ? 30 : 7;
   try {
-    const [screens, plays, ends] = await Promise.all([
+    const [screens, plays, ends, daily] = await Promise.all([
       aeQuery(env, `SELECT blob2 AS name, count() AS n FROM auralis_events WHERE blob1='screen' AND timestamp > NOW() - INTERVAL '${days}' DAY GROUP BY blob2 ORDER BY n DESC LIMIT 40`),
       aeQuery(env, `SELECT blob2 AS kind, blob3 AS id, count() AS n FROM auralis_events WHERE blob1='play' AND timestamp > NOW() - INTERVAL '${days}' DAY GROUP BY blob2, blob3 ORDER BY n DESC LIMIT 200`),
       aeQuery(env, `SELECT blob2 AS kind, blob3 AS id, count() AS n, sum(double1) AS total_sec, avg(double1) AS avg_sec FROM auralis_events WHERE blob1='end' AND timestamp > NOW() - INTERVAL '${days}' DAY GROUP BY blob2, blob3 ORDER BY total_sec DESC LIMIT 200`),
+      /* Ouvertures (t=open) et arrivees sur l'accueil ou la page d'abonnement
+         (premier ecran de chaque lancement), par heure et par plateforme.
+         _sample_interval corrige l'echantillonnage d'Analytics Engine en cas
+         de fort volume. Heures UTC : le navigateur les regroupe en jours locaux. */
+      aeQuery(env, `SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) AS h, blob1 AS t, blob4 AS plat, sum(_sample_interval) AS n FROM auralis_events WHERE (blob1='open' OR (blob1='screen' AND (blob2='home' OR blob2='paywall'))) AND timestamp > NOW() - INTERVAL '${days + 1}' DAY GROUP BY h, t, plat ORDER BY h DESC LIMIT 10000`)
+        .catch((e) => [{ error: String((e && e.message) || e) }]), // ne jamais casser le reste de la page
     ]);
-    return new Response(JSON.stringify({ days, screens, plays, ends }), {
+    return new Response(JSON.stringify({ days, screens, plays, ends, daily }), {
       headers: { "content-type": "application/json" },
     });
   } catch (e) {
@@ -153,11 +174,11 @@ const STATS_HTML = `<!doctype html><html lang="fr"><head><meta charset="utf-8">
   .range{display:flex;gap:8px;margin-bottom:22px}
   .range button{background:var(--pan);border:1px solid var(--line);color:var(--txt);padding:7px 14px;border-radius:10px;font:inherit;cursor:pointer}
   .range button.on{border-color:var(--cyan);color:var(--cyan)}
-  section{background:var(--pan);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  section{background:var(--pan);border:1px solid var(--line);border-radius:14px;padding:14px 12px;margin-bottom:16px}
   h2{font-size:.95rem;margin:0 0 10px;color:var(--mauve)}
   table{width:100%;border-collapse:collapse;font-size:.86rem}
-  th{text-align:left;color:var(--dim);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;padding:4px 8px;border-bottom:1px solid var(--line)}
-  td{padding:6px 8px;border-bottom:1px solid #ffffff0c}
+  th{text-align:left;color:var(--dim);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;padding:4px 6px;border-bottom:1px solid var(--line)}
+  td{padding:6px 6px;white-space:nowrap;border-bottom:1px solid #ffffff0c}
   td.num{text-align:right;font-variant-numeric:tabular-nums;color:var(--cyan)}
   .empty{color:var(--dim);font-size:.85rem;padding:6px 8px}
   .err{color:#f5a3a3}
@@ -186,11 +207,37 @@ function table(headers, rows, empty){
     r.forEach(function(c,i){ row.appendChild(el("td", i>0?"num":null, String(c))); }); tbody.appendChild(row); });
   t.appendChild(tbody); return t;
 }
+var PLATS=[["android","Android"],["ios","iPhone"],["web","Web"]];
+function dayKey(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function dayLabel(k){ var d=new Date(k+"T12:00:00"); return d.toLocaleDateString("fr-CA",{day:"numeric",month:"short"}); }
+function dailySection(data, t, title, note){
+  var byDay={}, any=false, cutoff=new Date(); cutoff.setHours(0,0,0,0); cutoff.setDate(cutoff.getDate()-data.days+1);
+  var derr=(data.daily||[]).filter(function(r){return r.error;})[0];
+  (data.daily||[]).forEach(function(r){
+    if(r.error||r.t!==t) return;
+    var d=new Date(String(r.h).replace(" ","T")+"Z"); if(isNaN(d)||d<cutoff) return;
+    var k=dayKey(d), row=byDay[k]=byDay[k]||{android:0,ios:0,web:0,autre:0};
+    var p=r.plat||"autre"; row[p in row?p:"autre"]+=Number(r.n)||0; any=true;
+  });
+  var sec=el("section"); sec.appendChild(el("h2",null,title)); if(note) sec.appendChild(el("p","empty",note));
+  if(derr){ sec.appendChild(el("p","err","Erreur : "+derr.error)); return sec; }
+  var keys=Object.keys(byDay).sort().reverse();
+  var tot={android:0,ios:0,web:0,autre:0};
+  var rows=keys.map(function(k){ var r=byDay[k]; Object.keys(tot).forEach(function(p){tot[p]+=r[p];});
+    return [dayLabel(k), r.android, r.ios, r.web, r.autre, r.android+r.ios+r.web+r.autre]; });
+  if(rows.length>1) rows.push(["Total", tot.android, tot.ios, tot.web, tot.autre, tot.android+tot.ios+tot.web+tot.autre]);
+  sec.appendChild(table(["Jour"].concat(PLATS.map(function(p){return p[1];}),["Autre","Total"]), any?rows:[], "Aucune donnée pour l'instant."));
+  return sec;
+}
 function render(data){
   var out=document.getElementById("out"); out.innerHTML="";
   if(data.error){ out.appendChild(el("p","err","Erreur : "+data.error)); return; }
+  out.appendChild(dailySection(data,"open","Ouvertures de l'app par jour",
+    "Une ligne par lancement de l'app. Compté à partir de la version 1.0.3 (la version web compte déjà)."));
+  out.appendChild(dailySection(data,"screen","Arrivées sur l'accueil ou l'abonnement, par jour",
+    "Approximation en attendant la 1.0.3 : chaque lancement en compte une, mais un retour à l'accueil aussi. Réparti par appareil depuis le 14 octobre 2026."));
 
-  var s1=el("section"); s1.appendChild(el("h2","\u00c9crans les plus visit\u00e9s"));
+  var s1=el("section"); s1.appendChild(el("h2",null,"\u00c9crans les plus visit\u00e9s"));
   var screens=(data.screens||[]).map(function(r){ return [r.name||"(?)", r.n]; });
   s1.appendChild(table(["\u00c9cran","Vues"], screens, "Aucune donn\u00e9e pour l'instant.")); out.appendChild(s1);
 

@@ -3921,6 +3921,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
        par pagehide. On vide la file regulierement pour ne pas tout perdre si
        le systeme tue l'app. */
     setInterval(send, 120000);
+    /* Une ouverture par lancement (2026-10-14) : version seulement, la plateforme
+       est deduite cote serveur de l'en-tete Origin. */
+    push({ t:"open", v:String(APP_VERSION) });
     return {
       screen: function(v){ push({ t:"screen", s:String(v||"") }); },
       play: function(k, id){ stopCur();
