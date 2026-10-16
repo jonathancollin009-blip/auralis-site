@@ -5563,7 +5563,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     }
     function skip(){prefs.mode="off";save();close(true);}
     function next(){
-      if(topic==="welcome"){prefs.mode="guided";save();close(true);return;}
+      if(topic==="welcome"){prefs.mode="guided";save();close(false);var go=document.querySelector('[data-go="lib"]');if(go)go.click();return;}
       index++;prefs.steps[topic]=index;save();
       if(index>=tours[topic].length){close(true);return;}
       render();$("guideNext").focus({preventScroll:true});
