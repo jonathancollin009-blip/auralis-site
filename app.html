@@ -3562,11 +3562,21 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     if(!NativeTone.update({master:state.vol,glideMs:20}) && sMaster && ctx)sMaster.gain.setTargetAtTime(state.playing?state.vol:0,ctx.currentTime,0.02); });
 
   function playerMinuteUnit(){return (lang==="zh"||lang==="zht")?"分":lang==="lo"?"ນາທີ":lang==="hi"?"मि":"min";}
-  var tEl=$("timer"),OPTS=[10,20,30],tHandle=null,tRemain=0;
+  var tEl=$("timer"),OPTS=[10,20,30],tHandle=null,tEnd=0;
   OPTS.forEach(function(o){ var b=document.createElement("button"); b.textContent=o+" "+playerMinuteUnit(); b.addEventListener("click",function(){ setTimer(o); if(state.playing)armTimer(); }); tEl.appendChild(b); });
   function setTimer(o){ state.timerMin=o; Array.prototype.forEach.call(tEl.children,function(x,i){x.setAttribute("aria-pressed",OPTS[i]===o?"true":"false");}); if(!state.playing||o===0)$("tclock").textContent=""; }
-  function armTimer(){ clearInterval(tHandle);tHandle=null; if(state.timerMin===0){$("tclock").textContent="";return;} tRemain=state.timerMin*60; tTick(); tHandle=setInterval(tTick,1000); }
-  function tTick(){ if(tRemain<=0){clearInterval(tHandle);tHandle=null;stopSingle(false);$("tclock").textContent=t("done");return;} var mm=Math.floor(tRemain/60),ss=tRemain%60; $("tclock").textContent=mm+":"+(ss<10?"0":"")+ss+" "+t("remaining"); tRemain--; }
+  function armTimer(){ clearInterval(tHandle);tHandle=null; if(state.timerMin===0){tEnd=0;$("tclock").textContent="";tSyncNative();return;} tEnd=Date.now()+state.timerMin*60000; tTick(); tSyncNative(); tHandle=setInterval(tTick,1000); }
+  /* Temps restant a l horloge reelle : ecran verrouille, iOS gele le
+     JavaScript et compter les appels de tTick laissait la frequence jouer
+     sans fin (signale par un client iPhone, 2026-10-16). */
+  function tLeft(){ return Math.max(0,Math.ceil((tEnd-Date.now())/1000)); }
+  function tTick(){ var r=tLeft(); if(r<=0){clearInterval(tHandle);tHandle=null;stopSingle(false);$("tclock").textContent=t("done");return;} var mm=Math.floor(r/60),ss=r%60; $("tclock").textContent=mm+":"+(ss<10?"0":"")+ss+" "+t("remaining"); }
+  /* iOS : le plugin natif coupe lui-meme le son a la fin du temps choisi
+     (sequence d une seule etape), meme JavaScript gele. Sans minuterie, une
+     liste vide annule l arret programme. */
+  function tSyncNative(){ if(!state.playing||!state.native||!state.cur)return;
+    NativeTone.sequence({steps:tEnd?[{f:state.cur.f,d:tLeft()}]:[]}); }
+  document.addEventListener("visibilitychange",function(){ if(!document.hidden&&state.playing&&tHandle){ tTick(); tSyncNative(); } });
 
   var sMaster=null,sOscs=[];
   function startSingle(){ if(!state.cur)return; ensureCtx();
@@ -3575,7 +3585,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       pause: function(){ stopSingle(false); }, stop: function(){ stopSingle(false); },
       play:  function(){ if(!state.playing) startSingle(); } });
     var ti=ctx.currentTime,f=state.cur.f;
-    if(!NativeTone.start({voices:[{f:f,g:1,p:0}],master:state.vol,fadeMs:50})){
+    state.native=NativeTone.start({voices:[{f:f,g:1,p:0}],master:state.vol,fadeMs:50});
+    if(!state.native){
       sMaster=ctx.createGain(); sMaster.gain.setValueAtTime(0.0001,ti); sMaster.gain.linearRampToValueAtTime(state.vol,ti+0.05); sMaster.connect(ctx.destination); sOscs=[];
       var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(f,ti);o.connect(sMaster);o.start();sOscs.push(o);
     }
@@ -3588,7 +3599,11 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     if(ctx&&sMaster){ var ti=ctx.currentTime,m=sMaster,os=sOscs; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
       setTimeout(function(){os.forEach(function(o){try{o.stop();o.disconnect();}catch(e){}});try{m.disconnect();}catch(e){}},immediate?30:90); }
     sMaster=null;sOscs=[];state.playing=false;setBtn(false); naSweep(); ST.stop(); if(state.timerMin&&$("tclock").textContent.indexOf(t("done"))<0)$("tclock").textContent=""; }
-  function live(){ if(!state.playing||!ctx||!state.cur||!sOscs[0])return; sOscs[0].frequency.setTargetAtTime(state.cur.f,ctx.currentTime,0.03); }
+  function live(){ if(!state.playing||!state.cur)return;
+    /* Synthese native : sOscs reste vide, l ajustement fin ne s entendait
+       pas sur iPhone. La sequence d arret porte la frequence, on la renvoie. */
+    if(state.native){ NativeTone.update({voices:[{f:state.cur.f,g:1,p:0}],glideMs:30}); if(tEnd)tSyncNative(); return; }
+    if(!ctx||!sOscs[0])return; sOscs[0].frequency.setTargetAtTime(state.cur.f,ctx.currentTime,0.03); }
   function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=""; b.setAttribute("aria-label",on?t("pause"):t("play")); $("pStatus").textContent=t(on?"freq_playing":"freq_ready"); $("vPlay").classList.toggle("isplaying",on); $("viz").parentNode.classList.toggle("playing",on); if(typeof CymFx!=="undefined")CymFx.play(on); setBg(on); }
   $("play").addEventListener("click",function(){ if(state.playing){ unlockAudio(); stopSingle(false); } else startWhenReady(startSingle); });
   $("pRestart").addEventListener("click",function(){ if(state.playing)armTimer(); else setTimer(state.timerMin||20); });
