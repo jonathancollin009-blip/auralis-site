@@ -1623,6 +1623,9 @@
 #vBinPlayer #binSessionPanel:before,#vBinPlayer #binSessionPanel:after{display:none}
 #vBinPlayer .binsessiontitle{font-size:clamp(1.65rem,6vw,2.1rem);line-height:1.18;letter-spacing:-.025em;color:#fff;text-align:left;margin:0 0 9px}
 #vBinPlayer .binintenttag{color:#e0e8f4;font-size:.98rem;line-height:1.4;text-align:left;margin:0 0 22px}
+#vBinPlayer .binbeattag{margin:-16px 0 22px;color:#f2dfac;font-size:.9rem;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+#vBinPlayer .binbeattag:empty{display:none}
+@media(max-height:650px){#vBinPlayer .binbeattag{margin:-8px 0 12px}}
 #vBinPlayer .binwaveviz,#vBinPlayer .bincomfort,#vBinPlayer .disc{display:none}
 #vBinPlayer .bincontrol{margin:0 0 12px;grid-template-columns:22px auto minmax(70px,1fr);color:#e0e8f4;gap:10px}
 #vBinPlayer .binlabel{color:#e0e8f4;font-size:.82rem}
@@ -1951,6 +1954,7 @@
       <div class="binsession" id="binSessionPanel">
         <h3 class="binsessiontitle" id="binSessionTitle">—</h3>
         <p class="binintenttag" id="binIntentTag"></p>
+        <p class="binbeattag" id="binBeatTag"></p>
         <svg class="binwaveviz" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="binWaveGrad" x1="0" x2="1"><stop stop-color="#47d9fb"/><stop offset="1" stop-color="#9c63ff"/></linearGradient></defs><path d="M2 30 C18 30 23 8 37 30 S58 52 74 30 S94 4 108 30 S130 55 146 30 S168 12 182 30 S205 42 218 30 S238 17 252 30 S270 7 286 30 S306 49 321 30 S342 13 357 30 S378 40 398 30" stroke="url(#binWaveGrad)" stroke-width="3"/><path d="M2 30 C30 22 43 38 68 30 S104 18 130 30 S168 42 194 30 S232 18 258 30 S296 42 322 30 S360 20 398 30" stroke="url(#binWaveGrad)" stroke-width="1.2" opacity=".42"/></svg>
         <div class="bincontrol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg><span class="binlabel" id="binVolLabel">—</span><input type="range" id="binVol" min="0" max="100" step="1" value="50"></div>
         <div class="bintransport">
@@ -4725,8 +4729,15 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     }); }
   function binFormat(seconds){ var s=Math.max(0,Math.ceil(seconds)),m=Math.floor(s/60); return String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
   function binSetPlayState(on){ bin.playing=!!on; var b=$("binPlay"); b.setAttribute("aria-pressed",on?"true":"false"); b.setAttribute("aria-label",on?t("pause"):t("play")); binCatMark(); }
+  /* Ecart entre les deux oreilles (= battement percu) et les deux
+     frequences jouees, sans zeros inutiles : 2 Hz, 3,5 Hz, 107 / 109 Hz. */
+  function binHz(v){ v=Math.round(v*100)/100; try{return v.toLocaleString(languageTag(),{maximumFractionDigits:2,useGrouping:false});}catch(e){return String(v);} }
+  function binBeatText(){ if(!(bin.f1>0&&bin.f2>0))return "";
+    var lo=Math.min(bin.f1,bin.f2),hi=Math.max(bin.f1,bin.f2);
+    return t("bin_beat")+" "+binHz(hi-lo)+" Hz · "+binHz(bin.f1)+" / "+binHz(bin.f2)+" Hz"; }
   function binUpdateUi(){
     $("binSessionTitle").textContent=(!bin.manual&&bin.track)?binTrackName(bin.track):binTitle(); $("binIntentTag").textContent=bin.manual?t("bin_playing"):binTitle();
+    $("binBeatTag").textContent=binBeatText();
     Array.prototype.forEach.call($("binDurations").children,function(b){ b.setAttribute("aria-pressed",parseInt(b.getAttribute("data-min"),10)===bin.duration?"true":"false"); b.textContent=b.getAttribute("data-min")==="0"?bpT("unlimited"):b.getAttribute("data-min")+" "+unitText("unit_minute_short","min"); });
     $("binCountdown").textContent=bin.playing?binFormat(bin.remaining):""; binSetPlayState(bin.playing);
     var mk=binMusicAvail(); if(mk&&!NativeTone.on())binMusicLoad(mk);
