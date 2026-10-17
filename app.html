@@ -3239,7 +3239,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     if(seqVisual)seqVisual.sync();
   }
   function toggleTheme(){ settings.theme=(curTheme()==="light")?"dark":"light"; saveSettings(); applyTheme(); }
-  var APP_VERSION="1.0.3";
+  var APP_VERSION="1.0.4";
 
   var ctx=null;
   function ensureCtx(){ if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==="suspended")ctx.resume(); return ctx; }
