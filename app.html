@@ -1455,6 +1455,49 @@
   @media(max-height:690px){#vSeq .seqscene{height:200px;border-radius:22px}#vSeq .seqscene .hz{font-size:2.25rem}#vSeq .seqscene .pcat{margin-top:8px}#vSeq .seqscene .beatline{margin-top:8px}#vSeq .player{padding-bottom:8px}#vSeq .disc{margin-top:8px;font-size:.66rem}}
   @media(max-height:570px){#vSeq .seqscene{height:166px}#vSeq .seqbrand,#vSeq .seqstate{top:10px}#vSeq .seqscene .readout{top:55%}#vSeq .seqscene .hz{font-size:1.95rem}}
 
+
+  /* AURALIS_CHAKRA_PLAYER_LAYOUT_V1 */
+  #vSeq.chakra-player{height:auto;min-height:100svh;overflow:visible}
+  #vSeq.chakra-player .player{flex:0 0 auto;padding-bottom:24px}
+  .seqfrequencylabel,.chakra-status{display:none}
+  #vSeq.chakra-player .seqscene{--chakra-art-h:clamp(112px,35vw,190px);display:block;height:auto;min-height:0;padding-top:var(--chakra-art-h);background:var(--pan);margin-bottom:16px}
+  #vSeq.chakra-player .seqart{inset:0 0 auto;height:var(--chakra-art-h);opacity:1;object-fit:cover;object-position:center!important}
+  #vSeq.chakra-player .seqveil{display:none}
+  #vSeq.chakra-player .seqbrand,#vSeq.chakra-player .seqstate{color:#d2e7ee}
+  #vSeq.chakra-player .seqscene .readout{position:relative;inset:auto;transform:none;padding:18px 16px 48px;border-top:1px solid var(--line2);color:var(--txt);text-shadow:none;text-align:center}
+  #vSeq.chakra-player .seqfrequencylabel{display:block;color:var(--dim);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:9px}
+  #vSeq.chakra-player .seqscene .hz{font-size:clamp(2.7rem,11vw,3.5rem);line-height:1.12}
+  #vSeq.chakra-player .seqscene .hz .u{color:var(--dim);font-size:1rem}
+  #vSeq.chakra-player .seqscene .pcat{display:none}
+  #vSeq.chakra-player .seqscene .beatline{margin-top:12px;padding:6px 13px;color:var(--txt);background:rgba(var(--cyan-rgb),.05);border-color:var(--line2);font-size:.8rem;letter-spacing:0;max-width:100%;overflow-wrap:anywhere}
+  #vSeq.chakra-player #sViz{inset:auto 0 7px;width:100%;height:34px}
+  #vSeq.chakra-player .prog{margin-bottom:14px}
+  #vSeq.chakra-player .steps{flex:0 0 auto;overflow:visible;margin-top:18px}
+  #vSeq.chakra-player .steps .sh{display:none}
+  #vSeq.chakra-player .steps .sn{white-space:normal;overflow-wrap:anywhere}
+  #vSeq.chakra-player .steps .sm{white-space:nowrap}
+  #vSeq.chakra-player .chakra-status{display:flex;align-items:center;justify-content:center;gap:8px;min-height:1.5em;margin:13px 0;color:var(--cyan);font-size:.82rem;text-align:center;visibility:hidden}
+  #vSeq.chakra-player.chakra-playing .chakra-status{visibility:visible}
+  #vSeq.chakra-player.chakra-playing .chakra-status::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px rgba(var(--cyan-rgb),.4);flex:0 0 auto}
+  #vSeq.chakra-player .actions{margin-top:0}
+  #vSeq.chakra-player #sPlay{min-height:58px;border:1px solid transparent}
+  #vSeq.chakra-player #sPlay.on{color:var(--txt);background:linear-gradient(var(--pan),var(--pan)) padding-box,linear-gradient(100deg,var(--cyan),var(--mauve)) border-box;box-shadow:0 0 20px -11px var(--cyan)}
+  #vSeq.chakra-player #sPlay:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
+  #vSeq.chakra-player .disc{margin-top:16px}
+  .chakra-equalizer{display:flex;align-items:center;justify-content:center;gap:2px;height:14px}
+  .chakra-equalizer i{display:block;width:2px;height:7px;background:currentColor;border-radius:2px}
+  .chakra-equalizer i:nth-child(2){height:13px}
+  .chakra-equalizer i:nth-child(3){height:10px}
+  :root[data-theme="light"] #vSeq.chakra-player .chakra-status{color:#246d82}
+  @media(max-height:740px){#vSeq.chakra-player .seqscene{--chakra-art-h:120px}#vSeq.chakra-player .seqscene .readout{padding-top:12px;padding-bottom:38px}#vSeq.chakra-player .seqscene .hz{font-size:2.7rem}#vSeq.chakra-player .seqscene .beatline{margin-top:9px}#vSeq.chakra-player .chakra-status{margin:9px 0}}
+
+  /* AURALIS_CHAKRA_PLAYER_POLISH_V1 */
+  .seqartframe{display:contents}
+  #vSeq.chakra-player{background:var(--bg)}
+  #vSeq.chakra-player .seqartframe{display:block;position:absolute;inset:0 0 auto;height:var(--chakra-art-h);overflow:hidden}
+  #vSeq.chakra-player .seqart{transform:scale(1.3);transform-origin:75% 50%}
+  #vSeq.chakra-player .chakra-stop-icon{display:inline-block;width:13px;height:13px;border-radius:2px;background:var(--cyan);margin-right:10px;vertical-align:baseline}
+
   /* AURALIS_FREQUENCY_PLAYER_FINAL_OVERRIDES_V1
      Ce bloc reste apres les composants historiques partages afin que le
      lecteur reproduise fidelement l'ordre et les proportions de la maquette. */
@@ -1902,14 +1945,15 @@
     <div class="bar"><button class="backbtn" id="sBack" aria-label="Retour">‹</button><h2 id="sTitle">—</h2></div>
     <div class="player">
       <div class="stage seqscene" id="sScene">
-        <img class="seqart" id="sArtwork" src="app-images/366.webp" data-dark="366.webp" data-light="371.webp" alt="">
+        <div class="seqartframe"><img class="seqart" id="sArtwork" src="app-images/366.webp" data-dark="366.webp" data-light="371.webp" alt=""></div>
         <div class="seqveil" aria-hidden="true"></div><span class="seqbrand" aria-hidden="true">AURALIS</span>
         <span class="seqstate" aria-hidden="true"><i></i><i></i><i></i></span>
         <canvas id="sViz" width="720" height="560" aria-hidden="true"></canvas>
-        <div class="readout"><div class="hz"><span id="sHz">0</span><span class="u">Hz</span></div><div class="pcat" id="sStep"></div><div class="beatline" id="sClock"></div></div></div>
+        <div class="readout"><div class="seqfrequencylabel" id="sChakraFrequency"></div><div class="hz"><span id="sHz">0</span><span class="u">Hz</span></div><div class="pcat" id="sStep"></div><div class="beatline" id="sClock"></div></div></div>
       <div class="prog"><i id="sBar"></i></div>
       <div class="ctl"><div class="row"><span class="label" id="sVolLabel"></span><span class="v"><span id="sVolLbl">50</span> %</span></div><input type="range" id="sVol" min="0" max="100" step="1" value="50"></div>
       <ul class="steps" id="sSteps"></ul>
+      <p class="chakra-status" id="sChakraStatus" role="status" aria-live="polite"></p>
       <div class="actions"><button class="play" id="sPlay"></button></div>
       <p class="disc" id="discSeq"></p>
     </div>
@@ -3741,6 +3785,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function openSeq(source, from){ stopSeq(true); returnTo=from||"protos";
     seq.p=(typeof source==="number")?PROTOS[source]:source; seq.protoIdx=(typeof source==="number")?source:null;
     seq.idx=0; seq.playing=false; seq.total=seq.p.s.reduce(function(a,x){return a+x.m*60;},0); seq.elapsed=0;
+    $("vSeq").classList.toggle("chakra-player",returnTo==="chakras");
     $("sTitle").textContent=pname(seq.p); setSeqArtwork();
     var st=$("sSteps"); st.innerHTML="";
     seq.p.s.forEach(function(x,k){ var li=document.createElement("li"); li.id="st"+k; li.innerHTML='<span class="si">'+(k+1)+'</span><span class="sn">'+htmlText(stepShort(x))+'</span><span class="sh">'+x.f.toFixed(2)+' Hz</span><span class="sm">'+x.m+' '+htmlText(unitText("unit_minute_short","m"))+'</span>'; st.appendChild(li); });
@@ -3750,7 +3795,28 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("sVol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("sVolLbl").textContent=this.value; $("vol").value=this.value; $("volLbl").textContent=this.value;
     if(!NativeTone.update({master:state.vol,glideMs:20}) && seq.master && ctx)seq.master.gain.setTargetAtTime(seq.playing?state.vol:0,ctx.currentTime,0.02); });
   $("sPlay").addEventListener("click",function(){ if(seq.playing){ unlockAudio(); stopSeq(false); } else startWhenReady(startSeq); });
-  function setSeqBtn(on){ var b=$("sPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("seq_start"); $("sViz").parentNode.classList.toggle("playing",on); if(seqVisual)seqVisual.sync(); setBg(on); }
+  function syncChakraPresentation(){
+    var chakra=$("vSeq").classList.contains("chakra-player");
+    $("vSeq").classList.toggle("chakra-playing",chakra&&seq.playing);
+    if(!chakra||!seq.p)return;
+    $("sChakraFrequency").textContent=t("hz_label");
+    $("sChakraStatus").textContent=seq.playing?t("freq_playing"):"";
+    if(seq.playing)$("sPlay").innerHTML='<span class="chakra-stop-icon" aria-hidden="true"></span>'+htmlText(t("stop").replace(/^\s*■\s*/,""));
+    var step=seq.p.s[Math.min(seq.idx,seq.p.s.length-1)];
+    if(!seq.playing&&seq.idx<seq.p.s.length){
+      $("sClock").textContent=step.m+" "+unitText("unit_minute_short","m");
+    }
+    seq.p.s.forEach(function(x,k){
+      var badge=$("st"+k).querySelector(".si");
+      if(seq.playing&&k===seq.idx)badge.innerHTML='<span class="chakra-equalizer" aria-hidden="true"><i></i><i></i><i></i></span>';
+      else badge.textContent=k+1;
+    });
+    var art=CHAKRA_SECT.find(function(c){return c.f===step.f;});
+    if(art&&$("sArtwork").getAttribute("data-dark")!==art.p){
+      $("sArtwork").setAttribute("data-dark",art.p);$("sArtwork").setAttribute("data-light",art.p);$("sArtwork").src="app-images/"+art.p;
+    }
+  }
+  function setSeqBtn(on){ var b=$("sPlay"); b.classList.toggle("on",on); b.textContent=on?t("stop"):t("seq_start"); $("sViz").parentNode.classList.toggle("playing",on); syncChakraPresentation(); if(seqVisual)seqVisual.sync(); setBg(on); }
   function startSeq(){ if(!seq.p)return; ensureCtx();
     /* l'index du protocole, pas son nom : celui-ci est traduit et changerait
        de valeur selon la langue de l'utilisateur. */
@@ -3797,7 +3863,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     updSeqUI(); }
   document.addEventListener("visibilitychange",function(){ if(!document.hidden&&seq.playing){ seqTick(); seqSyncNative(); } });
   function updSeqUI(){ var s=seq.p.s[seq.idx]; $("sHz").textContent=s.f.toFixed(2); $("sStep").textContent=(seq.idx+1)+"/"+seq.p.s.length+" · "+stepShort(s);
-    var mm=Math.floor(seq.remain/60),ss=seq.remain%60; $("sClock").textContent=mm+":"+(ss<10?"0":"")+ss; $("sBar").style.width=Math.min(100,(seq.elapsed/seq.total)*100)+"%"; highlight(seq.idx); }
+    var mm=Math.floor(seq.remain/60),ss=seq.remain%60; $("sClock").textContent=mm+":"+(ss<10?"0":"")+ss; $("sBar").style.width=Math.min(100,(seq.elapsed/seq.total)*100)+"%"; highlight(seq.idx); syncChakraPresentation();
+    if($("vSeq").classList.contains("chakra-player"))$("sClock").textContent+=" · "+t("remaining"); }
   function stopSeq(immediate){ clearInterval(seq.timer);seq.timer=null; NativeTone.stop({fadeMs:immediate?20:60});
     if(ctx&&seq.master){ var ti=ctx.currentTime,m=seq.master,o=seq.osc; try{m.gain.cancelScheduledValues(ti);m.gain.setValueAtTime(m.gain.value,ti);m.gain.linearRampToValueAtTime(0.0001,ti+(immediate?0.01:0.05));}catch(e){}
       setTimeout(function(){try{o.stop();o.disconnect();}catch(e){}try{m.disconnect();}catch(e){}},immediate?30:90); }
@@ -3820,7 +3887,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     function visible(){return curView==="seq"&&!document.hidden;}
     function moving(){return visible()&&seq.playing&&settings.anim!=="off"&&!mq.matches;}
     function size(){
-      var w=scene.clientWidth,h=scene.clientHeight,d=Math.min(window.devicePixelRatio||1,2);
+      var w=scene.clientWidth,h=$("vSeq").classList.contains("chakra-player")?cv.clientHeight:scene.clientHeight,d=Math.min(window.devicePixelRatio||1,2);
       if(!w||!h)return false;
       W=w;H=h;
       if(cv.width!==Math.round(w*d)||cv.height!==Math.round(h*d)){cv.width=Math.round(w*d);cv.height=Math.round(h*d);}
@@ -3832,6 +3899,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       var cx=W/2,cy=H*.49,r=Math.min(H*.34,W*.33),on=seq.playing,reduced=settings.anim==="reduced";
       var breath=on?Math.sin(phase)*.025:0;
       var cyan=light?"42,129,152":"111,225,249",violet=light?"121,81,157":"191,161,242";
+      if(!$("vSeq").classList.contains("chakra-player")){
       var halo=g.createRadialGradient(cx,cy,r*.7,cx,cy,r*1.28);
       halo.addColorStop(0,"rgba("+cyan+",0)");halo.addColorStop(.65,"rgba("+cyan+","+(on?.11:.05)+")");halo.addColorStop(1,"rgba("+cyan+",0)");
       g.fillStyle=halo;g.fillRect(0,0,W,H);
@@ -3852,11 +3920,12 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
           g.beginPath();g.arc(px,py,1.7,0,Math.PI*2);g.fillStyle="rgba("+cyan+",.85)";g.fill();
         }
       }
+      }
       var grad=g.createLinearGradient(18,0,W-18,0);grad.addColorStop(0,"rgba("+cyan+",0)");grad.addColorStop(.28,"rgba("+cyan+",.7)");grad.addColorStop(.72,"rgba("+violet+",.7)");grad.addColorStop(1,"rgba("+violet+",0)");
       for(var wave=0;wave<3;wave++){
         g.beginPath();
         for(var q=0;q<=100;q++){
-          var u=q/100,env=Math.pow(Math.sin(u*Math.PI),2),wy=H*.89+Math.sin(u*Math.PI*5-phase*1.6+wave*.6)*env*(on?7:2)+wave*1.7;
+          var u=q/100,env=Math.pow(Math.sin(u*Math.PI),2),wy=H*($("vSeq").classList.contains("chakra-player")?.5:.89)+Math.sin(u*Math.PI*5-phase*1.6+wave*.6)*env*(on?7:2)+wave*1.7;
           if(!q)g.moveTo(u*W,wy);else g.lineTo(u*W,wy);
         }
         g.strokeStyle=grad;g.globalAlpha=1-wave*.25;g.lineWidth=1;g.stroke();
