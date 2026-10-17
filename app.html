@@ -1598,6 +1598,20 @@
   @media(min-width:600px){#vPlay .freqplayer{width:min(100%,560px);align-self:center}}
 
 
+
+  /* AURALIS_CHAKRA_MEDALLION_V1 */
+  .chakra-medallion{display:none}
+  .chakra-medallion[hidden]{display:none!important}
+  #vPlay.chakramode .pplayheading #pcat{display:none}
+  #vPlay.chakramode #pStage::before,#vPlay.chakramode #pStage canvas,#vPlay.chakramode #cymImg{display:none!important}
+  #vPlay.chakramode .chakra-medallion{position:relative;display:block;flex:none;width:min(29svh,72vw,300px);height:min(29svh,72vw,300px);overflow:hidden;border-radius:50%;border:1px solid var(--chakra-color);background:#050b18;box-shadow:0 0 26px var(--chakra-glow),0 0 65px -12px var(--chakra-glow);isolation:isolate}
+  #vPlay.chakramode .chakra-medallion img{display:block;width:100%;height:100%;object-fit:cover;object-position:87.5% center;transform:scale(1.2);pointer-events:none}
+  #vPlay.chakramode .chakra-medallion::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 15px rgba(0,0,0,.25)}
+  #vPlay.chakramode #pStage.playing[data-chakra-motion="full"] .chakra-medallion{animation:chakraBreath 5s ease-in-out infinite}
+  #vPlay.chakramode #pStage.playing[data-chakra-motion="reduced"] .chakra-medallion{animation:chakraBreath 9s ease-in-out infinite}
+  @keyframes chakraBreath{0%,100%{box-shadow:0 0 22px var(--chakra-glow),0 0 52px -14px var(--chakra-glow)}50%{box-shadow:0 0 32px var(--chakra-glow),0 0 72px -10px var(--chakra-glow)}}
+  @media(prefers-reduced-motion:reduce){#vPlay.chakramode #pStage.playing .chakra-medallion{animation:none!important}}
+
   /* AURALIS_FREQUENCY_CATEGORY_PHOTOS_V1
      Une seule photo WebP par catégorie, réutilisée par toutes ses fréquences. */
   #vLib .freqlist{grid-template-columns:1fr;gap:12px;padding:2px 18px 26px}
@@ -1911,7 +1925,7 @@
     <div class="player freqplayer">
       <span class="pplaybrand" aria-hidden="true">AURALIS</span>
       <div class="pplayheading"><b id="pName">—</b><span class="pcat" id="pcat"></span></div>
-      <div class="stage" id="pStage"><canvas id="viz" width="400" height="400" aria-hidden="true"></canvas><img class="cymimg" id="cymImg" alt="" hidden><canvas class="cymgrain" id="cymGrain" aria-hidden="true"></canvas></div>
+      <div class="stage" id="pStage"><div class="chakra-medallion" id="pChakraArt" hidden aria-hidden="true"><img id="pChakraSymbol" alt="" decoding="async"></div><canvas id="viz" width="400" height="400" aria-hidden="true"></canvas><img class="cymimg" id="cymImg" alt="" hidden><canvas class="cymgrain" id="cymGrain" aria-hidden="true"></canvas></div>
       <div class="readout pplayreadout"><div class="hz"><span id="hzval">0</span><span class="u">Hz</span></div><div class="pplaystatus"><i aria-hidden="true"></i><span id="pStatus">—</span></div></div>
       <section class="pdescription" id="pDescription" aria-labelledby="pDescriptionTitle"><h3 id="pDescriptionTitle"></h3><p class="pdesc" id="pDesc"></p><button id="pMethodLink" type="button"></button></section>
       <div id="manualWrap" hidden>
@@ -3617,7 +3631,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     /* La methode (masse molaire) ne s applique pas aux chakras. */
     $("pMethodLink").hidden=m.c==="Chakras";
     $("hzval").textContent=formatPlayerHz(m.f,manual?2:4); if(manual)$("mInput").value=m.f.toFixed(2);
-    setCymatic(manual?null:m.f,manual?null:FREQ_ART[m.n]);
+    setChakraMedallion(m);
+    setCymatic(manual||m.c==="Chakras"?null:m.f,manual?null:FREQ_ART[m.n]);
     $("vPlay").classList.toggle("chakramode",m.c==="Chakras"); $("tclock").textContent="";
     setTimer(m.c==="Chakras"?0:20); setBtn(false); show("play");
   }
@@ -3627,6 +3642,19 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
      exacte de LIB. Le nom a quatre decimales distingue aussi les valeurs tres
      proches; deux entrees ayant exactement le meme Hz partagent naturellement
      le meme fichier. Repli sur l anneau anime si une image manque. */
+  function setChakraMedallion(m){
+    var frame=$("pChakraArt"),img=$("pChakraSymbol");
+    frame.hidden=true;
+    if(m.c!=="Chakras")return;
+    var art=CHAKRA_SECT.find(function(c){return c.n===m.n;});
+    if(!art)return;
+    var rgb=art.c.slice(1).match(/../g).map(function(h){return parseInt(h,16);}).join(",");
+    frame.style.setProperty("--chakra-color",art.c);
+    frame.style.setProperty("--chakra-glow","rgba("+rgb+",.24)");
+    img.alt="";img.src="app-images/"+art.p;frame.hidden=false;
+    $("pStage").dataset.chakraMotion=settings.anim;
+  }
+
   function setCymatic(hz,personal){
     var img=$("cymImg"),stage=$("pStage");
     img.classList.toggle("freqpersonal",!!personal); img.classList.toggle("cymplate",hz!=null&&!personal);
@@ -3731,7 +3759,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
        pas sur iPhone. La sequence d arret porte la frequence, on la renvoie. */
     if(state.native){ NativeTone.update({voices:[{f:state.cur.f,g:1,p:0}],glideMs:30}); if(tEnd)tSyncNative(); return; }
     if(!ctx||!sOscs[0])return; sOscs[0].frequency.setTargetAtTime(state.cur.f,ctx.currentTime,0.03); }
-  function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=""; b.setAttribute("aria-label",on?t("pause"):t("play")); $("pStatus").textContent=t(on?"freq_playing":"freq_ready"); $("vPlay").classList.toggle("isplaying",on); $("viz").parentNode.classList.toggle("playing",on); if(typeof CymFx!=="undefined")CymFx.play(on); setBg(on); }
+  function setBtn(on){ var b=$("play"); b.classList.toggle("on",on); b.textContent=""; b.setAttribute("aria-label",on?t("pause"):t("play")); $("pStatus").textContent=t(on?"freq_playing":"freq_ready"); $("vPlay").classList.toggle("isplaying",on); $("viz").parentNode.classList.toggle("playing",on); $("pStage").dataset.chakraMotion=settings.anim; if(typeof CymFx!=="undefined")CymFx.play(on); setBg(on); }
   $("play").addEventListener("click",function(){ if(state.playing){ unlockAudio(); stopSingle(false); } else startWhenReady(startSingle); });
   $("pRestart").addEventListener("click",function(){ if(state.playing)armTimer(); else setTimer(chakraMode()?state.timerMin:(state.timerMin||20)); });
 
@@ -5501,7 +5529,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("setVol").value=settings.vol; $("setVolVal").textContent=settings.vol; }
   $("setBtn").addEventListener("click",function(){ show("settings"); renderSettings(); });
   $("setBack").addEventListener("click",function(){ show("home"); });
-  Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.addEventListener("click",function(){ settings.anim=b.getAttribute("data-v"); saveSettings(); if(Particles)Particles.setLevel(settings.anim); if(seqVisual)seqVisual.sync(); if(BinWaves)BinWaves.kick(); if(PianoKeys)PianoKeys.kick(); if(typeof CymFx!=="undefined")CymFx.sync(); renderSettings(); }); });
+  Array.prototype.forEach.call(document.querySelectorAll("#setAnim button"),function(b){ b.addEventListener("click",function(){ settings.anim=b.getAttribute("data-v"); $("pStage").dataset.chakraMotion=settings.anim; saveSettings(); if(Particles)Particles.setLevel(settings.anim); if(seqVisual)seqVisual.sync(); if(BinWaves)BinWaves.kick(); if(PianoKeys)PianoKeys.kick(); if(typeof CymFx!=="undefined")CymFx.sync(); renderSettings(); }); });
   // sélecteur de langue des Réglages : peuplé par fillLangList (clics câblés à la création)
   $("setVol").addEventListener("input",function(){ settings.vol=parseInt(this.value,10); $("setVolVal").textContent=settings.vol; applyDefaultVolume(settings.vol); saveSettings(); });
 
