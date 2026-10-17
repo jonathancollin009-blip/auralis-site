@@ -1605,7 +1605,7 @@
   #vPlay.chakramode .pplayheading #pcat{display:none}
   #vPlay.chakramode #pStage::before,#vPlay.chakramode #pStage canvas,#vPlay.chakramode #cymImg{display:none!important}
   #vPlay.chakramode .chakra-medallion{position:relative;display:block;flex:none;width:min(29svh,72vw,300px);height:min(29svh,72vw,300px);overflow:hidden;border-radius:50%;border:1px solid var(--chakra-color);background:#050b18;box-shadow:0 0 26px var(--chakra-glow),0 0 65px -12px var(--chakra-glow);isolation:isolate}
-  #vPlay.chakramode .chakra-medallion img{display:block;width:100%;height:100%;object-fit:cover;object-position:87.5% center;transform:scale(1.2);pointer-events:none}
+  #vPlay.chakramode .chakra-medallion img{display:block;width:100%;height:100%;object-fit:cover;object-position:var(--chakra-x,87.5%) center;transform:translateY(var(--chakra-y,0%)) scale(var(--chakra-scale,1.2));pointer-events:none}
   #vPlay.chakramode .chakra-medallion::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 15px rgba(0,0,0,.25)}
   #vPlay.chakramode #pStage.playing[data-chakra-motion="full"] .chakra-medallion{animation:chakraBreath 5s ease-in-out infinite}
   #vPlay.chakramode #pStage.playing[data-chakra-motion="reduced"] .chakra-medallion{animation:chakraBreath 9s ease-in-out infinite}
@@ -3649,6 +3649,13 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     var art=CHAKRA_SECT.find(function(c){return c.n===m.n;});
     if(!art)return;
     var rgb=art.c.slice(1).match(/../g).map(function(h){return parseInt(h,16);}).join(",");
+    /* AURALIS_CHAKRA_CENTERING_V1: source coordinates measured on each 1800x600 image.
+       Equal bright-petal margins, rather than the approximate banner center. */
+    var framing={"Chakra Racine":[1341,291.5,1.2],"Chakra Sacré":[1333.5,288,1.2],"Plexus Solaire":[1334,296,1.2],"Chakra du Coeur":[1320,303,1.2],"Chakra de la Gorge":[1325,297.5,1.2],"Troisième Oeil":[1291,292.5,.9],"Chakra Couronne":[1338,294,1.2]};
+    var crop=framing[m.n];
+    frame.style.setProperty("--chakra-x",((crop[0]-300)/1200*100)+"%");
+    frame.style.setProperty("--chakra-y",((300-crop[1])/600*crop[2]*100)+"%");
+    frame.style.setProperty("--chakra-scale",crop[2]);
     frame.style.setProperty("--chakra-color",art.c);
     frame.style.setProperty("--chakra-glow","rgba("+rgb+",.24)");
     img.alt="";img.src="app-images/"+art.p;frame.hidden=false;
