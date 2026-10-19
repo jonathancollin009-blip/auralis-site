@@ -41,7 +41,7 @@
   // tant qu'il vaut "0", la version web reste ouverte comme avant.
   "vars": {
     "WEB_GATE": "0",
-    "STRIPE_PRICE_ID": "",
+    "STRIPE_PRICE_ID": "price_1US4pmBzwf0X2FdnSqtmNS3n",
     "STRIPE_TAX": "1",
     "MAIL_FROM": "Auralis <connexion@aura-lis.ca>"
   },
