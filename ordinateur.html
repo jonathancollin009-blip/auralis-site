@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auralis sur ordinateur — abonnement web</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="canonical" href="https://aura-lis.ca/ordinateur">
+<meta name="description" content="Toute l'application Auralis dans votre navigateur : fréquences, protocoles, binauraux, musiques et géométrie sacrée. 29,99 $ par an, sur 2 appareils, annulable en tout temps.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Auralis">
+<meta property="og:locale" content="fr_CA">
+<meta property="og:url" content="https://aura-lis.ca/ordinateur">
+<meta property="og:title" content="Auralis sur ordinateur">
+<meta property="og:description" content="Toute l'application Auralis dans votre navigateur. 29,99 $ par an, annulable en tout temps.">
+<meta property="og:image" content="https://aura-lis.ca/images/app-web.webp">
+
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .web-hero { max-width:var(--max); margin:0 auto; padding:56px 24px 40px; display:grid; grid-template-columns:1.15fr .85fr; gap:48px; align-items:center; }
+  .web-hero .kicker { color:var(--lis); font-size:.8rem; letter-spacing:3px; text-transform:uppercase; margin-bottom:12px; }
+  .web-hero h1 { font-size:2.5rem; line-height:1.15; letter-spacing:1px; margin-bottom:18px; }
+  .web-hero .sub { color:var(--text-dim); font-size:1.08rem; margin-bottom:26px; }
+  .web-price { font-size:2.2rem; font-weight:700; color:#e9c96a; line-height:1.1; }
+  .web-price small { font-size:1rem; font-weight:400; color:var(--text-dim); }
+  .web-terms { color:var(--text-dim); font-size:.9rem; margin:6px 0 24px; }
+  .web-actions { display:flex; gap:14px; flex-wrap:wrap; }
+  .web-shot { justify-self:center; width:100%; max-width:330px; border-radius:28px; border:1px solid var(--line); overflow:hidden; box-shadow:0 0 60px #7fd8f022; }
+  .web-shot img { display:block; width:100%; height:auto; }
+
+  .web-feats { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }
+  .web-feats .card { text-align:left; }
+  .web-feats .card h3 { font-size:1.08rem; }
+
+  .steps { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; counter-reset:step; }
+  .step { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:24px; }
+  .step::before { counter-increment:step; content:counter(step); display:inline-grid; place-items:center; width:34px; height:34px; border-radius:50%; border:1px solid var(--cyan); color:var(--cyan); font-weight:700; margin-bottom:12px; }
+  .step h3 { color:var(--aura); font-size:1.05rem; margin-bottom:6px; }
+  .step p { color:var(--text-dim); font-size:.95rem; }
+
+  .facts { max-width:820px; margin:0 auto; display:grid; gap:14px; }
+  .fact { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px 22px; }
+  .fact h3 { color:var(--aura); font-size:1rem; margin-bottom:4px; }
+  .fact p { color:var(--text-dim); font-size:.95rem; }
+
+  .web-foot { text-align:center; color:var(--text-dim); font-size:.8rem; padding:26px 24px 40px; border-top:1px solid var(--line); }
+  .web-foot a { color:var(--text-dim); text-decoration:underline; }
+
+  @media (max-width: 860px) {
+    .web-hero { grid-template-columns:1fr; gap:34px; padding:36px 16px 24px; text-align:center; }
+    .web-hero h1 { font-size:1.9rem; }
+    .web-actions { justify-content:center; }
+    .web-shot { max-width:280px; }
+    .steps, .web-feats { grid-template-columns:1fr; }
+    .section { padding-left:16px; padding-right:16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="index.html" class="brand"><span class="aura">AURA</span><span class="lis">LIS</span></a>
+  <button id="navToggle" aria-label="Menu">☰</button>
+  <ul id="navLinks">
+    <li><a href="index.html" data-fr="Accueil" data-es="Inicio" data-en="Home">Accueil</a></li>
+    <li><a href="frequences.html" data-fr="Fréquences" data-es="Frecuencias" data-en="Frequencies">Fréquences</a></li>
+    <li><a href="protocoles.html" data-fr="Protocoles" data-es="Protocolos" data-en="Protocols">Protocoles</a></li>
+    <li><a href="/compte" class="nav-cta" data-fr="Mon compte" data-es="Mi cuenta" data-en="My account">Mon compte</a></li>
+    <li><button class="lang-btn" aria-label="Language">EN</button></li>
+  </ul>
+</nav>
+
+<header class="web-hero">
+  <div>
+    <p class="kicker" data-fr="Version web" data-es="Versión web" data-en="Web version">Version web</p>
+    <h1 data-fr="Auralis sur votre ordinateur" data-es="Auralis en su computadora" data-en="Auralis on your computer">Auralis sur votre ordinateur</h1>
+    <p class="sub" data-fr="Toute l'application Auralis dans votre navigateur : fréquences, protocoles, binauraux, musiques, chakras et géométrie sacrée. Rien à installer." data-es="Toda la aplicación Auralis en su navegador: frecuencias, protocolos, binaurales, músicas, chakras y geometría sagrada. Nada que instalar." data-en="The full Auralis app in your browser: frequencies, protocols, binaural beats, music, chakras and sacred geometry. Nothing to install.">Toute l'application Auralis dans votre navigateur : fréquences, protocoles, binauraux, musiques, chakras et géométrie sacrée. Rien à installer.</p>
+    <p class="web-price">29,99&nbsp;$ <small data-fr="/ an, taxes en sus" data-es="/ año, impuestos aparte" data-en="/ year, plus taxes">/ an, taxes en sus</small></p>
+    <p class="web-terms" data-fr="Renouvellement automatique chaque année · annulable en tout temps · 2 appareils" data-es="Renovación automática cada año · cancelable en cualquier momento · 2 dispositivos" data-en="Renews automatically every year · cancel anytime · 2 devices">Renouvellement automatique chaque année · annulable en tout temps · 2 appareils</p>
+    <div class="web-actions">
+      <a href="/connexion?suite=achat" class="btn btn-primary btn-lg" data-fr="M'abonner" data-es="Suscribirme" data-en="Subscribe">M'abonner</a>
+      <a href="/connexion?suite=app" class="btn btn-ghost btn-lg" data-fr="J'ai déjà un compte" data-es="Ya tengo una cuenta" data-en="I already have an account">J'ai déjà un compte</a>
+    </div>
+  </div>
+  <div class="web-shot">
+    <img src="images/app-web.webp" width="430" height="800" alt="Écran d'accueil de l'application Auralis : Fréquences, Protocoles, Binauraux, Musiques">
+  </div>
+</header>
+
+<section class="section alt">
+  <h2 data-fr="Ce qui est inclus" data-es="Lo que incluye" data-en="What's included">Ce qui est inclus</h2>
+  <p class="section-intro" data-fr="Le même contenu que l'application mobile, mis à jour en continu." data-es="El mismo contenido que la aplicación móvil, actualizado de forma continua." data-en="The same content as the mobile app, continuously updated.">Le même contenu que l'application mobile, mis à jour en continu.</p>
+  <div class="web-feats">
+    <div class="card">
+      <h3 data-fr="Fréquences" data-es="Frecuencias" data-en="Frequencies">Fréquences</h3>
+      <p data-fr="Plus de 150 fréquences calculées à partir de molécules et d'éléments : endogènes, phytothérapie, huiles essentielles, éléments, acides aminés." data-es="Más de 150 frecuencias calculadas a partir de moléculas y elementos: endógenas, fitoterapia, aceites esenciales, elementos, aminoácidos." data-en="Over 150 frequencies calculated from molecules and elements: endogenous, herbal, essential oils, elements, amino acids.">Plus de 150 fréquences calculées à partir de molécules et d'éléments : endogènes, phytothérapie, huiles essentielles, éléments, acides aminés.</p>
+    </div>
+    <div class="card">
+      <h3 data-fr="Protocoles" data-es="Protocolos" data-en="Protocols">Protocoles</h3>
+      <p data-fr="Des parcours bien-être prêts à l'emploi, minutés, qui enchaînent les fréquences pour vous." data-es="Recorridos de bienestar listos para usar, temporizados, que encadenan las frecuencias por usted." data-en="Ready-made, timed wellness journeys that chain the frequencies for you.">Des parcours bien-être prêts à l'emploi, minutés, qui enchaînent les fréquences pour vous.</p>
+    </div>
+    <div class="card">
+      <h3 data-fr="Binauraux" data-es="Binaurales" data-en="Binaural beats">Binauraux</h3>
+      <p data-fr="Des battements binauraux par catégorie, accompagnés de musique. Un casque est requis." data-es="Batidos binaurales por categoría, acompañados de música. Se requieren auriculares." data-en="Binaural beats by category, paired with music. Headphones required.">Des battements binauraux par catégorie, accompagnés de musique. Un casque est requis.</p>
+    </div>
+    <div class="card">
+      <h3 data-fr="Musiques" data-es="Músicas" data-en="Music">Musiques</h3>
+      <p data-fr="Des séances musicales complètes accordées en 432 Hz, à écouter en continu." data-es="Sesiones musicales completas afinadas en 432 Hz, para escuchar de forma continua." data-en="Full music sessions tuned to 432 Hz, ready to play continuously.">Des séances musicales complètes accordées en 432 Hz, à écouter en continu.</p>
+    </div>
+    <div class="card">
+      <h3 data-fr="Chakras" data-es="Chakras" data-en="Chakras">Chakras</h3>
+      <p data-fr="Les 7 centres, chacun avec sa fréquence, pour la durée de votre choix." data-es="Los 7 centros, cada uno con su frecuencia, durante el tiempo que elija." data-en="The 7 centres, each with its own frequency, for as long as you choose.">Les 7 centres, chacun avec sa fréquence, pour la durée de votre choix.</p>
+    </div>
+    <div class="card">
+      <h3 data-fr="Géométrie sacrée" data-es="Geometría sagrada" data-en="Sacred geometry">Géométrie sacrée</h3>
+      <p data-fr="Un espace contemplatif : figures sacrées, crop circles, planètes, couleurs et flocons, chacun avec sa propre musique." data-es="Un espacio contemplativo: figuras sagradas, crop circles, planetas, colores y copos de nieve, cada uno con su propia música." data-en="A contemplative space: sacred figures, crop circles, planets, colours and snowflakes, each with its own music.">Un espace contemplatif : figures sacrées, crop circles, planètes, couleurs et flocons, chacun avec sa propre musique.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2 data-fr="Comment ça marche" data-es="Cómo funciona" data-en="How it works">Comment ça marche</h2>
+  <p class="section-intro" data-fr="Trois étapes, aucun mot de passe à retenir." data-es="Tres pasos, ninguna contraseña que recordar." data-en="Three steps, no password to remember.">Trois étapes, aucun mot de passe à retenir.</p>
+  <div class="steps">
+    <div class="step">
+      <h3 data-fr="Entrez votre courriel" data-es="Ingrese su correo" data-en="Enter your email">Entrez votre courriel</h3>
+      <p data-fr="Nous vous envoyons un code à 6 chiffres pour vous connecter." data-es="Le enviamos un código de 6 dígitos para iniciar sesión." data-en="We email you a 6-digit code to sign in.">Nous vous envoyons un code à 6 chiffres pour vous connecter.</p>
+    </div>
+    <div class="step">
+      <h3 data-fr="Abonnez-vous" data-es="Suscríbase" data-en="Subscribe">Abonnez-vous</h3>
+      <p data-fr="Paiement sécurisé par Stripe. Votre carte n'est jamais conservée chez nous." data-es="Pago seguro con Stripe. Su tarjeta nunca se guarda en nuestros sistemas." data-en="Secure payment with Stripe. Your card is never stored on our side.">Paiement sécurisé par Stripe. Votre carte n'est jamais conservée chez nous.</p>
+    </div>
+    <div class="step">
+      <h3 data-fr="Ouvrez Auralis" data-es="Abra Auralis" data-en="Open Auralis">Ouvrez Auralis</h3>
+      <p data-fr="L'application s'ouvre dans votre navigateur, sur votre ordinateur ou votre tablette." data-es="La aplicación se abre en su navegador, en su computadora o su tableta." data-en="The app opens in your browser, on your computer or tablet.">L'application s'ouvre dans votre navigateur, sur votre ordinateur ou votre tablette.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <h2 data-fr="Bon à savoir" data-es="Bueno saber" data-en="Good to know">Bon à savoir</h2>
+  <div class="facts">
+    <div class="fact">
+      <h3 data-fr="Deux appareils en même temps" data-es="Dos dispositivos a la vez" data-en="Two devices at once">Deux appareils en même temps</h3>
+      <p data-fr="Votre abonnement peut être connecté sur 2 appareils. Une connexion sur un 3ᵉ appareil déconnecte le plus ancien." data-es="Su suscripción puede estar conectada en 2 dispositivos. Iniciar sesión en un 3.er dispositivo cierra la sesión del más antiguo." data-en="Your subscription can be signed in on 2 devices. Signing in on a 3rd device signs out the oldest one.">Votre abonnement peut être connecté sur 2 appareils. Une connexion sur un 3ᵉ appareil déconnecte le plus ancien.</p>
+    </div>
+    <div class="fact">
+      <h3 data-fr="Annulable en tout temps" data-es="Cancelable en cualquier momento" data-en="Cancel anytime">Annulable en tout temps</h3>
+      <p data-fr="L'abonnement se renouvelle automatiquement chaque année. Vous pouvez l'annuler en deux clics depuis la page Mon compte ; vous gardez l'accès jusqu'à la fin de l'année payée." data-es="La suscripción se renueva automáticamente cada año. Puede cancelarla en dos clics desde la página Mi cuenta; conserva el acceso hasta el final del año pagado." data-en="The subscription renews automatically every year. You can cancel in two clicks from the My account page; you keep access until the end of the paid year.">L'abonnement se renouvelle automatiquement chaque année. Vous pouvez l'annuler en deux clics depuis la page Mon compte ; vous gardez l'accès jusqu'à la fin de l'année payée.</p>
+    </div>
+    <div class="fact">
+      <h3 data-fr="Ce qu'il vous faut" data-es="Lo que necesita" data-en="What you need">Ce qu'il vous faut</h3>
+      <p data-fr="Un navigateur récent (Chrome, Edge, Safari ou Firefox) et une connexion Internet. Des écouteurs ou un casque pour les binauraux." data-es="Un navegador reciente (Chrome, Edge, Safari o Firefox) y una conexión a Internet. Auriculares para los binaurales." data-en="A recent browser (Chrome, Edge, Safari or Firefox) and an Internet connection. Headphones for binaural beats.">Un navigateur récent (Chrome, Edge, Safari ou Firefox) et une connexion Internet. Des écouteurs ou un casque pour les binauraux.</p>
+    </div>
+    <div class="fact">
+      <h3 data-fr="Distinct de l'application mobile" data-es="Distinta de la aplicación móvil" data-en="Separate from the mobile app">Distinct de l'application mobile</h3>
+      <p data-fr="L'abonnement web est indépendant des abonnements souscrits dans l'App Store ou Google Play." data-es="La suscripción web es independiente de las suscripciones contratadas en la App Store o Google Play." data-en="The web subscription is separate from subscriptions purchased through the App Store or Google Play.">L'abonnement web est indépendant des abonnements souscrits dans l'App Store ou Google Play.</p>
+    </div>
+    <div class="fact">
+      <h3 data-fr="Une question ?" data-es="¿Una pregunta?" data-en="A question?">Une question ?</h3>
+      <p data-fr="Écrivez-nous à <a href=&quot;mailto:auralis432@gmail.com&quot;>auralis432@gmail.com</a>." data-es="Escríbanos a <a href=&quot;mailto:auralis432@gmail.com&quot;>auralis432@gmail.com</a>." data-en="Write to us at <a href=&quot;mailto:auralis432@gmail.com&quot;>auralis432@gmail.com</a>.">Écrivez-nous à <a href="mailto:auralis432@gmail.com">auralis432@gmail.com</a>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section cta-band">
+  <h2 data-fr="Commencez dès maintenant" data-es="Empiece ahora mismo" data-en="Start right now">Commencez dès maintenant</h2>
+  <p data-fr="29,99 $ par an, taxes en sus. Annulable en tout temps." data-es="29,99 $ al año, impuestos aparte. Cancelable en cualquier momento." data-en="$29.99 per year, plus taxes. Cancel anytime.">29,99 $ par an, taxes en sus. Annulable en tout temps.</p>
+  <a href="/connexion?suite=achat" class="btn btn-primary btn-lg" data-fr="M'abonner" data-es="Suscribirme" data-en="Subscribe">M'abonner</a>
+</section>
+
+<p class="web-foot"><span data-fr="Auralis est un outil de bien-être et de détente. Ce n'est pas un dispositif médical : il ne diagnostique, ne traite ni ne guérit aucune maladie." data-es="Auralis es una herramienta de bienestar y relajación. No es un dispositivo médico: no diagnostica, no trata ni cura ninguna enfermedad." data-en="Auralis is a wellness and relaxation tool. It is not a medical device: it does not diagnose, treat or cure any illness.">Auralis est un outil de bien-être et de détente. Ce n'est pas un dispositif médical : il ne diagnostique, ne traite ni ne guérit aucune maladie.</span><br>
+<a href="confidentialite.html" data-fr="Politique de confidentialité" data-es="Política de privacidad" data-en="Privacy policy">Politique de confidentialité</a></p>
+
+<script src="js/main.js"></script>
+</body>
+</html>
