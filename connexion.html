@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auralis — Connexion</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/compte.css">
+</head>
+<body>
+
+<nav id="nav">
+  <a href="index.html" class="brand"><span class="aura">AURA</span><span class="lis">LIS</span></a>
+  <button class="lang-btn" aria-label="Language">EN</button>
+</nav>
+
+<main class="acct">
+  <h1 data-fr="Connexion" data-en="Sign in" data-es="Iniciar sesión">Connexion</h1>
+  <p class="lead" data-fr="Pas de mot de passe : nous vous envoyons un code à 6 chiffres par courriel." data-en="No password: we email you a 6-digit code." data-es="Sin contraseña: le enviamos un código de 6 dígitos por correo.">Pas de mot de passe : nous vous envoyons un code à 6 chiffres par courriel.</p>
+
+  <form class="card" id="stepEmail" novalidate>
+    <label for="email" data-fr="Votre courriel" data-en="Your email" data-es="Su correo electrónico">Votre courriel</label>
+    <input id="email" type="email" autocomplete="email" inputmode="email" required>
+    <button class="btn btn-primary" type="submit" data-fr="Recevoir mon code" data-en="Send me a code" data-es="Recibir mi código">Recevoir mon code</button>
+    <p class="msg" id="msgEmail" role="status"></p>
+  </form>
+
+  <form class="card hide" id="stepCode" novalidate>
+    <label for="code"><span data-fr="Code envoyé à" data-en="Code sent to" data-es="Código enviado a">Code envoyé à</span> <strong id="sentTo"></strong></label>
+    <input id="code" class="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*">
+    <button class="btn btn-primary" type="submit" data-fr="Me connecter" data-en="Sign in" data-es="Iniciar sesión">Me connecter</button>
+    <p class="msg" id="msgCode" role="status"></p>
+    <div class="row">
+      <button class="link" type="button" id="resend" data-fr="Renvoyer le code" data-en="Resend the code" data-es="Reenviar el código">Renvoyer le code</button>
+      <button class="link" type="button" id="change" data-fr="Changer de courriel" data-en="Use another email" data-es="Cambiar de correo">Changer de courriel</button>
+    </div>
+  </form>
+
+  <p class="dim" style="text-align:center" data-fr="Vous ne trouvez pas le courriel ? Vérifiez vos courriels indésirables." data-en="Can't find the email? Check your spam folder." data-es="¿No encuentra el correo? Revise su carpeta de correo no deseado.">Vous ne trouvez pas le courriel ? Vérifiez vos courriels indésirables.</p>
+</main>
+
+<script src="js/main.js"></script>
+<script>
+(function () {
+  var T = {
+    fr: { email: "Entrez un courriel valide.", sent: "Code envoyé. Il est valide 10 minutes.", wait: "Patientez {n} s avant de demander un nouveau code.",
+          mail: "Le courriel n'a pas pu être envoyé. Réessayez dans un instant.", bad: "Code incorrect.", left: "Code incorrect, encore {n} essai(s).",
+          expired: "Ce code a expiré. Demandez-en un nouveau.", tries: "Trop d'essais. Demandez un nouveau code.", net: "Problème de connexion. Réessayez." },
+    en: { email: "Enter a valid email.", sent: "Code sent. It is valid for 10 minutes.", wait: "Please wait {n} s before requesting a new code.",
+          mail: "The email could not be sent. Try again in a moment.", bad: "Incorrect code.", left: "Incorrect code, {n} attempt(s) left.",
+          expired: "This code has expired. Request a new one.", tries: "Too many attempts. Request a new code.", net: "Connection problem. Try again." },
+    es: { email: "Ingrese un correo válido.", sent: "Código enviado. Es válido durante 10 minutos.", wait: "Espere {n} s antes de pedir un nuevo código.",
+          mail: "No se pudo enviar el correo. Inténtelo de nuevo en un momento.", bad: "Código incorrecto.", left: "Código incorrecto, le quedan {n} intento(s).",
+          expired: "Este código ha caducado. Pida uno nuevo.", tries: "Demasiados intentos. Pida un nuevo código.", net: "Problema de conexión. Inténtelo de nuevo." }
+  };
+  function lang() { var l = document.documentElement.lang; return T[l] ? l : "fr"; }
+  function t(k, n) { return T[lang()][k].replace("{n}", n); }
+  function $(id) { return document.getElementById(id); }
+  var suite = new URLSearchParams(location.search).get("suite") || "compte";
+  var email = "";
+
+  function post(path, body) {
+    return fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body || {}) })
+      .then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
+  }
+
+  // Apres connexion : vers l'app, vers le paiement, ou vers la page Compte.
+  function goNext(access) {
+    if (suite === "app") { location.href = access ? "/app" : "/compte"; return; }
+    if (suite === "achat" && !access) {
+      post("/api/web/checkout", { lang: lang() }).then(function (d) { location.href = d.url || "/compte"; })
+        .catch(function () { location.href = "/compte"; });
+      return;
+    }
+    location.href = "/compte";
+  }
+
+  // Deja connecte sur cet appareil : on saute l'etape.
+  fetch("/api/web/me").then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (me) { if (me) goNext(me.access); }).catch(function () {});
+
+  function busy(form, on) { form.querySelector("button[type=submit]").disabled = on; }
+
+  function requestCode(msgEl, form) {
+    busy(form, true);
+    return post("/api/auth/code", { email: email, lang: lang() }).then(function (d) {
+      busy(form, false);
+      if (d.ok) { msgEl.className = "msg ok"; msgEl.textContent = t("sent"); return true; }
+      msgEl.className = "msg";
+      msgEl.textContent = d.error === "wait" ? t("wait", d.retry) : d.error === "email" ? t("email") : t("mail");
+      return d.error === "wait";
+    }).catch(function () { busy(form, false); msgEl.className = "msg"; msgEl.textContent = t("net"); return false; });
+  }
+
+  $("stepEmail").addEventListener("submit", function (e) {
+    e.preventDefault();
+    email = $("email").value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $("msgEmail").className = "msg"; $("msgEmail").textContent = t("email"); return; }
+    requestCode($("msgEmail"), $("stepEmail")).then(function (ok) {
+      if (!ok) return;
+      $("sentTo").textContent = email;
+      $("stepEmail").classList.add("hide");
+      $("stepCode").classList.remove("hide");
+      $("msgCode").className = "msg ok"; $("msgCode").textContent = $("msgEmail").textContent;
+      $("code").focus();
+    });
+  });
+
+  $("stepCode").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var code = $("code").value.replace(/\D/g, "");
+    var m = $("msgCode");
+    if (code.length !== 6) { m.className = "msg"; m.textContent = t("bad"); return; }
+    busy($("stepCode"), true);
+    post("/api/auth/verify", { email: email, code: code }).then(function (d) {
+      if (d.ok) { goNext(d.access); return; }
+      busy($("stepCode"), false);
+      m.className = "msg";
+      m.textContent = d.error === "expired" ? t("expired") : d.error === "tries" ? t("tries")
+        : typeof d.left === "number" ? t("left", d.left) : t("bad");
+    }).catch(function () { busy($("stepCode"), false); m.className = "msg"; m.textContent = t("net"); });
+  });
+
+  $("code").addEventListener("input", function () {
+    this.value = this.value.replace(/\D/g, "").slice(0, 6);
+    if (this.value.length === 6) $("stepCode").requestSubmit();
+  });
+  $("resend").addEventListener("click", function () { requestCode($("msgCode"), $("stepCode")); });
+  $("change").addEventListener("click", function () {
+    $("stepCode").classList.add("hide"); $("stepEmail").classList.remove("hide");
+    $("code").value = ""; $("msgEmail").textContent = ""; $("email").focus();
+  });
+})();
+</script>
+</body>
+</html>

@@ -15,3 +15,9 @@ wrangler.jsonc
 # Dossier de travail cree par wrangler a chaque build (bundle + etat local) :
 # jamais present dans un checkout propre, mais growth garanti sinon.
 .wrangler
+
+# Abonnement web : module du Worker et schema D1, pas des pages du site.
+web-auth.js
+migrations
+.dev.vars
+ABONNEMENT_WEB.md

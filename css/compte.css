@@ -1,0 +1,29 @@
+/* Pages /connexion et /compte (abonnement web) */
+.acct { max-width: 520px; margin: 0 auto; padding: 40px 16px 70px; }
+.acct h1 { text-align: center; font-size: 1.8rem; letter-spacing: 2px; }
+.acct h1::after { content: ""; display: block; width: 60px; height: 2px; background: var(--cyan); margin: 14px auto 0; }
+.acct .lead { text-align: center; color: var(--text-dim); margin: 16px 0 26px; }
+.acct .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 22px; margin-bottom: 16px; }
+.acct .card.key { background: linear-gradient(96deg, rgba(127,216,240,.10), rgba(185,143,224,.10)); border-color: var(--cyan); }
+.acct h2 { font-size: 1.1rem; color: var(--aura); margin-bottom: 10px; }
+.acct label { display: block; font-size: .9rem; color: var(--text-dim); margin-bottom: 6px; }
+.acct input {
+  width: 100%; padding: 13px 14px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--bg-alt); color: var(--text); font-size: 1.05rem; font-family: inherit;
+}
+.acct input:focus { outline: none; border-color: var(--cyan); }
+.acct input.code { letter-spacing: 10px; text-align: center; font-size: 1.6rem; font-weight: 700; }
+.acct .btn { width: 100%; margin-top: 14px; border: none; font-family: inherit; text-align: center; }
+.acct .btn[disabled] { opacity: .5; cursor: wait; transform: none; }
+.acct .row { display: flex; justify-content: space-between; gap: 12px; margin-top: 14px; font-size: .9rem; }
+.acct .link { background: none; border: none; color: var(--cyan); cursor: pointer; font: inherit; padding: 0; }
+.acct .msg { min-height: 1.4em; margin-top: 12px; font-size: .92rem; color: var(--gold); }
+.acct .msg.ok { color: var(--cyan); }
+.acct .price { font-size: 2rem; font-weight: 700; color: var(--text); }
+.acct .price small { font-size: .95rem; font-weight: 400; color: var(--text-dim); }
+.acct .dim { color: var(--text-dim); font-size: .9rem; }
+.acct ul.devices { list-style: none; }
+.acct ul.devices li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: .95rem; }
+.acct ul.devices li:first-child { border-top: none; }
+.acct .tag { color: var(--cyan); font-size: .8rem; white-space: nowrap; }
+.acct .hide { display: none; }

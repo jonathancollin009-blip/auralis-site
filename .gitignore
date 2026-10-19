@@ -20,3 +20,4 @@ desktop.ini
 /app-sounds/meditation/*.m4a
 /app-sounds/binaural/*.flac
 /app-sounds/binaural/*.m4a
+.dev.vars

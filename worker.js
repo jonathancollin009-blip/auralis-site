@@ -28,6 +28,8 @@
  * les deux.
  */
 
+import { handleWeb } from "./web-auth.js";
+
 const MAX_EVENTS = 40;      // au-dela, lot suspect ou bogue cote client -- on tronque
 const MAX_STR = 64;         // longueur max d'un champ texte, evite tout abus
 const MAX_BODY = 8192;      // un lot de 40 evenements tient large dans 8 Ko
@@ -350,6 +352,10 @@ export default {
         return handleAudioFromR2(request, env, key);
       }
     }
+
+    // Abonnement web : verrou de /app, connexion, Stripe (voir web-auth.js).
+    const web = await handleWeb(request, env);
+    if (web) return web;
 
     if (url.pathname === "/api/e") {
       if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });

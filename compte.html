@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auralis — Mon compte</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/compte.css">
+</head>
+<body>
+
+<nav id="nav">
+  <a href="index.html" class="brand"><span class="aura">AURA</span><span class="lis">LIS</span></a>
+  <button class="lang-btn" aria-label="Language">EN</button>
+</nav>
+
+<main class="acct">
+  <h1 data-fr="Mon compte" data-en="My account" data-es="Mi cuenta">Mon compte</h1>
+  <p class="lead" id="who"></p>
+
+  <!-- Abonnement actif ou acces offert -->
+  <section class="card key hide" id="active">
+    <h2 id="activeTitle"></h2>
+    <p id="activeLine"></p>
+    <a class="btn btn-primary" href="/app" data-fr="Ouvrir Auralis" data-en="Open Auralis" data-es="Abrir Auralis">Ouvrir Auralis</a>
+    <button class="btn btn-ghost hide" id="manage" type="button" data-fr="Gérer mon abonnement" data-en="Manage my subscription" data-es="Gestionar mi suscripción">Gérer mon abonnement</button>
+    <p class="dim hide" id="manageHint" style="margin-top:10px" data-fr="Carte de paiement, factures, annulation." data-en="Payment card, invoices, cancellation." data-es="Tarjeta de pago, facturas, cancelación.">Carte de paiement, factures, annulation.</p>
+  </section>
+
+  <!-- Paiement en cours de confirmation (retour de Stripe) -->
+  <section class="card hide" id="pending">
+    <h2 data-fr="Paiement reçu" data-en="Payment received" data-es="Pago recibido">Paiement reçu</h2>
+    <p data-fr="Activation de votre abonnement… quelques secondes." data-en="Activating your subscription… a few seconds." data-es="Activando su suscripción… unos segundos.">Activation de votre abonnement… quelques secondes.</p>
+  </section>
+
+  <!-- Aucun abonnement -->
+  <section class="card key hide" id="none">
+    <h2 data-fr="Auralis sur ordinateur" data-en="Auralis on your computer" data-es="Auralis en su computadora">Auralis sur ordinateur</h2>
+    <p class="price">29,99 $ <small data-fr="/ an, taxes en sus" data-en="/ year, plus taxes" data-es="/ año, impuestos aparte">/ an, taxes en sus</small></p>
+    <p class="dim" id="noneLine" data-fr="Toute l'application Auralis dans votre navigateur. Renouvellement automatique chaque année, annulable en tout temps." data-en="The full Auralis app in your browser. Renews automatically every year, cancel anytime." data-es="Toda la aplicación Auralis en su navegador. Renovación automática cada año, cancelable en cualquier momento.">Toute l'application Auralis dans votre navigateur. Renouvellement automatique chaque année, annulable en tout temps.</p>
+    <button class="btn btn-primary" id="buy" type="button" data-fr="M'abonner" data-en="Subscribe" data-es="Suscribirme">M'abonner</button>
+    <p class="msg" id="msgBuy" role="status"></p>
+  </section>
+
+  <section class="card hide" id="devCard">
+    <h2><span data-fr="Appareils connectés" data-en="Signed-in devices" data-es="Dispositivos conectados">Appareils connectés</span> <span class="dim" id="devCount"></span></h2>
+    <ul class="devices" id="devices"></ul>
+    <p class="dim" style="margin-top:10px" data-fr="Une connexion sur un 3ᵉ appareil déconnecte le plus ancien." data-en="Signing in on a 3rd device signs out the oldest one." data-es="Iniciar sesión en un 3.er dispositivo cierra la sesión del más antiguo.">Une connexion sur un 3ᵉ appareil déconnecte le plus ancien.</p>
+  </section>
+
+  <p style="text-align:center"><button class="link" id="logout" type="button" data-fr="Me déconnecter de cet appareil" data-en="Sign out of this device" data-es="Cerrar sesión en este dispositivo">Me déconnecter de cet appareil</button></p>
+</main>
+
+<script src="js/main.js"></script>
+<script>
+(function () {
+  var T = {
+    fr: { who: "Connecté : {e}", act: "Abonnement actif", renew: "Renouvellement automatique le {d}.", canc: "Abonnement annulé",
+          until: "Accès jusqu'au {d}.", comp: "Accès offert", late: "Paiement en retard — mettez à jour votre carte pour garder l'accès.",
+          here: "cet appareil", err: "Impossible d'ouvrir le paiement. Réessayez." },
+    en: { who: "Signed in: {e}", act: "Active subscription", renew: "Renews automatically on {d}.", canc: "Subscription cancelled",
+          until: "Access until {d}.", comp: "Complimentary access", late: "Payment overdue — update your card to keep access.",
+          here: "this device", err: "Unable to open checkout. Try again." },
+    es: { who: "Sesión iniciada: {e}", act: "Suscripción activa", renew: "Renovación automática el {d}.", canc: "Suscripción cancelada",
+          until: "Acceso hasta el {d}.", comp: "Acceso ofrecido", late: "Pago atrasado: actualice su tarjeta para conservar el acceso.",
+          here: "este dispositivo", err: "No se pudo abrir el pago. Inténtelo de nuevo." }
+  };
+  function lang() { var l = document.documentElement.lang; return T[l] ? l : "fr"; }
+  function t(k, v) { return T[lang()][k].replace(/\{[ed]\}/, v || ""); }
+  function $(id) { return document.getElementById(id); }
+  function show(id, on) { $(id).classList.toggle("hide", !on); }
+  function day(s) {
+    return new Date(s * 1000).toLocaleDateString(lang() + "-CA", { year: "numeric", month: "long", day: "numeric" });
+  }
+  function post(path) {
+    return fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ lang: lang() }) })
+      .then(function (r) { return r.json(); });
+  }
+
+  var me = null, paid = new URLSearchParams(location.search).get("paye") === "1", polls = 0;
+
+  function render() {
+    if (!me) return;
+    $("who").textContent = t("who", me.email);
+    var comp = me.comp_until && me.comp_until * 1000 > Date.now();
+    show("active", me.access);
+    show("pending", !me.access && paid);
+    show("none", !me.access && !paid);
+    if (me.access) {
+      if (comp && me.status !== "active") { $("activeTitle").textContent = t("comp"); $("activeLine").textContent = t("until", day(me.comp_until)); }
+      else if (me.status === "past_due") { $("activeTitle").textContent = t("act"); $("activeLine").textContent = t("late"); }
+      else if (me.cancel_at_end) { $("activeTitle").textContent = t("canc"); $("activeLine").textContent = t("until", day(me.period_end)); }
+      else { $("activeTitle").textContent = t("act"); $("activeLine").textContent = t("renew", day(me.period_end)); }
+    }
+    show("manage", me.customer); show("manageHint", me.customer);
+    show("devCard", true);
+    $("devCount").textContent = "(" + me.devices.length + "/" + me.max_devices + ")";
+    var ul = $("devices"); ul.innerHTML = "";
+    me.devices.forEach(function (d) {
+      var li = document.createElement("li");
+      var a = document.createElement("span"); a.textContent = d.device || "—";
+      var b = document.createElement("span"); b.className = "tag"; b.textContent = d.current ? t("here") : day(d.last_seen);
+      li.appendChild(a); li.appendChild(b); ul.appendChild(li);
+    });
+  }
+
+  function load() {
+    fetch("/api/web/me").then(function (r) {
+      if (r.status === 401) { location.href = "/connexion?suite=compte"; return null; }
+      return r.json();
+    }).then(function (d) {
+      if (!d) return;
+      me = d; render();
+      // Retour de Stripe : le webhook arrive en general en 1-3 s.
+      if (paid && !me.access && polls++ < 15) setTimeout(load, 2000);
+      else if (paid && !me.access) { paid = false; render(); }
+    });
+  }
+  load();
+
+  // La langue peut changer apres coup : on reaffiche les textes dynamiques.
+  document.querySelectorAll(".lang-btn").forEach(function (b) { b.addEventListener("click", function () { setTimeout(render, 0); }); });
+
+  $("buy").addEventListener("click", function () {
+    var btn = this; btn.disabled = true;
+    post("/api/web/checkout").then(function (d) {
+      if (d.url) location.href = d.url; else { btn.disabled = false; $("msgBuy").textContent = t("err"); }
+    }).catch(function () { btn.disabled = false; $("msgBuy").textContent = t("err"); });
+  });
+  $("manage").addEventListener("click", function () {
+    post("/api/web/portal").then(function (d) { if (d.url) location.href = d.url; });
+  });
+  $("logout").addEventListener("click", function () {
+    post("/api/auth/logout").then(function () { location.href = "/connexion"; });
+  });
+})();
+</script>
+</body>
+</html>
