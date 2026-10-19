@@ -43,7 +43,7 @@
     "WEB_GATE": "0",
     "STRIPE_PRICE_ID": "price_1US4pmBzwf0X2FdnSqtmNS3n",
     "STRIPE_TAX": "1",
-    "MAIL_FROM": "Auralis <connexion@aura-lis.ca>"
+    "MAIL_FROM": "Auralis <connexion@mail.aura-lis.ca>"
   },
   "d1_databases": [
     { "binding": "DB", "database_name": "auralis-web", "database_id": "A_REMPLIR_APRES_wrangler_d1_create", "migrations_dir": "migrations" }

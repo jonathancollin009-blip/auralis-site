@@ -134,7 +134,7 @@ async function sendCode(env, email, code, lang) {
     method: "POST",
     headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
     body: JSON.stringify({
-      from: env.MAIL_FROM || "Auralis <connexion@aura-lis.ca>",
+      from: env.MAIL_FROM || "Auralis <connexion@mail.aura-lis.ca>",
       to: [email],
       subject: m.subj + code,
       html,
