@@ -286,14 +286,16 @@ async function handlePortal(request, env) {
    a l'objet de l'evenement : les webhooks peuvent arriver dans le desordre,
    un vieil evenement "updated" ne doit pas ecraser un etat plus recent.
    current_period_end est sur l'abonnement (anciennes versions d'API) ou sur
-   ses items (depuis 2025-03-31). */
+   ses items (depuis 2025-03-31). Le portail client annule maintenant avec
+   une date cancel_at, sans toujours lever cancel_at_period_end. */
 async function syncSubscription(env, subId) {
   const sub = await stripe(env, "GET", "subscriptions/" + encodeURIComponent(subId));
   const item = sub.items && sub.items.data && sub.items.data[0];
   const periodEnd = sub.current_period_end || (item && item.current_period_end) || null;
+  const cancelAtEnd = sub.cancel_at_period_end || !!sub.cancel_at;
   const r = await env.DB.prepare(
     "UPDATE users SET sub_status = ?, period_end = ?, cancel_at_end = ? WHERE stripe_customer = ?"
-  ).bind(sub.status, periodEnd, sub.cancel_at_period_end ? 1 : 0, sub.customer).run();
+  ).bind(sub.status, periodEnd, cancelAtEnd ? 1 : 0, sub.customer).run();
   if (!r.meta.changes) console.log("[auralis-web] abonnement sans client connu", sub.id, sub.customer);
 }
 
