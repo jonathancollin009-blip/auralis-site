@@ -46,7 +46,7 @@
     "MAIL_FROM": "Auralis <connexion@mail.aura-lis.ca>"
   },
   "d1_databases": [
-    { "binding": "DB", "database_name": "auralis-web", "database_id": "A_REMPLIR_APRES_wrangler_d1_create", "migrations_dir": "migrations" }
+    { "binding": "DB", "database_name": "auralis-web", "database_id": "40ff3b8e-3d62-4c17-88fe-98fd24badb0b", "migrations_dir": "migrations" }
   ],
   "r2_buckets": [
     { "binding": "AUDIO", "bucket_name": "auralis-assets" }

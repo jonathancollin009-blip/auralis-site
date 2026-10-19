@@ -33,7 +33,7 @@ Code : `web-auth.js` (Worker), `connexion.html`, `compte.html`, `css/compte.css`
 
 ```bash
 cd auralis-site
-npx wrangler d1 create auralis-web            # copier database_id dans wrangler.jsonc
+# base creee le 2026-10-18 (id dans wrangler.jsonc)
 npx wrangler d1 migrations apply auralis-web --remote
 npx wrangler secret put STRIPE_SECRET_KEY
 npx wrangler secret put STRIPE_WEBHOOK_SECRET
