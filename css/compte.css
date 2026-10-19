@@ -14,6 +14,8 @@
 .acct input:focus { outline: none; border-color: var(--cyan); }
 .acct input.code { letter-spacing: 10px; text-align: center; font-size: 1.6rem; font-weight: 700; }
 .acct .btn { width: 100%; margin-top: 14px; border: none; font-family: inherit; text-align: center; }
+.acct .btn-ghost { background: transparent; border: 1px solid var(--cyan); color: var(--cyan); cursor: pointer; }
+.acct .btn-ghost:hover { background: #00ffff1a; }
 .acct .btn[disabled] { opacity: .5; cursor: wait; transform: none; }
 .acct .row { display: flex; justify-content: space-between; gap: 12px; margin-top: 14px; font-size: .9rem; }
 .acct .link { background: none; border: none; color: var(--cyan); cursor: pointer; font: inherit; padding: 0; }
