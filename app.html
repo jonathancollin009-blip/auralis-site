@@ -3311,7 +3311,12 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     var P=null, probed=false;
     function plug(){ if(!probed){ probed=true;
       try{ var C=window.Capacitor;
-        if(C&&C.getPlatform&&C.getPlatform()==="ios"&&C.Plugins&&C.Plugins.AuralisTone) P=C.Plugins.AuralisTone;
+        /* Android aussi depuis versionCode 9 (AuralisTonePlugin.java) : Web Audio dans
+           la WebView craquait sur tous les sons generes chez une cliente
+           (2026-10-20). Un ancien binaire Android sans le plugin retombe
+           simplement sur Web Audio. */
+        var pf=C&&C.getPlatform&&C.getPlatform();
+        if((pf==="ios"||pf==="android")&&C.Plugins&&C.Plugins.AuralisTone) P=C.Plugins.AuralisTone;
       }catch(e){}
       if(!P&&window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==="ios")
         console.warn("[Auralis] plugin AuralisTone introuvable : repli sur Web Audio (pas de son ecran verrouille)");
@@ -5047,6 +5052,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     if(NativeTone.on()){ var el=binMusic.el, u=BIN_MUSIC_DIR+key+"_bed.m4a";
       if(!el){ el=binMusic.el=new Audio(); el.loop=true; el.setAttribute("playsinline",""); }
       if(el.getAttribute("src")!==u)el.setAttribute("src",u); try{ el.currentTime=0; }catch(e){}
+      /* Android respecte audio.volume (iOS l ignore) : le curseur regle alors
+         aussi la musique, deja attenuee dans le fichier _bed. */
+      try{ el.volume=Math.max(0,Math.min(1,bin.vol)); }catch(e){}
       var pr=el.play(); if(pr&&pr.catch)pr.catch(function(e){ console.warn("[Auralis] musique binaurale :",(e&&e.name)||e); }); return; }
     binMusicLoad(key).then(function(buf){ if(!buf||gen!==binMusic.gen||!bin.playing||!ctx)return;
       var ti=ctx.currentTime,g=ctx.createGain(),s=ctx.createBufferSource(); s.buffer=buf; s.loop=true;
@@ -5060,6 +5068,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     binMusic.src=null; binMusic.gain=null; }
   function binVolApply(){
     if(!NativeTone.update({master:binToneVol(),glideMs:20}) && bin.master && ctx)bin.master.gain.setTargetAtTime(binToneVol(),ctx.currentTime,.02);
+    if(binMusic.el){ try{ binMusic.el.volume=Math.max(0,Math.min(1,bin.vol)); }catch(e){} }
     if(binMusic.gain&&ctx){ var ti=ctx.currentTime; try{binMusic.gain.gain.cancelScheduledValues(ti);}catch(e){} binMusic.gain.gain.setTargetAtTime(bin.vol*BIN_MUSIC_LEVEL,ti,.05); } }
   /* AURALIS_BIN_CAT_V1 : chaque categorie (bande) a sa page et sa liste de
      musiques. Pour ajouter une musique : deposer <id>_loop.flac et
