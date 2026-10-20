@@ -3321,15 +3321,30 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       if(!P&&window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==="ios")
         console.warn("[Auralis] plugin AuralisTone introuvable : repli sur Web Audio (pas de son ecran verrouille)");
     } return P; }
+    /* Repli en cours de route (versionCode 10) : start() rend true avant que
+       le natif ait vraiment demarre. Si le plugin refuse ensuite (AudioTrack
+       impossible a creer) ou signale "failed" (rendu interrompu), le natif est
+       mis hors jeu pour la session et le son en cours est relance par
+       l appelant -- ses fonctions stop/start passent alors par Web Audio. Sans
+       ca, un echec natif laissait l app muette. */
+    var broken=false, retry=null;
+    function fail(why){ if(broken)return; broken=true; P=null;
+      console.warn("[Auralis] AuralisTone hors service ("+why+") : repli sur Web Audio");
+      var r=retry; retry=null; if(typeof r==="function")setTimeout(r,0); }
     function call(m,a){ var p=plug(); if(!p)return false;
-      try{ var r=p[m](a||{}); if(r&&r.catch)r.catch(function(e){ console.warn("[Auralis] AuralisTone."+m+" :",e); }); }
-      catch(e){ console.warn("[Auralis] AuralisTone."+m+" :",e); return false; }
+      try{ var r=p[m](a||{}); if(r&&r.catch)r.catch(function(e){ console.warn("[Auralis] AuralisTone."+m+" :",e); if(m==="start")fail(e&&e.message||e); }); }
+      catch(e){ console.warn("[Auralis] AuralisTone."+m+" :",e); if(m==="start")fail(e&&e.message||e); return false; }
       return true; }
-    return { on:function(){ return !!plug(); },
-      start:function(o){ return call("start",o); },
-      update:function(o){ return call("update",o); },
-      sequence:function(o){ return call("sequence",o); },
-      stop:function(o){ return call("stop",o); } };
+    function listen(){ var p=plug(); if(p&&p.addListener){ try{ p.addListener("failed",function(e){ fail((e&&e.reason)||"rendu interrompu"); }); }catch(e){} } }
+    var listening=false;
+    return { on:function(){ return !broken&&!!plug(); },
+      /* again : relance le son en cours (stop puis start de l appelant) si le
+         natif tombe en panne apres coup. */
+      start:function(o,again){ if(broken)return false; if(!listening){ listening=true; listen(); }
+        var ok=call("start",o); retry=ok?again||null:null; return ok; },
+      update:function(o){ return !broken&&call("update",o); },
+      sequence:function(o){ return !broken&&call("sequence",o); },
+      stop:function(o){ retry=null; return !broken&&call("stop",o); } };
   })();
   /* Pont vers l abonnement natif -- AuralisStore.swift (StoreKit 2) sur iOS,
      AuralisBillingPlugin.java (Google Play Billing) sur Android, meme nom de
@@ -3796,7 +3811,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       pause: function(){ stopSingle(false); }, stop: function(){ stopSingle(false); },
       play:  function(){ if(!state.playing) startSingle(); } });
     var ti=ctx.currentTime,f=state.cur.f;
-    state.native=NativeTone.start({voices:[{f:f,g:1,p:0}],master:state.vol,fadeMs:50});
+    state.native=NativeTone.start({voices:[{f:f,g:1,p:0}],master:state.vol,fadeMs:50},
+      function(){ if(state.playing){ stopSingle(true); startSingle(); } });
     if(!state.native){
       sMaster=ctx.createGain(); sMaster.gain.setValueAtTime(0.0001,ti); sMaster.gain.linearRampToValueAtTime(state.vol,ti+0.05); sMaster.connect(ctx.destination); sOscs=[];
       var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(f,ti);o.connect(sMaster);o.start();sOscs.push(o);
@@ -3936,7 +3952,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       pause: function(){ stopSeq(false); }, stop: function(){ stopSeq(false); },
       play:  function(){ if(!seq.playing) startSeq(); } });
     var ti=ctx.currentTime; if(seq.idx>=seq.p.s.length)seq.idx=0;
-    seq.native=NativeTone.start({voices:[{f:seq.p.s[seq.idx].f,g:1,p:0}],master:state.vol,fadeMs:50});
+    seq.native=NativeTone.start({voices:[{f:seq.p.s[seq.idx].f,g:1,p:0}],master:state.vol,fadeMs:50},
+      function(){ if(seq.playing){ stopSeq(true); startSeq(); } });
     if(!seq.native){
       seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(ctx.destination);
       seq.osc=ctx.createOscillator(); seq.osc.type="sine"; seq.osc.frequency.setValueAtTime(seq.p.s[seq.idx].f,ti); seq.osc.connect(seq.master); seq.osc.start();
@@ -4735,7 +4752,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
        avec l enveloppe GENV. Ici un tremolo sinusoidal de meme periode donne
        la meme pulsation a l oreille sans avoir a porter l enveloppe. */
     var tr=gp.pulsed?{rate:1/gp.dur,base:0.5,depth:0.5}:null;
-    if(!NativeTone.start({voices:vs,master:gp.vol,fadeMs:60,trem:tr})) return false;
+    if(!NativeTone.start({voices:vs,master:gp.vol,fadeMs:60,trem:tr},
+      function(){ if(gp.playing){ gStop(true); gPlaySynth(); } })) return false;
     gp.cycleStart=ctx?ctx.currentTime:0; gp.playing=true; gSetBtn(true);
     return true; }
   function gPlaySynth(){ if(gPlaySynthNative())return; var t=ctx.currentTime+0.06;
@@ -4946,7 +4964,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
        exactement la plage du trem Web Audio ci-dessous (offset continu 0,65
        + LFO d amplitude 0,35). */
     if(NativeTone.start({voices:[{f:432,g:1,p:0}],master:pulse.vol,fadeMs:80,
-        trem:{rate:pulse.bpm/60,base:0.65,depth:0.35}})){
+        trem:{rate:pulse.bpm/60,base:0.65,depth:0.35}},
+        function(){ if(pulse.playing){ pulseStop(true); pulseStart(); } })){
       pulse.playing=true; pulseSetBtn(true); return; }
     pulse.master=ctx.createGain(); pulse.master.gain.setValueAtTime(0.0001,t); pulse.master.gain.linearRampToValueAtTime(pulse.vol,t+0.08); pulse.master.connect(ctx.destination);
     pulse.osc=ctx.createOscillator(); pulse.osc.type="sine"; pulse.osc.frequency.setValueAtTime(432,t);
@@ -5225,7 +5244,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     ST.play("bin",bin.manual?"manual":(bin.intent?bin.intent.key:"binaural"));
     NA.start(nativeText("notification_binaural",t("bin_playing")),binTitle(),{pause:function(){binStop(false,true);},stop:function(){binStop(false,false);},play:function(){if(!bin.playing)binStart();}});
     var ti=ctx.currentTime;
-    if(!NativeTone.start({voices:[{f:bin.f1,g:1,p:-1},{f:bin.f2,g:1,p:1}],master:binToneVol(),fadeMs:50})){
+    if(!NativeTone.start({voices:[{f:bin.f1,g:1,p:-1},{f:bin.f2,g:1,p:1}],master:binToneVol(),fadeMs:50},
+        function(){ if(bin.playing){ binStop(true,true); binStart(); } })){
       bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(.0001,ti); bin.master.gain.linearRampToValueAtTime(binToneVol(),ti+.05); bin.master.connect(ctx.destination);
       bin.oscA=ctx.createOscillator(); bin.oscA.type="sine"; bin.oscA.frequency.setValueAtTime(bin.f1,ti); bin.oscB=ctx.createOscillator(); bin.oscB.type="sine"; bin.oscB.frequency.setValueAtTime(bin.f2,ti);
       var pa=ctx.createStereoPanner(),pb=ctx.createStereoPanner(); pa.pan.setValueAtTime(-1,ti); pb.pan.setValueAtTime(1,ti); bin.oscA.connect(pa); pa.connect(bin.master); bin.oscB.connect(pb); pb.connect(bin.master); bin.oscA.start(ti); bin.oscB.start(ti);
