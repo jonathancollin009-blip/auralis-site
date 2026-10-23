@@ -59,6 +59,7 @@
   function t(k, n) { return T[lang()][k].replace("{n}", n); }
   function $(id) { return document.getElementById(id); }
   var suite = new URLSearchParams(location.search).get("suite") || "compte";
+  var plan = new URLSearchParams(location.search).get("plan") === "famille" ? "famille" : "individuel";
   var email = "";
 
   function post(path, body) {
@@ -70,11 +71,11 @@
   function goNext(access) {
     if (suite === "app") { location.href = access ? "/app" : "/compte"; return; }
     if (suite === "achat" && !access) {
-      post("/api/web/checkout", { lang: lang() }).then(function (d) { location.href = d.url || "/compte"; })
+      post("/api/web/checkout", { lang: lang(), plan: plan }).then(function (d) { location.href = d.url || "/compte"; })
         .catch(function () { location.href = "/compte"; });
       return;
     }
-    location.href = "/compte";
+    location.href = plan === "famille" ? "/compte?plan=famille" : "/compte";
   }
 
   // Deja connecte sur cet appareil : on saute l'etape.

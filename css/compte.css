@@ -28,4 +28,15 @@
 .acct ul.devices li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: .95rem; }
 .acct ul.devices li:first-child { border-top: none; }
 .acct .tag { color: var(--cyan); font-size: .8rem; white-space: nowrap; }
+.acct .plans { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 10px; }
+.acct .plan {
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left;
+  padding: 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-alt);
+  color: var(--text); font: inherit; cursor: pointer;
+}
+.acct .plan[aria-checked="true"] { border-color: var(--cyan); box-shadow: 0 0 0 1px var(--cyan) inset; }
+.acct .plan-name { font-weight: 700; color: var(--aura); }
+.acct .plan-price { font-size: 1.45rem; font-weight: 700; }
+.acct .plan-price small { font-size: .85rem; font-weight: 400; color: var(--text-dim); }
+.acct .plan-dev { font-size: .9rem; color: var(--text-dim); }
 .acct .hide { display: none; }

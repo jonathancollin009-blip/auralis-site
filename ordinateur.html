@@ -6,13 +6,13 @@
 <title>Auralis sur ordinateur — abonnement web</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="canonical" href="https://aura-lis.ca/ordinateur">
-<meta name="description" content="Toute l'application Auralis dans votre navigateur : fréquences, protocoles, binauraux, musiques et géométrie sacrée. 29,99 $ par an, sur 2 appareils, annulable en tout temps.">
+<meta name="description" content="Toute l'application Auralis dans votre navigateur : fréquences, protocoles, binauraux, musiques et géométrie sacrée. Dès 29,99 $ par an (2 appareils) ou 39,99 $ en forfait Famille (4 appareils), annulable en tout temps.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Auralis">
 <meta property="og:locale" content="fr_CA">
 <meta property="og:url" content="https://aura-lis.ca/ordinateur">
 <meta property="og:title" content="Auralis sur ordinateur">
-<meta property="og:description" content="Toute l'application Auralis dans votre navigateur. 29,99 $ par an, annulable en tout temps.">
+<meta property="og:description" content="Toute l'application Auralis dans votre navigateur. Dès 29,99 $ par an, annulable en tout temps.">
 <meta property="og:image" content="https://aura-lis.ca/images/app-web.webp">
 
 <link rel="stylesheet" href="css/style.css">
@@ -25,6 +25,14 @@
   .web-price small { font-size:1rem; font-weight:400; color:var(--text-dim); }
   .web-terms { color:var(--text-dim); font-size:.9rem; margin:6px 0 24px; }
   .web-actions { display:flex; gap:14px; flex-wrap:wrap; }
+  #forfaits { scroll-margin-top:70px; }
+  .web-plans { display:grid; grid-template-columns:repeat(2, minmax(0, 320px)); gap:20px; justify-content:center; margin-top:28px; }
+  .web-plans .card { display:flex; flex-direction:column; gap:10px; text-align:center; padding:28px 22px; }
+  .web-plans .card.pop { border-color:var(--cyan); }
+  .web-plans h3 { font-size:1.25rem; }
+  .web-plans .web-price { font-size:2rem; color:#e9c96a; }
+  .web-plans ul { list-style:none; color:var(--text-dim); margin:4px 0 12px; line-height:1.8; }
+  .web-plans .btn { margin-top:auto; }
   .web-shot { justify-self:center; width:100%; max-width:330px; border-radius:28px; border:1px solid var(--line); overflow:hidden; box-shadow:0 0 60px #7fd8f022; }
   .web-shot img { display:block; width:100%; height:auto; }
 
@@ -47,6 +55,7 @@
   .web-foot a { color:var(--text-dim); text-decoration:underline; }
 
   @media (max-width: 860px) {
+    .web-plans { grid-template-columns:1fr; }
     .web-hero { grid-template-columns:1fr; gap:34px; padding:36px 16px 24px; text-align:center; }
     .web-hero h1 { font-size:1.9rem; }
     .web-actions { justify-content:center; }
@@ -75,10 +84,10 @@
     <p class="kicker" data-fr="Version web" data-es="Versión web" data-en="Web version">Version web</p>
     <h1 data-fr="Auralis sur votre ordinateur" data-es="Auralis en su computadora" data-en="Auralis on your computer">Auralis sur votre ordinateur</h1>
     <p class="sub" data-fr="Toute l'application Auralis dans votre navigateur : fréquences, protocoles, binauraux, musiques, chakras et géométrie sacrée. Rien à installer." data-es="Toda la aplicación Auralis en su navegador: frecuencias, protocolos, binaurales, músicas, chakras y geometría sagrada. Nada que instalar." data-en="The full Auralis app in your browser: frequencies, protocols, binaural beats, music, chakras and sacred geometry. Nothing to install.">Toute l'application Auralis dans votre navigateur : fréquences, protocoles, binauraux, musiques, chakras et géométrie sacrée. Rien à installer.</p>
-    <p class="web-price">29,99&nbsp;$ <small data-fr="/ an, taxes en sus" data-es="/ año, impuestos aparte" data-en="/ year, plus taxes">/ an, taxes en sus</small></p>
-    <p class="web-terms" data-fr="Renouvellement automatique chaque année · annulable en tout temps · 2 appareils" data-es="Renovación automática cada año · cancelable en cualquier momento · 2 dispositivos" data-en="Renews automatically every year · cancel anytime · 2 devices">Renouvellement automatique chaque année · annulable en tout temps · 2 appareils</p>
+    <p class="web-price"><small data-fr="Dès" data-es="Desde" data-en="From">Dès</small> 29,99&nbsp;$ <small data-fr="/ an, taxes en sus" data-es="/ año, impuestos aparte" data-en="/ year, plus taxes">/ an, taxes en sus</small></p>
+    <p class="web-terms" data-fr="Renouvellement automatique chaque année · annulable en tout temps · 2 ou 4 appareils" data-es="Renovación automática cada año · cancelable en cualquier momento · 2 o 4 dispositivos" data-en="Renews automatically every year · cancel anytime · 2 or 4 devices">Renouvellement automatique chaque année · annulable en tout temps · 2 ou 4 appareils</p>
     <div class="web-actions">
-      <a href="/connexion?suite=achat" class="btn btn-primary btn-lg" data-fr="M'abonner" data-es="Suscribirme" data-en="Subscribe">M'abonner</a>
+      <a href="#forfaits" class="btn btn-primary btn-lg" data-fr="M'abonner" data-es="Suscribirme" data-en="Subscribe">M'abonner</a>
       <a href="/connexion?suite=app" class="btn btn-ghost btn-lg" data-fr="J'ai déjà un compte" data-es="Ya tengo una cuenta" data-en="I already have an account">J'ai déjà un compte</a>
     </div>
   </div>
@@ -86,6 +95,32 @@
     <img src="images/app-web.webp" width="430" height="800" alt="Écran d'accueil de l'application Auralis : Fréquences, Protocoles, Binauraux, Musiques">
   </div>
 </header>
+
+<section class="section" id="forfaits">
+  <h2 data-fr="Deux forfaits" data-es="Dos planes" data-en="Two plans">Deux forfaits</h2>
+  <p class="section-intro" data-fr="Le même contenu complet. Seul le nombre d'appareils connectés change." data-es="El mismo contenido completo. Solo cambia el número de dispositivos conectados." data-en="The same full content. Only the number of signed-in devices changes.">Le même contenu complet. Seul le nombre d'appareils connectés change.</p>
+  <div class="web-plans">
+    <div class="card">
+      <h3 data-fr="Individuel" data-es="Individual" data-en="Individual">Individuel</h3>
+      <p class="web-price">29,99&nbsp;$ <small data-fr="/ an" data-es="/ año" data-en="/ year">/ an</small></p>
+      <ul>
+        <li data-fr="2 appareils en même temps" data-es="2 dispositivos a la vez" data-en="2 devices at once">2 appareils en même temps</li>
+        <li data-fr="Tout le contenu d'Auralis" data-es="Todo el contenido de Auralis" data-en="All Auralis content">Tout le contenu d'Auralis</li>
+      </ul>
+      <a href="/connexion?suite=achat&amp;plan=individuel" class="btn btn-ghost btn-lg" data-fr="Choisir Individuel" data-es="Elegir Individual" data-en="Choose Individual">Choisir Individuel</a>
+    </div>
+    <div class="card pop">
+      <h3 data-fr="Famille" data-es="Familia" data-en="Family">Famille</h3>
+      <p class="web-price">39,99&nbsp;$ <small data-fr="/ an" data-es="/ año" data-en="/ year">/ an</small></p>
+      <ul>
+        <li data-fr="4 appareils en même temps" data-es="4 dispositivos a la vez" data-en="4 devices at once">4 appareils en même temps</li>
+        <li data-fr="Tout le contenu d'Auralis" data-es="Todo el contenido de Auralis" data-en="All Auralis content">Tout le contenu d'Auralis</li>
+      </ul>
+      <a href="/connexion?suite=achat&amp;plan=famille" class="btn btn-primary btn-lg" data-fr="Choisir Famille" data-es="Elegir Familia" data-en="Choose Family">Choisir Famille</a>
+    </div>
+  </div>
+  <p class="section-intro" style="margin-top:22px" data-fr="Taxes en sus. Renouvellement automatique chaque année, annulable en tout temps." data-es="Impuestos aparte. Renovación automática cada año, cancelable en cualquier momento." data-en="Plus taxes. Renews automatically every year, cancel anytime.">Taxes en sus. Renouvellement automatique chaque année, annulable en tout temps.</p>
+</section>
 
 <section class="section alt">
   <h2 data-fr="Ce qui est inclus" data-es="Lo que incluye" data-en="What's included">Ce qui est inclus</h2>
@@ -141,8 +176,8 @@
   <h2 data-fr="Bon à savoir" data-es="Bueno saber" data-en="Good to know">Bon à savoir</h2>
   <div class="facts">
     <div class="fact">
-      <h3 data-fr="Deux appareils en même temps" data-es="Dos dispositivos a la vez" data-en="Two devices at once">Deux appareils en même temps</h3>
-      <p data-fr="Votre abonnement peut être connecté sur 2 appareils. Une connexion sur un 3ᵉ appareil déconnecte le plus ancien." data-es="Su suscripción puede estar conectada en 2 dispositivos. Iniciar sesión en un 3.er dispositivo cierra la sesión del más antiguo." data-en="Your subscription can be signed in on 2 devices. Signing in on a 3rd device signs out the oldest one.">Votre abonnement peut être connecté sur 2 appareils. Une connexion sur un 3ᵉ appareil déconnecte le plus ancien.</p>
+      <h3 data-fr="2 ou 4 appareils" data-es="2 o 4 dispositivos" data-en="2 or 4 devices">2 ou 4 appareils</h3>
+      <p data-fr="Le forfait Individuel se connecte sur 2 appareils, le forfait Famille sur 4. Une connexion de trop déconnecte l'appareil le plus ancien. Vous pouvez passer au forfait Famille en tout temps depuis la page Mon compte." data-es="El plan Individual se conecta en 2 dispositivos, el plan Familia en 4. Una conexión de más cierra la sesión del dispositivo más antiguo. Puede cambiar al plan Familia en cualquier momento desde la página Mi cuenta." data-en="The Individual plan can be signed in on 2 devices, the Family plan on 4. One sign-in too many signs out the oldest device. You can switch to the Family plan at any time from the My account page.">Le forfait Individuel se connecte sur 2 appareils, le forfait Famille sur 4. Une connexion de trop déconnecte l'appareil le plus ancien. Vous pouvez passer au forfait Famille en tout temps depuis la page Mon compte.</p>
     </div>
     <div class="fact">
       <h3 data-fr="Annulable en tout temps" data-es="Cancelable en cualquier momento" data-en="Cancel anytime">Annulable en tout temps</h3>
@@ -165,8 +200,8 @@
 
 <section class="section cta-band">
   <h2 data-fr="Commencez dès maintenant" data-es="Empiece ahora mismo" data-en="Start right now">Commencez dès maintenant</h2>
-  <p data-fr="29,99 $ par an, taxes en sus. Annulable en tout temps." data-es="29,99 $ al año, impuestos aparte. Cancelable en cualquier momento." data-en="$29.99 per year, plus taxes. Cancel anytime.">29,99 $ par an, taxes en sus. Annulable en tout temps.</p>
-  <a href="/connexion?suite=achat" class="btn btn-primary btn-lg" data-fr="M'abonner" data-es="Suscribirme" data-en="Subscribe">M'abonner</a>
+  <p data-fr="Dès 29,99 $ par an, taxes en sus. Annulable en tout temps." data-es="Desde 29,99 $ al año, impuestos aparte. Cancelable en cualquier momento." data-en="From $29.99 per year, plus taxes. Cancel anytime.">Dès 29,99 $ par an, taxes en sus. Annulable en tout temps.</p>
+  <a href="#forfaits" class="btn btn-primary btn-lg" data-fr="M'abonner" data-es="Suscribirme" data-en="Subscribe">M'abonner</a>
 </section>
 
 <p class="web-foot"><span data-fr="Auralis est un outil de bien-être et de détente. Ce n'est pas un dispositif médical : il ne diagnostique, ne traite ni ne guérit aucune maladie." data-es="Auralis es una herramienta de bienestar y relajación. No es un dispositivo médico: no diagnostica, no trata ni cura ninguna enfermedad." data-en="Auralis is a wellness and relaxation tool. It is not a medical device: it does not diagnose, treat or cure any illness.">Auralis est un outil de bien-être et de détente. Ce n'est pas un dispositif médical : il ne diagnostique, ne traite ni ne guérit aucune maladie.</span><br>

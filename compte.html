@@ -38,7 +38,19 @@
   <!-- Aucun abonnement -->
   <section class="card key hide" id="none">
     <h2 data-fr="Auralis sur ordinateur" data-en="Auralis on your computer" data-es="Auralis en su computadora">Auralis sur ordinateur</h2>
-    <p class="price">29,99 $ <small data-fr="/ an, taxes en sus" data-en="/ year, plus taxes" data-es="/ año, impuestos aparte">/ an, taxes en sus</small></p>
+    <div class="plans" role="radiogroup" aria-label="Forfait">
+      <button class="plan" type="button" role="radio" data-plan="individuel" aria-checked="true">
+        <span class="plan-name" data-fr="Individuel" data-en="Individual" data-es="Individual">Individuel</span>
+        <span class="plan-price">29,99 $ <small data-fr="/ an" data-en="/ year" data-es="/ año">/ an</small></span>
+        <span class="plan-dev" data-fr="2 appareils" data-en="2 devices" data-es="2 dispositivos">2 appareils</span>
+      </button>
+      <button class="plan" type="button" role="radio" data-plan="famille" aria-checked="false">
+        <span class="plan-name" data-fr="Famille" data-en="Family" data-es="Familia">Famille</span>
+        <span class="plan-price">39,99 $ <small data-fr="/ an" data-en="/ year" data-es="/ año">/ an</small></span>
+        <span class="plan-dev" data-fr="4 appareils" data-en="4 devices" data-es="4 dispositivos">4 appareils</span>
+      </button>
+    </div>
+    <p class="dim" style="margin-bottom:8px" data-fr="Taxes en sus." data-en="Plus taxes." data-es="Impuestos aparte.">Taxes en sus.</p>
     <p class="dim" id="noneLine" data-fr="Toute l'application Auralis dans votre navigateur. Renouvellement automatique chaque année, annulable en tout temps." data-en="The full Auralis app in your browser. Renews automatically every year, cancel anytime." data-es="Toda la aplicación Auralis en su navegador. Renovación automática cada año, cancelable en cualquier momento.">Toute l'application Auralis dans votre navigateur. Renouvellement automatique chaque année, annulable en tout temps.</p>
     <button class="btn btn-primary" id="buy" type="button" data-fr="M'abonner" data-en="Subscribe" data-es="Suscribirme">M'abonner</button>
     <p class="msg" id="msgBuy" role="status"></p>
@@ -47,7 +59,7 @@
   <section class="card hide" id="devCard">
     <h2><span data-fr="Appareils connectés" data-en="Signed-in devices" data-es="Dispositivos conectados">Appareils connectés</span> <span class="dim" id="devCount"></span></h2>
     <ul class="devices" id="devices"></ul>
-    <p class="dim" style="margin-top:10px" data-fr="Une connexion sur un 3ᵉ appareil déconnecte le plus ancien." data-en="Signing in on a 3rd device signs out the oldest one." data-es="Iniciar sesión en un 3.er dispositivo cierra la sesión del más antiguo.">Une connexion sur un 3ᵉ appareil déconnecte le plus ancien.</p>
+    <p class="dim" style="margin-top:10px" id="devNote"></p>
   </section>
 
   <p style="text-align:center"><button class="link" id="logout" type="button" data-fr="Me déconnecter de cet appareil" data-en="Sign out of this device" data-es="Cerrar sesión en este dispositivo">Me déconnecter de cet appareil</button></p>
@@ -57,27 +69,40 @@
 <script>
 (function () {
   var T = {
-    fr: { who: "Connecté : {e}", act: "Abonnement actif", renew: "Renouvellement automatique le {d}.", canc: "Abonnement annulé",
+    fr: { who: "Connecté : {e}", act: "Abonnement actif", fam: "Abonnement Famille actif", renew: "Renouvellement automatique le {d}.", canc: "Abonnement annulé",
           until: "Accès jusqu'au {d}.", comp: "Accès offert", late: "Paiement en retard — mettez à jour votre carte pour garder l'accès.",
-          here: "cet appareil", err: "Impossible d'ouvrir le paiement. Réessayez." },
-    en: { who: "Signed in: {e}", act: "Active subscription", renew: "Renews automatically on {d}.", canc: "Subscription cancelled",
+          here: "cet appareil", err: "Impossible d'ouvrir le paiement. Réessayez.",
+          note: "Une connexion sur un {n}ᵉ appareil déconnecte le plus ancien.", up: " Besoin de plus d'appareils ? Passez au forfait Famille (4 appareils) dans « Gérer mon abonnement »." },
+    en: { who: "Signed in: {e}", act: "Active subscription", fam: "Family subscription active", renew: "Renews automatically on {d}.", canc: "Subscription cancelled",
           until: "Access until {d}.", comp: "Complimentary access", late: "Payment overdue — update your card to keep access.",
-          here: "this device", err: "Unable to open checkout. Try again." },
-    es: { who: "Sesión iniciada: {e}", act: "Suscripción activa", renew: "Renovación automática el {d}.", canc: "Suscripción cancelada",
+          here: "this device", err: "Unable to open checkout. Try again.",
+          note: "Signing in on device no. {n} signs out the oldest one.", up: " Need more devices? Switch to the Family plan (4 devices) in “Manage my subscription”." },
+    es: { who: "Sesión iniciada: {e}", act: "Suscripción activa", fam: "Suscripción Familia activa", renew: "Renovación automática el {d}.", canc: "Suscripción cancelada",
           until: "Acceso hasta el {d}.", comp: "Acceso ofrecido", late: "Pago atrasado: actualice su tarjeta para conservar el acceso.",
-          here: "este dispositivo", err: "No se pudo abrir el pago. Inténtelo de nuevo." }
+          here: "este dispositivo", err: "No se pudo abrir el pago. Inténtelo de nuevo.",
+          note: "Iniciar sesión en un {n}.º dispositivo cierra la sesión del más antiguo.", up: " ¿Necesita más dispositivos? Cambie al plan Familia (4 dispositivos) en «Gestionar mi suscripción»." }
   };
   function lang() { var l = document.documentElement.lang; return T[l] ? l : "fr"; }
-  function t(k, v) { return T[lang()][k].replace(/\{[ed]\}/, v || ""); }
+  function t(k, v) { return T[lang()][k].replace(/\{[edn]\}/, v || ""); }
   function $(id) { return document.getElementById(id); }
   function show(id, on) { $(id).classList.toggle("hide", !on); }
   function day(s) {
     return new Date(s * 1000).toLocaleDateString(lang() + "-CA", { year: "numeric", month: "long", day: "numeric" });
   }
-  function post(path) {
-    return fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ lang: lang() }) })
+  function post(path, extra) {
+    var body = { lang: lang() };
+    for (var k in extra || {}) body[k] = extra[k];
+    return fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) })
       .then(function (r) { return r.json(); });
   }
+
+  var plan = new URLSearchParams(location.search).get("plan") === "famille" ? "famille" : "individuel";
+  function pickPlan(p) {
+    plan = p;
+    document.querySelectorAll(".plan").forEach(function (b) { b.setAttribute("aria-checked", b.dataset.plan === p ? "true" : "false"); });
+  }
+  pickPlan(plan);
+  document.querySelectorAll(".plan").forEach(function (b) { b.addEventListener("click", function () { pickPlan(b.dataset.plan); }); });
 
   var me = null, paid = new URLSearchParams(location.search).get("paye") === "1", polls = 0;
 
@@ -92,11 +117,13 @@
       if (comp && me.status !== "active") { $("activeTitle").textContent = t("comp"); $("activeLine").textContent = t("until", day(me.comp_until)); }
       else if (me.status === "past_due") { $("activeTitle").textContent = t("act"); $("activeLine").textContent = t("late"); }
       else if (me.cancel_at_end) { $("activeTitle").textContent = t("canc"); $("activeLine").textContent = t("until", day(me.period_end)); }
-      else { $("activeTitle").textContent = t("act"); $("activeLine").textContent = t("renew", day(me.period_end)); }
+      else { $("activeTitle").textContent = t(me.plan === "famille" ? "fam" : "act"); $("activeLine").textContent = t("renew", day(me.period_end)); }
     }
     show("manage", me.customer); show("manageHint", me.customer);
     show("devCard", true);
     $("devCount").textContent = "(" + me.devices.length + "/" + me.max_devices + ")";
+    var paying = me.customer && me.status === "active" && !me.cancel_at_end;
+    $("devNote").textContent = t("note", me.max_devices + 1) + (paying && me.plan !== "famille" ? t("up") : "");
     var ul = $("devices"); ul.innerHTML = "";
     me.devices.forEach(function (d) {
       var li = document.createElement("li");
@@ -125,7 +152,7 @@
 
   $("buy").addEventListener("click", function () {
     var btn = this; btn.disabled = true;
-    post("/api/web/checkout").then(function (d) {
+    post("/api/web/checkout", { plan: plan }).then(function (d) {
       if (d.url) location.href = d.url; else { btn.disabled = false; $("msgBuy").textContent = t("err"); }
     }).catch(function () { btn.disabled = false; $("msgBuy").textContent = t("err"); });
   });

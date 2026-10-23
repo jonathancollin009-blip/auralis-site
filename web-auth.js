@@ -7,18 +7,21 @@
  *   interroge au chargement de /app.
  * - Connexion sans mot de passe : code a 6 chiffres envoye par courriel
  *   (Resend), puis cookie de session HttpOnly. Maximum 2 appareils connectes
- *   par courriel : la 3e connexion deconnecte la plus ancienne.
+ *   par courriel (4 au forfait Famille) : une connexion de trop deconnecte
+ *   la plus ancienne.
  * - /app n'est verrouillee que si WEB_GATE = "1" : on peut deployer tout ceci
  *   sans fermer l'acces public, puis basculer le jour du lancement.
  *
  * Secrets (npx wrangler secret put ...) : STRIPE_SECRET_KEY,
  * STRIPE_WEBHOOK_SECRET, RESEND_API_KEY. Variables (wrangler.jsonc) :
- * WEB_GATE, STRIPE_PRICE_ID, STRIPE_TAX, MAIL_FROM.
+ * WEB_GATE, STRIPE_PRICE_ID (Individuel), STRIPE_PRICE_ID_FAMILLE, STRIPE_TAX,
+ * MAIL_FROM.
  * En local, DEV_LOG_CODES = "1" ecrit le code dans la console au lieu de
  * l'envoyer (aucun courriel ne part sans RESEND_API_KEY).
  */
 
-const MAX_DEVICES = 2;
+const MAX_DEVICES = 2;           // forfait Individuel, et acces offerts
+const MAX_DEVICES_FAMILLE = 4;
 const SESSION_DAYS = 180;
 const CODE_TTL = 10 * 60;        // un code vaut 10 minutes
 const CODE_RESEND = 60;          // pas plus d'un envoi par minute et par courriel
@@ -81,6 +84,18 @@ function deviceLabel(request) {
   const br = /Edg\//.test(ua) ? "Edge" : /Firefox\//.test(ua) ? "Firefox" : /Chrome\//.test(ua) ? "Chrome"
     : /Safari\//.test(ua) ? "Safari" : "";
   return br ? `${os} · ${br}` : os;
+}
+
+function deviceLimit(u) {
+  return (u && u.max_devices) || MAX_DEVICES;
+}
+
+/* Deconnecte les sessions les plus anciennes au-dela de la limite. */
+function trimSessions(env, email, limit) {
+  return env.DB.prepare(
+    "DELETE FROM sessions WHERE email = ? AND token_hash NOT IN " +
+    "(SELECT token_hash FROM sessions WHERE email = ? ORDER BY created_at DESC, rowid DESC LIMIT ?)"
+  ).bind(email, email, limit);
 }
 
 export function hasAccess(u, t = now()) {
@@ -186,16 +201,14 @@ async function handleVerify(request, env) {
   }
 
   const tok = randomToken();
+  const prevUser = await env.DB.prepare("SELECT max_devices FROM users WHERE email = ?").bind(email).first();
   await env.DB.batch([
     env.DB.prepare("DELETE FROM login_codes WHERE email = ?").bind(email),
     env.DB.prepare("INSERT INTO users (email, created_at) VALUES (?, ?) ON CONFLICT(email) DO NOTHING").bind(email, t),
     env.DB.prepare("INSERT INTO sessions (token_hash, email, device, created_at, last_seen) VALUES (?, ?, ?, ?, ?)")
       .bind(await sha256(tok), email, deviceLabel(request), t, t),
-    // Garde les MAX_DEVICES sessions les plus recentes, deconnecte les autres.
-    env.DB.prepare(
-      "DELETE FROM sessions WHERE email = ? AND token_hash NOT IN " +
-      "(SELECT token_hash FROM sessions WHERE email = ? ORDER BY created_at DESC, rowid DESC LIMIT ?)"
-    ).bind(email, email, MAX_DEVICES),
+    // Garde les sessions les plus recentes, deconnecte les autres.
+    trimSessions(env, email, deviceLimit(prevUser)),
   ]);
   const u = await env.DB.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
   return json({ ok: true, access: hasAccess(u) }, 200, { "set-cookie": sessionCookie(tok, SESSION_DAYS * 86400) });
@@ -221,7 +234,8 @@ async function handleMe(request, env) {
     comp_until: s.comp_until || null,
     customer: !!s.stripe_customer,
     devices: dev.results.map((d) => ({ device: d.device, last_seen: d.last_seen, current: d.token_hash === s.token_hash })),
-    max_devices: MAX_DEVICES,
+    max_devices: deviceLimit(s),
+    plan: s.max_devices === MAX_DEVICES_FAMILLE ? "famille" : "individuel",
   });
 }
 
@@ -246,6 +260,8 @@ async function handleCheckout(request, env) {
   if (!s) return json({ error: "auth" }, 401);
   if (hasAccess(s) && !s.comp_until) return json({ error: "already" }, 409);
   const body = (await readJson(request)) || {};
+  const famille = body.plan === "famille";
+  if (famille && !env.STRIPE_PRICE_ID_FAMILLE) return json({ error: "plan" }, 400);
   let customer = s.stripe_customer;
   if (!customer) {
     customer = (await stripe(env, "POST", "customers", { email: s.email, "metadata[source]": "auralis-web" })).id;
@@ -255,7 +271,7 @@ async function handleCheckout(request, env) {
   const p = {
     mode: "subscription",
     customer,
-    "line_items[0][price]": env.STRIPE_PRICE_ID,
+    "line_items[0][price]": famille ? env.STRIPE_PRICE_ID_FAMILLE : env.STRIPE_PRICE_ID,
     "line_items[0][quantity]": "1",
     success_url: origin + "/compte?paye=1",
     cancel_url: origin + "/compte",
@@ -287,16 +303,25 @@ async function handlePortal(request, env) {
    un vieil evenement "updated" ne doit pas ecraser un etat plus recent.
    current_period_end est sur l'abonnement (anciennes versions d'API) ou sur
    ses items (depuis 2025-03-31). Le portail client annule maintenant avec
-   une date cancel_at, sans toujours lever cancel_at_period_end. */
+   une date cancel_at, sans toujours lever cancel_at_period_end.
+   Le tarif de l'abonnement donne le forfait : un changement de forfait dans
+   le portail arrive ici par customer.subscription.updated. */
 async function syncSubscription(env, subId) {
   const sub = await stripe(env, "GET", "subscriptions/" + encodeURIComponent(subId));
   const item = sub.items && sub.items.data && sub.items.data[0];
   const periodEnd = sub.current_period_end || (item && item.current_period_end) || null;
   const cancelAtEnd = sub.cancel_at_period_end || !!sub.cancel_at;
+  const priceId = item && item.price && item.price.id;
+  const famille = !!env.STRIPE_PRICE_ID_FAMILLE && priceId === env.STRIPE_PRICE_ID_FAMILLE;
   const r = await env.DB.prepare(
-    "UPDATE users SET sub_status = ?, period_end = ?, cancel_at_end = ? WHERE stripe_customer = ?"
-  ).bind(sub.status, periodEnd, cancelAtEnd ? 1 : 0, sub.customer).run();
-  if (!r.meta.changes) console.log("[auralis-web] abonnement sans client connu", sub.id, sub.customer);
+    "UPDATE users SET sub_status = ?, period_end = ?, cancel_at_end = ?, max_devices = ? WHERE stripe_customer = ?"
+  ).bind(sub.status, periodEnd, cancelAtEnd ? 1 : 0, famille ? MAX_DEVICES_FAMILLE : null, sub.customer).run();
+  if (!r.meta.changes) { console.log("[auralis-web] abonnement sans client connu", sub.id, sub.customer); return; }
+  // Retour au forfait Individuel : deconnecte les appareils en trop.
+  if (!famille) {
+    const u = await env.DB.prepare("SELECT email FROM users WHERE stripe_customer = ?").bind(sub.customer).first();
+    if (u) await trimSessions(env, u.email, MAX_DEVICES).run();
+  }
 }
 
 async function verifyStripeSignature(payload, header, secret) {
