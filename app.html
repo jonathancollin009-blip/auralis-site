@@ -5247,7 +5247,16 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
      Les battements sont baisses quand la musique joue pour que la somme ne
      sature pas a plein volume. Si le fichier manque, les battements jouent seuls. */
   var BIN_MUSIC_DIR="https://aura-lis.ca/app-sounds/binaural/", BIN_MUSIC_TONE=.695, BIN_MUSIC_LEVEL=.647;
-  var binMusic={buf:{},src:null,gain:null,el:null,gen:0};
+  var binMusic={buf:{},src:null,gain:null,el:null,gen:0,want:false,retries:[]};
+  /* iOS met l <audio> en pause ~1 s apres le Play (reorganisation de la session
+     audio, le natif est relance par son chien de garde) : on relance la musique
+     si la pause ne vient pas de nous. 5 essais max par 10 s (appel en cours). */
+  function binMusicOnPause(){ var el=binMusic.el; if(!el||!binMusic.want||!bin.playing)return;
+    var now=Date.now(); binMusic.retries=binMusic.retries.filter(function(x){ return now-x<10000; });
+    if(binMusic.retries.length>=5){ console.warn("[Auralis] musique binaurale : relances epuisees"); return; }
+    binMusic.retries.push(now); var gen=binMusic.gen;
+    setTimeout(function(){ if(gen!==binMusic.gen||!binMusic.want||!bin.playing||!el.paused)return;
+      var pr=el.play(); if(pr&&pr.catch)pr.catch(function(e){ console.warn("[Auralis] musique binaurale (relance) :",(e&&e.name)||e); }); },250); }
   function binMusicAvail(){ return (!bin.manual&&bin.track)?bin.track.id:null; }
   function binMusicKey(){ return binMusicAvail(); }
   function binToneVol(){ return bin.vol*(binMusicKey()?BIN_MUSIC_TONE:1); }
@@ -5260,7 +5269,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     return binMusic.buf[key]; }
   function binMusicStart(){ var key=binMusicKey(), gen=++binMusic.gen; if(!key)return;
     if(NativeTone.on()){ var el=binMusic.el, u=offSrc(BIN_MUSIC_DIR+key+"_bed.m4a");
-      if(!el){ el=binMusic.el=new Audio(); el.loop=true; el.setAttribute("playsinline",""); }
+      if(!el){ el=binMusic.el=new Audio(); el.loop=true; el.setAttribute("playsinline",""); el.addEventListener("pause",binMusicOnPause); }
+      binMusic.want=true; binMusic.retries=[];
       if(el.getAttribute("src")!==u)el.setAttribute("src",u); try{ el.currentTime=0; }catch(e){}
       /* Android respecte audio.volume (iOS l ignore) : le curseur regle alors
          aussi la musique, deja attenuee dans le fichier _bed. */
@@ -5270,7 +5280,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       var ti=ctx.currentTime,g=ctx.createGain(),s=ctx.createBufferSource(); s.buffer=buf; s.loop=true;
       g.gain.setValueAtTime(.0001,ti); g.gain.linearRampToValueAtTime(bin.vol*BIN_MUSIC_LEVEL,ti+1.5);
       s.connect(g); g.connect(ctx.destination); s.start(ti); binMusic.src=s; binMusic.gain=g; }); }
-  function binMusicStop(immediate){ binMusic.gen++;
+  function binMusicStop(immediate){ binMusic.gen++; binMusic.want=false;
     if(binMusic.el){ try{ binMusic.el.pause(); }catch(e){} }
     if(ctx&&binMusic.gain){ var ti=ctx.currentTime,g=binMusic.gain,s=binMusic.src,d=immediate?.03:.6;
       try{g.gain.cancelScheduledValues(ti);g.gain.setValueAtTime(g.gain.value,ti);g.gain.linearRampToValueAtTime(.0001,ti+d);}catch(e){}
