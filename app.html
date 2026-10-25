@@ -511,6 +511,11 @@
   .chakmusic p{margin:0 0 8px;font-size:.78rem;color:var(--dim);text-align:center}
   .chakmusic .segbtns{gap:6px}
   .chakmusic .segbtns button{min-height:44px;padding:10px 4px;font-size:.78rem}
+  .chakmvol[hidden]{display:none!important}
+  #vPlay:not(.chakramode) .chakmvol,#vSeq:not(.chakra-player) .chakmvol{display:none!important}
+  #vPlay .ctl.pplayvolume.chakmvol{margin-top:-10px}
+  #vPlay.chakramode .pplayvolume .row .label{flex:0 0 6.4em;width:6.4em;min-width:6.4em}
+  .pplayvolume.chakmvol input[type="range"]{accent-color:var(--mauve)}
   .pplaytransport{display:grid;grid-template-columns:1fr 1.25fr 1fr;align-items:center;justify-items:center;flex:0 0 auto;width:min(100%,300px);margin:16px auto 0}
   .pplayside{display:grid;place-items:center;width:58px;height:58px;padding:0;border:1px solid var(--line);border-radius:50%;background:rgba(var(--panel-rgb),.18);color:var(--txt);cursor:pointer}
   .pplayside svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round}
@@ -2008,6 +2013,7 @@
       </div>
       <div class="chakmusic" id="chakMusicPlay" role="group"><p></p><div class="segbtns"></div></div>
       <div class="ctl pplayvolume"><div class="row"><span class="label" id="volLabel"></span><input type="range" id="vol" min="0" max="100" step="1" value="50"><span class="v"><span id="volLbl">50</span> %</span></div></div>
+      <div class="ctl pplayvolume chakmvol" id="chakMVolPlay" hidden><div class="row"><span class="label"></span><input type="range" min="0" max="100" step="1" value="50"><span class="v"><span>50</span> %</span></div></div>
       <p class="pplayfooter" id="pFooter"></p>
       <p class="disc" id="discSingle"></p>
     </div>
@@ -2034,6 +2040,7 @@
         <div class="readout"><div class="seqfrequencylabel" id="sChakraFrequency"></div><div class="hz"><span id="sHz">0</span><span class="u">Hz</span></div><div class="pcat" id="sStep"></div><div class="beatline" id="sClock"></div></div></div>
       <div class="prog"><i id="sBar"></i></div>
       <div class="ctl"><div class="row"><span class="label" id="sVolLabel"></span><span class="v"><span id="sVolLbl">50</span> %</span></div><input type="range" id="sVol" min="0" max="100" step="1" value="50"></div>
+      <div class="ctl chakmvol" id="chakMVolSeq" hidden><div class="row"><span class="label"></span><span class="v"><span>50</span> %</span></div><input type="range" min="0" max="100" step="1" value="50"></div>
       <ul class="steps" id="sSteps"></ul>
       <p class="chakra-status" id="sChakraStatus" role="status" aria-live="polite"></p>
       <div class="actions"><button class="play" id="sPlay"></button></div>
@@ -3788,7 +3795,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("favBtn").querySelector(".actlabel").textContent=t("freq_fav");
     $("freqHeroTitle").textContent=t("freq_hero_title"); $("freqHeroSub").textContent=t("freq_hero_sub"); $("freqExplore").textContent=t("freq_explore"); $("pInfoBtn").setAttribute("aria-label",t("freq_details"));
     $("hzLabel").textContent=t("hz_label");
-    $("volLabel").textContent=t("volume"); $("sVolLabel").textContent=t("volume"); $("pVolLabel").textContent=t("volume"); $("gVolLabel").textContent=t("volume"); $("binVolLabel").textContent=t("bin_vol_freq"); $("binMVolLabel").textContent=t("bin_vol_music");
+    $("volLabel").textContent=t("volume"); $("sVolLabel").textContent=t("volume"); if(typeof chakMusRender==="function")chakMusRender(); $("pVolLabel").textContent=t("volume"); $("gVolLabel").textContent=t("volume"); $("binVolLabel").textContent=t("bin_vol_freq"); $("binMVolLabel").textContent=t("bin_vol_music");
     $("timerLabel").textContent=t("timer_label"); $("pFooter").textContent=t("freq_footer");
     $("pRestart").setAttribute("aria-label",t("bin_retry")); $("pTimerQuick").setAttribute("aria-label",t("timer_label"));
     $("discSingle").textContent=t("disc_single"); $("discSeq").textContent=t("disc_seq"); $("discGeo").textContent=t("disc_geo"); $("discPulse").textContent=t("disc_pulse"); $("discBin").textContent=t("disc_bin");
@@ -4150,9 +4157,11 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   /* AURALIS_CHAK_MUSIC_V1 -- musique de fond des lecteurs de chakras, reprise
      des 4 plus longues musiques des Binauraux (boucles de 53 a 88 s). */
   var CHAK_MUSIC=["delta_2","theta_2","alpha_2","beta_2"], CHAK_MUSIC_LEVEL=.75;
-  var chakMus={sel:-1,el:null,nat:false,on:false,gen:0};
+  var chakMus={sel:-1,el:null,nat:false,on:false,gen:0}, chakMVolPref=null;
+  try{ var _cmv=localStorage.getItem("auralis_chak_mvol"); if(_cmv!==null&&_cmv!==""&&isFinite(+_cmv))chakMVolPref=Math.max(0,Math.min(100,+_cmv)); }catch(e){}
+  function chakMVol(){ return chakMVolPref===null?state.vol:chakMVolPref/100; }
   try{ var _cm=parseInt(localStorage.getItem("auralis_chak_music"),10); if(_cm>=0&&_cm<CHAK_MUSIC.length)chakMus.sel=_cm; }catch(e){}
-  function chakMusGain(){ return Math.max(0,Math.min(1,state.vol*CHAK_MUSIC_LEVEL)); }
+  function chakMusGain(){ return Math.max(0,Math.min(1,chakMVol()*CHAK_MUSIC_LEVEL)); }
   function chakMusPlaying(){ return (chakraMode()&&state.playing)||($("vSeq").classList.contains("chakra-player")&&seq.playing); }
   function chakMusEl(u){ var el=chakMus.el;
     if(!el){ el=chakMus.el=new Audio(); el.loop=true; el.setAttribute("playsinline",""); }
@@ -4169,10 +4178,23 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     if(NativeTone.music({url:u,gain:chakMusGain()},function(){
         if(gen===chakMus.gen&&chakMus.on){ chakMus.nat=false; chakMusEl(u); } })){ chakMus.nat=true; return; }
     chakMus.nat=false; chakMusEl(u); }
-  function chakMusVol(){ if(!chakMus.on)return;
+  /* Affiche la valeur du curseur Musique (suit Frequences tant qu il n a pas ete touche). */
+  function chakMVolShow(){ var v=Math.round(chakMVol()*100);
+    ["chakMVolPlay","chakMVolSeq"].forEach(function(id){ var r=$(id); if(!r)return;
+      r.hidden=chakMus.sel<0; var s=r.querySelector("input"); s.value=v; r.querySelector(".v span").textContent=v; }); }
+  function chakMusVol(){ chakMVolShow(); if(!chakMus.on)return;
     if(chakMus.nat)NativeTone.musicGain({gain:chakMusGain()});
     if(chakMus.el){ try{ chakMus.el.volume=chakMusGain(); }catch(e){} } }
-  function chakMusRender(){ ["chakMusicPlay","chakMusicSeq"].forEach(function(id){ var box=$(id); if(!box)return;
+  function chakMusRender(){ if(!CHAK_MUSIC)return;
+    /* En mode chakra, Volume devient Frequences ; ailleurs, inchange. */
+    $("volLabel").textContent=t(chakraMode()?"bin_vol_freq":"volume");
+    $("sVolLabel").textContent=t($("vSeq").classList.contains("chakra-player")?"bin_vol_freq":"volume");
+    ["chakMVolPlay","chakMVolSeq"].forEach(function(id){ var r=$(id); if(!r)return; var lb=r.querySelector(".label");
+      lb.textContent=t("bin_vol_music"); var s=r.querySelector("input"); s.setAttribute("aria-label",t("bin_vol_music"));
+      if(!s.dataset.wired){ s.dataset.wired="1"; s.addEventListener("input",function(){ chakMVolPref=parseInt(this.value,10);
+        try{ localStorage.setItem("auralis_chak_mvol",String(chakMVolPref)); }catch(e){} chakMusVol(); }); } });
+    chakMVolShow();
+    ["chakMusicPlay","chakMusicSeq"].forEach(function(id){ var box=$(id); if(!box)return;
     box.setAttribute("aria-label",t("chak_music_head")); box.querySelector("p").textContent=t("chak_music_head");
     var row=box.querySelector(".segbtns"); if(row.children.length!==CHAK_MUSIC.length){ row.innerHTML="";
       CHAK_MUSIC.forEach(function(k,i){ var b=document.createElement("button"); b.type="button"; b.setAttribute("data-i",String(i));
