@@ -3404,6 +3404,14 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
      Les pistes fichier (Musiques, Geometrie/Protocoles audio) n ont jamais eu
      le probleme : elles utilisent deja un <audio> natif. */
   function unlockAudio(){ try{ if(!_silence){ _silence=new Audio(SILENCE_URI); _silence.loop=true; _silence.setAttribute("playsinline",""); _silence.addEventListener("error",function(){ silenceFailed(_silence.error); }); } var pr=_silence.play(); if(pr&&pr.catch)pr.catch(silenceFailed); }catch(e){ silenceFailed(e); } ensureCtx(); }
+  /* AURALIS_SILENCE_PAUSE_V1 -- navigateur hors iOS : la boucle de silence
+     est mise en pause quand plus rien ne joue, sinon Chrome Android garde une
+     notification media « en lecture » dont la barre sautille (boucle de 0,4 s). */
+  (function(){ var ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+    if(ios||window.Capacitor)return;
+    setInterval(function(){ if(!_silence||_silence.paused)return;
+      var busy=state.playing||seq.playing||gp.playing||pulse.playing||bin.playing||(med.playingId&&!med.paused)||(gAudio.el&&!gAudio.el.paused);
+      if(!busy){ try{ _silence.pause(); }catch(e){} } },1500); })();
   /* Synthese native (iOS uniquement) -- plugin AuralisTone, voir
      ios/App/App/AuralisTone.swift. Les 5 modes generes se ramenent tous a un
      banc de voix sinusoidales {f: frequence, g: gain, p: panoramique} plus un
