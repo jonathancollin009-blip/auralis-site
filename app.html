@@ -4157,17 +4157,24 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   /* AURALIS_CHAK_MUSIC_V1 -- musique de fond des lecteurs de chakras, reprise
      des 4 plus longues musiques des Binauraux (boucles de 53 a 88 s). */
   var CHAK_MUSIC=["delta_2","theta_2","alpha_2","beta_2"], CHAK_MUSIC_LEVEL=.75;
-  var chakMus={sel:-1,el:null,nat:false,on:false,gen:0}, chakMVolPref=null;
+  var chakMus={sel:-1,el:null,nat:false,on:false,gen:0,g:null}, chakMVolPref=null;
   try{ var _cmv=localStorage.getItem("auralis_chak_mvol"); if(_cmv!==null&&_cmv!==""&&isFinite(+_cmv))chakMVolPref=Math.max(0,Math.min(100,+_cmv)); }catch(e){}
   function chakMVol(){ return chakMVolPref===null?state.vol:chakMVolPref/100; }
   try{ var _cm=parseInt(localStorage.getItem("auralis_chak_music"),10); if(_cm>=0&&_cm<CHAK_MUSIC.length)chakMus.sel=_cm; }catch(e){}
   function chakMusGain(){ return Math.max(0,Math.min(1,chakMVol()*CHAK_MUSIC_LEVEL)); }
   function chakMusPlaying(){ return (chakraMode()&&state.playing)||($("vSeq").classList.contains("chakra-player")&&seq.playing); }
   function chakMusEl(u){ var el=chakMus.el;
-    if(!el){ el=chakMus.el=new Audio(); el.loop=true; el.setAttribute("playsinline",""); }
+    if(!el){ el=chakMus.el=new Audio(); el.loop=true; el.setAttribute("playsinline","");
+      /* Navigateur : volume par Web Audio (fluide, et iOS Safari ignore audio.volume). */
+      if(!NativeTone.on()){ try{ el.crossOrigin="anonymous"; var c=ensureCtx(), g=c.createGain();
+        c.createMediaElementSource(el).connect(g); g.connect(c.destination); chakMus.g=g; }catch(e){ chakMus.g=null; } } }
     if(el.getAttribute("src")!==u)el.setAttribute("src",u); try{ el.currentTime=0; }catch(e){}
-    try{ el.volume=chakMusGain(); }catch(e){}
+    chakMusElVol();
     var pr=el.play(); if(pr&&pr.catch)pr.catch(function(e){ console.warn("[Auralis] musique chakras :",(e&&e.name)||e); }); }
+  function chakMusElVol(){ var el=chakMus.el; if(!el)return;
+    if(chakMus.g&&ctx){ try{ el.volume=1; }catch(e){} var ti=ctx.currentTime;
+      try{ chakMus.g.gain.cancelScheduledValues(ti); }catch(e){} chakMus.g.gain.setTargetAtTime(chakMusGain(),ti,.05); }
+    else{ try{ el.volume=chakMusGain(); }catch(e){} } }
   function chakMusStop(immediate){ chakMus.gen++; chakMus.on=false;
     if(chakMus.nat){ chakMus.nat=false; NativeTone.musicStop({fadeMs:immediate?30:600}); }
     if(chakMus.el){ try{ chakMus.el.pause(); }catch(e){} } }
@@ -4181,10 +4188,10 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   /* Affiche la valeur du curseur Musique (suit Frequences tant qu il n a pas ete touche). */
   function chakMVolShow(){ var v=Math.round(chakMVol()*100);
     ["chakMVolPlay","chakMVolSeq"].forEach(function(id){ var r=$(id); if(!r)return;
-      r.hidden=chakMus.sel<0; var s=r.querySelector("input"); s.value=v; r.querySelector(".v span").textContent=v; }); }
+      r.hidden=chakMus.sel<0; var s=r.querySelector("input"); if(+s.value!==v)s.value=v; r.querySelector(".v span").textContent=v; }); }
   function chakMusVol(){ chakMVolShow(); if(!chakMus.on)return;
     if(chakMus.nat)NativeTone.musicGain({gain:chakMusGain()});
-    if(chakMus.el){ try{ chakMus.el.volume=chakMusGain(); }catch(e){} } }
+    chakMusElVol(); }
   function chakMusRender(){ if(!CHAK_MUSIC)return;
     /* En mode chakra, Volume devient Frequences ; ailleurs, inchange. */
     $("volLabel").textContent=t(chakraMode()?"bin_vol_freq":"volume");
