@@ -3411,7 +3411,17 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
         var ok=call("start",o); retry=ok?again||null:null; return ok; },
       update:function(o){ return !broken&&call("update",o); },
       sequence:function(o){ return !broken&&call("sequence",o); },
-      stop:function(o){ retry=null; return !broken&&call("stop",o); } };
+      stop:function(o){ retry=null; return !broken&&call("stop",o); },
+      /* Musique des binauraux par le moteur natif (iOS seulement, 2026-10-24) :
+         un <audio> de la WebView et AVAudioEngine se disputaient la session.
+         false si indisponible ; onFail si le natif echoue apres coup. */
+      music:function(o,onFail){ var p=plug(), pf=null; if(broken||!p||typeof p.music!=="function")return false;
+        try{ pf=window.Capacitor.getPlatform(); }catch(e){} if(pf!=="ios")return false;
+        try{ var r=p.music(o); if(r&&r.catch)r.catch(function(e){ console.warn("[Auralis] AuralisTone.music :",(e&&e.message)||e); if(onFail)onFail(); }); }
+        catch(e){ return false; }
+        return true; },
+      musicGain:function(o){ return !broken&&call("musicGain",o); },
+      musicStop:function(o){ return !broken&&call("musicStop",o); } };
   })();
   /* Pont vers l abonnement natif -- AuralisStore.swift (StoreKit 2) sur iOS,
      AuralisBillingPlugin.java (Google Play Billing) sur Android, meme nom de
@@ -5268,19 +5278,25 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       xhr.onerror=fail; xhr.send(); });
     return binMusic.buf[key]; }
   function binMusicStart(){ var key=binMusicKey(), gen=++binMusic.gen; if(!key)return;
-    if(NativeTone.on()){ var el=binMusic.el, u=offSrc(BIN_MUSIC_DIR+key+"_bed.m4a");
+    if(NativeTone.on()){ var u=offSrc(BIN_MUSIC_DIR+key+"_bed.m4a");
+      if(NativeTone.music({url:u,gain:bin.vol},function(){
+          if(gen===binMusic.gen&&bin.playing){ binMusic.nat=false; binMusicEl(u); } })){ binMusic.nat=true; return; }
+      binMusicEl(u); return; }
+    binMusicLoad(key).then(function(buf){ if(!buf||gen!==binMusic.gen||!bin.playing||!ctx)return;
+      var ti=ctx.currentTime,g=ctx.createGain(),s=ctx.createBufferSource(); s.buffer=buf; s.loop=true;
+      g.gain.setValueAtTime(.0001,ti); g.gain.linearRampToValueAtTime(bin.vol*BIN_MUSIC_LEVEL,ti+1.5);
+      s.connect(g); g.connect(ctx.destination); s.start(ti); binMusic.src=s; binMusic.gain=g; }); }
+  /* Repli <audio> : Android (moteur natif sans musique) et ancien binaire iOS. */
+  function binMusicEl(u){ var el=binMusic.el;
       if(!el){ el=binMusic.el=new Audio(); el.loop=true; el.setAttribute("playsinline",""); el.addEventListener("pause",binMusicOnPause); }
       binMusic.want=true; binMusic.retries=[];
       if(el.getAttribute("src")!==u)el.setAttribute("src",u); try{ el.currentTime=0; }catch(e){}
       /* Android respecte audio.volume (iOS l ignore) : le curseur regle alors
          aussi la musique, deja attenuee dans le fichier _bed. */
       try{ el.volume=Math.max(0,Math.min(1,bin.vol)); }catch(e){}
-      var pr=el.play(); if(pr&&pr.catch)pr.catch(function(e){ console.warn("[Auralis] musique binaurale :",(e&&e.name)||e); }); return; }
-    binMusicLoad(key).then(function(buf){ if(!buf||gen!==binMusic.gen||!bin.playing||!ctx)return;
-      var ti=ctx.currentTime,g=ctx.createGain(),s=ctx.createBufferSource(); s.buffer=buf; s.loop=true;
-      g.gain.setValueAtTime(.0001,ti); g.gain.linearRampToValueAtTime(bin.vol*BIN_MUSIC_LEVEL,ti+1.5);
-      s.connect(g); g.connect(ctx.destination); s.start(ti); binMusic.src=s; binMusic.gain=g; }); }
+      var pr=el.play(); if(pr&&pr.catch)pr.catch(function(e){ console.warn("[Auralis] musique binaurale :",(e&&e.name)||e); }); }
   function binMusicStop(immediate){ binMusic.gen++; binMusic.want=false;
+    if(binMusic.nat){ binMusic.nat=false; NativeTone.musicStop({fadeMs:immediate?30:600}); }
     if(binMusic.el){ try{ binMusic.el.pause(); }catch(e){} }
     if(ctx&&binMusic.gain){ var ti=ctx.currentTime,g=binMusic.gain,s=binMusic.src,d=immediate?.03:.6;
       try{g.gain.cancelScheduledValues(ti);g.gain.setValueAtTime(g.gain.value,ti);g.gain.linearRampToValueAtTime(.0001,ti+d);}catch(e){}
@@ -5288,6 +5304,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     binMusic.src=null; binMusic.gain=null; }
   function binVolApply(){
     if(!NativeTone.update({master:binToneVol(),glideMs:20}) && bin.master && ctx)bin.master.gain.setTargetAtTime(binToneVol(),ctx.currentTime,.02);
+    if(binMusic.nat)NativeTone.musicGain({gain:bin.vol});
     if(binMusic.el){ try{ binMusic.el.volume=Math.max(0,Math.min(1,bin.vol)); }catch(e){} }
     if(binMusic.gain&&ctx){ var ti=ctx.currentTime; try{binMusic.gain.gain.cancelScheduledValues(ti);}catch(e){} binMusic.gain.gain.setTargetAtTime(bin.vol*BIN_MUSIC_LEVEL,ti,.05); } }
   /* AURALIS_BIN_CAT_V1 : chaque categorie (bande) a sa page et sa liste de
