@@ -3404,6 +3404,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
      Les pistes fichier (Musiques, Geometrie/Protocoles audio) n ont jamais eu
      le probleme : elles utilisent deja un <audio> natif. */
   function unlockAudio(){ try{ if(!_silence){ _silence=new Audio(SILENCE_URI); _silence.loop=true; _silence.setAttribute("playsinline",""); _silence.addEventListener("error",function(){ silenceFailed(_silence.error); }); } var pr=_silence.play(); if(pr&&pr.catch)pr.catch(silenceFailed); }catch(e){ silenceFailed(e); } ensureCtx(); }
+  /* AURALIS_STRIP_DEBUG_V1 -- ancien lien de test ?debug=1 : retire de l'adresse. */
+  try{ if(/[?&]debug=/.test(location.search)&&history.replaceState){ var _q=new URLSearchParams(location.search); _q.delete("debug");
+    var _s=_q.toString(); history.replaceState(history.state,"",location.pathname+(_s?"?"+_s:"")+location.hash); } }catch(e){}
   /* AURALIS_SILENCE_PAUSE_V1 -- navigateur hors iOS : la boucle de silence
      est mise en pause quand plus rien ne joue, sinon Chrome Android garde une
      notification media « en lecture » dont la barre sautille (boucle de 0,4 s). */
