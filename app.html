@@ -3481,6 +3481,23 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       musicGain:function(o){ return !broken&&call("musicGain",o); },
       musicStop:function(o){ return !broken&&call("musicStop",o); } };
   })();
+  /* AURALIS_IOS_SYSVOL_V1 -- WebKit iOS ignore audio.volume : sur iPhone, les
+     curseurs des musiques (Geometrie a piste, Meditation) reglent le volume
+     du telephone par AuralisTone.setSystemVolume. null/false hors iOS natif ou
+     avec un ancien binaire sans la methode : comportement d avant. */
+  var SysVol=(function(){ var P=null, v=null, subs=[], lastSet=0, want=0, tm=null;
+    try{ var C=window.Capacitor; if(C&&C.getPlatform&&C.getPlatform()==="ios"&&C.Plugins&&C.Plugins.AuralisTone
+      &&typeof C.Plugins.AuralisTone.setSystemVolume==="function")P=C.Plugins.AuralisTone; }catch(e){}
+    function got(e){ if(!e||!isFinite(e.value))return; if(Date.now()-lastSet<600)return; v=+e.value;
+      subs.forEach(function(f){ try{ f(v); }catch(x){} }); }
+    if(P){ try{ P.addListener("systemVolume",got); }catch(e){}
+      try{ var r=P.systemVolume(); if(r&&r.then)r.then(got,function(){}); }catch(e){} }
+    return { on:function(){ return !!P; }, get:function(){ return v; },
+      set:function(x){ if(!P)return; v=want=Math.max(0,Math.min(1,x)); lastSet=Date.now(); if(tm)return;
+        tm=setTimeout(function(){ tm=null; lastSet=Date.now();
+          try{ var r=P.setSystemVolume({value:want}); if(r&&r.catch)r.catch(function(e){ console.warn("[Auralis] volume iPhone :",(e&&e.message)||e); }); }catch(e){} },60); },
+      onChange:function(f){ subs.push(f); } };
+  })();
   /* Pont vers l abonnement natif -- AuralisStore.swift (StoreKit 2) sur iOS,
      AuralisBillingPlugin.java (Google Play Billing) sur Android, meme nom de
      plugin "AuralisStore" et meme contrat JS des deux cotes (status/purchase/
@@ -4758,7 +4775,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("gTitle").textContent=tn(gp.fig.name); $("gSym").textContent=geoSymbol(gp.fig); $("gRatios").textContent=tn(gp.fig.ratios);
     var ph=$("gPhoto"); if(gp.fig.photo){ var playPhoto=gp.fig.photo; ph.removeAttribute("data-dark"); ph.removeAttribute("data-light"); if(gp.fig.cat==="snowflake"){ph.setAttribute("data-dark",gp.fig.photo);ph.setAttribute("data-light","snow-light-"+gp.fig.photo);playPhoto=curTheme()==="light"?"snow-light-"+gp.fig.photo:gp.fig.photo;} ph.src="app-images/"+playPhoto; ph.hidden=false; ph.classList.toggle("incolor", gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"||gp.fig.cat==="crop"); $("gViz").style.visibility="hidden"; } else { ph.hidden=true; ph.removeAttribute("src"); ph.removeAttribute("data-dark"); ph.removeAttribute("data-light"); $("gViz").style.visibility="visible"; }
     if(ph.parentNode){ var photoOrb=!!gp.fig.photo&&(gp.fig.cat==="planet"||gp.fig.cat==="color"||gp.fig.cat==="crop"||gp.fig.cat==="sacred"||gp.fig.cat==="snowflake"); ph.parentNode.classList.toggle("photobig",!!gp.fig.photo); ph.parentNode.classList.toggle("photoorb",photoOrb); }
-    gProgShow(!!gp.fig.audio); gProgReset();
+    gProgShow(!!gp.fig.audio); gProgReset(); gVolSync();
     $("gPrev").hidden=$("gNext").hidden=!gp.fig.audio;
     var row=$("gRow"); row.innerHTML="";
     gp.fig.notes.forEach(function(nn,k){ var d=document.createElement("div"); d.className="gnote"; d.id="gn"+k; d.innerHTML="<b>"+noteLabel(nn)+"</b>"; row.appendChild(d); });
@@ -4796,7 +4813,13 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("gModePulsed").addEventListener("click",function(){ gSetPulsed(true); });
   $("gModePure").addEventListener("click",function(){ gSetPulsed(false); });
   $("gDur").addEventListener("input",function(){ var bpm=parseInt(this.value,10); gp.dur=60/bpm; $("gDurLbl").textContent=bpm+" "+unitText("unit_bpm","bpm")+" · "+gp.dur.toFixed(2)+" "+unitText("unit_second","s"); if(gp.playing){ gStop(true); setTimeout(gPlay,60); } });
-  $("gVol").addEventListener("input",function(){ gp.vol=parseInt(this.value,10)/100; $("gVolLbl").textContent=this.value;
+  /* AURALIS_IOS_SYSVOL_V1 : figure a piste sur iPhone = volume du telephone. */
+  function gSysVol(){ return SysVol.on()&&!!(gp.fig&&gp.fig.audio); }
+  function gVolSync(){ var p=Math.round(gp.vol*100);
+    if(gSysVol()&&SysVol.get()!==null)p=Math.round(SysVol.get()*100);
+    $("gVol").value=p; $("gVolLbl").textContent=p; }
+  $("gVol").addEventListener("input",function(){ $("gVolLbl").textContent=this.value;
+    if(gSysVol()){ SysVol.set(parseInt(this.value,10)/100); return; } gp.vol=parseInt(this.value,10)/100;
     if(!NativeTone.update({master:gp.vol,glideMs:20}) && gp.master && ctx)gp.master.gain.setTargetAtTime(gp.playing?gp.vol:0,ctx.currentTime,0.02);
     /* figures a piste enregistree (streaming HTML5 Audio, sans gp.master) :
        le curseur ne touchait que le synthetiseur -- silencieux sur ces
@@ -6027,7 +6050,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function medPos(){return med.el&&isFinite(med.el.currentTime)?med.el.currentTime:0;}
   function medProgSet(cur,dur){var d=$("medDockProgress");if(!d)return;var pct=dur>0?Math.max(0,Math.min(100,cur/dur*100)):0;d.querySelector(".medpbar i").style.width=pct.toFixed(2)+"%";var sp=d.querySelectorAll(".medptimes span");sp[0].textContent=fmtMS(cur);sp[1].textContent=dur>0?fmtMS(dur):"--:--";d.setAttribute("aria-valuenow",String(Math.round(pct)));var fp=$("medFullProg");if(fp){fp.querySelector(".medpbar i").style.width=pct.toFixed(2)+"%";var fs=fp.querySelectorAll(".medptimes span");fs[0].textContent=fmtMS(cur);fs[1].textContent=dur>0?fmtMS(dur):"--:--";}}
   function medSetCover(img,s){img.setAttribute("src","app-images/"+(curTheme()==="light"?s.light:s.cover));img.setAttribute("data-dark",s.cover);img.setAttribute("data-light",s.light);}
-  function medUpdateDock(){var s=medSelected();$("medDockTitle").textContent=t(s.key);$("medDockSub").textContent=t("med_moment");medSetCover($("medDockImg"),s);$("medDockVol").value=med.vol[s.id]===undefined?s.vol:med.vol[s.id];$("medMainPlay").textContent=medIsOn(s)?"❚❚":"▶";$("medMainPlay").setAttribute("aria-label",medIsOn(s)?t("pause"):t("play").replace(/^[▶■]\s*/,""));$("medDockTop").setAttribute("aria-label",t(s.key));$("medRepeat").setAttribute("aria-pressed",med.repeat?"true":"false");medFullSync();}
+  function medUpdateDock(){var s=medSelected();$("medDockTitle").textContent=t(s.key);$("medDockSub").textContent=t("med_moment");medSetCover($("medDockImg"),s);$("medDockVol").value=(SysVol.on()&&SysVol.get()!==null)?Math.round(SysVol.get()*100):(med.vol[s.id]===undefined?s.vol:med.vol[s.id]);$("medMainPlay").textContent=medIsOn(s)?"❚❚":"▶";$("medMainPlay").setAttribute("aria-label",medIsOn(s)?t("pause"):t("play").replace(/^[▶■]\s*/,""));$("medDockTop").setAttribute("aria-label",t(s.key));$("medRepeat").setAttribute("aria-pressed",med.repeat?"true":"false");medFullSync();}
   function medStopCurrent(){med.paused=false;var el=med.el;med.el=null;if(el){try{el.onended=null;el.ontimeupdate=null;el.onerror=null;el.onloadedmetadata=null;el.ondurationchange=null;el.onplaying=null;el.pause();}catch(e){}}var prev=med.playingId;med.playingId=null;if(prev){var b=$("medPlay_"+prev);if(b)b.textContent="▶";var c=$("medCard_"+prev);if(c)c.classList.remove("playing");}medProgSet(0,medSelected().dur);medUpdateDock();naSweep();ST.stop();}
   function medPlay(s){medStopCurrent();medTimerRearm();med.selectedId=s.id;unlockAudio();ST.play("music",s.id);NA.start(t(s.key),nativeText("notification_music",t("home_med")),{pause:function(){medQClear();medStopCurrent();},stop:function(){medQClear();medStopCurrent();},play:function(){if(med.paused)medResume();else if(!med.playingId)medPlay(s);},next:function(){medNavGo(1);},previous:function(){medNavGo(-1);}});var el=med.pool||(med.pool=new Audio()),myseq=++med.seq,wantSrc=medUrl(s.base),wantDur=s.dur>0?s.dur:0;el.src=wantSrc;el.loop=med.repeat&&!med.q.on;el.volume=Math.max(0,Math.min(1,(med.vol[s.id]===undefined?s.vol:med.vol[s.id])/100));el.preload="auto";function fresh(){var cs=el.currentSrc||"";return cs===wantSrc||cs.slice(-wantSrc.length)===wantSrc;}function push(){medTimerTick();if(myseq!==med.seq||!fresh())return;var d=wantDur||el.duration;if(!isFinite(d)||d<=0)return;medProgSet(el.currentTime,d);}el.onloadedmetadata=push;el.ondurationchange=push;el.ontimeupdate=push;el.onended=function(){if(myseq!==med.seq)return;medStopCurrent();medQNext();};var hqFb=false;el.onerror=function(){if(myseq!==med.seq)return;if(hqFb&&!el.error)return;if(/\.flac$/.test(wantSrc)){hqFb=true;wantSrc=hqStd(wantSrc);el.src=wantSrc;var rf=el.play();if(rf&&rf.catch)rf.catch(function(){if(myseq===med.seq&&el.onerror)el.onerror();});return;}flashMsg(t("mix_err"));medQClear();medStopCurrent();};var slow=setTimeout(function(){if(myseq===med.seq&&med.el===el&&el.paused)flashMsg(t("mix_loading"));},500);el.onplaying=function(){clearTimeout(slow);};med.el=el;med.playingId=s.id;var p=el.play();if(p&&p.catch)p.catch(function(){if(myseq===med.seq&&el.onerror)el.onerror();});medRender();medUpdateDock();}
   function medPause(){if(!med.el||!med.playingId||med.paused)return;med.paused=true;try{med.el.pause();}catch(e){}ST.stop();medRender();medUpdateDock();}
@@ -6120,7 +6143,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("medPrev").addEventListener("click",function(){medNavGo(-1);});$("medNext").addEventListener("click",function(){medNavGo(1);});
   $("medMainPlay").addEventListener("click",function(){medToggle(medSelected());});
   $("medRepeat").addEventListener("click",function(){med.repeat=!med.repeat;this.setAttribute("aria-pressed",med.repeat?"true":"false");if(med.el)med.el.loop=med.repeat&&!med.q.on;});
-  $("medDockVol").addEventListener("input",function(){medSetVol(medSelected(),parseInt(this.value,10));});
+  $("medDockVol").addEventListener("input",function(){if(SysVol.on()){SysVol.set(parseInt(this.value,10)/100);return;}medSetVol(medSelected(),parseInt(this.value,10));});
+  SysVol.onChange(function(v){ $("medDockVol").value=Math.round(v*100); gVolSync(); });
   $("medThemeBtn").addEventListener("click",toggleTheme);
   Array.prototype.forEach.call($("medFilters").children,function(b){b.addEventListener("click",function(){med.filter=this.getAttribute("data-cat");Array.prototype.forEach.call($("medFilters").children,function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});medQClear();medRender();medQLabel();});});
   $("medBack").addEventListener("click",function(){medFullHide();medQClear();medStopCurrent();show("home");});
