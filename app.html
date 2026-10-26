@@ -2004,7 +2004,7 @@
       <section class="pdescription" id="pDescription" aria-labelledby="pDescriptionTitle"><h3 id="pDescriptionTitle"></h3><p class="pdesc" id="pDesc"></p><button id="pMethodLink" type="button"></button></section>
       <div id="manualWrap" hidden>
         <p class="label" id="hzLabel" style="margin-bottom:8px"></p>
-        <input class="mInput" id="mInput" type="number" inputmode="decimal" step="0.01" min="20" max="1000" value="100.00" aria-label="Hz">
+        <input class="mInput" id="mInput" type="number" inputmode="decimal" step="0.0001" min="20" max="1000" value="100.0000" aria-label="Hz">
         <div class="fine">
           <button data-d="-100">−100</button><button data-d="-10">−10</button><button data-d="-1">−1</button><button data-d="-0.1">−0.1</button><button data-d="-0.01">−0.01</button>
           <button data-d="0.01">+0.01</button><button data-d="0.1">+0.1</button><button data-d="1">+1</button><button data-d="10">+10</button><button data-d="100">+100</button>
@@ -3961,7 +3961,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("pMethodLink").textContent=t("guide_method_link")+" ›";
     /* La methode (masse molaire) ne s applique pas aux chakras. */
     $("pMethodLink").hidden=m.c==="Chakras";
-    $("hzval").textContent=formatPlayerHz(m.f,manual?2:4); if(manual)$("mInput").value=m.f.toFixed(2);
+    $("hzval").textContent=formatPlayerHz(m.f,4); if(manual)$("mInput").value=m.f.toFixed(4);
     setChakraMedallion(m);
     setCymatic(manual||m.c==="Chakras"?null:m.f,manual?null:FREQ_ART[m.n]);
     $("vPlay").classList.toggle("chakramode",m.c==="Chakras"); $("tclock").textContent="";
@@ -4046,9 +4046,10 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   var lastManual=100.00; try{lastManual=parseFloat(localStorage.getItem("auralis_manual"))||100.00;}catch(e){}
   $("manualBtn").addEventListener("click",function(){ if(favBuild)openFavKeypad("freq"); else openPlayer({n:"Fréquence manuelle",f:lastManual,c:"Manuel",manual:true},"lib"); });
   $("favBtn").addEventListener("click",function(){ renderFavList(); show("favList"); });
-  function setManual(v){ v=Math.max(20,Math.min(1000,Math.round(v*100)/100)); state.cur.f=v; lastManual=v; try{localStorage.setItem("auralis_manual",v);}catch(e){}
-    $("hzval").textContent=formatPlayerHz(v,2); if(document.activeElement!==$("mInput"))$("mInput").value=v.toFixed(2); live(); }
+  function setManual(v){ v=Math.max(20,Math.min(1000,Math.round(v*10000)/10000)); state.cur.f=v; lastManual=v; try{localStorage.setItem("auralis_manual",v);}catch(e){}
+    $("hzval").textContent=formatPlayerHz(v,4); if(document.activeElement!==$("mInput"))$("mInput").value=v.toFixed(4); live(); }
   $("mInput").addEventListener("input",function(){ var v=parseFloat(this.value); if(!isNaN(v))setManual(v); });
+  $("mInput").addEventListener("blur",function(){ if(state.cur&&state.cur.manual)this.value=state.cur.f.toFixed(4); });
   Array.prototype.forEach.call(document.querySelectorAll(".fine button"),function(b){ b.addEventListener("click",function(){ if(state.cur&&state.cur.manual)setManual(state.cur.f+parseFloat(b.getAttribute("data-d"))); }); });
 
   $("vol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("volLbl").textContent=this.value; $("sVol").value=this.value; $("sVolLbl").textContent=this.value;
@@ -4074,7 +4075,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   var sMaster=null,sOscs=[];
   function startSingle(){ if(!state.cur)return; ensureCtx();
     ST.play("freq", state.cur.n);
-    NA.start(state.cur.manual?t("manual_title"):tn(state.cur.n), nativeText("notification_frequency",t("tab_freq"))+" · "+state.cur.f.toFixed(2)+" Hz", {
+    NA.start(state.cur.manual?t("manual_title"):tn(state.cur.n), nativeText("notification_frequency",t("tab_freq"))+" · "+state.cur.f.toFixed(state.cur.manual?4:2)+" Hz", {
       pause: function(){ stopSingle(false); }, stop: function(){ stopSingle(false); },
       play:  function(){ if(!state.playing) startSingle(); } });
     var ti=ctx.currentTime,f=state.cur.f;
@@ -4242,8 +4243,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("vSeq").classList.toggle("chakra-player",returnTo==="chakras");
     $("sTitle").textContent=pname(seq.p); setSeqArtwork();
     var st=$("sSteps"); st.innerHTML="";
-    seq.p.s.forEach(function(x,k){ var li=document.createElement("li"); li.id="st"+k; li.innerHTML='<span class="si">'+(k+1)+'</span><span class="sn">'+htmlText(stepShort(x))+'</span><span class="sh">'+x.f.toFixed(2)+' Hz</span><span class="sm">'+x.m+' '+htmlText(unitText("unit_minute_short","m"))+'</span>'; st.appendChild(li); });
-    var s0=seq.p.s[0]; $("sHz").textContent=s0.f.toFixed(2); $("sStep").textContent="1/"+seq.p.s.length+" · "+stepShort(s0); $("sClock").textContent=""; $("sBar").style.width="0%"; highlight(0); setSeqBtn(false); chakMusRender(); show("seq"); }
+    seq.p.s.forEach(function(x,k){ var li=document.createElement("li"); li.id="st"+k; li.innerHTML='<span class="si">'+(k+1)+'</span><span class="sn">'+htmlText(stepShort(x))+'</span><span class="sh">'+x.f.toFixed(x.manual?4:2)+' Hz</span><span class="sm">'+x.m+' '+htmlText(unitText("unit_minute_short","m"))+'</span>'; st.appendChild(li); });
+    var s0=seq.p.s[0]; $("sHz").textContent=s0.f.toFixed(s0.manual?4:2); $("sStep").textContent="1/"+seq.p.s.length+" · "+stepShort(s0); $("sClock").textContent=""; $("sBar").style.width="0%"; highlight(0); setSeqBtn(false); chakMusRender(); show("seq"); }
   function highlight(active){ seq.p.s.forEach(function(x,k){ var li=$("st"+k); if(!li)return; li.classList.toggle("active",k===active); li.classList.toggle("done",k<active); }); }
   $("sBack").addEventListener("click",function(){ stopSeq(false); show(returnTo); });
   $("sVol").addEventListener("input",function(){ state.vol=parseInt(this.value,10)/100; $("sVolLbl").textContent=this.value; $("vol").value=this.value; $("volLbl").textContent=this.value;
@@ -4318,7 +4319,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     seq.elapsed=pos; seq.remain=seqStepEnd(k)-pos;
     updSeqUI(); }
   document.addEventListener("visibilitychange",function(){ if(!document.hidden&&seq.playing){ seqTick(); seqSyncNative(); } });
-  function updSeqUI(){ var s=seq.p.s[seq.idx]; $("sHz").textContent=s.f.toFixed(2); $("sStep").textContent=(seq.idx+1)+"/"+seq.p.s.length+" · "+stepShort(s);
+  function updSeqUI(){ var s=seq.p.s[seq.idx]; $("sHz").textContent=s.f.toFixed(s.manual?4:2); $("sStep").textContent=(seq.idx+1)+"/"+seq.p.s.length+" · "+stepShort(s);
     var mm=Math.floor(seq.remain/60),ss=seq.remain%60; $("sClock").textContent=mm+":"+(ss<10?"0":"")+ss; $("sBar").style.width=Math.min(100,(seq.elapsed/seq.total)*100)+"%"; highlight(seq.idx); syncChakraPresentation();
     if($("vSeq").classList.contains("chakra-player"))$("sClock").textContent+=" · "+t("remaining"); }
   function stopSeq(immediate){ chakMusStop(immediate); clearInterval(seq.timer);seq.timer=null; NativeTone.stop({fadeMs:immediate?20:60});
@@ -5823,7 +5824,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function renderFavKeypad(){
     if(favKb.mode==="duration"){
       $("favKbTitle").textContent=t("fav_dur_title");
-      $("favKbSub").textContent=favBuild.pending.manual?t("manual_title")+"  —  "+formatPlayerHz(favBuild.pending.f,2)+" Hz":stepName(favBuild.pending)+"  —  "+favBuild.pending.f.toFixed(4)+" Hz";
+      $("favKbSub").textContent=favBuild.pending.manual?t("manual_title")+"  —  "+formatPlayerHz(favBuild.pending.f,4)+" Hz":stepName(favBuild.pending)+"  —  "+favBuild.pending.f.toFixed(4)+" Hz";
       $("favKbVal").textContent=(favKb.kb||"—")+" "+unitText("unit_minute","min");
       $("favKbHint").textContent=t("fav_dur_hint");
     } else {
@@ -5833,7 +5834,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       $("favKbHint").textContent=t("fav_hz_range");
     }
   }
-  function favKbDigit(d){ var max=(favKb.mode==="duration")?2:9; if(favKb.kb.length>=max)return; if(d==="."){ if(favKb.mode==="duration"||favKb.kb.indexOf(".")>=0)return; } favKb.kb+=d; renderFavKeypad(); }
+  function favKbDigit(d){ var max=(favKb.mode==="duration")?2:9; if(favKb.kb.length>=max)return; if(d==="."){ if(favKb.mode==="duration"||favKb.kb.indexOf(".")>=0)return; }
+    else if(favKb.mode!=="duration"&&/\.\d{4}$/.test(favKb.kb))return; favKb.kb+=d; renderFavKeypad(); }
   function favKbBack(){ favKb.kb=favKb.kb.slice(0,-1); renderFavKeypad(); }
   function favKbOk(){
     if(favKb.mode==="duration"){
@@ -5843,8 +5845,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       favBuild.pending=null;
       renderFavNext(); show("favNext");
     } else {
-      /* Memes bornes que le lecteur manuel (setManual) : 20-1000 Hz, 2 decimales. */
-      var v=Math.round(parseFloat(favKb.kb)*100)/100; if(!favKb.kb||isNaN(v))return;
+      /* Memes bornes que le lecteur manuel (setManual) : 20-1000 Hz, 4 decimales. */
+      var v=Math.round(parseFloat(favKb.kb)*10000)/10000; if(!favKb.kb||isNaN(v))return;
       if(v<20||v>1000){ flashMsg(t("fav_hz_range")); return; }
       favBuild.pending={n:"Fréquence manuelle", f:v, manual:true};
       openFavKeypad("duration");
@@ -5878,7 +5880,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     var el=$("favRecapSteps"); el.innerHTML="";
     favBuild.steps.forEach(function(s,i){
       var li=document.createElement("li");
-      li.innerHTML='<span class="si">'+(i+1)+'</span><span class="sn">'+htmlText(stepShort(s))+'</span><span class="sh">'+s.f.toFixed(2)+' Hz</span><span class="sm">'+s.m+' '+htmlText(unitText("unit_minute_short","m"))+'</span><span class="rm">✕</span>';
+      li.innerHTML='<span class="si">'+(i+1)+'</span><span class="sn">'+htmlText(stepShort(s))+'</span><span class="sh">'+s.f.toFixed(s.manual?4:2)+' Hz</span><span class="sm">'+s.m+' '+htmlText(unitText("unit_minute_short","m"))+'</span><span class="rm">✕</span>';
       li.querySelector(".rm").addEventListener("click",function(){
         favBuild.steps.splice(i,1);
         if(!favBuild.steps.length) favBuildCancelHome(); else renderFavRecap();
