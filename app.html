@@ -1714,7 +1714,7 @@
 .ambinfo{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--txt);background:transparent;color:var(--txt);font:600 1.05rem/1 Georgia,serif;cursor:pointer}
 .amblanding{width:100%;max-width:640px;box-sizing:border-box;margin-inline:auto;padding:6px 18px 34px;display:flex;flex-direction:column}
 .ambhero{position:relative;height:clamp(200px,58vw,320px);border-radius:22px;overflow:hidden;background:#0b1428}
-.ambhero img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .45s ease}
+.ambhero img{width:100%;height:100%;object-fit:cover;object-position:center 42%;display:block;transition:opacity .45s ease}
 .ambhero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,13,28,0) 45%,rgba(7,13,28,.85) 100%)}
 .ambherocopy{position:absolute;left:20px;right:20px;bottom:18px;z-index:1;display:flex;flex-direction:column;gap:4px}
 .ambherocopy b{font-size:1.55rem;line-height:1.15;color:#fff}
@@ -2180,7 +2180,7 @@
       <p class="bincollectionhint" id="binCollectionHint"></p>
       <div class="binintents" id="binPresets"></div>
       <div class="binsectionhead ambhead"><h3 id="ambSection">—</h3></div>
-      <button type="button" class="ambcard" id="ambOpen"><img src="app-images/ambiance-acouphene-carte-v1.webp" alt="" loading="lazy" decoding="async"><span class="ambcardcopy"><b id="ambCardT">—</b><span id="ambCardD">—</span></span><span class="ambcardgo" aria-hidden="true">›</span></button>
+      <button type="button" class="ambcard" id="ambOpen"><img src="app-images/ambiances-carte-v1.webp" alt="" loading="lazy" decoding="async"><span class="ambcardcopy"><b id="ambCardT">—</b><span id="ambCardD">—</span></span><span class="ambcardgo" aria-hidden="true">›</span></button>
       <div class="binsectionhead binmanualheading"><h3 id="binManOr">—</h3></div>
       <button type="button" class="binmancard" id="binManOpen"><span class="binmannew" id="binManNew">—</span><span class="binmanhead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M4 12h16M4 17h7"/><circle cx="17" cy="7" r="2.2"/><circle cx="14" cy="17" r="2.2"/></svg><b id="binManCardT">—</b><span class="binmanchev" aria-hidden="true">›</span></span><span class="binmansub" id="binManCardD">—</span><span class="binmanviz"><span class="binmanear l"><small id="binManVizL">—</small><strong id="binManVizLv">100 Hz</strong></span><svg viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="binManGrad" x1="0" x2="1"><stop stop-color="#7fd8f0"/><stop offset="1" stop-color="#b98fe0"/></linearGradient></defs><path d="M0 17 C10 2 20 2 30 17 S50 32 60 17 S80 2 90 17 S110 32 120 17" fill="none" stroke="url(#binManGrad)" stroke-width="2.2"/></svg><span class="binmanear r"><small id="binManVizR">—</small><strong id="binManVizRv">104 Hz</strong></span></span></button>
     </div>
@@ -5464,9 +5464,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   var bin={f1:0,f2:0,vol:0.5,playing:false,master:null,oscA:null,oscB:null,intent:null,duration:0,remaining:0,startedAt:0,timerId:null,timerDone:false};
   /* AURALIS_AMBIANCES_V1 : amb.on = l ecran vAmb pilote le moteur binaural. */
   var AMB_LIST=[
-    {id:"vagues",key:"amb_vagues_v1",photo:"ambiance-acouphene-carte-v1.webp",pos:"62% 50%"},
-    {id:"pluie",key:"amb_pluie_v1",photo:"music-forest-rain-v1.webp",pos:"center 38%"},
-    {id:"vent",key:"amb_vent_v1",photo:"music-foret-ancienne-v1.webp",pos:"center 30%"}];
+    {id:"vagues",key:"amb_vagues_v1",hero:"ambiance-vagues-hero-v1.webp",tile:"ambiance-vagues-tuile-v1.webp"},
+    {id:"pluie",key:"amb_pluie_v1",hero:"ambiance-pluie-hero-v1.webp",tile:"ambiance-pluie-tuile-v1.webp"},
+    {id:"vent",key:"amb_vent_v1",hero:"ambiance-vent-hero-v1.webp",tile:"ambiance-vent-tuile-v1.webp"}];
   var AMB_CARRIER=108, AMB_BEAT=8, AMB_TONE=.25;
   var amb={on:false,sel:AMB_LIST[0],bins:false,vol:.5,bvol:.2};
   try{ var _am=JSON.parse(localStorage.getItem("auralis_amb")||"{}")||{};
@@ -5778,11 +5778,11 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     ambTiles(); ambPaint(); }
   function ambTiles(){ var el=$("ambTiles"); if(!el)return; el.innerHTML="";
     AMB_LIST.forEach(function(a){ var b=document.createElement("button"); b.type="button"; b.setAttribute("data-amb",a.id);
-      b.innerHTML='<img src="app-images/'+a.photo+'" alt="" loading="lazy" decoding="async" style="object-position:'+a.pos+'"><span>'+htmlText(t("amb_"+a.id))+'</span>';
+      b.innerHTML='<img src="app-images/'+a.tile+'" alt="" loading="lazy" decoding="async"><span>'+htmlText(t("amb_"+a.id))+'</span>';
       b.addEventListener("click",function(){ ambPick(a); }); el.appendChild(b); }); }
   function ambPaint(){ if(!$("vAmb"))return;
-    var a=amb.sel, img=$("ambHeroImg"), src="app-images/"+a.photo;
-    if(img.getAttribute("src")!==src){ img.setAttribute("src",src); img.style.objectPosition=a.pos; }
+    var a=amb.sel, img=$("ambHeroImg"), src="app-images/"+a.hero;
+    if(img.getAttribute("src")!==src)img.setAttribute("src",src);
     $("ambHeroName").textContent=t("amb_"+a.id+"_t");
     Array.prototype.forEach.call($("ambTiles").children,function(b){ var on=b.getAttribute("data-amb")===a.id;
       b.setAttribute("aria-pressed",on?"true":"false"); b.setAttribute("aria-label",t("amb_"+b.getAttribute("data-amb")+"_t")); });
