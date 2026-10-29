@@ -1872,6 +1872,11 @@
 @media(max-height:650px){#binPlayerSlot{padding:18px 20px calc(var(--safe-bottom) + 12px)}#vBinPlayer .binintenttag{margin-bottom:12px}#vBinPlayer #binPlay{width:74px!important;height:74px}#vBinPlayer .bintransport{min-height:82px}#vBinPlayer .binsessiontitle{font-size:1.55rem}}
 @media(orientation:landscape) and (max-height:520px){#vBinPlayer{max-width:none}.binplayerart{object-position:center 35%}#binPlayerSlot{width:48%;box-sizing:border-box;align-self:flex-end;background:linear-gradient(90deg,transparent,rgba(3,8,20,.7));max-height:calc(100% - 72px)}#vBinPlayer .binsessiontitle{font-size:1.25rem}#vBinPlayer .binintenttag{font-size:.8rem;margin-bottom:8px}#vBinPlayer .bincontrol{margin-bottom:2px}#vBinPlayer #binPlay{width:62px!important;height:62px}#vBinPlayer .bintransport{min-height:68px;margin:0}}
 
+  /* AURALIS_GEO_PETIT_ECRAN_V1 : voir tools/patch_geo_petit_ecran_v1.py */
+  #vGeoPlay .grow{flex-wrap:nowrap; gap:4px}
+  #vGeoPlay .gnote{flex:1 1 0; min-width:0; padding:5px 2px}
+  #vGeoPlay .gnote b{font-size:clamp(.72rem, 3.4vw, .85rem)}
+  #vGeoPlay .player{overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
 </style>
 <script>
 /* Thème appliqué avant le premier rendu, sinon l'app clignote en sombre puis passe en clair. */
