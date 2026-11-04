@@ -3589,6 +3589,37 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
      Les pistes fichier (Musiques, Geometrie/Protocoles audio) n ont jamais eu
      le probleme : elles utilisent deja un <audio> natif. */
   function unlockAudio(){ try{ if(!_silence){ _silence=new Audio(SILENCE_URI); _silence.loop=true; _silence.setAttribute("playsinline",""); _silence.addEventListener("error",function(){ silenceFailed(_silence.error); }); } var pr=_silence.play(); if(pr&&pr.catch)pr.catch(silenceFailed); }catch(e){ silenceFailed(e); } ensureCtx(); }
+  /* AURALIS_WEB_RESUME_V1 (2026-11-04) -- version web sur iPad/iPhone : le son
+     coupait plusieurs fois par protocole puis revenait avec un bruit fort.
+     1) Les sons generes passent par outBus() : quand Safari suspend ou
+        interrompt le contexte (veille, autre app), le bus tombe a zero ; au
+        retour il remonte en fondu de 0,6 s au lieu de repartir d un coup.
+     2) Au retour sur la page ou au premier toucher, on relance le contexte.
+     3) WL : verrou d ecran (navigateur seulement) tant qu un son genere joue,
+        pour que l iPad ne se mette plus en veille au milieu d un protocole. */
+  var _out=null,_outCtx=null,_ctxLost=false;
+  function outBus(){ if(_out&&_outCtx===ctx)return _out;
+    _outCtx=ctx; _ctxLost=false; _out=ctx.createGain(); _out.gain.value=1; _out.connect(ctx.destination);
+    try{ ctx.addEventListener("statechange",ctxStateChanged); }catch(e){}
+    return _out; }
+  function ctxStateChanged(){ if(!_out||_outCtx!==ctx)return; var g=_out.gain,now=ctx.currentTime;
+    if(ctx.state!=="running"){ if(!_ctxLost){ _ctxLost=true; try{ g.cancelScheduledValues(now); g.setValueAtTime(0.0001,now); }catch(e){} } return; }
+    if(_ctxLost){ _ctxLost=false; try{ g.cancelScheduledValues(now); g.setValueAtTime(0.0001,now); g.exponentialRampToValueAtTime(1,now+0.6); }catch(e){} } }
+  function ctxRevive(){ if(!ctx||!_ctxLost||ctx.state==="running"||ctx.state==="closed")return;
+    try{ var p=ctx.resume(); if(p&&p.catch)p.catch(function(){}); }catch(e){}
+    if(_silence&&_silence.paused){ try{ var q=_silence.play(); if(q&&q.catch)q.catch(function(){}); }catch(e){} } }
+  document.addEventListener("visibilitychange",function(){ if(!document.hidden)ctxRevive(); });
+  window.addEventListener("pageshow",ctxRevive); window.addEventListener("focus",ctxRevive);
+  document.addEventListener("pointerdown",ctxRevive,true);
+  var WL=(function(){ var want=false,lock=null,pending=false;
+    function grab(){ if(!want||lock||pending||document.hidden||window.Capacitor||!navigator.wakeLock)return;
+      pending=true;
+      navigator.wakeLock.request("screen").then(function(l){ pending=false; lock=l;
+        l.addEventListener("release",function(){ if(lock===l)lock=null; });
+        if(!want){ lock=null; l.release().catch(function(){}); } },function(){ pending=false; }); }
+    function set(on){ want=!!on; if(want)grab(); else if(lock){ var l=lock; lock=null; l.release().catch(function(){}); } }
+    document.addEventListener("visibilitychange",function(){ if(!document.hidden)grab(); });
+    return {set:set}; })();
   /* AURALIS_STRIP_DEBUG_V1 -- ancien lien de test ?debug=1 : retire de l'adresse. */
   try{ if(/[?&]debug=/.test(location.search)&&history.replaceState){ var _q=new URLSearchParams(location.search); _q.delete("debug");
     var _s=_q.toString(); history.replaceState(history.state,"",location.pathname+(_s?"?"+_s:"")+location.hash); } }catch(e){}
@@ -3938,7 +3969,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     if(ch)try{ localStorage.setItem("auralis_favorites",JSON.stringify(favSlots)); }catch(e){} })();
   function saveFavSlots(){ try{ localStorage.setItem("auralis_favorites",JSON.stringify(favSlots)); }catch(e){} }
   var favBuild=null; // {slot, steps:[{n,f,m}], name?, pending?}
-  function setBg(hidden){ var bg=$("appbg"); if(bg)bg.classList.toggle("off",!!hidden); }
+  function setBg(hidden){ var bg=$("appbg"); if(bg)bg.classList.toggle("off",!!hidden); WL.set(hidden); }
   var _flashT=null;
   function flashMsg(msg){ var el=$("flashMsg"); if(!el){ el=document.createElement("div"); el.id="flashMsg"; el.className="flashmsg"; document.querySelector(".app").appendChild(el); }
     el.textContent=msg; el.classList.add("show"); clearTimeout(_flashT); _flashT=setTimeout(function(){ el.classList.remove("show"); },2200); }
@@ -4276,7 +4307,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     state.native=NativeTone.start({voices:[{f:f,g:1,p:0}],master:state.vol,fadeMs:50},
       function(){ if(state.playing){ stopSingle(true); startSingle(); } });
     if(!state.native){
-      sMaster=ctx.createGain(); sMaster.gain.setValueAtTime(0.0001,ti); sMaster.gain.linearRampToValueAtTime(state.vol,ti+0.05); sMaster.connect(ctx.destination); sOscs=[];
+      sMaster=ctx.createGain(); sMaster.gain.setValueAtTime(0.0001,ti); sMaster.gain.linearRampToValueAtTime(state.vol,ti+0.05); sMaster.connect(outBus()); sOscs=[];
       var o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(f,ti);o.connect(sMaster);o.start();sOscs.push(o);
     }
     state.playing=true; setBtn(true); armTimer(); if(chakraMode())chakMusStart(); }
@@ -4490,7 +4521,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     seq.native=NativeTone.start({voices:[{f:seq.p.s[seq.idx].f,g:1,p:0}],master:state.vol,fadeMs:50},
       function(){ if(seq.playing){ stopSeq(true); startSeq(); } });
     if(!seq.native){
-      seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(ctx.destination);
+      seq.master=ctx.createGain(); seq.master.gain.setValueAtTime(0.0001,ti); seq.master.gain.linearRampToValueAtTime(state.vol,ti+0.05); seq.master.connect(outBus());
       seq.osc=ctx.createOscillator(); seq.osc.type="sine"; seq.osc.frequency.setValueAtTime(seq.p.s[seq.idx].f,ti); seq.osc.connect(seq.master); seq.osc.start();
     }
     /* Reprise au debut de l etape en cours, comme avant ; mais le temps se
@@ -5306,7 +5337,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     return true; }
   function gPlaySynth(){ if(gPlaySynthNative())return; var t=ctx.currentTime+0.06;
     gp.master=ctx.createGain(); gp.master.gain.setValueAtTime(0.0001,t); gp.master.gain.linearRampToValueAtTime(gp.vol,t+0.05);
-    gp.dry=ctx.createGain(); gp.dry.gain.value=1; gp.master.connect(gp.dry); gp.dry.connect(ctx.destination);
+    gp.dry=ctx.createGain(); gp.dry.gain.value=1; gp.master.connect(gp.dry); gp.dry.connect(outBus());
     // écho et réverb retirés (2026-07-20 puis 2026-08-29)
     /* Bourdon tenu : seulement pour les figures a note unique (planetes,
        couleurs). Sur une figure harmonisee il tiendrait Do+Mi+Sol en continu
@@ -5515,7 +5546,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
         trem:{rate:pulse.bpm/60,base:0.65,depth:0.35}},
         function(){ if(pulse.playing){ pulseStop(true); pulseStart(); } })){
       pulse.playing=true; pulseSetBtn(true); return; }
-    pulse.master=ctx.createGain(); pulse.master.gain.setValueAtTime(0.0001,t); pulse.master.gain.linearRampToValueAtTime(pulse.vol,t+0.08); pulse.master.connect(ctx.destination);
+    pulse.master=ctx.createGain(); pulse.master.gain.setValueAtTime(0.0001,t); pulse.master.gain.linearRampToValueAtTime(pulse.vol,t+0.08); pulse.master.connect(outBus());
     pulse.osc=ctx.createOscillator(); pulse.osc.type="sine"; pulse.osc.frequency.setValueAtTime(432,t);
     pulse.trem=ctx.createGain(); pulse.trem.gain.setValueAtTime(0.65,t);
     pulse.dc=ctx.createConstantSource(); pulse.dc.offset.setValueAtTime(0.65,t);
@@ -5647,7 +5678,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     binMusicLoad(key).then(function(buf){ if(!buf||gen!==binMusic.gen||!bin.playing||!ctx)return;
       var ti=ctx.currentTime,g=ctx.createGain(),s=ctx.createBufferSource(); s.buffer=buf; s.loop=true;
       g.gain.setValueAtTime(.0001,ti); g.gain.linearRampToValueAtTime(binMusicVol()*binMusicLevel(),ti+1.5);
-      s.connect(g); g.connect(ctx.destination); s.start(ti); binMusic.src=s; binMusic.gain=g; }); }
+      s.connect(g); g.connect(outBus()); s.start(ti); binMusic.src=s; binMusic.gain=g; }); }
   /* Repli <audio> : Android (moteur natif sans musique) et ancien binaire iOS. */
   function binMusicEl(u){ var el=binMusic.el;
       if(!el){ el=binMusic.el=new Audio(); el.loop=true; el.setAttribute("playsinline",""); el.addEventListener("pause",binMusicOnPause); }
@@ -5826,7 +5857,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     var ti=ctx.currentTime;
     if(!NativeTone.start({voices:[{f:bin.f1,g:1,p:-1},{f:bin.f2,g:1,p:1}],master:binToneVol(),fadeMs:50},
         function(){ if(bin.playing){ binStop(true,true); binStart(); } })){
-      bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(.0001,ti); bin.master.gain.linearRampToValueAtTime(binToneVol(),ti+.05); bin.master.connect(ctx.destination);
+      bin.master=ctx.createGain(); bin.master.gain.setValueAtTime(.0001,ti); bin.master.gain.linearRampToValueAtTime(binToneVol(),ti+.05); bin.master.connect(outBus());
       bin.oscA=ctx.createOscillator(); bin.oscA.type="sine"; bin.oscA.frequency.setValueAtTime(bin.f1,ti); bin.oscB=ctx.createOscillator(); bin.oscB.type="sine"; bin.oscB.frequency.setValueAtTime(bin.f2,ti);
       var pa=ctx.createStereoPanner(),pb=ctx.createStereoPanner(); pa.pan.setValueAtTime(-1,ti); pb.pan.setValueAtTime(1,ti); bin.oscA.connect(pa); pa.connect(bin.master); bin.oscB.connect(pb); pb.connect(bin.master); bin.oscA.start(ti); bin.oscB.start(ti);
     }
