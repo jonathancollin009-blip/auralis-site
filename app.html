@@ -3600,7 +3600,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   /* AURALIS_WEB_RESUME_V2 : la reprise suit l etat reel du contexte (ctx.state)
      tant qu une lecture est en cours (_audioWanted, mis par setBg), et non plus
      seulement _ctxLost : Safari peut livrer statechange apres visibilitychange. */
-  var _out=null,_outCtx=null,_ctxLost=false,_audioWanted=false,_wlSkip=false;
+  var _out=null,_outCtx=null,_ctxLost=false,_audioWanted=false;
   try{ if(!window.Capacitor&&navigator.audioSession)navigator.audioSession.type="playback"; }catch(e){}
   function outBus(){ if(_out&&_outCtx===ctx)return _out;
     _outCtx=ctx; _out=ctx.createGain(); _out.connect(ctx.destination);
@@ -3975,7 +3975,14 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     if(ch)try{ localStorage.setItem("auralis_favorites",JSON.stringify(favSlots)); }catch(e){} })();
   function saveFavSlots(){ try{ localStorage.setItem("auralis_favorites",JSON.stringify(favSlots)); }catch(e){} }
   var favBuild=null; // {slot, steps:[{n,f,m}], name?, pending?}
-  function setBg(hidden){ var bg=$("appbg"); if(bg)bg.classList.toggle("off",!!hidden); _audioWanted=!!hidden; WL.set(hidden&&!_wlSkip); }
+  function setBg(hidden){ var bg=$("appbg"); if(bg)bg.classList.toggle("off",!!hidden); audioSync(); }
+  /* AURALIS_WEB_RESUME_V3 : reprise du son et verrou d ecran decides d apres les
+     lecteurs reellement actifs, pas d apres le dernier setBg() (le 432 Hz pulse
+     appelle setBg(false) meme en lecture ; applyLang() rafraichit les inactifs). */
+  function audioSync(){
+    var gen=!!(state.playing||seq.playing||pulse.playing||bin.playing);
+    _audioWanted=gen||!!gp.playing;
+    WL.set(gen||(!!gp.playing&&!gAudio.el)); }
   var _flashT=null;
   function flashMsg(msg){ var el=$("flashMsg"); if(!el){ el=document.createElement("div"); el.id="flashMsg"; el.className="flashmsg"; document.querySelector(".app").appendChild(el); }
     el.textContent=msg; el.classList.add("show"); clearTimeout(_flashT); _flashT=setTimeout(function(){ el.classList.remove("show"); },2200); }
@@ -5312,7 +5319,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     gAudio.el=el; gp.cycleStart=(ctx?ctx.currentTime:0);
     var p=el.play(); if(p&&p.catch)p.catch(function(){ if(gen===gAudio.gen)el.onerror(); });
     /* <audio> enregistre : il continue ecran verrouille, pas de verrou d ecran. */
-    gp.playing=true; _wlSkip=true; gSetBtn(true); _wlSkip=false;
+    gp.playing=true; gSetBtn(true);
   }
   function gPlay(){ if(!gp.fig)return; ensureCtx(); unlockAudio();
     ST.play("geo", gp.fig.audio || gp.fig.name);
