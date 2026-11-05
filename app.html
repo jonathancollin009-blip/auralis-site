@@ -124,6 +124,15 @@
   .bar h2{font-size:1rem; font-weight:700; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
   .home{flex:1; display:flex; flex-direction:column; padding:2px 16px 22px; overflow-y:auto; -webkit-overflow-scrolling:touch}
+  /* AURALIS_HOME_LABELS_READY_V1 : les tirets du HTML ne doivent pas apparaître
+     avant applyLang(). visibility conserve la place des textes et des cartes. */
+  #vHome:not([data-home-ready]) .het,
+  #vHome:not([data-home-ready]) .hherobody,
+  #vHome:not([data-home-ready]) .hdiscover,
+  #vHome:not([data-home-ready]) .hsbody,
+  #vHome:not([data-home-ready]) .hexplain,
+  #vHome:not([data-home-ready]) .hxcard b,
+  #vHome:not([data-home-ready]) .hmt{visibility:hidden}
   .home.in > *{opacity:0; animation:cardIn .38s cubic-bezier(.22,.61,.36,1) both}
   .home.in > :nth-child(1){animation-delay:0ms} .home.in > :nth-child(2){animation-delay:50ms}
   .home.in > :nth-child(3){animation-delay:100ms} .home.in > :nth-child(4){animation-delay:150ms}
@@ -1891,6 +1900,9 @@
   #vGeoPlay .gnote b{font-size:clamp(.72rem, 3.4vw, .85rem)}
   #vGeoPlay .player{overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
 </style>
+<script>/* AURALIS_HOME_LABELS_FAILSAFE_V1 : si le script principal plante avant
+   applyLang(), les textes de l accueil s affichent quand meme apres 2 s. */
+setTimeout(function(){ var h=document.getElementById("vHome"); if(h)h.setAttribute("data-home-ready",""); },2000);</script>
 <script>
 /* Thème appliqué avant le premier rendu, sinon l'app clignote en sombre puis passe en clair. */
 (function(){
@@ -4070,6 +4082,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("hExplNote").textContent=t("home_expl_note");
     $("hxSacred").textContent=t("geo_filter_sacred"); $("hxCrop").textContent=t("geo_filter_crop"); $("hxPlanet").textContent=t("geo_filter_planet"); $("hxColor").textContent=t("geo_filter_color"); $("hxFlocon").textContent=t("geo_filter_snowflake");
     $("hMethodT").textContent=t("home_method_t"); $("hMethodS").textContent=t("home_method_s");
+    $("vHome").setAttribute("data-home-ready","");
     $("methTitle").textContent=t("home_method_t"); $("methBody").innerHTML=t("home_method_body");
     $("libTitle").textContent=t("tab_freq"); $("protTitle").textContent=t("protos_head"); $("geoTitle").textContent=t("geo_head"); $("favTitle").textContent=t("fav_title"); pulseUpdTitle();
     $("cropHeroTitle").textContent=t("crop_hero_title"); $("cropHeroSub").textContent=t("crop_hero_sub"); $("cropCollection").textContent=t("crop_collection"); $("cropChoose").textContent=t("crop_choose");
