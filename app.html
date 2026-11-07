@@ -3985,7 +3985,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   function pwErr(msg){ var e=$("pwError"); if(msg){ e.textContent=msg; e.hidden=false; } else e.hidden=true; }
   /* AURALIS_SHARE_V3 : aucun son ne continue derriere l ecran d abonnement (lecture
      lancee pendant la verification, ou abonnement expire en cours de route). */
-  function pwStopAudio(){
+  function pwStopAudio(){ _startGen++; _startPending=false;
     [function(){ stopSingle(true); },function(){ stopSeq(true); },function(){ pulseStop(true); },
      function(){ binStop(true,false); },function(){ gQueueClear(); gStop(true); },
      function(){ medQClear(); medStopCurrent(); }].forEach(function(f){ try{ f(); }catch(e){} }); }
@@ -4031,6 +4031,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
      du contexte, puis demarre. Le drapeau evite qu un second appui pendant
      l attente n empile une deuxieme lecture (oscillateurs en double). */
   var _startPending=false;
+  /* AURALIS_SHARE_V4 : pwStopAudio() incremente _startGen ; un demarrage encore en
+     attente a ce moment-la ne lance plus rien quand sa promesse se resout. */
+  var _startGen=0;
   /* AURALIS_SILENCE_FIRST_V1 -- iOS : au premier son apres l ouverture, la
      boucle de silence demarrait ~1 s APRES le moteur natif ; iOS reorganisait
      alors la session audio et coupait la frequence (2026-10-18). On attend
@@ -4043,10 +4046,10 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       function fin(){ if(done)return; done=true; try{ _silence.removeEventListener("playing",fin); }catch(e){} res(); }
       try{ _silence.addEventListener("playing",fin); }catch(e){}
       setTimeout(fin,1000); }); }
-  function startWhenReady(fn){ if(_startPending)return; _startPending=true;
+  function startWhenReady(fn){ if(_startPending||_pwShown)return; _startPending=true; var gen=_startGen;
     unlockAudio();
-    Promise.all([audioReady(),silenceReady()]).then(function(){ _startPending=false; fn(); },
-                      function(){ _startPending=false; }); }
+    Promise.all([audioReady(),silenceReady()]).then(function(){ if(gen!==_startGen)return; _startPending=false; if(_pwShown)return; fn(); },
+                      function(){ if(gen===_startGen)_startPending=false; }); }
 
   var FAV_MAX=12, FAV_STEP_MAX=8;
   var favSlots=[]; try{ favSlots=JSON.parse(localStorage.getItem("auralis_favorites")||"[]"); }catch(e){ favSlots=[]; }
