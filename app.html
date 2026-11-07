@@ -724,9 +724,9 @@
 #vShareOut .play, #vShareOut .manualbtn{margin:0}
 /* AURALIS_SHARE_V2 : icones des favoris = zone tactile de 40 x 40 px. */
 .ftile .facts{top:0; right:0; gap:0}
-.ftile .facts .rm{display:flex; align-items:center; justify-content:center; min-width:40px; min-height:40px; padding:0; border-radius:10px}
+.ftile .facts .rm{display:flex; align-items:center; justify-content:center; min-width:48px; min-height:48px; padding:0; border-radius:12px}
 .ftile .facts .rm:focus-visible{outline:2px solid var(--cyan); outline-offset:-4px}
-.ftile:not(.vide){padding-top:40px}
+.ftile:not(.vide){padding-top:46px}
   .item{display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:var(--pan); border:1px solid var(--line); border-radius:12px; padding:13px 14px; margin-bottom:9px; cursor:pointer; color:var(--txt); font:inherit}
   .item:active{background:var(--pan2)}
   .item .dot{flex:0 0 auto; width:9px; height:9px; border-radius:50%}
@@ -3928,6 +3928,9 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
       row.appendChild(txt); row.appendChild(btn); list.appendChild(row); }); }
   OFF.sub(function(){ if(curView==="settings")offRender(); });
   var _pwShown=false;
+  /* AURALIS_SHARE_V3 : vrai quand bootGate() a tranche (acces accorde ou ecran
+     d abonnement). Un protocole recu par lien attend jusque-la. */
+  var _gateDone=false;
   function isAndroidNative(){ try{ return !!(window.Capacitor&&window.Capacitor.getPlatform&&window.Capacitor.getPlatform()==="android"&&NativeStore.on()); }catch(e){ return false; } }
   $("pwClose").addEventListener("click",function(){ try{ window.Capacitor.Plugins.AuralisStore.exitApp(); }catch(e){} });
   function pwSetText(){
@@ -3980,7 +3983,13 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("pwPlanMonth").addEventListener("click",function(){ _pwPlan="month"; pwPlanPaint(); });
   $("pwPlanYear").addEventListener("click",function(){ _pwPlan="year"; pwPlanPaint(); });
   function pwErr(msg){ var e=$("pwError"); if(msg){ e.textContent=msg; e.hidden=false; } else e.hidden=true; }
-  function openPaywall(st){ _pwShown=true; pwSetText(); pwSetPrice(st); pwErr(null); show("paywall"); }
+  /* AURALIS_SHARE_V3 : aucun son ne continue derriere l ecran d abonnement (lecture
+     lancee pendant la verification, ou abonnement expire en cours de route). */
+  function pwStopAudio(){
+    [function(){ stopSingle(true); },function(){ stopSeq(true); },function(){ pulseStop(true); },
+     function(){ binStop(true,false); },function(){ gQueueClear(); gStop(true); },
+     function(){ medQClear(); medStopCurrent(); }].forEach(function(f){ try{ f(); }catch(e){} }); }
+  function openPaywall(st){ _gateDone=true; pwStopAudio(); _pwShown=true; pwSetText(); pwSetPrice(st); pwErr(null); show("paywall"); }
   function pwBusy(b){ $("pwSubscribe").disabled=b; $("pwSubscribe").textContent=b?t("pw_loading"):t("pw_cta"); }
   $("pwSubscribe").addEventListener("click",function(){
     pwErr(null); pwBusy(true);
@@ -4013,9 +4022,10 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     try{ var t0=+localStorage.getItem(ENT_KEY)||0; return Date.now()-t0<30*864e5; }catch(e){ return false; } }
   function bootGate(){
     OFF.init();
-    if(!NativeStore.on()||pwCodeGranted()){ show("home"); return; }
-    NativeStore.status().then(function(st){ entOk(st); if(st&&st.entitled||offlineGrace())show("home"); else openPaywall(st); })
-      .catch(function(){ if(offlineGrace())show("home"); else openPaywall(null); });
+    function open(){ _gateDone=true; show("home"); }
+    if(!NativeStore.on()||pwCodeGranted()){ open(); return; }
+    NativeStore.status().then(function(st){ entOk(st); if(st&&st.entitled||offlineGrace())open(); else openPaywall(st); })
+      .catch(function(){ if(offlineGrace())open(); else openPaywall(null); });
   }
   /* Point d entree unique de toute lecture : deverrouille, attend la reprise
      du contexte, puis demarre. Le drapeau evite qu un second appui pendant
@@ -6246,11 +6256,11 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     return ({home:1,lib:1,protos:1,geo:1,favList:1,settings:1,method:1,freqInfo:1,shareIn:1,shareOut:1})[curView]===1; }
   function shTake(p,warm){ if(!p)return; var now=Date.now(); if(p===SH.last&&now-SH.lastT<5000)return; SH.last=p; SH.lastT=now;
     var r=shParse(p); if(r)SH.pend=r; else SH.bad=true;
-    if(warm&&!_pwShown&&shIdle())show(curView==="shareIn"?"shareIn":"home"); }
+    if(warm&&_gateDone&&!_pwShown&&shIdle())show(curView==="shareIn"?"shareIn":"home"); }
   /* Appele par show() : l accueil cede la place au protocole recu, qui attend
      tant que l ecran d abonnement est affiche. Favoris pleins (SH.full) : le
      retour de la liste des favoris ramene aussi au protocole recu. */
-  function shDivert(v){ if(!SH||_pwShown)return false;
+  function shDivert(v){ if(!SH||!_gateDone||_pwShown)return false;
     if(SH.bad&&(v==="home"||v==="shareIn")){ SH.bad=false; setTimeout(function(){ flashMsg(t("share_in_bad")); },300); }
     if(!SH.pend)return false;
     /* Retour du lecteur sur l ecran recu : redessine si un autre lien est arrive. */
