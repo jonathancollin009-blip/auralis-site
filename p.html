@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auralis — Protocole partagé</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<!-- Lien de partage d'un protocole (AURALIS_SHARE_V1, 2026-11-07).
+     Le protocole est dans la partie du lien apres # : elle n'est jamais envoyee
+     au serveur ni a Google, rien n'est stocke chez Auralis. La page n'est pas
+     indexee : le nom du protocole est un texte libre de l'utilisateur.
+     Si l'app Auralis (1.1.0 et plus) est installee, le telephone ouvre
+     directement l'app (liens universels, /.well-known servis par worker.js). -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/compte.css">
+<style>
+  .acct ol.psteps { list-style: none; counter-reset: st; margin-top: 12px; }
+  .acct ol.psteps li { counter-increment: st; display: grid; grid-template-columns: 26px 1fr auto; gap: 4px 10px; align-items: baseline; padding: 9px 0; border-top: 1px solid var(--line); font-size: .95rem; }
+  .acct ol.psteps li:first-child { border-top: none; }
+  .acct ol.psteps li::before { content: counter(st); color: var(--cyan); font-weight: 700; text-align: center; }
+  .acct ol.psteps .pn { min-width: 0; overflow-wrap: anywhere; text-align: left; }
+  .acct ol.psteps .ph { color: var(--text-dim); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+  .acct .pname { font-size: 1.35rem; color: var(--text); margin-bottom: 4px; overflow-wrap: anywhere; }
+  .acct a.btn { display: block; text-decoration: none; }
+  .acct .webbtn { display: block; margin: 16px auto 0; }
+  .acct .fine { color: var(--text-dim); font-size: .82rem; text-align: center; margin-top: 18px; }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="index.html" class="brand"><span class="aura">AURA</span><span class="lis">LIS</span></a>
+  <button class="lang-btn" aria-label="Language">EN</button>
+</nav>
+
+<main class="acct">
+  <h1 data-fr="Protocole partagé" data-en="Shared protocol" data-es="Protocolo compartido">Protocole partagé</h1>
+  <p class="lead" data-fr="Quelqu'un a partagé ce protocole avec vous. Ouvrez-le dans l'app Auralis pour l'écouter ou l'ajouter à vos favoris." data-en="Someone shared this protocol with you. Open it in the Auralis app to listen to it or add it to your favorites." data-es="Alguien compartió este protocolo con usted. Ábralo en la app Auralis para escucharlo o añadirlo a sus favoritos.">Quelqu'un a partagé ce protocole avec vous. Ouvrez-le dans l'app Auralis pour l'écouter ou l'ajouter à vos favoris.</p>
+
+  <section class="card key hide" id="proto" aria-live="polite">
+    <h2 class="pname" id="pName"></h2>
+    <p class="dim" id="pSub"></p>
+    <ol class="psteps" id="pSteps"></ol>
+  </section>
+
+  <section class="card hide" id="bad">
+    <p data-fr="Ce lien n'est pas valide ou il est incomplet. Demandez à la personne de vous le renvoyer." data-en="This link is not valid or it is incomplete. Ask the person to send it again." data-es="Este enlace no es válido o está incompleto. Pida a la persona que se lo vuelva a enviar.">Ce lien n'est pas valide ou il est incomplet. Demandez à la personne de vous le renvoyer.</p>
+  </section>
+
+  <section class="card hide" id="actions">
+    <a class="btn btn-primary" id="openApp" href="#" data-fr="J'ai l'app : ouvrir dans Auralis" data-en="I have the app: open in Auralis" data-es="Tengo la app: abrir en Auralis">J'ai l'app : ouvrir dans Auralis</a>
+    <a class="btn btn-ghost" id="getIos" href="https://apps.apple.com/app/id6813928911" rel="noopener" data-fr="Télécharger sur l'App Store" data-en="Download on the App Store" data-es="Descargar en el App Store">Télécharger sur l'App Store</a>
+    <a class="btn btn-ghost" id="getAndroid" href="https://play.google.com/store/apps/details?id=ca.auralis.app" rel="noopener" data-fr="Télécharger sur Google Play" data-en="Get it on Google Play" data-es="Descargar en Google Play">Télécharger sur Google Play</a>
+    <button class="link webbtn" type="button" id="openWeb" data-fr="Ouvrir dans la version web (abonnés)" data-en="Open in the web version (subscribers)" data-es="Abrir en la versión web (suscriptores)">Ouvrir dans la version web (abonnés)</button>
+  </section>
+
+  <p class="fine" data-fr="Protocole créé par un utilisateur d'Auralis. Auralis n'en vérifie pas le contenu." data-en="Protocol created by an Auralis user. Auralis does not review its content." data-es="Protocolo creado por un usuario de Auralis. Auralis no revisa su contenido.">Protocole créé par un utilisateur d'Auralis. Auralis n'en vérifie pas le contenu.</p>
+</main>
+
+<script src="js/main.js"></script>
+<script>
+(function () {
+  "use strict";
+  var T = {
+    fr: { steps: "étapes", min: "min", manual: "Fréquence manuelle", unnamed: "Protocole" },
+    en: { steps: "steps", min: "min", manual: "Manual frequency", unnamed: "Protocol" },
+    es: { steps: "etapas", min: "min", manual: "Frecuencia manual", unnamed: "Protocolo" }
+  };
+  function lang() { var l = document.documentElement.lang; return T[l] ? l : "fr"; }
+  function $(id) { return document.getElementById(id); }
+  function clean(v, max) {
+    var s = String(v == null ? "" : v).replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069]/g, "").replace(/\s+/g, " ").trim();
+    return Array.from(s).slice(0, max).join("").trim();
+  }
+  function b64d(s) {
+    s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "=";
+    var x = atob(s), b = new Uint8Array(x.length);
+    for (var i = 0; i < x.length; i++) b[i] = x.charCodeAt(i);
+    return new TextDecoder("utf-8", { fatal: true }).decode(b);
+  }
+  /* Memes regles que l'app (shParse) : 1 a 15 etapes, 1 a 60 min, 20 a 1000 Hz. */
+  function parse(p) {
+    try {
+      var m = /^1\.([A-Za-z0-9_-]{4,2800})$/.exec(p); if (!m) return null;
+      var o = JSON.parse(b64d(m[1])); if (!o || !Array.isArray(o.s) || o.s.length < 1 || o.s.length > 15) return null;
+      var steps = [];
+      for (var i = 0; i < o.s.length; i++) {
+        var x = o.s[i]; if (!Array.isArray(x) || x.length < 2 || x.length > 3) return null;
+        var mn = x[x.length - 1], f = x[x.length - 2];
+        if (typeof mn !== "number" || mn % 1 !== 0 || mn < 1 || mn > 60) return null;
+        if (typeof f !== "number" || !isFinite(f) || f < 20 || f > 1000) return null;
+        var named = x.length === 3 && typeof x[0] === "string" && clean(x[0], 60);
+        steps.push({ n: named || "", f: f, m: mn, manual: !named });
+      }
+      return { name: clean(o.n, 24), steps: steps };
+    } catch (e) { return null; }
+  }
+  function hz(f, d) {
+    try { return Number(f).toLocaleString(lang(), { minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: false }); }
+    catch (e) { return Number(f).toFixed(d); }
+  }
+
+  var payload = (location.hash || "").replace(/^#/, "").replace(/^p=/, "");
+  var proto = parse(payload);
+
+  function render() {
+    if (!proto) { $("bad").classList.remove("hide"); return; }
+    var L = T[lang()], tot = 0, ol = $("pSteps");
+    $("pName").textContent = proto.name || L.unnamed;
+    ol.textContent = "";
+    proto.steps.forEach(function (s) {
+      tot += s.m;
+      var li = document.createElement("li"), n = document.createElement("span"), h = document.createElement("span");
+      n.className = "pn"; n.textContent = s.manual ? L.manual : s.n;
+      h.className = "ph"; h.textContent = hz(s.f, s.manual ? 4 : 2) + " Hz · " + s.m + " " + L.min;
+      li.appendChild(n); li.appendChild(h); ol.appendChild(li);
+    });
+    $("pSub").textContent = proto.steps.length + " " + L.steps + " · " + tot + " " + L.min;
+    $("proto").classList.remove("hide");
+    $("actions").classList.remove("hide");
+  }
+
+  if (proto) {
+    var ua = navigator.userAgent || "";
+    var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    var android = /Android/.test(ua);
+    if (ios) $("getAndroid").classList.add("hide");
+    if (android) $("getIos").classList.add("hide");
+    /* Schema auralis:// declare par l'app 1.1.0 : sert quand le lien a ete ouvert
+       dans un navigateur (appli de messagerie, adresse collee). */
+    $("openApp").setAttribute("href", "auralis://p#" + payload);
+    /* Version web : meme origine que /app. Le protocole attend dans le
+       localStorage pendant la connexion par code, puis /app l'ouvre. */
+    $("openWeb").addEventListener("click", function () {
+      try { localStorage.setItem("auralis_share_in", JSON.stringify({ d: payload, t: Date.now() })); } catch (e) {}
+      location.href = "/app#p=" + payload;
+    });
+  }
+  render();
+  /* Un autre lien ouvert dans le meme onglet : seule la partie apres # change. */
+  window.addEventListener("hashchange", function () { location.reload(); });
+  document.querySelectorAll(".lang-btn").forEach(function (b) {
+    b.addEventListener("click", function () { setTimeout(render, 0); });
+  });
+})();
+</script>
+</body>
+</html>

@@ -342,6 +342,31 @@ async function handleAudioFromR2(request, env, key) {
   }
 }
 
+// Partage de protocole (2026-11-07). Team ID Apple et identifiant de l'app :
+// projet Xcode (DEVELOPMENT_TEAM) et capacitor.config.json. Empreinte Android :
+// certificat de la cle de signature d'application de Google Play (Play Console >
+// Signature d'appli), PAS la cle d'importation du .keystore local.
+const AASA = JSON.stringify({
+  applinks: {
+    apps: [],
+    details: [{
+      appID: "QWGNHCRKL6.ca.auralis.app",
+      appIDs: ["QWGNHCRKL6.ca.auralis.app"],
+      paths: ["/p", "/p/*"],
+      components: [{ "/": "/p" }, { "/": "/p/*" }],
+    }],
+  },
+});
+const ASSETLINKS = JSON.stringify([{
+  relation: ["delegate_permission/common.handle_all_urls"],
+  target: {
+    namespace: "android_app",
+    package_name: "ca.auralis.app",
+    sha256_cert_fingerprints: ["29:76:7A:FA:95:CA:E5:98:05:6B:E0:B8:10:F4:61:94:70:FF:66:07:21:50:13:B8:FC:BE:04:15:99:B0:C2:8B"],
+  },
+}]);
+const WELL_KNOWN_HEADERS = { "content-type": "application/json", "cache-control": "public, max-age=3600" };
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -351,6 +376,17 @@ export default {
       if (R2_PREFIXES.some((p) => key.startsWith(p))) {
         return handleAudioFromR2(request, env, key);
       }
+    }
+
+    // Liens universels du partage de protocole (aura-lis.ca/p, voir p.html) :
+    // iOS et Android lisent ces fichiers pour ouvrir l'app directement. Servis
+    // ici plutot que comme fichiers statiques : type JSON garanti, aucune
+    // redirection, et pas de dossier commencant par un point a publier.
+    if (url.pathname === "/.well-known/apple-app-site-association" || url.pathname === "/apple-app-site-association") {
+      return new Response(AASA, { headers: WELL_KNOWN_HEADERS });
+    }
+    if (url.pathname === "/.well-known/assetlinks.json") {
+      return new Response(ASSETLINKS, { headers: WELL_KNOWN_HEADERS });
     }
 
     // Abonnement web : verrou de /app, connexion, Stripe (voir web-auth.js).
