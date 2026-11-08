@@ -3627,7 +3627,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     if(seqVisual)seqVisual.sync();
   }
   function toggleTheme(){ settings.theme=(curTheme()==="light")?"dark":"light"; saveSettings(); applyTheme(); }
-  var APP_VERSION="1.1.0";
+  var APP_VERSION="1.1.1";
 
   var ctx=null;
   /* Android : tampon « playback » (plus grand) contre la friture des sons generes
@@ -3698,7 +3698,17 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     if(ctx.state!=="running"){ if(!_ctxLost){ _ctxLost=true; try{ g.cancelScheduledValues(now); g.setValueAtTime(0.0001,now); }catch(e){} }
       if(!document.hidden)ctxRevive(); return; }
     if(_ctxLost){ _ctxLost=false; try{ g.cancelScheduledValues(now); g.setValueAtTime(0.0001,now); g.exponentialRampToValueAtTime(1,now+0.6); }catch(e){} } }
+  /* AURALIS_NATIVE_SCROLL_AUDIO_V1 : pointerdown arrive aussi au debut d un
+     defilement. Ne pas reveiller WebKit (contexte + silence) quand le natif
+     joue seul : il peut reprendre la session iOS et interrompre les deux sons.
+     Verifier les lecteurs actifs, pas seulement la presence du plugin : une
+     synthese ou une musique qui utilise vraiment Web Audio doit pouvoir reprendre. */
+  function ctxUsedByPlayer(){ return !!(
+    (state&&state.playing&&!state.native)||(seq&&seq.playing&&!seq.native)||
+    (pulse&&pulse.playing&&pulse.master)||(bin&&bin.playing&&(bin.master||(binMusic&&binMusic.src)))||
+    (gp&&gp.playing&&gp.master)||(chakMus&&chakMus.on&&!chakMus.nat&&chakMus.g)); }
   function ctxRevive(){ if(!ctx||!_audioWanted||ctx.state==="running"||ctx.state==="closed")return;
+    if(NativeTone&&NativeTone.on()&&!ctxUsedByPlayer())return;
     try{ var p=ctx.resume(); if(p&&p.catch)p.catch(function(){}); }catch(e){}
     if(_silence&&_silence.paused){ try{ var q=_silence.play(); if(q&&q.catch)q.catch(function(){}); }catch(e){} } }
   document.addEventListener("visibilitychange",function(){ if(document.hidden)return; ctxRevive(); setTimeout(ctxRevive,400); setTimeout(ctxRevive,1500); });
