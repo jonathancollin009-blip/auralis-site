@@ -28,6 +28,8 @@
 .sound-options{flex-wrap:wrap}.duo-settings{display:flex;flex-wrap:wrap;gap:14px;padding:0 23px 18px;align-items:end}.track-choices{display:flex;gap:7px;flex-wrap:wrap}.duo-settings .hint{flex-basis:100%;font-size:12px;color:var(--muted);margin:0}.track-choices button{font-size:12px}.duo-settings select{min-width:135px}.duo-settings .field{flex:1;min-width:130px}.track-choices button[aria-pressed=true]{border-color:var(--gold);color:var(--gold)}
 @media(max-width:560px){.duo-settings{padding:0 16px 16px}.sound-options button{padding:9px 10px}}
 </style><style>
+.track{height:clamp(240px,40vh,400px)}.track canvas{touch-action:none;cursor:pointer}.note-editor{margin:0 23px 14px;padding:12px;border:1px solid #526880;border-radius:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.focus .note-editor{display:none}.note-editor label{display:flex;align-items:center;gap:8px}.note-editor input{width:95px}.note-editor button,.note-editor input{min-height:44px}.note-editor p{flex-basis:100%;margin:0;font-size:12px;color:var(--muted)}
+</style><style>
 .studio-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 0}.studio-top strong{margin-right:auto;font-size:13px}.studio-top button{font-size:12px}.orientation-tip{font-size:12px;color:var(--gold);display:none}.source-pages{display:none}.settings-close{display:none}.studio-controls{min-width:0}.focus .shell{max-width:none;padding:0}.focus header,.focus .intro,.focus .side,.focus footer,.focus .explanation,.focus .orientation-tip{display:none}.focus{height:100dvh;overflow:hidden}.focus .shell{height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);display:flex;flex-direction:column}.focus .studio-top{padding:4px 10px;flex-wrap:nowrap;flex-shrink:0;min-height:44px;border-bottom:1px solid var(--line)}.focus .studio-top strong{font-size:11px;white-space:nowrap}.focus .studio-top button{font-size:11px;min-height:36px;padding:5px 10px}.focus main{display:flex;align-items:stretch;flex:1;min-height:0;padding:0 8px}.focus .workspace{display:flex;flex-direction:column;flex:1;min-height:0;width:100%}.focus .instrument{display:flex;flex-direction:column;flex:1;min-height:0;border-radius:0 0 12px 12px}.focus .panel-head,.focus .now-playing{display:none}.focus .studio-controls{display:none}.focus .grid-wrap{padding:0 8px;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}.focus .keyboard{height:100%;gap:4px;padding:0;grid-template-rows:21px repeat(3,minmax(44px,1fr))}.focus .pad{min-height:44px;height:100%;padding:3px}.focus .column-label{padding:1px 0;font-size:10px}.focus .source-label{font-size:11px;position:sticky;left:0;background:#151f34;z-index:2}.focus .source-label span:last-child{font-size:9px}.focus .keyboard-help{padding:3px 8px;min-height:36px;flex-wrap:nowrap;flex-shrink:0;gap:8px}.focus .keyboard-help>span,.focus .mobile-hint{display:none}.focus .source-pages{display:flex;align-items:center;gap:8px;font-size:11px;margin-right:auto}.source-pages button{min-width:40px;min-height:32px;padding:0 8px}.focus .keyboard-help .octave-control{font-size:10px}.focus .composition{margin:4px 0 0;border-radius:9px;flex-shrink:0}.focus .composition .track-wrap,.focus .composition .save-bar,.focus .composition .undo{display:none}.focus .transport{padding:4px 8px;flex-wrap:nowrap;gap:7px}.focus .transport button{font-size:11px;padding:6px 10px;min-height:40px}.focus .transport .clock{font-size:19px;min-width:56px}.focus .status{font-size:10px;min-height:18px;padding:0 8px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;flex-shrink:0}.focus .studio-controls.open{display:block;position:fixed;z-index:10;inset:48px max(12px,env(safe-area-inset-right)) 12px max(12px,env(safe-area-inset-left));background:#111a2e;border:1px solid #50617e;border-radius:12px;overflow:auto;box-shadow:0 0 0 100vmax #050916c9;padding-top:42px}.focus .settings-close{display:block;position:absolute;right:10px;top:5px;min-height:32px;padding:3px 12px}.focus .studio-controls .settings{padding-top:8px}.focus #settingsButton[aria-expanded=true]{color:var(--gold)}
 @media(orientation:portrait) and (max-width:900px){.orientation-tip{display:block}.studio-top strong{flex-basis:100%}}
 @media(max-height:360px) and (orientation:landscape){.focus .studio-top{min-height:38px}.focus .studio-top button{min-height:30px}.focus .keyboard-help{min-height:32px}.focus .status{display:none}}
@@ -64,8 +66,8 @@
 <section class="panel composition" aria-labelledby="composition-title"><div class="panel-head"><div><h2 id="composition-title">Ta composition</h2><p id="takeLabel">À toi de jouer.</p></div><button class="small ghost" id="loop" aria-pressed="false">↻ Boucle</button></div>
 <div class="transport"><button id="record" class="record">● Enregistrer</button><button id="play" class="primary" disabled>▶ Écouter</button><button id="stop" disabled>■ Arrêter</button><span id="clock" class="clock mono">00:00</span></div>
 <div class="track-wrap"><div class="track"><canvas id="timeline" aria-label="Partition de la composition"></canvas><div class="track-empty" id="trackEmpty"><strong>Ta mélodie prendra forme ici.</strong><span>Appuie sur Enregistrer, puis joue sur le clavier.</span></div></div><div class="track-meta"><span id="noteCount">Aucune note</span><span id="trackState">Prise libre · sans grille imposée</span></div></div>
-<div class="undo" id="undoWrap" hidden><button class="small ghost" id="undo">↶ Reprendre la prise précédente</button></div>
-<div class="save-bar"><label class="sr-only" for="title">Titre de la composition</label><input id="title" type="text" maxlength="70" placeholder="Donne un titre à ta musique" value="Ma première exploration"><button id="save" disabled>Sauvegarder</button><button id="wav" class="export" disabled>↓ Audio WAV</button></div>
+<div class="undo" id="undoWrap" hidden><button class="small ghost" id="undo">↶ Annuler la modification</button></div>
+<div class="note-editor" id="noteEditor" hidden aria-label="Durée de la note sélectionnée"><strong id="selectedNoteLabel"></strong><label>Durée (s)<input id="noteDuration" type="number" min="0.025" step="0.05" inputmode="decimal"></label><button id="shortenNote" aria-label="Raccourcir la note">−</button><button id="lengthenNote" aria-label="Rallonger la note">+</button><button id="closeNoteEditor">Terminer</button><p>Touche une note, puis règle sa durée ou fais glisser son bord droit. Le bouton « Annuler la modification » permet de revenir en arrière.</p></div><div class="save-bar"><label class="sr-only" for="title">Titre de la composition</label><input id="title" type="text" maxlength="70" placeholder="Donne un titre à ta musique" value="Ma première exploration"><button id="save" disabled>Sauvegarder</button><button id="wav" class="export" disabled>↓ Audio WAV</button></div>
 </section>
 <div id="status" class="status" role="status" aria-live="polite">Choisis une touche, ou écoute l’exemple pour commencer.</div>
 </div>
@@ -136,6 +138,7 @@ const PIANO_SAMPLES = [{"note":"A0","frequency":27.5,"data":"SUQzAwAAAAAASlRTU0U
 let pianoBank=null,pianoLoading=null;
 let paletteIndex = Math.max(0, PALETTES.findIndex(p => p.name === 'Sommeil'));
 let timbre = 'pure', keyboardOctave = 1, audio = null, master = null;
+let selectedNote=null,noteDrag=null,noteRects=[];
 let take = null, previousTake = null, saved = [], recording = false, recordStart = 0;
 let recordPalette = null, recordTimbre = null, events = [], playback = null;
 let exporting = false, generation = 0, active = new Map(), paints = new Map();
@@ -360,7 +363,7 @@ function stop(){if(recording)stopRecording();allOff();stopPlayback();resetSpace(
 
 function updateControls(){
   const ready=!!take&&take.notes.length>0,busy=recording||!!playback||exporting;
-  syncDuo();for(const id of ['track1','track2','reverb','duoDemo'])$(id).disabled=busy;
+  syncNoteEditor();syncDuo();for(const id of ['track1','track2','reverb','duoDemo'])$(id).disabled=busy;
   $('record').textContent=recording?'■ Fin de la prise':'● Enregistrer piste '+(selectedTrack+1);
   $('customize').disabled=busy;$('customPanel').querySelectorAll('button,input,select').forEach(el=>el.disabled=busy);$('addSource').disabled=busy||palette().sources.length>=12;
   document.querySelectorAll('.source-edit').forEach(el=>el.disabled=busy);
@@ -386,7 +389,7 @@ function demoTake(){
   return {format:'auralis-composition',version:1,title:'Esquisse · '+p.name,palette:p,timbre,reverb,notes:notes.sort((a,b)=>a.start-b.start),duration:11.3,createdAt:new Date().toISOString()};
 }
 function setTake(t){
-  stop();editMode=false;take=clone(t);$('title').value=take.title;selectedTrack=0;timbre=take.timbre;firstTimbre=take.timbre;secondTimbre=take.secondTimbre||'flute';reverb=take.reverb||'none';resetSpace();
+  stop();selectedNote=null;noteDrag=null;editMode=false;take=clone(t);$('title').value=take.title;selectedTrack=0;timbre=take.timbre;firstTimbre=take.timbre;secondTimbre=take.secondTimbre||'flute';reverb=take.reverb||'none';resetSpace();
   let index=PALETTES.findIndex(p=>JSON.stringify(p)===JSON.stringify(take.palette));
   if(index<0){PALETTES.push(clone(take.palette));index=PALETTES.length-1;customIndices.add(index);addPaletteOption(index);}
   paletteIndex=index;$('palette').value=index;buildKeyboard();updateTimbre();updateControls();
@@ -398,19 +401,69 @@ function drawTimeline(){
   if(canvas.width!==Math.round(box.width*dpr)||canvas.height!==Math.round(box.height*dpr)){canvas.width=Math.round(box.width*dpr);canvas.height=Math.round(box.height*dpr);}
   const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);const w=box.width,h=box.height;ctx.clearRect(0,0,w,h);
   const t=recording?{notes:[...(recordBase?.notes.filter(n=>trackOf(n)!==selectedTrack)||[]),...events],palette:recordPalette,duration:Math.max(0,audio.currentTime-recordStart)}:take;
-  const span=recording?Math.max(12,Math.ceil((audio.currentTime-recordStart)/6)*6):Math.max(12,takeLength(t));
+  const span=recording?Math.max(12,Math.ceil((audio.currentTime-recordStart)/6)*6):Math.max(12,noteDrag?.span||takeLength(t));
   const rows=t?t.palette.sources.length:6,cell=(h-25)/rows;
   ctx.strokeStyle='#202d43';ctx.lineWidth=.6;
   for(let i=1;i<rows;i++){ctx.beginPath();ctx.moveTo(0,i*cell);ctx.lineTo(w,i*cell);ctx.stroke();}
   const step=span>60?15:span>24?5:2;
   for(let sec=0;sec<span;sec+=step){const x=8+sec/span*(w-16);ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h-22);ctx.stroke();ctx.fillStyle='#7f90ab';ctx.font='9px Segoe UI, sans-serif';ctx.fillText(sec+' s',x+2,h-7);}
+  noteRects=[];
   if(t)for(const note of t.notes){
     const held=recording&&note.duration===0,duration=held?Math.max(.03,audio.currentTime-recordStart-note.start):note.duration;
     const x=8+note.start/span*(w-16),width=Math.max(3,duration/span*(w-16)),height=3+(note.octave+1)*1.5;
     ctx.fillStyle=trackOf(note)===1?'#e9cd91':COLORS[note.source%8];ctx.globalAlpha=.5+note.velocity*.4;ctx.fillRect(x,note.source*cell+(cell-height)/2+(trackOf(note)===1?4:-3),width,height);ctx.globalAlpha=1;
+    const y=note.source*cell+(cell-height)/2+(trackOf(note)===1?4:-3);
+    noteRects.push({note,x,y,width,height,span});
+    if(note===selectedNote){ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.strokeRect(x-2,y-3,width+4,height+6);ctx.fillStyle='#ffffff';ctx.fillRect(x+width-3,y-5,6,height+10);}
   }
   if(recording||playback){const position=recording?audio.currentTime-recordStart:Math.max(0,audio.currentTime-playback.start),x=8+position/span*(w-16);ctx.strokeStyle=recording?'#ed9fac':'#a2e5dd';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h-23);ctx.stroke();}
 }
+function syncNoteEditor(){
+  const busy=recording||!!playback||exporting;
+  if(selectedNote&&!take?.notes.includes(selectedNote))selectedNote=null;
+  $('noteEditor').hidden=!selectedNote;
+  for(const id of ['noteDuration','shortenNote','lengthenNote','closeNoteEditor'])$(id).disabled=busy;
+  if(!selectedNote)return;
+  $('selectedNoteLabel').textContent='Piste '+(trackOf(selectedNote)+1)+' · '+formatHz(selectedNote.frequency)+' Hz';
+  if(document.activeElement!==$('noteDuration'))$('noteDuration').value=Number(selectedNote.duration.toFixed(3));
+  $('noteDuration').max=MAX_SECONDS-selectedNote.start;
+}
+function changeNoteDuration(value,before=null){
+  if(!selectedNote||recording||playback||exporting||!Number.isFinite(value))return false;
+  const old=selectedNote.duration,snapshot=before||clone(take);
+  selectedNote.duration=Math.max(.025,Math.min(MAX_SECONDS-selectedNote.start,value));
+  try{validTake(take);}catch(error){selectedNote.duration=old;message(error.message);syncNoteEditor();return false;}
+  if(!before){previousTake=snapshot;$('undoWrap').hidden=false;}
+  const silence=Math.max(0,snapshot.duration-Math.max(...snapshot.notes.map(n=>n.start+n.duration)));
+  take.duration=Math.min(MAX_SECONDS,Math.max(...take.notes.map(n=>n.start+n.duration))+silence);
+  updateControls();drawTimeline();return true;
+}
+$('noteDuration').onchange=()=>{if(!changeNoteDuration(Number($('noteDuration').value)))syncNoteEditor();};
+$('noteDuration').onblur=syncNoteEditor;
+$('shortenNote').onclick=()=>changeNoteDuration(selectedNote.duration-.1);
+$('lengthenNote').onclick=()=>changeNoteDuration(selectedNote.duration+.1);
+$('closeNoteEditor').onclick=()=>{selectedNote=null;syncNoteEditor();drawTimeline();};
+$('timeline').addEventListener('pointerdown',e=>{
+  if(recording||playback||exporting||!take)return;
+  drawTimeline();const box=e.currentTarget.getBoundingClientRect(),x=e.clientX-box.left,y=e.clientY-box.top;
+  const hits=noteRects.filter(r=>x>=r.x-9&&x<=r.x+r.width+12&&Math.abs(y-r.y-r.height/2)<=Math.max(12,r.height/2));
+  hits.sort((a,b)=>Math.abs(y-a.y-a.height/2)-Math.abs(y-b.y-b.height/2));
+  const hit=hits[0];selectedNote=hit?.note||null;
+  if(hit&&Math.abs(x-hit.x-hit.width)<=14){noteDrag={id:e.pointerId,x,start:hit.note.duration,span:hit.span,width:box.width-16,before:clone(take)};e.currentTarget.setPointerCapture(e.pointerId);}
+  syncNoteEditor();drawTimeline();
+});
+$('timeline').addEventListener('pointermove',e=>{
+  if(!noteDrag||e.pointerId!==noteDrag.id)return;
+  changeNoteDuration(noteDrag.start+(e.clientX-noteDrag.x)*noteDrag.span/noteDrag.width,noteDrag.before);
+});
+function finishNoteDrag(e){
+  if(!noteDrag||e.pointerId!==noteDrag.id)return;
+  const d=noteDrag;noteDrag=null;
+  if(e.type==='pointercancel'){const index=take.notes.indexOf(selectedNote);take=d.before;selectedNote=take.notes[index];}
+  else if(selectedNote.duration!==d.start){previousTake=d.before;$('undoWrap').hidden=false;}
+  updateControls();drawTimeline();
+}
+for(const type of ['pointerup','pointercancel','lostpointercapture'])$('timeline').addEventListener(type,finishNoteDrag);
 let lastDraw=0;
 function frame(now){
   if(recording){const elapsed=audio.currentTime-recordStart;$('clock').textContent=displayClock(elapsed);$('noteCount').textContent=events.length+' notes';if(elapsed>=MAX_SECONDS){stopRecording();message('Ta prise de trois minutes est prête. Sauvegarde-la pour continuer.');}}
