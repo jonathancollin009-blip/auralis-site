@@ -28,7 +28,7 @@
 .sound-options{flex-wrap:wrap}.duo-settings{display:flex;flex-wrap:wrap;gap:14px;padding:0 23px 18px;align-items:end}.track-choices{display:flex;gap:7px;flex-wrap:wrap}.duo-settings .hint{flex-basis:100%;font-size:12px;color:var(--muted);margin:0}.track-choices button{font-size:12px}.duo-settings select{min-width:135px}.duo-settings .field{flex:1;min-width:130px}.track-choices button[aria-pressed=true]{border-color:var(--gold);color:var(--gold)}
 @media(max-width:560px){.duo-settings{padding:0 16px 16px}.sound-options button{padding:9px 10px}}
 </style><style>
-.track{height:clamp(240px,40vh,400px)}.track canvas{touch-action:none;cursor:pointer}.note-editor{margin:0 23px 14px;padding:12px;border:1px solid #526880;border-radius:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.focus .note-editor{display:none}.note-editor label{display:flex;align-items:center;gap:8px}.note-editor input{width:95px}.note-editor button,.note-editor input{min-height:44px}.note-editor p{flex-basis:100%;margin:0;font-size:12px;color:var(--muted)}
+.track{height:clamp(240px,40vh,400px)}.track canvas{touch-action:none;cursor:pointer}.note-editor{margin:0 23px 14px;padding:12px;border:1px solid #526880;border-radius:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.focus .note-editor{display:none}.note-editor label{display:flex;align-items:center;gap:8px}.note-editor input{width:95px}.note-editor button,.note-editor input{min-height:44px}.note-editor p{flex-basis:100%;margin:0;font-size:12px;color:var(--muted)}/* NOTE_MOVE_V1 */.note-editor .note-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.note-editor .note-group>span{font-size:12px;color:var(--muted)}.note-editor .danger{border-color:#a8566a;color:#f2b8c4}
 </style><style>
 .studio-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 0}.studio-top strong{margin-right:auto;font-size:13px}.studio-top button{font-size:12px}.orientation-tip{font-size:12px;color:var(--gold);display:none}.source-pages{display:none}.settings-close{display:none}.studio-controls{min-width:0}.focus .shell{max-width:none;padding:0}.focus header,.focus .intro,.focus .side,.focus footer,.focus .explanation,.focus .orientation-tip{display:none}.focus{height:100dvh;overflow:hidden}.focus .shell{height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);display:flex;flex-direction:column}.focus .studio-top{padding:4px 10px;flex-wrap:nowrap;flex-shrink:0;min-height:44px;border-bottom:1px solid var(--line)}.focus .studio-top strong{font-size:11px;white-space:nowrap}.focus .studio-top button{font-size:11px;min-height:36px;padding:5px 10px}.focus main{display:flex;align-items:stretch;flex:1;min-height:0;padding:0 8px}.focus .workspace{display:flex;flex-direction:column;flex:1;min-height:0;width:100%}.focus .instrument{display:flex;flex-direction:column;flex:1;min-height:0;border-radius:0 0 12px 12px}.focus .panel-head,.focus .now-playing{display:none}.focus .studio-controls{display:none}.focus .grid-wrap{padding:0 8px;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}.focus .keyboard{height:100%;gap:4px;padding:0;grid-template-rows:21px repeat(3,minmax(44px,1fr))}.focus .pad{min-height:44px;height:100%;padding:3px}.focus .column-label{padding:1px 0;font-size:10px}.focus .source-label{font-size:11px;position:sticky;left:0;background:#151f34;z-index:2}.focus .source-label span:last-child{font-size:9px}.focus .keyboard-help{padding:3px 8px;min-height:36px;flex-wrap:nowrap;flex-shrink:0;gap:8px}.focus .keyboard-help>span,.focus .mobile-hint{display:none}.focus .source-pages{display:flex;align-items:center;gap:8px;font-size:11px;margin-right:auto}.source-pages button{min-width:40px;min-height:32px;padding:0 8px}.focus .keyboard-help .octave-control{font-size:10px}.focus .composition{margin:4px 0 0;border-radius:9px;flex-shrink:0}.focus .composition .track-wrap,.focus .composition .save-bar,.focus .composition .undo{display:none}.focus .transport{padding:4px 8px;flex-wrap:nowrap;gap:7px}.focus .transport button{font-size:11px;padding:6px 10px;min-height:40px}.focus .transport .clock{font-size:19px;min-width:56px}.focus .status{font-size:10px;min-height:18px;padding:0 8px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;flex-shrink:0}.focus .studio-controls.open{display:block;position:fixed;z-index:10;inset:48px max(12px,env(safe-area-inset-right)) 12px max(12px,env(safe-area-inset-left));background:#111a2e;border:1px solid #50617e;border-radius:12px;overflow:auto;box-shadow:0 0 0 100vmax #050916c9;padding-top:42px}.focus .settings-close{display:block;position:absolute;right:10px;top:5px;min-height:32px;padding:3px 12px}.focus .studio-controls .settings{padding-top:8px}.focus #settingsButton[aria-expanded=true]{color:var(--gold)}
 @media(orientation:portrait) and (max-width:900px){.orientation-tip{display:block}.studio-top strong{flex-basis:100%}}
@@ -67,7 +67,7 @@
 <div class="transport"><button id="record" class="record">● Enregistrer</button><button id="play" class="primary" disabled>▶ Écouter</button><button id="stop" disabled>■ Arrêter</button><span id="clock" class="clock mono">00:00</span></div>
 <div class="track-wrap"><div class="track"><canvas id="timeline" aria-label="Partition de la composition"></canvas><div class="track-empty" id="trackEmpty"><strong>Ta mélodie prendra forme ici.</strong><span>Appuie sur Enregistrer, puis joue sur le clavier.</span></div></div><div class="track-meta"><span id="noteCount">Aucune note</span><span id="trackState">Prise libre · sans grille imposée</span></div></div>
 <div class="undo" id="undoWrap" hidden><button class="small ghost" id="undo">↶ Annuler la modification</button></div>
-<div class="note-editor" id="noteEditor" hidden aria-label="Durée de la note sélectionnée"><strong id="selectedNoteLabel"></strong><label>Durée (s)<input id="noteDuration" type="number" min="0.025" step="0.05" inputmode="decimal"></label><button id="shortenNote" aria-label="Raccourcir la note">−</button><button id="lengthenNote" aria-label="Rallonger la note">+</button><button id="closeNoteEditor">Terminer</button><p>Touche une note, puis règle sa durée ou fais glisser son bord droit. Le bouton « Annuler la modification » permet de revenir en arrière.</p></div><div class="save-bar"><label class="sr-only" for="title">Titre de la composition</label><input id="title" type="text" maxlength="70" placeholder="Donne un titre à ta musique" value="Ma première exploration"><button id="save" disabled>Sauvegarder</button><button id="wav" class="export" disabled>↓ Audio WAV</button></div>
+<div class="note-editor" id="noteEditor" hidden aria-label="Note sélectionnée"><strong id="selectedNoteLabel"></strong><div class="note-group"><label>Début (s)<input id="noteStart" type="number" min="0" step="0.05" inputmode="decimal"></label><button id="earlierNote" aria-label="Avancer la note de 0,05 seconde">◀</button><button id="laterNote" aria-label="Retarder la note de 0,05 seconde">▶</button></div><div class="note-group"><label>Durée (s)<input id="noteDuration" type="number" min="0.025" step="0.05" inputmode="decimal"></label><button id="shortenNote" aria-label="Raccourcir la note">−</button><button id="lengthenNote" aria-label="Rallonger la note">+</button></div><div class="note-group"><span>Ligne</span><button id="noteRowUp" aria-label="Déplacer vers la ligne du dessus">↑</button><button id="noteRowDown" aria-label="Déplacer vers la ligne du dessous">↓</button></div><div class="note-group"><span>Octave</span><button id="noteOctaveDown" aria-label="Baisser la note d’une octave">−</button><button id="noteOctaveUp" aria-label="Monter la note d’une octave">+</button></div><button id="deleteNote" class="danger">Supprimer</button><button id="closeNoteEditor">Terminer</button><p>Fais glisser une note pour la déplacer dans le temps ou vers une autre ligne. Une fois la note sélectionnée, tire son bord droit pour changer sa durée. Touche un espace vide pour ajouter une note (touche d’abord « Terminer » si une note est sélectionnée). Le bouton « Annuler la modification » permet de revenir en arrière.</p></div><div class="save-bar"><label class="sr-only" for="title">Titre de la composition</label><input id="title" type="text" maxlength="70" placeholder="Donne un titre à ta musique" value="Ma première exploration"><button id="save" disabled>Sauvegarder</button><button id="wav" class="export" disabled>↓ Audio WAV</button></div>
 </section>
 <div id="status" class="status" role="status" aria-live="polite">Choisis une touche, ou écoute l’exemple pour commencer.</div>
 </div>
@@ -138,7 +138,7 @@ const PIANO_SAMPLES = [{"note":"A0","frequency":27.5,"data":"SUQzAwAAAAAASlRTU0U
 let pianoBank=null,pianoLoading=null;
 let paletteIndex = Math.max(0, PALETTES.findIndex(p => p.name === 'Sommeil'));
 let timbre = 'pure', keyboardOctave = 1, audio = null, master = null;
-let selectedNote=null,noteDrag=null,noteRects=[];
+let selectedNote=null,noteDrag=null,noteRects=[],timelineLayout=null;
 let take = null, previousTake = null, saved = [], recording = false, recordStart = 0;
 let recordPalette = null, recordTimbre = null, events = [], playback = null;
 let exporting = false, generation = 0, active = new Map(), paints = new Map();
@@ -403,6 +403,7 @@ function drawTimeline(){
   const t=recording?{notes:[...(recordBase?.notes.filter(n=>trackOf(n)!==selectedTrack)||[]),...events],palette:recordPalette,duration:Math.max(0,audio.currentTime-recordStart)}:take;
   const span=recording?Math.max(12,Math.ceil((audio.currentTime-recordStart)/6)*6):Math.max(12,noteDrag?.span||takeLength(t));
   const rows=t?t.palette.sources.length:6,cell=(h-25)/rows;
+  timelineLayout={span,rows,cell,w,h};
   ctx.strokeStyle='#202d43';ctx.lineWidth=.6;
   for(let i=1;i<rows;i++){ctx.beginPath();ctx.moveTo(0,i*cell);ctx.lineTo(w,i*cell);ctx.stroke();}
   const step=span>60?15:span>24?5:2;
@@ -422,9 +423,15 @@ function syncNoteEditor(){
   const busy=recording||!!playback||exporting;
   if(selectedNote&&!take?.notes.includes(selectedNote))selectedNote=null;
   $('noteEditor').hidden=!selectedNote;
-  for(const id of ['noteDuration','shortenNote','lengthenNote','closeNoteEditor'])$(id).disabled=busy;
+  for(const id of ['noteStart','earlierNote','laterNote','noteDuration','shortenNote','lengthenNote','noteRowUp','noteRowDown','noteOctaveDown','noteOctaveUp','deleteNote','closeNoteEditor'])$(id).disabled=busy;
   if(!selectedNote)return;
-  $('selectedNoteLabel').textContent='Piste '+(trackOf(selectedNote)+1)+' · '+formatHz(selectedNote.frequency)+' Hz';
+  const named=assignment(take.palette,selectedNote.source,selectedNote.octave);
+  $('selectedNoteLabel').textContent='Piste '+(trackOf(selectedNote)+1)+' · '+named.name+' · '+octaveText(named.octave)+' · '+formatHz(selectedNote.frequency)+' Hz';
+  if(document.activeElement!==$('noteStart'))$('noteStart').value=Number(selectedNote.start.toFixed(3));
+  $('noteStart').max=Math.max(0,MAX_SECONDS-selectedNote.duration);
+  const cols=registers(take.palette),ci=cols.indexOf(selectedNote.octave);
+  if(!busy){$('noteRowUp').disabled=selectedNote.source===0;$('noteRowDown').disabled=selectedNote.source>=take.palette.sources.length-1;
+    $('noteOctaveDown').disabled=!cols.slice(0,ci).some(o=>playableAt(selectedNote.source,o));$('noteOctaveUp').disabled=!cols.slice(ci+1).some(o=>playableAt(selectedNote.source,o));}
   if(document.activeElement!==$('noteDuration'))$('noteDuration').value=Number(selectedNote.duration.toFixed(3));
   $('noteDuration').max=MAX_SECONDS-selectedNote.start;
 }
@@ -438,6 +445,70 @@ function changeNoteDuration(value,before=null){
   take.duration=Math.min(MAX_SECONDS,Math.max(...take.notes.map(n=>n.start+n.duration))+silence);
   updateControls();drawTimeline();return true;
 }
+/* NOTE_MOVE_V1 : deplacer, changer de ligne ou d'octave, supprimer, ajouter. */
+function playableAt(source,column,p=take.palette){const a=assignment(p,source,column);return playable(a.frequency*2**a.octave);}
+/* Place la note sur une ligne ; garde l'octave voulue si elle est jouable, sinon la plus proche. */
+function placeNote(n,source,column,p=take.palette){
+  source=Math.max(0,Math.min(p.sources.length-1,source));
+  const cols=registers(p).filter(o=>playableAt(source,o,p)).sort((a,b)=>Math.abs(a-column)-Math.abs(b-column));
+  if(!cols.length)return false;const a=assignment(p,source,cols[0]);
+  n.source=source;n.octave=cols[0];n.frequency=a.frequency*2**a.octave;return true;
+}
+function editNote(mutate,before=null){
+  if(!selectedNote||recording||playback||exporting)return false;
+  const old={...selectedNote},snapshot=before||clone(take);
+  if(mutate(selectedNote)===false){Object.assign(selectedNote,old);return false;}
+  selectedNote.start=Math.max(0,Math.min(MAX_SECONDS-selectedNote.duration,Math.round(selectedNote.start*1000)/1000));
+  try{validTake(take);}catch(error){Object.assign(selectedNote,old);message(error.message);syncNoteEditor();drawTimeline();return false;}
+  if(!before){previousTake=snapshot;$('undoWrap').hidden=false;}
+  const silence=Math.max(0,snapshot.duration-Math.max(...snapshot.notes.map(n=>n.start+n.duration)));
+  take.duration=Math.min(MAX_SECONDS,Math.max(...take.notes.map(n=>n.start+n.duration))+silence);
+  updateControls();drawTimeline();return true;
+}
+async function previewNote(n){
+  try{const kind=kindFor(take,n);await ensureAudio(kind);if(kind==='piano')await preparePiano(audio);
+    const at=audio.currentTime+.02,v=voice(audio,master,n.frequency,kind,at,n.velocity*.5);v.release(at+Math.min(n.duration,.8));}catch(_){}
+}
+function moveNoteBy(rows){const n=selectedNote;if(editNote(x=>placeNote(x,x.source+rows,x.octave)))previewNote(n);}
+function shiftOctave(dir){
+  const n=selectedNote,cols=registers(take.palette),i=cols.indexOf(n.octave);
+  const next=(dir>0?cols.slice(i+1):cols.slice(0,i).reverse()).find(o=>playableAt(n.source,o));
+  if(next===undefined)return;if(editNote(x=>placeNote(x,x.source,next)))previewNote(n);
+}
+function deleteSelectedNote(){
+  if(!selectedNote||recording||playback||exporting)return;
+  if(take.notes.length<=1){message('Une composition garde au moins une note.');return;}
+  previousTake=clone(take);$('undoWrap').hidden=false;
+  take.notes.splice(take.notes.indexOf(selectedNote),1);selectedNote=null;
+  message('Note supprimée.');updateControls();drawTimeline();
+}
+function addNoteAt(x,y){
+  const L=timelineLayout;if(!L||y>L.h-25)return;
+  const source=Math.max(0,Math.min(take.palette.sources.length-1,Math.floor(y/L.cell)));
+  const start=Math.max(0,Math.min(MAX_SECONDS-.5,(x-8)/(L.w-16)*L.span));
+  const cols=registers(take.palette),wanted=cols.includes(keyboardOctave)?keyboardOctave:cols[0];
+  const n={track:selectedTrack,source,octave:wanted,frequency:0,start:Math.round(start*1000)/1000,duration:.5,velocity:1};
+  if(!placeNote(n,source,wanted)){message('Cette ligne n’a aucune octave jouable.');return;}
+  const before=clone(take);take.notes.push(n);
+  try{validTake(take);}catch(error){take.notes.pop();message(error.message);return;}
+  previousTake=before;$('undoWrap').hidden=false;
+  take.duration=Math.min(MAX_SECONDS,Math.max(take.duration,n.start+n.duration));
+  selectedNote=n;message('Note ajoutée. Fais-la glisser ou règle-la ci-dessous.');previewNote(n);
+}
+$('noteStart').onchange=()=>{const v=Number($('noteStart').value);if(!Number.isFinite(v)||!editNote(n=>{n.start=v;}))syncNoteEditor();};
+$('noteStart').onblur=syncNoteEditor;
+$('earlierNote').onclick=()=>editNote(n=>{n.start-=.05;});
+$('laterNote').onclick=()=>editNote(n=>{n.start+=.05;});
+$('noteRowUp').onclick=()=>moveNoteBy(-1);
+$('noteRowDown').onclick=()=>moveNoteBy(1);
+$('noteOctaveDown').onclick=()=>shiftOctave(-1);
+$('noteOctaveUp').onclick=()=>shiftOctave(1);
+$('deleteNote').onclick=deleteSelectedNote;
+document.addEventListener('keydown',e=>{
+  if(!selectedNote||(e.key!=='Delete'&&e.key!=='Backspace'))return;
+  const el=document.activeElement;if(el&&(el.tagName==='INPUT'||el.tagName==='SELECT'||el.tagName==='TEXTAREA'||el.isContentEditable))return;
+  e.preventDefault();deleteSelectedNote();
+});
 $('noteDuration').onchange=()=>{if(!changeNoteDuration(Number($('noteDuration').value)))syncNoteEditor();};
 $('noteDuration').onblur=syncNoteEditor;
 $('shortenNote').onclick=()=>changeNoteDuration(selectedNote.duration-.1);
@@ -448,19 +519,27 @@ $('timeline').addEventListener('pointerdown',e=>{
   drawTimeline();const box=e.currentTarget.getBoundingClientRect(),x=e.clientX-box.left,y=e.clientY-box.top;
   const hits=noteRects.filter(r=>x>=r.x-9&&x<=r.x+r.width+12&&Math.abs(y-r.y-r.height/2)<=Math.max(12,r.height/2));
   hits.sort((a,b)=>Math.abs(y-a.y-a.height/2)-Math.abs(y-b.y-b.height/2));
-  const hit=hits[0];selectedNote=hit?.note||null;
-  if(hit&&Math.abs(x-hit.x-hit.width)<=14){noteDrag={id:e.pointerId,x,start:hit.note.duration,span:hit.span,width:box.width-16,before:clone(take)};e.currentTarget.setPointerCapture(e.pointerId);}
+  const hit=hits[0],wasSelected=selectedNote;
+  if(!hit){if(wasSelected)selectedNote=null;else addNoteAt(x,y);syncNoteEditor();drawTimeline();return;}
+  selectedNote=hit.note;
+  const edge=wasSelected===hit.note&&x>=hit.x+hit.width-8&&x<=hit.x+hit.width+14;
+  noteDrag={id:e.pointerId,mode:edge?'resize':'move',x,y,start:edge?hit.note.duration:hit.note.start,source:hit.note.source,octave:hit.note.octave,span:hit.span,width:box.width-16,cell:timelineLayout.cell,before:clone(take),moving:false,changed:false};
+  e.currentTarget.setPointerCapture(e.pointerId);
   syncNoteEditor();drawTimeline();
 });
 $('timeline').addEventListener('pointermove',e=>{
   if(!noteDrag||e.pointerId!==noteDrag.id)return;
-  changeNoteDuration(noteDrag.start+(e.clientX-noteDrag.x)*noteDrag.span/noteDrag.width,noteDrag.before);
+  const d=noteDrag,box=e.currentTarget.getBoundingClientRect(),dx=e.clientX-box.left-d.x,dy=e.clientY-box.top-d.y;
+  if(d.mode==='resize'){if(changeNoteDuration(d.start+dx*d.span/d.width,d.before))d.changed=true;return;}
+  if(!d.moving&&Math.hypot(dx,dy)<6)return;d.moving=true;
+  const rows=Math.round(dy/d.cell);
+  if(editNote(n=>{n.start=d.start+dx*d.span/d.width;return placeNote(n,d.source+rows,d.octave);},d.before))d.changed=true;
 });
 function finishNoteDrag(e){
   if(!noteDrag||e.pointerId!==noteDrag.id)return;
   const d=noteDrag;noteDrag=null;
   if(e.type==='pointercancel'){const index=take.notes.indexOf(selectedNote);take=d.before;selectedNote=take.notes[index];}
-  else if(selectedNote.duration!==d.start){previousTake=d.before;$('undoWrap').hidden=false;}
+  else if(d.changed){previousTake=d.before;$('undoWrap').hidden=false;if(d.mode==='move'&&selectedNote&&(selectedNote.source!==d.source||selectedNote.octave!==d.octave))previewNote(selectedNote);}
   updateControls();drawTimeline();
 }
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('timeline').addEventListener(type,finishNoteDrag);
