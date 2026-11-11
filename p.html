@@ -83,7 +83,7 @@
   function parse(p) {
     try {
       var m = /^1\.([A-Za-z0-9_-]{4,2800})$/.exec(p); if (!m) return null;
-      var o = JSON.parse(b64d(m[1])); if (!o || !Array.isArray(o.s) || o.s.length < 1 || o.s.length > 8) return null;
+      var o = JSON.parse(b64d(m[1])); if (!o || !Array.isArray(o.s) || o.s.length < 1 || o.s.length > 15) return null; /* AURALIS_FAV_PLUS_V1 */
       var steps = [];
       for (var i = 0; i < o.s.length; i++) {
         var x = o.s[i]; if (!Array.isArray(x) || x.length < 2 || x.length > 3) return null;
