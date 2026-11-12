@@ -96,16 +96,62 @@
       return { name: clean(o.n, 24), steps: steps };
     } catch (e) { return null; }
   }
+  /* AURALIS_BIN_ATELIER_V1 : preregle de l'atelier (lien b1.), memes regles que l'app (atlParse). */
+  var TRACKS = { delta_1: "Brume des fougères|Fern Mist|Bruma de helechos", delta_2: "Marée lunaire|Lunar Tide|Marea lunar",
+    theta_1: "Cristal des sous-bois|Woodland Crystal|Cristal del bosque", theta_2: "L’arbre ancien|The Ancient Tree|El árbol antiguo",
+    alpha_1: "Handpan au ruisseau|Handpan by the Stream|Handpan junto al arroyo", alpha_2: "Lac de l’équilibre|Lake of Balance|Lago del equilibrio",
+    beta_1: "Crête à l’aube|Ridge at Dawn|Cresta al amanecer", beta_2: "L’élan de la vague|The Wave’s Momentum|El impulso de la ola" };
+  var TA = {
+    fr: { kind: "Préréglage de l'atelier", mode: "Type de son", bin: "Binaural", iso: "Isochrone", car: "Fréquence porteuse", beat: "Battement",
+          dur: "Durée", free: "Libre", music: "Musique", none: "Aucune musique", lin: "régulière", soft: "douce aux extrémités",
+          h1: "Préréglage partagé", lead: "Quelqu'un a partagé ce préréglage de l'atelier Auralis avec vous. Ouvrez-le dans l'app Auralis (avec Auralis Plus) pour l'écouter ou l'ajouter à vos préréglages." },
+    en: { kind: "Workshop preset", mode: "Sound type", bin: "Binaural", iso: "Isochronic", car: "Carrier frequency", beat: "Beat",
+          dur: "Length", free: "Open", music: "Music", none: "No music", lin: "steady", soft: "gentle at both ends",
+          h1: "Shared preset", lead: "Someone shared this Auralis workshop preset with you. Open it in the Auralis app (with Auralis Plus) to listen to it or add it to your presets." },
+    es: { kind: "Ajuste del taller", mode: "Tipo de sonido", bin: "Binaural", iso: "Isocrónico", car: "Frecuencia portadora", beat: "Pulso",
+          dur: "Duración", free: "Libre", music: "Música", none: "Sin música", lin: "regular", soft: "suave en los extremos",
+          h1: "Ajuste compartido", lead: "Alguien compartió con usted este ajuste del taller de Auralis. Ábralo en la app Auralis (con Auralis Plus) para escucharlo o añadirlo a sus ajustes." }
+  };
+  function parseAtl(p) {
+    try {
+      var m = /^b1\.([A-Za-z0-9_-]{4,1200})$/.exec(p); if (!m) return null;
+      var o = JSON.parse(b64d(m[1])); if (!o || typeof o !== "object") return null;
+      var num = function (v, lo, hi) { return typeof v === "number" && isFinite(v) && v >= lo && v <= hi; };
+      if (!num(o.c, 60, 500) || !num(o.d, 0, 1440) || o.d % 1 !== 0 || (o.m !== 0 && o.m !== 1)) return null;
+      var s = { iso: o.m === 1, car: o.c, dur: o.d, music: typeof o.u === "string" && TRACKS[o.u] ? o.u : "" };
+      if (Array.isArray(o.r)) {
+        if (o.r.length !== 4 || !num(o.r[0], .5, 30) || !num(o.r[1], .5, 30) || o.d < 1) return null;
+        s.from = o.r[0]; s.to = o.r[1]; s.back = o.r[2] === 1; s.soft = o.r[3] === 1;
+      } else { if (!num(o.b, .5, 30)) return null; s.beat = o.b; }
+      return { name: clean(o.n, 24), atl: s };
+    } catch (e) { return null; }
+  }
   function hz(f, d) {
     try { return Number(f).toLocaleString(lang(), { minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: false }); }
     catch (e) { return Number(f).toFixed(d); }
   }
 
   var payload = (location.hash || "").replace(/^#/, "").replace(/^p=/, "");
-  var proto = parse(payload);
+  var proto = parse(payload) || parseAtl(payload);
+  function hz2(v) { return hz(Math.round(v * 100) / 100, v % 1 ? (Math.round(v * 100) % 10 ? 2 : 1) : 0); }
+  function renderAtl() {
+    var l = lang(), A = TA[l], s = proto.atl, ol = $("pSteps"), li = l === "en" ? 1 : l === "es" ? 2 : 0;
+    var h1 = document.querySelector("main h1"), lead = document.querySelector("main .lead");
+    ["fr", "en", "es"].forEach(function (k) { h1.setAttribute("data-" + k, TA[k].h1); lead.setAttribute("data-" + k, TA[k].lead); });
+    h1.textContent = A.h1; lead.textContent = A.lead;
+    var beat = s.beat != null ? hz2(s.beat) + " Hz" : hz2(s.from) + " → " + hz2(s.to) + (s.back ? " → " + hz2(s.from) : "") + " Hz · " + (s.soft ? A.soft : A.lin);
+    var rows = [[A.mode, s.iso ? A.iso : A.bin], [A.car, hz2(s.car) + " Hz"], [A.beat, beat],
+      [A.dur, s.dur > 0 ? s.dur + " min" : A.free], [A.music, s.music ? TRACKS[s.music].split("|")[li] : A.none]];
+    $("pName").textContent = proto.name || A.kind; $("pSub").textContent = A.kind;
+    ol.textContent = "";
+    rows.forEach(function (r) { var e = document.createElement("li"), n = document.createElement("span"), h = document.createElement("span");
+      n.className = "pn"; n.textContent = r[0]; h.className = "ph"; h.textContent = r[1]; e.appendChild(n); e.appendChild(h); ol.appendChild(e); });
+    $("proto").classList.remove("hide"); $("actions").classList.remove("hide");
+  }
 
   function render() {
     if (!proto) { $("bad").classList.remove("hide"); return; }
+    if (proto.atl) { renderAtl(); return; }
     var L = T[lang()], tot = 0, ol = $("pSteps");
     $("pName").textContent = proto.name || L.unnamed;
     ol.textContent = "";
