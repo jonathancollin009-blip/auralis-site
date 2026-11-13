@@ -29,6 +29,7 @@
  */
 
 import { handleWeb } from "./web-auth.js";
+import { handleOutil } from "./outil.js";
 
 const MAX_EVENTS = 40;      // au-dela, lot suspect ou bogue cote client -- on tronque
 const MAX_STR = 64;         // longueur max d'un champ texte, evite tout abus
@@ -388,6 +389,10 @@ export default {
     if (url.pathname === "/.well-known/assetlinks.json") {
       return new Response(ASSETLINKS, { headers: WELL_KNOWN_HEADERS });
     }
+
+    // Page protegee /outil (mode d'emploi du studio audio, voir outil.js).
+    const outil = await handleOutil(request, env);
+    if (outil) return outil;
 
     // Abonnement web : verrou de /app, connexion, Stripe (voir web-auth.js).
     const web = await handleWeb(request, env);

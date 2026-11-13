@@ -10,6 +10,7 @@
 # televerser comme deux assets de plus, servis tels quels sur
 # aura-lis.ca/worker.js et aura-lis.ca/wrangler.jsonc.
 worker.js
+outil.js
 wrangler.jsonc
 
 # Dossier de travail cree par wrangler a chaque build (bundle + etat local) :
