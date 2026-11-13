@@ -73,7 +73,7 @@ function pageOutil() {
 <h1>Studio audio Auralis</h1>
 <p class="doux">Outil interne pour améliorer le rendu des pistes audio (Suno ou autres). Version d'essai.</p>
 
-<div class="carte"><b>Important.</b> L'outil ne fonctionne pas dans le navigateur, sur ce site. Il s'installe et tourne sur votre propre ordinateur (Windows) : vos fichiers audio n'en sortent jamais, et les originaux ne sont jamais modifiés. Les nouveaux fichiers sont écrits dans un dossier <code>output/studio_audio/</code>.</div>
+<div class="carte"><b>Important.</b> L'outil ne fonctionne pas dans le navigateur, sur ce site. Il s'installe et tourne sur votre propre ordinateur (Windows ou Mac) : vos fichiers audio n'en sortent jamais, et les originaux ne sont jamais modifiés. Les nouveaux fichiers sont écrits dans un dossier <code>output/studio_audio/</code>.</div>
 
 <h2>Ce que l'outil fait</h2>
 <ul>
@@ -85,7 +85,7 @@ function pageOutil() {
   <li><b>Écoute avant / après</b> directement dans la page.</li>
 </ul>
 
-<h2>Installation, pas à pas</h2>
+<h2>Sur Windows : installation, pas à pas</h2>
 <p class="doux">À faire une seule fois. Comptez 15 à 20 minutes. Rien de ce qui suit ne modifie vos fichiers personnels. Si une étape ne ressemble pas à ce qui est décrit, arrêtez-vous et écrivez à Jonathan avec une capture d'écran.</p>
 
 <div class="carte"><b>Étape 1 — Recevoir et placer le dossier</b>
@@ -142,7 +142,7 @@ function pageOutil() {
   <li>« Carte graphique : False » est normal si vous n'avez pas de carte NVIDIA. La séparation fonctionne quand même, mais beaucoup plus lentement (plusieurs minutes par chanson).</li>
 </ol></div>
 
-<h2>Utilisation, pas à pas</h2>
+<h2>Utilisation, pas à pas (Windows ; sur Mac, voir la section Mac)</h2>
 <div class="carte">
 <ol>
   <li>Dans le dossier de l'outil, ouvrez <code>tools</code>, puis <code>studio_audio</code>, et double-cliquez sur <code>Lancer le studio audio.bat</code>. (Même avertissement de Windows possible : « Informations complémentaires », puis « Exécuter quand même ».)</li>
@@ -158,7 +158,72 @@ function pageOutil() {
   <li><b>Quitter :</b> fermez la page du navigateur, puis la fenêtre noire (croix, ou touches <kbd>Ctrl</kbd> + <kbd>C</kbd>).</li>
 </ol></div>
 
-<h2>Si quelque chose ne va pas</h2>
+<h2>Sur Mac (MacBook Pro) : installation, pas à pas</h2>
+<p class="doux">À faire une seule fois, environ 20 minutes. Les étapes Windows plus haut ne vous concernent pas. Si une étape ne ressemble pas à ce qui est décrit, arrêtez-vous et écrivez à Jonathan avec une capture d'écran (touches <kbd>Cmd</kbd> + <kbd>Maj</kbd> + <kbd>4</kbd>).</p>
+
+<div class="carte"><b>Mac 1 — Placer le dossier</b>
+<ol>
+  <li>Double-cliquez sur le fichier <code>.zip</code> envoyé par Jonathan : un dossier apparaît à côté.</li>
+  <li>Glissez ce dossier dans <code>Documents</code>.</li>
+  <li>Ne déplacez pas les fichiers à l'intérieur. Vous devez y trouver un dossier <code>tools</code>, qui contient un dossier <code>studio_audio</code>.</li>
+</ol></div>
+
+<div class="carte"><b>Mac 2 — Ouvrir le Terminal</b>
+<p style="margin-top:6px">C'est la fenêtre où on tape du texte. On s'en sert pour les étapes suivantes.</p>
+<ol>
+  <li>Appuyez sur <kbd>Cmd</kbd> + <kbd>Espace</kbd> (la recherche Spotlight).</li>
+  <li>Tapez <code>Terminal</code>, puis appuyez sur <kbd>Entrée</kbd>. Une fenêtre s'ouvre.</li>
+  <li>Pour taper une commande : copiez la ligne grise, cliquez dans la fenêtre du Terminal, collez avec <kbd>Cmd</kbd> + <kbd>V</kbd>, puis appuyez sur <kbd>Entrée</kbd>.</li>
+</ol></div>
+
+<div class="carte"><b>Mac 3 — Installer Python</b>
+<ol>
+  <li>Allez sur <code>python.org/downloads</code>, cliquez sur le gros bouton jaune « Download Python », puis ouvrez le fichier <code>.pkg</code> téléchargé.</li>
+  <li>Cliquez sur « Continuer » à chaque fenêtre, acceptez la licence, puis « Installer » (le Mac demande votre mot de passe), puis « Fermer ».</li>
+  <li><b>Fermez le Terminal</b> (<kbd>Cmd</kbd> + <kbd>Q</kbd>) et rouvrez-le (Mac 2).</li>
+  <li><b>Vérification :</b> collez <code>python3 --version</code> puis Entrée. Vous devez voir « Python 3.… ».</li>
+</ol></div>
+
+<div class="carte"><b>Mac 4 — Installer les deux modules de calcul</b>
+<ol>
+  <li>Collez <code>python3 -m pip install numpy scipy</code> puis Entrée.</li>
+  <li>Attendez la fin (une à deux minutes). Le texte défile, c'est normal. C'est fini quand vous revoyez une ligne avec le curseur qui clignote, après « Successfully installed… ».</li>
+</ol></div>
+
+<div class="carte"><b>Mac 5 — Installer ffmpeg (avec Homebrew)</b>
+<p style="margin-top:6px">ffmpeg permet à l'outil de lire vos fichiers audio. On l'installe avec Homebrew, un installateur très courant sur Mac.</p>
+<ol>
+  <li>Collez cette commande, puis Entrée : <code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></li>
+  <li>Appuyez sur <kbd>Entrée</kbd> quand c'est demandé. Quand le Mac demande un mot de passe, tapez le mot de passe de votre Mac : <b>rien ne s'affiche pendant que vous tapez, c'est normal</b>. Terminez par Entrée.</li>
+  <li>Attendez (5 à 10 minutes). À la fin, Homebrew affiche « Next steps » avec deux lignes à copier-coller et exécuter l'une après l'autre. Faites-le (sur un Mac récent, ces lignes commencent par <code>echo</code> et <code>eval</code>).</li>
+  <li>Fermez le Terminal et rouvrez-le (Mac 2).</li>
+  <li>Collez <code>brew install ffmpeg</code> puis Entrée. Attendez la fin (quelques minutes).</li>
+  <li><b>Vérification :</b> collez <code>ffmpeg -version</code> puis Entrée. Vous devez voir « ffmpeg version … ».</li>
+</ol></div>
+
+<div class="carte"><b>Mac 6 — Lancer l'outil</b>
+<ol>
+  <li>Dans le Terminal, tapez <code>bash</code> suivi d'<b>un espace</b>, sans appuyer sur Entrée.</li>
+  <li>Dans le Finder, ouvrez le dossier <code>tools</code>, puis <code>studio_audio</code>. <b>Glissez</b> le fichier <code>Lancer le studio audio.command</code> dans la fenêtre du Terminal : son adresse s'écrit toute seule.</li>
+  <li>Appuyez sur <kbd>Entrée</kbd>. Le navigateur s'ouvre sur l'outil. <b>Laissez le Terminal ouvert</b> pendant toute l'utilisation. Pour quitter : fermez la page, puis appuyez sur <kbd>Ctrl</kbd> + <kbd>C</kbd> dans le Terminal.</li>
+  <li>Ensuite, l'utilisation est la même que sur Windows (section « Utilisation » plus haut), sauf que les fichiers produits sont dans <code>output</code>, puis <code>studio_audio</code>, dans le dossier de l'outil.</li>
+</ol></div>
+
+<div class="carte"><b>Mac 7 (facultative) — Séparation en pistes</b>
+<p style="margin-top:6px">Elle sépare voix, basse, batterie et autres instruments. Prévoyez quelques Go libres. Sur Mac, elle est plus lente (plusieurs minutes par chanson).</p>
+<ol>
+  <li>Faites comme à l'étape précédente, mais glissez le fichier <code>Installer la separation en pistes (Mac).command</code> après <code>bash </code>.</li>
+  <li>Attendez 5 à 15 minutes sans fermer le Terminal. C'est fini quand « Installé. » s'affiche.</li>
+</ol></div>
+
+<div class="carte"><b>Si quelque chose ne va pas sur Mac</b><ul>
+  <li><b>« command not found: python3 »</b> : refaites Mac 3, puis fermez et rouvrez le Terminal.</li>
+  <li><b>« No module named numpy »</b> : refaites Mac 4.</li>
+  <li><b>« command not found: brew » ou « ffmpeg »</b> : refaites Mac 5, en exécutant bien les lignes « Next steps », puis fermez et rouvrez le Terminal.</li>
+  <li><b>« Décodage impossible »</b> : ffmpeg est absent ; refaites Mac 5.</li>
+</ul></div>
+
+<h2>Si quelque chose ne va pas (Windows)</h2>
 <div class="carte"><ul>
   <li><b>« Python n'est pas reconnu… »</b> : Python n'est pas installé, ou la case « Add python.exe to PATH » n'était pas cochée. Refaites l'étape 2.</li>
   <li><b>« No module named numpy »</b> : refaites l'étape 4.</li>
