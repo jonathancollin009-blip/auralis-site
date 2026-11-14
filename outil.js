@@ -142,20 +142,26 @@ function pageOutil() {
   <li>« Carte graphique : False » est normal si vous n'avez pas de carte NVIDIA. La séparation fonctionne quand même, mais beaucoup plus lentement (plusieurs minutes par chanson).</li>
 </ol></div>
 
+<div class="carte"><b>Étape 7 — Créer l'icône sur le bureau</b>
+<ol>
+  <li>Dans le dossier de l'outil, ouvrez <code>tools</code>, puis <code>studio_audio</code>.</li>
+  <li>Double-cliquez sur <code>Creer l'icone sur le bureau.bat</code> (même avertissement de Windows possible : « Informations complémentaires », puis « Exécuter quand même »).</li>
+  <li>La fenêtre noire affiche « C'est fait ». Appuyez sur une touche pour la fermer. Une icône <b>« Studio audio Auralis »</b> est maintenant sur votre bureau.</li>
+</ol></div>
+
 <h2>Utilisation, pas à pas (Windows ; sur Mac, voir la section Mac)</h2>
 <div class="carte">
 <ol>
-  <li>Dans le dossier de l'outil, ouvrez <code>tools</code>, puis <code>studio_audio</code>, et double-cliquez sur <code>Lancer le studio audio.bat</code>. (Même avertissement de Windows possible : « Informations complémentaires », puis « Exécuter quand même ».)</li>
-  <li>Une <b>fenêtre noire</b> s'ouvre : <b>laissez-la ouverte</b> pendant toute l'utilisation. Elle fait fonctionner l'outil.</li>
-  <li>Votre navigateur s'ouvre tout seul sur l'outil (adresse <code>127.0.0.1</code> suivie d'un numéro, comme 8791). S'il ne s'ouvre pas, copiez cette adresse depuis la fenêtre noire dans la barre d'adresse.</li>
-  <li><b>Charger une chanson :</b> glissez un fichier audio dans la page, ou utilisez le bouton de choix de fichier.</li>
-  <li><b>Lire les mesures :</b> l'outil analyse la piste et affiche ses notes, avec leur écart en Hz par rapport à la grille Factor 9.</li>
-  <li><b>Choisir les traitements :</b> chaque carte a une case à cocher en haut. Cochez ceux que vous voulez essayer. Pour le réaccordage, ouvrez la carte « Réaccorder sur la grille Factor 9 » et cochez-la.</li>
-  <li>Cliquez sur <b>« Traiter la piste »</b> et attendez (de quelques secondes à quelques minutes).</li>
-  <li><b>Écouter :</b> comparez « avant » et « après ». Utilisez des écouteurs ou des moniteurs de qualité si possible.</li>
-  <li>Cliquez sur <b>« Mesurer la version traitée »</b> pour voir où tombent maintenant les notes sur la grille.</li>
+  <li><b>Ouvrir :</b> double-cliquez sur l'icône <b>« Studio audio Auralis »</b> du bureau. L'outil s'ouvre dans sa propre fenêtre, comme un logiciel.</li>
+  <li><b>Charger une chanson et ses pistes Suno :</b> dans l'explorateur, sélectionnez la chanson complète <b>et</b> ses pistes (par exemple « Titre.wav », « Titre (Bass).wav », « Titre (Vocals).wav »…), faites <kbd>Ctrl</kbd> + <kbd>C</kbd>, puis cliquez dans la fenêtre du studio et faites <kbd>Ctrl</kbd> + <kbd>V</kbd>. Vous pouvez aussi les glisser toutes ensemble dans la zone en pointillés du haut. Une seule chanson à la fois : une nouvelle chanson remplace la précédente.</li>
+  <li><b>Lire les mesures :</b> l'outil analyse la chanson. Cliquez sur « Mesurer la piste complète » pour voir ses notes et leur écart en Hz par rapport à la grille Factor 9.</li>
+  <li><b>Choisir les traitements :</b> chaque carte a une case à cocher en haut. Cochez ceux que vous voulez essayer, par exemple « Réaccorder sur la grille Factor 9 ».</li>
+  <li>Cliquez sur <b>« Traiter la piste »</b> (tout en bas) et attendez « Traitement terminé. » à côté du bouton (de quelques secondes à une minute).</li>
+  <li><b>Écouter :</b> dans « Écoute », comparez « Original » et « Traité ». Utilisez des écouteurs ou des moniteurs de qualité si possible.</li>
+  <li>Cliquez sur <b>« Mesurer la version traitée »</b> pour voir où tombent maintenant les notes sur la grille (« Exact » = à 0,1 Hz près).</li>
   <li><b>Retrouver les fichiers :</b> les nouvelles pistes sont dans le dossier de l'outil, dans <code>output</code>, puis <code>studio_audio</code>. Vos fichiers d'origine ne sont jamais modifiés.</li>
-  <li><b>Quitter :</b> fermez la page du navigateur, puis la fenêtre noire (croix, ou touches <kbd>Ctrl</kbd> + <kbd>C</kbd>).</li>
+  <li><b>Quitter :</b> fermez simplement la fenêtre du studio.</li>
+  <li>Si un bandeau rouge apparaît en haut de la page, suivez ce qu'il dit (en général : fermer la fenêtre et rouvrir l'icône).</li>
 </ol></div>
 
 <h2>Sur Mac (MacBook Pro) : installation, pas à pas</h2>
@@ -205,8 +211,11 @@ function pageOutil() {
 <ol>
   <li>Dans le Terminal, tapez <code>bash</code> suivi d'<b>un espace</b>, sans appuyer sur Entrée.</li>
   <li>Dans le Finder, ouvrez le dossier <code>tools</code>, puis <code>studio_audio</code>. <b>Glissez</b> le fichier <code>Lancer le studio audio.command</code> dans la fenêtre du Terminal : son adresse s'écrit toute seule.</li>
-  <li>Appuyez sur <kbd>Entrée</kbd>. Le navigateur s'ouvre sur l'outil. <b>Laissez le Terminal ouvert</b> pendant toute l'utilisation. Pour quitter : fermez la page, puis appuyez sur <kbd>Ctrl</kbd> + <kbd>C</kbd> dans le Terminal.</li>
-  <li>Ensuite, l'utilisation est la même que sur Windows (section « Utilisation » plus haut), sauf que les fichiers produits sont dans <code>output</code>, puis <code>studio_audio</code>, dans le dossier de l'outil.</li>
+  <li>Appuyez sur <kbd>Entrée</kbd>. L'outil s'ouvre dans sa propre fenêtre (si Google Chrome est installé ; sinon dans un onglet de Safari). <b>Laissez le Terminal ouvert</b> pendant toute l'utilisation.</li>
+  <li><b>Charger une chanson et ses pistes Suno :</b> dans le Finder, sélectionnez la chanson complète <b>et</b> ses pistes, puis glissez-les toutes ensemble dans la zone en pointillés du haut de l'outil.</li>
+  <li>Ensuite, l'utilisation est la même que sur Windows (section « Utilisation » plus haut, à partir de « Lire les mesures »). Les fichiers produits sont dans <code>output</code>, puis <code>studio_audio</code>, dans le dossier de l'outil.</li>
+  <li><b>Quitter :</b> fermez la fenêtre de l'outil, puis le Terminal (<kbd>Cmd</kbd> + <kbd>Q</kbd>). Si l'outil était dans Safari, appuyez d'abord sur <kbd>Ctrl</kbd> + <kbd>C</kbd> dans le Terminal.</li>
+  <li><b>Conseil :</b> installez Google Chrome (google.com/chrome) pour avoir l'outil dans sa propre fenêtre.</li>
 </ol></div>
 
 <div class="carte"><b>Mac 7 (facultative) — Séparation en pistes</b>
