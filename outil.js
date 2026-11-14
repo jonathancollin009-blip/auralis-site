@@ -71,175 +71,67 @@ function pageConnexion(erreur) {
 function pageOutil() {
   return enveloppe("Studio audio Auralis", `
 <h1>Studio audio Auralis</h1>
-<p class="doux">Outil interne pour améliorer le rendu des pistes audio (Suno ou autres). Version d'essai.</p>
+<p class="doux">Mode d'emploi de l'outil interne pour améliorer le rendu des pistes audio (Suno ou autres). Version d'essai.</p>
 
-<div class="carte"><b>Important.</b> L'outil ne fonctionne pas dans le navigateur, sur ce site. Il s'installe et tourne sur votre propre ordinateur (Windows ou Mac) : vos fichiers audio n'en sortent jamais, et les originaux ne sont jamais modifiés. Les nouveaux fichiers sont écrits dans un dossier <code>output/studio_audio/</code>.</div>
+<div class="carte"><b>Important.</b> L'outil n'est pas un site : c'est un logiciel qui tourne sur votre ordinateur. Vos fichiers audio n'en sortent jamais et vos originaux ne sont jamais modifiés. Les nouveaux fichiers sont écrits dans un dossier à part (voir « Retrouver vos fichiers »).</div>
 
 <h2>Ce que l'outil fait</h2>
 <ul>
   <li><b>Analyse</b> d'une piste : niveau, fréquences, problèmes éventuels.</li>
   <li><b>Mesure contre la grille Factor 9</b> : toutes les notes détectées, avec leur écart en Hz par rapport à la case la plus proche (précision de 0,1 Hz), pour le mélange ou piste par piste.</li>
   <li><b>Réaccordage automatique</b> sur la grille Factor 9 : chaque note tenue, avec ses harmoniques, est déplacée vers la case choisie (12 menus réglables, ou « Ne pas modifier »).</li>
-  <li><b>Séparation en pistes</b> (voix, basse, batterie, autres) ou import de pistes déjà séparées par Suno.</li>
+  <li><b>Import des pistes séparées par Suno</b> (voix, basse, batterie, guitare…). La séparation automatique en pistes n'est pas incluse dans l'application Mac.</li>
   <li><b>Nettoyage</b> des artefacts, nettoyage des graves, réverbération et <b>mastering</b>.</li>
-  <li><b>Écoute avant / après</b> directement dans la page.</li>
+  <li><b>Écoute avant / après</b> directement dans la fenêtre.</li>
 </ul>
 
-<h2>Sur Windows : installation, pas à pas</h2>
-<p class="doux">À faire une seule fois. Comptez 15 à 20 minutes. Rien de ce qui suit ne modifie vos fichiers personnels. Si une étape ne ressemble pas à ce qui est décrit, arrêtez-vous et écrivez à Jonathan avec une capture d'écran.</p>
-
-<div class="carte"><b>Étape 1 — Recevoir et placer le dossier</b>
+<h2>1. Ouvrir l'outil</h2>
+<div class="carte">
+<p style="margin-top:0"><b>Sur Mac</b> (application « Studio audio Auralis », reçue par WeTransfer) :</p>
 <ol>
-  <li>Jonathan vous envoie un fichier <code>.zip</code> (le dossier de l'outil).</li>
-  <li>Faites un <b>clic droit</b> sur le fichier, puis <b>« Extraire tout… »</b>, puis <b>« Extraire »</b>.</li>
-  <li>Déplacez le dossier obtenu à un endroit simple, par exemple directement dans <code>Documents</code>. Évitez le bureau et les dossiers synchronisés (OneDrive).</li>
-  <li>Ne changez pas le contenu du dossier et ne déplacez pas les fichiers à l'intérieur. Vous devez y trouver un dossier <code>tools</code>, qui contient un dossier <code>studio_audio</code>.</li>
-</ol></div>
+  <li>Double-cliquez sur le fichier <code>.zip</code> reçu : l'application « Studio audio Auralis » apparaît à côté.</li>
+  <li>Glissez-la dans le dossier <b>Applications</b> (colonne de gauche du Finder). À faire une seule fois.</li>
+  <li>Double-cliquez dessus. Au premier lancement, le Mac peut proposer d'installer <b>Rosetta</b> : cliquez sur « Installer », tapez le mot de passe de votre session, et attendez. Si macOS demande de confirmer l'ouverture, cliquez sur <b>Ouvrir</b>.</li>
+  <li>Une fenêtre « Studio audio Auralis » s'ouvre : c'est l'outil.</li>
+</ol>
+<p><b>Sur Windows</b> (ordinateur de Jonathan) : double-cliquez sur l'icône « Studio audio Auralis » du bureau.</p>
+<p style="margin-bottom:0"><b>Pour fermer :</b> fermez simplement la fenêtre de l'outil.</p>
+</div>
 
-<div class="carte"><b>Étape 2 — Installer Python</b>
-<p style="margin-top:6px">Python est le moteur qui fait fonctionner l'outil.</p>
-<ol>
-  <li>Allez sur <code>python.org/downloads</code> et cliquez sur le gros bouton jaune « Download Python ».</li>
-  <li>Ouvrez le fichier téléchargé.</li>
-  <li><b>Très important :</b> dans la première fenêtre, en bas, <b>cochez la case « Add python.exe to PATH »</b> (« Ajouter python.exe au PATH »).</li>
-  <li>Cliquez sur <b>« Install Now »</b>, acceptez la question de Windows (« Oui »), attendez, puis cliquez sur <b>« Close »</b>.</li>
-</ol></div>
-
-<div class="carte"><b>Étape 3 — Ouvrir une fenêtre de commandes</b>
-<p style="margin-top:6px">C'est la fenêtre noire où on tape du texte. On s'en sert pour les étapes 4 et 5.</p>
-<ol>
-  <li>Appuyez sur la touche <kbd>Windows</kbd> du clavier (entre Ctrl et Alt).</li>
-  <li>Tapez <code>cmd</code>.</li>
-  <li>Cliquez sur <b>« Invite de commandes »</b>. Une fenêtre noire s'ouvre.</li>
-  <li>Pour taper une commande : copiez la ligne grise, faites un <b>clic droit</b> dans la fenêtre noire (cela colle le texte), puis appuyez sur <kbd>Entrée</kbd>.</li>
-  <li><b>Vérification :</b> collez <code>python --version</code> puis Entrée. Vous devez voir « Python 3.… ». Si le message dit que Python est introuvable, refaites l'étape 2 en cochant bien la case « Add python.exe to PATH ».</li>
-</ol></div>
-
-<div class="carte"><b>Étape 4 — Installer les deux modules de calcul</b>
-<p style="margin-top:6px">Dans la même fenêtre noire :</p>
-<ol>
-  <li>Collez <code>pip install numpy scipy</code> puis Entrée.</li>
-  <li>Attendez la fin (une à deux minutes). Le texte défile, c'est normal. C'est fini quand vous revoyez la ligne avec le curseur qui clignote, après un message « Successfully installed… ».</li>
-</ol></div>
-
-<div class="carte"><b>Étape 5 — Installer ffmpeg</b>
-<p style="margin-top:6px">ffmpeg permet à l'outil de lire vos fichiers audio (mp3, wav, m4a…).</p>
-<ol>
-  <li>Dans la fenêtre noire, collez <code>winget install Gyan.FFmpeg</code> puis Entrée.</li>
-  <li>Si Windows pose une question (« Y/N » ou « O/N »), tapez <code>Y</code> (ou <code>O</code>) puis Entrée.</li>
-  <li>Attendez le message « Installé correctement » (« Successfully installed »).</li>
-  <li><b>Fermez la fenêtre noire</b> avec la croix, puis rouvrez-en une (étape 3). C'est nécessaire pour que Windows reconnaisse ffmpeg.</li>
-  <li><b>Vérification :</b> collez <code>ffmpeg -version</code> puis Entrée. Vous devez voir « ffmpeg version … ». Si winget n'existe pas sur votre ordinateur, dites-le à Jonathan.</li>
-</ol></div>
-
-<div class="carte"><b>Étape 6 (facultative) — Séparation en pistes</b>
-<p style="margin-top:6px">Elle sépare voix, basse, batterie et autres instruments. Elle n'est pas nécessaire pour mesurer les notes, nettoyer, masteriser ou réaccorder le mélange complet. Elle est utile pour réaccorder instrument par instrument.</p>
-<ol>
-  <li>Prévoyez <b>5 Go libres</b> sur le disque et une bonne connexion internet.</li>
-  <li>Dans le dossier de l'outil, ouvrez <code>tools</code>, puis <code>studio_audio</code>.</li>
-  <li>Double-cliquez sur <code>Installer la separation en pistes.bat</code>. Si Windows affiche « Windows a protégé votre ordinateur », cliquez sur <b>« Informations complémentaires »</b>, puis <b>« Exécuter quand même »</b>.</li>
-  <li>Une fenêtre noire s'ouvre et affiche beaucoup de texte pendant 5 à 15 minutes. <b>Ne la fermez pas.</b> C'est fini quand elle affiche « Installé. Carte graphique : True » (ou False), puis « Appuyez sur une touche ». Appuyez sur une touche.</li>
-  <li>« Carte graphique : False » est normal si vous n'avez pas de carte NVIDIA. La séparation fonctionne quand même, mais beaucoup plus lentement (plusieurs minutes par chanson).</li>
-</ol></div>
-
-<div class="carte"><b>Étape 7 — Créer l'icône sur le bureau</b>
-<ol>
-  <li>Dans le dossier de l'outil, ouvrez <code>tools</code>, puis <code>studio_audio</code>.</li>
-  <li>Double-cliquez sur <code>Creer l'icone sur le bureau.bat</code> (même avertissement de Windows possible : « Informations complémentaires », puis « Exécuter quand même »).</li>
-  <li>La fenêtre noire affiche « C'est fait ». Appuyez sur une touche pour la fermer. Une icône <b>« Studio audio Auralis »</b> est maintenant sur votre bureau.</li>
-</ol></div>
-
-<h2>Utilisation, pas à pas (Windows ; sur Mac, voir la section Mac)</h2>
+<h2>2. Charger une chanson et ses pistes Suno</h2>
 <div class="carte">
 <ol>
-  <li><b>Ouvrir :</b> double-cliquez sur l'icône <b>« Studio audio Auralis »</b> du bureau. L'outil s'ouvre dans sa propre fenêtre, comme un logiciel.</li>
-  <li><b>Charger une chanson et ses pistes Suno :</b> dans l'explorateur, sélectionnez la chanson complète <b>et</b> ses pistes (par exemple « Titre.wav », « Titre (Bass).wav », « Titre (Vocals).wav »…), faites <kbd>Ctrl</kbd> + <kbd>C</kbd>, puis cliquez dans la fenêtre du studio et faites <kbd>Ctrl</kbd> + <kbd>V</kbd>. Vous pouvez aussi les glisser toutes ensemble dans la zone en pointillés du haut. Une seule chanson à la fois : une nouvelle chanson remplace la précédente.</li>
-  <li><b>Lire les mesures :</b> l'outil analyse la chanson. Cliquez sur « Mesurer la piste complète » pour voir ses notes et leur écart en Hz par rapport à la grille Factor 9.</li>
-  <li><b>Choisir les traitements :</b> chaque carte a une case à cocher en haut. Cochez ceux que vous voulez essayer, par exemple « Réaccorder sur la grille Factor 9 ».</li>
-  <li>Cliquez sur <b>« Traiter la piste »</b> (tout en bas) et attendez « Traitement terminé. » à côté du bouton (de quelques secondes à une minute).</li>
-  <li><b>Écouter :</b> dans « Écoute », comparez « Original » et « Traité ». Utilisez des écouteurs ou des moniteurs de qualité si possible.</li>
-  <li>Cliquez sur <b>« Mesurer la version traitée »</b> pour voir où tombent maintenant les notes sur la grille (« Exact » = à 0,1 Hz près).</li>
-  <li><b>Retrouver les fichiers :</b> les nouvelles pistes sont dans le dossier de l'outil, dans <code>output</code>, puis <code>studio_audio</code>. Vos fichiers d'origine ne sont jamais modifiés.</li>
-  <li><b>Quitter :</b> fermez simplement la fenêtre du studio.</li>
-  <li>Si un bandeau rouge apparaît en haut de la page, suivez ce qu'il dit (en général : fermer la fenêtre et rouvrir l'icône).</li>
+  <li>Dans Suno, téléchargez la chanson complète en WAV et, si vous voulez traiter les pistes une par une, ses pistes séparées (« Titre (Bass).wav », « Titre (Vocals).wav »…).</li>
+  <li>Dans le Finder (ou l'Explorateur), sélectionnez la chanson <b>et</b> ses pistes, puis <b>glissez-les toutes ensemble</b> dans la zone en pointillés du haut de la fenêtre. (Sous Windows, <kbd>Ctrl</kbd> + <kbd>C</kbd> puis <kbd>Ctrl</kbd> + <kbd>V</kbd> fonctionne aussi.)</li>
+  <li>La ligne « Chanson en cours » indique ce qui est chargé. <b>Une seule chanson à la fois :</b> une nouvelle chanson remplace la précédente.</li>
 </ol></div>
 
-<h2>Sur Mac (MacBook Pro) : installation, pas à pas</h2>
-<p class="doux">À faire une seule fois, environ 20 minutes. Les étapes Windows plus haut ne vous concernent pas. Si une étape ne ressemble pas à ce qui est décrit, arrêtez-vous et écrivez à Jonathan avec une capture d'écran (touches <kbd>Cmd</kbd> + <kbd>Maj</kbd> + <kbd>4</kbd>).</p>
-
-<div class="carte"><b>Mac 1 — Placer le dossier</b>
+<h2>3. Mesurer, traiter, vérifier</h2>
+<div class="carte">
 <ol>
-  <li>Double-cliquez sur le fichier <code>.zip</code> envoyé par Jonathan : un dossier apparaît à côté.</li>
-  <li>Glissez ce dossier dans <code>Documents</code>.</li>
-  <li>Ne déplacez pas les fichiers à l'intérieur. Vous devez y trouver un dossier <code>tools</code>, qui contient un dossier <code>studio_audio</code>.</li>
+  <li>Cliquez sur <b>« Mesurer la piste complète »</b> pour voir les notes et leur écart en Hz par rapport à la grille Factor 9.</li>
+  <li>Cochez les traitements voulus (case en haut de chaque carte), par exemple « Réaccorder sur la grille Factor 9 », et réglez les 12 menus de notes si besoin.</li>
+  <li>Cliquez sur <b>« Traiter la piste »</b> (tout en bas) et attendez « Traitement terminé. » à côté du bouton : de quelques secondes à une minute.</li>
+  <li>Dans « Écoute », comparez « Original » et « Traité » (écouteurs ou moniteurs de qualité si possible).</li>
+  <li>Cliquez sur <b>« Mesurer la version traitée »</b> : « Exact » veut dire à 0,1 Hz près de la grille.</li>
 </ol></div>
 
-<div class="carte"><b>Mac 2 — Ouvrir le Terminal</b>
-<p style="margin-top:6px">C'est la fenêtre où on tape du texte. On s'en sert pour les étapes suivantes.</p>
-<ol>
-  <li>Appuyez sur <kbd>Cmd</kbd> + <kbd>Espace</kbd> (la recherche Spotlight).</li>
-  <li>Tapez <code>Terminal</code>, puis appuyez sur <kbd>Entrée</kbd>. Une fenêtre s'ouvre.</li>
-  <li>Pour taper une commande : copiez la ligne grise, cliquez dans la fenêtre du Terminal, collez avec <kbd>Cmd</kbd> + <kbd>V</kbd>, puis appuyez sur <kbd>Entrée</kbd>.</li>
-</ol></div>
-
-<div class="carte"><b>Mac 3 — Installer Python</b>
-<ol>
-  <li>Allez sur <code>python.org/downloads</code>, cliquez sur le gros bouton jaune « Download Python », puis ouvrez le fichier <code>.pkg</code> téléchargé.</li>
-  <li>Cliquez sur « Continuer » à chaque fenêtre, acceptez la licence, puis « Installer » (le Mac demande votre mot de passe), puis « Fermer ».</li>
-  <li><b>Fermez le Terminal</b> (<kbd>Cmd</kbd> + <kbd>Q</kbd>) et rouvrez-le (Mac 2).</li>
-  <li><b>Vérification :</b> collez <code>python3 --version</code> puis Entrée. Vous devez voir « Python 3.… ».</li>
-</ol></div>
-
-<div class="carte"><b>Mac 4 — Installer les deux modules de calcul</b>
-<ol>
-  <li>Collez <code>python3 -m pip install numpy scipy</code> puis Entrée.</li>
-  <li>Attendez la fin (une à deux minutes). Le texte défile, c'est normal. C'est fini quand vous revoyez une ligne avec le curseur qui clignote, après « Successfully installed… ».</li>
-</ol></div>
-
-<div class="carte"><b>Mac 5 — Installer ffmpeg (avec Homebrew)</b>
-<p style="margin-top:6px">ffmpeg permet à l'outil de lire vos fichiers audio. On l'installe avec Homebrew, un installateur très courant sur Mac.</p>
-<ol>
-  <li>Collez cette commande, puis Entrée : <code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></li>
-  <li>Appuyez sur <kbd>Entrée</kbd> quand c'est demandé. Quand le Mac demande un mot de passe, tapez le mot de passe de votre Mac : <b>rien ne s'affiche pendant que vous tapez, c'est normal</b>. Terminez par Entrée.</li>
-  <li>Attendez (5 à 10 minutes). À la fin, Homebrew affiche « Next steps » avec deux lignes à copier-coller et exécuter l'une après l'autre. Faites-le (sur un Mac récent, ces lignes commencent par <code>echo</code> et <code>eval</code>).</li>
-  <li>Fermez le Terminal et rouvrez-le (Mac 2).</li>
-  <li>Collez <code>brew install ffmpeg</code> puis Entrée. Attendez la fin (quelques minutes).</li>
-  <li><b>Vérification :</b> collez <code>ffmpeg -version</code> puis Entrée. Vous devez voir « ffmpeg version … ».</li>
-</ol></div>
-
-<div class="carte"><b>Mac 6 — Lancer l'outil</b>
-<ol>
-  <li>Dans le Terminal, tapez <code>bash</code> suivi d'<b>un espace</b>, sans appuyer sur Entrée.</li>
-  <li>Dans le Finder, ouvrez le dossier <code>tools</code>, puis <code>studio_audio</code>. <b>Glissez</b> le fichier <code>Lancer le studio audio.command</code> dans la fenêtre du Terminal : son adresse s'écrit toute seule.</li>
-  <li>Appuyez sur <kbd>Entrée</kbd>. L'outil s'ouvre dans sa propre fenêtre (si Google Chrome est installé ; sinon dans un onglet de Safari). <b>Laissez le Terminal ouvert</b> pendant toute l'utilisation.</li>
-  <li><b>Charger une chanson et ses pistes Suno :</b> dans le Finder, sélectionnez la chanson complète <b>et</b> ses pistes, puis glissez-les toutes ensemble dans la zone en pointillés du haut de l'outil.</li>
-  <li>Ensuite, l'utilisation est la même que sur Windows (section « Utilisation » plus haut, à partir de « Lire les mesures »). Les fichiers produits sont dans <code>output</code>, puis <code>studio_audio</code>, dans le dossier de l'outil.</li>
-  <li><b>Quitter :</b> fermez la fenêtre de l'outil, puis le Terminal (<kbd>Cmd</kbd> + <kbd>Q</kbd>). Si l'outil était dans Safari, appuyez d'abord sur <kbd>Ctrl</kbd> + <kbd>C</kbd> dans le Terminal.</li>
-  <li><b>Conseil :</b> installez Google Chrome (google.com/chrome) pour avoir l'outil dans sa propre fenêtre.</li>
-</ol></div>
-
-<div class="carte"><b>Mac 7 (facultative) — Séparation en pistes</b>
-<p style="margin-top:6px">Elle sépare voix, basse, batterie et autres instruments. Prévoyez quelques Go libres. Sur Mac, elle est plus lente (plusieurs minutes par chanson).</p>
-<ol>
-  <li>Faites comme à l'étape précédente, mais glissez le fichier <code>Installer la separation en pistes (Mac).command</code> après <code>bash </code>.</li>
-  <li>Attendez 5 à 15 minutes sans fermer le Terminal. C'est fini quand « Installé. » s'affiche.</li>
-</ol></div>
-
-<div class="carte"><b>Si quelque chose ne va pas sur Mac</b><ul>
-  <li><b>« command not found: python3 »</b> : refaites Mac 3, puis fermez et rouvrez le Terminal.</li>
-  <li><b>« No module named numpy »</b> : refaites Mac 4.</li>
-  <li><b>« command not found: brew » ou « ffmpeg »</b> : refaites Mac 5, en exécutant bien les lignes « Next steps », puis fermez et rouvrez le Terminal.</li>
-  <li><b>« Décodage impossible »</b> : ffmpeg est absent ; refaites Mac 5.</li>
+<h2>4. Retrouver vos fichiers</h2>
+<div class="carte">
+<ul style="margin:0">
+  <li><b>Mac :</b> dans le dossier <code>Documents</code>, puis <code>Studio audio Auralis</code>.</li>
+  <li><b>Windows :</b> dans le dossier de l'outil, puis <code>output</code>, puis <code>studio_audio</code>.</li>
+  <li>Vos fichiers d'origine ne sont jamais modifiés.</li>
 </ul></div>
 
-<h2>Si quelque chose ne va pas (Windows)</h2>
-<div class="carte"><ul>
-  <li><b>« Python n'est pas reconnu… »</b> : Python n'est pas installé, ou la case « Add python.exe to PATH » n'était pas cochée. Refaites l'étape 2.</li>
-  <li><b>« No module named numpy »</b> : refaites l'étape 4.</li>
-  <li><b>« Décodage impossible » ou rien ne se charge</b> : ffmpeg est absent. Refaites l'étape 5, sans oublier de rouvrir la fenêtre noire.</li>
-  <li><b>La page ne s'ouvre pas</b> : regardez l'adresse écrite dans la fenêtre noire et copiez-la dans votre navigateur.</li>
-  <li><b>Un traitement est très lent</b> : c'est normal pour la séparation en pistes sans carte graphique NVIDIA. Attendez, ne fermez rien.</li>
-  <li><b>Dans tous les cas</b> : prenez une capture d'écran (touches <kbd>Windows</kbd> + <kbd>Maj</kbd> + <kbd>S</kbd>) de la fenêtre noire et de la page, et envoyez-la à Jonathan.</li>
+<h2>Si quelque chose ne va pas</h2>
+<div class="carte"><ul style="margin:0">
+  <li><b>Un bandeau rouge apparaît en haut :</b> suivez ce qu'il dit (en général : fermer la fenêtre, puis rouvrir l'outil).</li>
+  <li><b>L'application ne s'ouvre pas (Mac) :</b> fermez-la complètement (<kbd>Cmd</kbd> + <kbd>Q</kbd>), rouvrez-la, et acceptez l'installation de Rosetta si elle est proposée. Si elle ne s'ouvre toujours pas, écrivez à Jonathan avec la version de macOS (menu pomme, puis « À propos de ce Mac »).</li>
+  <li><b>Rien ne se passe quand vous cliquez :</b> fermez la fenêtre et rouvrez l'outil.</li>
+  <li><b>Un fichier ne se charge pas :</b> essayez de le télécharger de nouveau depuis Suno en WAV.</li>
+  <li><b>Un traitement est lent :</b> c'est normal pour les longues chansons. Attendez, ne fermez rien.</li>
+  <li><b>Dans tous les cas :</b> prenez une capture d'écran de la fenêtre (<kbd>Cmd</kbd> + <kbd>Maj</kbd> + <kbd>4</kbd> sur Mac, <kbd>Windows</kbd> + <kbd>Maj</kbd> + <kbd>S</kbd> sur Windows) et envoyez-la à Jonathan. Sur Mac, le fichier <code>studio.log</code> du dossier <code>Studio audio Auralis</code> aide aussi à comprendre.</li>
 </ul></div>
 
 <h2>Ce qu'on aimerait savoir</h2>
