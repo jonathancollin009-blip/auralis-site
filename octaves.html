@@ -1,0 +1,121 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Comprendre les fréquences, les harmoniques et les octaves avec Auralis Fréquences & sons."><title>Comprendre les octaves · Auralis Fréquences & sons</title><style>
+:root{color-scheme:dark;--bg:#091222;--ink:#f6f6fb;--muted:#bdc9dc;--cyan:#80dbe9;--lilac:#c8a6ef}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Segoe UI,Arial,sans-serif;line-height:1.5}
+header{max-width:1200px;margin:auto;padding:24px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid #283448}
+.brand{font-weight:750;letter-spacing:.22em;color:var(--cyan);font-size:18px}.brand span{display:block;color:var(--muted);font-size:12px;letter-spacing:.06em;font-weight:400}
+.header-actions{display:flex;gap:12px;align-items:center}.header-actions a{font-size:14px}a{color:var(--cyan);text-underline-offset:4px}
+main{max-width:1120px;margin:auto;padding:40px 40px 120px;min-height:calc(100svh - 95px)}.slide[hidden]{display:none}
+.tag{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--lilac);margin-bottom:18px}
+h1{font-size:clamp(32px,4.2vw,58px);line-height:1.12;letter-spacing:-.035em;max-width:1000px;margin:0 0 22px;font-weight:650;outline:none}
+.lead{font-size:clamp(20px,2.1vw,27px);color:var(--muted);max-width:920px;margin:0}
+.equation{padding:34px 0 28px;margin:18px 0 12px;border-bottom:1px solid #283448}
+.formula{font-size:clamp(30px,5.5vw,76px);line-height:1.2;letter-spacing:-.035em;color:var(--cyan);font-weight:600;margin:0 0 14px;overflow-wrap:anywhere}.formula.words{font-size:clamp(28px,4.6vw,58px)}
+.caption{font-size:20px;color:var(--lilac);margin:0;max-width:900px}
+details{margin-top:14px;font-size:17px;max-width:960px}summary{cursor:pointer;min-height:40px;padding:8px 0;color:var(--ink)}details p{color:var(--muted);margin:8px 0 18px}.sources{font-size:14px}.sources summary{color:var(--muted)}.sources li{margin-bottom:8px}
+button{font:inherit;min-height:44px;border:1px solid #52657f;border-radius:10px;padding:9px 18px;color:var(--ink);background:#142237;cursor:pointer}button:hover{background:#21364d}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--cyan);outline-offset:4px}button:disabled{opacity:.4;cursor:default}
+.listen{margin:18px 0}.listen p{font-size:14px;color:var(--muted);margin:0 0 10px}.sounds{display:flex;flex-wrap:wrap;gap:10px}.tone[aria-pressed=true]{background:var(--cyan);color:var(--bg)}
+nav{position:fixed;bottom:0;left:0;right:0;background:#091222f5;border-top:1px solid #283448;padding:14px max(20px,calc((100vw - 1040px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:2;backdrop-filter:blur(12px)}nav .next{background:var(--cyan);color:var(--bg);border-color:var(--cyan);font-weight:650}.position{font-variant-numeric:tabular-nums;color:var(--muted);text-align:center;font-size:14px}progress{display:block;width:110px;height:4px;margin-top:5px;accent-color:var(--cyan)}
+#audio-state{font-size:13px;color:var(--muted);margin:0}#stop{font-size:14px}.all nav{display:none}.all .slide{display:block!important;border-bottom:1px solid #52657f;margin-bottom:60px;padding-bottom:40px}.all main{padding-bottom:20px}
+@media(max-width:600px){header{padding:16px 20px;align-items:flex-start}.brand{font-size:15px}.brand span{font-size:10px}.header-actions{flex-direction:column;align-items:flex-end;gap:8px}.header-actions a{font-size:12px}main{padding:26px 22px 115px}h1{margin-bottom:18px}.equation{padding:26px 0}.caption{font-size:18px}details{font-size:16px}.formula{font-size:34px}.formula.words{font-size:30px}nav{padding:12px 16px max(12px,env(safe-area-inset-bottom))}nav button{padding:10px 13px;font-size:14px}progress{width:65px}#audio-state{max-width:150px;text-align:right}.lead{font-size:20px}}
+@media print{@page{size:A4 landscape;margin:15mm}body{background:white;color:#091222}header,nav,.listen,.sources,summary,.header-actions{display:none!important}main{padding:0;max-width:none}.slide,.slide[hidden]{display:block!important;break-after:page;border:0!important;padding:0!important;margin:0!important}.slide:last-child{break-after:auto}.tag{color:#64438b}h1{font-size:32pt}.lead{font-size:18pt;color:#29394f}.formula,.formula.words{font-size:38pt;color:#17667b}.caption{color:#64438b;font-size:15pt}details{display:block}details p{color:#29394f;font-size:12pt}.equation{padding:20px 0}}
+</style></head><body><header><div class="brand">AURALIS<span>Fréquences &amp; sons</span></div><div class="header-actions"><a href="#" id="all">Tout lire</a><button id="stop" type="button">Arrêter le son</button><p id="audio-state" role="status" aria-live="polite">Aucun son automatique</p></div></header><main><section class="slide" id="page-1" aria-labelledby="title-1" >
+    <div class="tag">Comprendre le son</div>
+    <h1 id="title-1" tabindex="-1">Les octaves, simplement</h1>
+    <p class="lead">Pourquoi une note reste reconnaissable quand elle devient plus grave ou plus aiguë.</p>
+    <div class="equation"><p class="formula ">108 · 216 · 432</p><p class="caption">Trois fréquences, une même famille de notes.</p></div>
+    <details><summary>Pour mieux comprendre</summary><p>Dans Auralis, 108 Hz est la fréquence choisie pour le chakra racine. Les exemples 108, 216 et 432 Hz illustrent deux doublements successifs. Le principe de l’octave fonctionne avec toute fréquence de départ.</p></details>
+    <details class="sources"><summary>Source et calculs</summary><p><a href="https://newt.phys.unsw.edu.au/jw/notes.html" target="_blank" rel="noopener">UNSW · Notes, fréquences et tempérament égal</a></p></details>
+    </section><section class="slide" id="page-2" aria-labelledby="title-2" hidden>
+    <div class="tag">01 / La fréquence</div>
+    <h1 id="title-2" tabindex="-1">Une vibration qui se répète</h1>
+    <p class="lead">La fréquence indique le nombre de cycles par seconde. Un son pur à 432 Hz effectue 432 cycles en une seconde.</p>
+    <div class="equation"><p class="formula ">432 Hz</p><p class="caption">432 cycles par seconde</p></div>
+    <div class="listen"><p>Comparer à l’oreille · commencez à faible volume</p><div class="sounds"><button type="button" class="tone" data-hz="432" aria-label="Écouter 432 hertz">Écouter 432 Hz</button></div></div><details><summary>Pour mieux comprendre</summary><p>Pour un son pur, augmenter la fréquence rend le son plus aigu. Le volume dépend notamment de l’amplitude. La fréquence et le volume décrivent donc deux caractéristiques différentes. Un son pur est une vibration sinusoïdale, contrairement à de nombreux sons d’instruments qui combinent plusieurs composantes.</p></details>
+    <details class="sources"><summary>Source et calculs</summary><p><a href="https://newt.phys.unsw.edu.au/jw/harmonics.html" target="_blank" rel="noopener">UNSW · Harmoniques et périodicité</a></p></details>
+    </section><section class="slide" id="page-3" aria-labelledby="title-3" hidden>
+    <div class="tag">02 / L’octave</div>
+    <h1 id="title-3" tabindex="-1">Une octave, c’est un rapport de 2</h1>
+    <p class="lead">Pour monter d’une octave, on double la fréquence. Pour descendre d’une octave, on la divise par deux.</p>
+    <div class="equation"><p class="formula ">108 × 2 = 216</p><p class="caption">216 × 2 = 432 Hz : encore une octave plus haut.</p></div>
+    <div class="listen"><p>Comparer à l’oreille · commencez à faible volume</p><div class="sounds"><button type="button" class="tone" data-hz="108" aria-label="Écouter 108 hertz">Écouter 108 Hz</button><button type="button" class="tone" data-hz="216" aria-label="Écouter 216 hertz">Écouter 216 Hz</button><button type="button" class="tone" data-hz="432" aria-label="Écouter 432 hertz">Écouter 432 Hz</button></div></div><details><summary>Pour mieux comprendre</summary><p>108, 216 et 432 Hz correspondent à trois la si l’on choisit le la de référence à 432 Hz. Dans Auralis, 108 Hz est aussi la fréquence choisie pour le chakra racine. Ces sons ont des hauteurs différentes. Dans le système musical occidental, on leur donne le même nom de note dans des registres différents.</p></details>
+    <details class="sources"><summary>Source et calculs</summary><p><a href="https://newt.phys.unsw.edu.au/jw/notes.html" target="_blank" rel="noopener">UNSW · Notes, fréquences et tempérament égal</a></p></details>
+    </section><section class="slide" id="page-4" aria-labelledby="title-4" hidden>
+    <div class="tag">03 / La répétition</div>
+    <h1 id="title-4" tabindex="-1">Deux cycles pendant un seul</h1>
+    <p class="lead">Pendant qu’un son à 108 Hz effectue un cycle, celui à 216 Hz en effectue exactement deux.</p>
+    <div class="equation"><p class="formula words">1 cycle / 2 cycles</p><p class="caption">La même durée : environ 9,26 millisecondes.</p></div>
+    <div class="listen"><p>Comparer à l’oreille · commencez à faible volume</p><div class="sounds"><button type="button" class="tone" data-hz="108" aria-label="Écouter 108 hertz">Écouter 108 Hz</button><button type="button" class="tone" data-hz="216" aria-label="Écouter 216 hertz">Écouter 216 Hz</button></div></div><details><summary>Pour mieux comprendre</summary><p>La période d’un signal vaut 1 divisé par sa fréquence. Pour deux sinusoïdes stables de fréquences f et 2f, l’ensemble du motif se répète après chaque période 1/f. Ce rapport simple décrit leur structure temporelle. Il ne suffit pas, à lui seul, à expliquer toute notre perception musicale.</p></details>
+    <details class="sources"><summary>Source et calculs</summary><p><a href="https://newt.phys.unsw.edu.au/jw/harmonics.html" target="_blank" rel="noopener">UNSW · Harmoniques et périodicité</a></p></details>
+    </section><section class="slide" id="page-5" aria-labelledby="title-5" hidden>
+    <div class="tag">04 / Les harmoniques</div>
+    <h1 id="title-5" tabindex="-1">Une note peut contenir plusieurs fréquences</h1>
+    <p class="lead">De nombreux sons musicaux contiennent une fondamentale et des composantes proches de ses multiples entiers : les harmoniques.</p>
+    <div class="equation"><p class="formula ">f · 2f · 3f · 4f</p><p class="caption">Exemple : 108, 216, 324 et 432 Hz.</p></div>
+    <details><summary>Pour mieux comprendre</summary><p>Avec une fondamentale à 108 Hz, la deuxième harmonique se trouve à 216 Hz, une octave plus haut. Deux sons harmoniques à l’octave peuvent partager de nombreuses composantes. Cela contribue à leur parenté acoustique. Certains instruments, notamment des percussions, ont des composantes qui s’écartent de ces rapports. Un son pur ne contient pas cette série d’harmoniques.</p></details>
+    <details class="sources"><summary>Source et calculs</summary><p><a href="https://newt.phys.unsw.edu.au/jw/harmonics.html" target="_blank" rel="noopener">UNSW · Harmoniques et périodicité</a></p></details>
+    </section><section class="slide" id="page-6" aria-labelledby="title-6" hidden>
+    <div class="tag">05 / La perception</div>
+    <h1 id="title-6" tabindex="-1">Une parenté que l’oreille apprend aussi</h1>
+    <p class="lead">Dans la musique occidentale, des notes à l’octave sont souvent perçues comme apparentées, même si l’une est plus aiguë.</p>
+    <div class="equation"><p class="formula words">Même famille ≠ même son</p><p class="caption">La hauteur change. Le nom de la note peut rester le même.</p></div>
+    <details><summary>Pour mieux comprendre</summary><p>On parle d’équivalence d’octave. Les relations harmoniques offrent un fondement acoustique, mais l’expérience musicale intervient aussi. Une étude comparant des participants américains et tsimane’ a montré que cette équivalence perceptive n’apparaît pas de la même façon dans toutes les cultures. On ne peut donc pas la résumer à une réaction identique et automatique chez tous les humains.</p></details>
+    <details class="sources"><summary>Source et calculs</summary><p><a href="https://pubmed.ncbi.nlm.nih.gov/31543451/" target="_blank" rel="noopener">Jacoby et al., 2019 · Perception musicale interculturelle</a></p></details>
+    </section><section class="slide" id="page-7" aria-labelledby="title-7" hidden>
+    <div class="tag">06 / Les intervalles</div>
+    <h1 id="title-7" tabindex="-1">Le rapport compte plus que l’écart</h1>
+    <p class="lead">200 à 400 Hz et 400 à 800 Hz sont deux octaves. Pourtant, les écarts sont de 200 Hz et de 400 Hz.</p>
+    <div class="equation"><p class="formula ">400 ÷ 200 = 800 ÷ 400</p><p class="caption">Dans les deux cas, le rapport vaut 2.</p></div>
+    <div class="listen"><p>Comparer à l’oreille · commencez à faible volume</p><div class="sounds"><button type="button" class="tone" data-hz="200" aria-label="Écouter 200 hertz">Écouter 200 Hz</button><button type="button" class="tone" data-hz="400" aria-label="Écouter 400 hertz">Écouter 400 Hz</button><button type="button" class="tone" data-hz="800" aria-label="Écouter 800 hertz">Écouter 800 Hz</button></div></div><details><summary>Pour mieux comprendre</summary><p>Les intervalles musicaux se décrivent par des rapports de fréquences. Une suite d’octaves multiplie chaque fois la fréquence par deux : f, 2f, 4f, 8f. Sur une échelle logarithmique de fréquences, ces octaves occupent des distances égales.</p></details>
+    <details class="sources"><summary>Source et calculs</summary><p><a href="https://newt.phys.unsw.edu.au/jw/notes.html" target="_blank" rel="noopener">UNSW · Notes, fréquences et tempérament égal</a></p></details>
+    </section><section class="slide" id="page-8" aria-labelledby="title-8" hidden>
+    <div class="tag">07 / Les gammes</div>
+    <h1 id="title-8" tabindex="-1">Entre deux octaves, plusieurs choix</h1>
+    <p class="lead">Une octave fixe deux bornes. Une gamme choisit les notes qui se trouvent entre elles.</p>
+    <div class="equation"><p class="formula words">12 demi-tons</p><p class="caption">En tempérament égal, chaque demi-ton multiplie la fréquence par 2¹⁄¹².</p></div>
+    <details><summary>Pour mieux comprendre</summary><p>Douze multiplications par 2¹⁄¹² donnent exactement 2, donc une octave. Les systèmes d’accordage à rapports simples font d’autres choix, comme 3/2 pour une quinte pure. Le rapport d’octave ne dicte ni une seule gamme ni un nombre obligatoire de notes.</p></details>
+    <details class="sources"><summary>Source et calculs</summary><p><a href="https://newt.phys.unsw.edu.au/jw/notes.html" target="_blank" rel="noopener">UNSW · Notes, fréquences et tempérament égal</a></p></details>
+    </section><section class="slide" id="page-9" aria-labelledby="title-9" hidden>
+    <div class="tag">08 / Le choix de 432 Hz</div>
+    <h1 id="title-9" tabindex="-1">Un point de départ pour l’accordage</h1>
+    <p class="lead">Avec un do à 256 Hz et le rapport pythagoricien de sixte majeure 27/16, on obtient un la à 432 Hz.</p>
+    <div class="equation"><p class="formula ">256 × 27/16 = 432</p><p class="caption">Le résultat dépend du do choisi et du système d’accordage.</p></div>
+    <details><summary>Pour mieux comprendre</summary><p>Avec ce même do à 256 Hz, le tempérament égal donnerait un la d’environ 430,5390 Hz. On peut aussi choisir directement un la à 432 Hz et accorder les autres notes en tempérament égal. Ce sont deux constructions différentes. L’arithmétique est exacte, mais elle ne démontre pas que 432 Hz serait une fréquence universellement supérieure.</p></details>
+    <details class="sources"><summary>Source et calculs</summary><p><a href="https://newt.phys.unsw.edu.au/jw/notes.html" target="_blank" rel="noopener">UNSW · Accordage pythagoricien et tempéraments</a></p><p>Calculs du parcours : 256 × 27/16 = 432 et 256 × 2^(9/12) ≈ 430,5390. Le premier exemple figure à la page 15 de <cite>Spirals of Harmony</cite>.</p></details>
+    </section><section class="slide" id="page-10" aria-labelledby="title-10" hidden>
+    <div class="tag">09 / La géométrie</div>
+    <h1 id="title-10" tabindex="-1">Une spirale peut représenter le doublement</h1>
+    <p class="lead">Dans le modèle présenté dans Spirals of Harmony, le rayon double à chaque quart de tour. C’est une règle cohérente de spirale logarithmique.</p>
+    <div class="equation"><p class="formula ">r · 2r · 4r · 8r</p><p class="caption">Rayons après 0°, 90°, 180° et 270° dans ce modèle.</p></div>
+    <details><summary>Pour mieux comprendre</summary><p>Après 45°, le rayon est multiplié par √2. Après un tour complet, il est multiplié par 16. Cette construction illustre le même facteur 2 que l’octave. Elle ne prouve pas que toutes les spirales naturelles suivent cette règle, et elle ne fixe aucune fréquence en hertz sans référence supplémentaire.</p></details>
+    <details class="sources"><summary>Source et calculs</summary><p>Source du modèle : <cite>Spirals of Harmony</cite>, page 6. Calculs : (√2)² = 2 et 2⁴ = 16. Il s’agit d’une construction géométrique.</p></details>
+    </section><section class="slide" id="page-11" aria-labelledby="title-11" hidden>
+    <div class="tag">10 / La transposition</div>
+    <h1 id="title-11" tabindex="-1">Changer de registre en gardant un rapport</h1>
+    <p class="lead">Diviser 864 Hz par deux donne 432 Hz, puis 216 Hz, puis 108 Hz. Chaque étape descend d’une octave.</p>
+    <div class="equation"><p class="formula ">864 ÷ 2³ = 108 Hz</p><p class="caption">Trois divisions par deux : trois octaves plus bas.</p></div>
+    <details><summary>Pour mieux comprendre</summary><p>Appliquer le même facteur à toutes les fréquences d’une mélodie conserve ses rapports d’intervalles. On peut aussi utiliser des doublements pour transformer une périodicité très lente en fréquence audible : c’est une sonification. Cette correspondance mathématique ne recrée pas le phénomène d’origine et ne démontre aucun transfert de ses propriétés physiques ou biologiques.</p></details>
+    <details class="sources"><summary>Source et calculs</summary><p>Calculs : 864 ÷ 8 = 108 et (a ÷ 8) / (b ÷ 8) = a / b. La transposition conserve les rapports lorsque le même facteur s’applique à toutes les fréquences.</p></details>
+    </section><section class="slide" id="page-12" aria-labelledby="title-12" hidden>
+    <div class="tag">À retenir</div>
+    <h1 id="title-12" tabindex="-1">L’octave relie les notes par un doublement</h1>
+    <p class="lead">Son rapport est exact. Sa parenté musicale s’appuie sur l’acoustique et sur notre expérience d’écoute.</p>
+    <div class="equation"><p class="formula ">f × 2ⁿ</p><p class="caption">n = nombre entier d’octaves vers le haut. Pour descendre, on divise par 2ⁿ.</p></div>
+    <details><summary>Pour mieux comprendre</summary><p>Ces relations permettent d’expliquer un accordage, de transposer une mélodie et de créer des représentations sonores. Elles ne suffisent pas à démontrer un effet thérapeutique ou une résonance universelle. Le plaisir d’écoute reste une expérience personnelle.</p></details>
+    <details class="sources"><summary>Sources et repères</summary><ul><li><a href="https://newt.phys.unsw.edu.au/jw/notes.html" target="_blank" rel="noopener">UNSW · Notes, fréquences et tempérament égal</a></li><li><a href="https://newt.phys.unsw.edu.au/jw/harmonics.html" target="_blank" rel="noopener">UNSW · Harmoniques et périodicité</a></li><li><a href="https://pubmed.ncbi.nlm.nih.gov/31543451/" target="_blank" rel="noopener">Jacoby et al., 2019 · Perception musicale interculturelle</a></li></ul><p>Point de départ : <cite>Spirals of Harmony</cite>, A. &amp; A. Deane, présentation de Noel Tobin, 2012, notamment les pages 6–8 et 15. Ce parcours reprend et explique des relations mathématiques vérifiables, sans reprendre les conclusions spirituelles du document.</p></details>
+    </section></main><nav aria-label="Navigation du diaporama"><button id="prev" type="button">Précédente</button><div class="position"><span id="position" aria-live="polite"></span><progress max="12" value="1" aria-label="Progression du diaporama"></progress></div><button id="next" class="next" type="button">Suivante</button></nav><script>
+"use strict";
+const slides=[...document.querySelectorAll('.slide')];
+const prev=document.querySelector('#prev'),next=document.querySelector('#next'),position=document.querySelector('#position'),bar=document.querySelector('progress');
+let index=0,ctx=null,active=null,generation=0;
+const state=document.querySelector('#audio-state');
+function stopAudio(){generation++;if(active){try{const now=ctx.currentTime;active.gain.gain.cancelScheduledValues(now);active.gain.gain.setTargetAtTime(0,now,.015);active.osc.stop(now+.08);}catch(e){}active=null;}document.querySelectorAll('.tone').forEach(b=>b.setAttribute('aria-pressed','false'));state.textContent='Son arrêté';}
+function show(n,focus=false){stopAudio();index=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,i)=>s.hidden=i!==index);position.textContent=`${index+1} / ${slides.length}`;bar.value=index+1;prev.disabled=index===0;next.disabled=index===slides.length-1;history.replaceState(null,'',`#diapo-${index+1}`);if(focus){window.scrollTo(0,0);slides[index].querySelector('h1').focus({preventScroll:true});}}
+prev.addEventListener('click',()=>show(index-1,true));next.addEventListener('click',()=>show(index+1,true));
+document.querySelector('#stop').addEventListener('click',stopAudio);
+document.querySelector('#all').addEventListener('click',e=>{e.preventDefault();stopAudio();const all=document.body.classList.toggle('all');e.currentTarget.textContent=all?'Revenir au diaporama':'Tout lire';if(!all)show(index,true);});
+document.addEventListener('keydown',e=>{if(document.body.classList.contains('all')||['INPUT','TEXTAREA','SELECT','BUTTON','SUMMARY','A'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight'){e.preventDefault();show(index+1,true);}if(e.key==='ArrowLeft'){e.preventDefault();show(index-1,true);}if(e.key==='Escape')stopAudio();});
+document.querySelectorAll('.tone').forEach(button=>{button.setAttribute('aria-pressed','false');button.addEventListener('click',async()=>{stopAudio();const request=generation;try{const AudioCtor=window.AudioContext||window.webkitAudioContext;if(!AudioCtor)throw new Error('unavailable');ctx=ctx||new AudioCtor();await ctx.resume();if(request!==generation||document.hidden)return;const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.value=Number(button.dataset.hz);const now=ctx.currentTime;gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(.055,now+.08);gain.gain.setValueAtTime(.055,now+1.6);gain.gain.linearRampToValueAtTime(0,now+1.8);osc.connect(gain);gain.connect(ctx.destination);const voice={osc,gain};active=voice;button.setAttribute('aria-pressed','true');state.textContent=`Écoute : ${button.dataset.hz} Hz`;osc.onended=()=>{osc.disconnect();gain.disconnect();if(active===voice){active=null;button.setAttribute('aria-pressed','false');state.textContent='Écoute terminée';}};osc.start(now);osc.stop(now+1.85);}catch(e){state.textContent='Lecture indisponible dans ce navigateur.';}});});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopAudio();});window.addEventListener('pagehide',stopAudio);
+const requested=Number(location.hash.replace('#diapo-',''));
+show(Number.isInteger(requested)&&requested>=1&&requested<=slides.length?requested-1:0);state.textContent='Aucun son automatique';
+</script></body></html>
