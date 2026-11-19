@@ -4787,7 +4787,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     if(!NativeTone.update({master:state.vol,glideMs:20}) && sMaster && ctx)sMaster.gain.setTargetAtTime(state.playing?state.vol:0,ctx.currentTime,0.02); chakMusVol(); });
 
   function playerMinuteUnit(){return (lang==="zh"||lang==="zht")?"分":lang==="lo"?"ນາທີ":lang==="hi"?"मि":"min";}
-  var tEl=$("timer"),OPTS=[10,20,30],tHandle=null,tEnd=0;
+  var tEl=$("timer"),OPTS=[10,20,30,60],tHandle=null,tEnd=0;
   OPTS.forEach(function(o){ var b=document.createElement("button"); b.textContent=o+" "+playerMinuteUnit(); b.addEventListener("click",function(){ setTimer(o); if(state.playing)armTimer(); }); tEl.appendChild(b); });
   function setTimer(o){ state.timerMin=o; Array.prototype.forEach.call(tEl.children,function(x,i){x.setAttribute("aria-pressed",OPTS[i]===o?"true":"false");}); if(!state.playing||o===0)$("tclock").textContent=""; freqTimerUi(); }
   function armTimer(){ clearInterval(tHandle);tHandle=null; if(state.timerMin===0){tEnd=0;$("tclock").textContent="";freqTimerUi();tSyncNative();return;} tEnd=Date.now()+state.timerMin*60000; tTick(); tSyncNative(); tHandle=setInterval(tTick,1000); }
