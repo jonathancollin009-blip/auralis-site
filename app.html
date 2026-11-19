@@ -2012,6 +2012,16 @@
   #vGeoPlay .gnote{flex:1 1 0; min-width:0; padding:5px 2px}
   #vGeoPlay .gnote b{font-size:clamp(.72rem, 3.4vw, .85rem)}
   #vGeoPlay .player{overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
+
+  #colorPicker {margin:12px 0;padding:16px;background:var(--pan);color:var(--txt);border:1px solid var(--line);border-radius:16px}
+  #colorPicker[hidden]{display:none}
+  #colorPicker label {display:block;margin:10px 0;color:var(--dim)}
+  #colorPicker input {display:block;width:100%;accent-color:var(--cyan);min-height:28px}
+  #colorHue {appearance:none;background:linear-gradient(to right,red,yellow,lime,cyan,blue,magenta,red) center/100% 8px no-repeat}
+  #colorSwatch {height:72px;border:1px solid var(--line2);border-radius:12px}
+  #colorPicker output {display:block;font-weight:700;margin:12px 0}
+  #colorPicker button {background:var(--pan2);color:var(--txt);border:1px solid var(--line2);border-radius:12px;min-height:44px;padding:8px 12px;font:inherit}
+  #colorPicker button:disabled {opacity:.5}
 </style>
 <script>/* AURALIS_HOME_LABELS_FAILSAFE_V1 : si le script principal plante avant
    applyLang(), les textes de l accueil s affichent quand meme apres 2 s. */
@@ -2291,6 +2301,15 @@ setTimeout(function(){ var h=document.getElementById("vHome"); if(h)h.setAttribu
     <div class="sacredsectionhead" id="sacredSectionHead" hidden><h3 id="sacredChoose">—</h3><span id="sacredCount">—</span></div>
     <div class="snowsectionhead" id="snowSectionHead" hidden><h3 id="snowChoose">—</h3><span id="snowCount">—</span></div>
     <div class="geoall" id="geoAllWrap" hidden><div class="allrow"><button class="shufbtn" id="geoShuffle" type="button" aria-pressed="false"><span aria-hidden="true">🔀</span></button><button class="geoallbtn" id="geoPlayAll"><span class="gaico" aria-hidden="true">▶</span><span id="geoPlayAllLbl">—</span></button></div></div>
+
+    <div id="colorPicker" hidden>
+      <h3 id="colorHeading"></h3><div id="colorSwatch"></div>
+      <label><span id="colorHueLabel"></span><input type="range" id="colorHue" min="0" max="360" value="169"></label>
+      <label><span id="colorSatLabel"></span><input type="range" id="colorSat" min="0" max="100" value="99"></label>
+      <label><span id="colorLightLabel"></span><input type="range" id="colorLight" min="0" max="100" value="99"></label>
+      <output id="colorResult" for="colorHue colorSat colorLight"></output>
+      <button type="button" id="colorListen"></button> <button type="button" id="colorSave"></button>
+    </div>
     <div class="geogrid" id="geoList"></div>
     <p class="sacredfooter" id="sacredFooter" hidden>—</p>
     <p class="snowfooter" id="snowFooter" hidden>—</p>
@@ -4634,7 +4653,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("pMethodLink").hidden=m.c==="Chakras";
     $("hzval").textContent=formatPlayerHz(m.f,4);lowHzNote("lowHz",m.f); if(manual)$("mInput").value=m.f.toFixed(4);
     setChakraMedallion(m);
-    setCymatic(manual||m.c==="Chakras"?null:m.f,manual?null:FREQ_ART[m.n]);
+    setCymatic(manual||m.c==="Chakras"||m.c==="color"?null:m.f,manual?null:FREQ_ART[m.n]);
     $("vPlay").classList.toggle("chakramode",m.c==="Chakras"); bgMusCtx(m.c==="Chakras"); $("tclock").textContent="";
     state.oct=0; octRender(); setTimer(m.c==="Chakras"?0:20); setBtn(false); chakMusRender(); show("play");
   }
@@ -5311,7 +5330,63 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("sacredHero").hidden=!sacred; $("sacredSectionHead").hidden=!sacred; $("sacredFooter").hidden=!sacred;
     $("snowHero").hidden=!snow; $("snowSectionHead").hidden=!snow; $("snowFooter").hidden=!snow;
     $("geoTitle").textContent=t(crop?"geo_filter_crop":sacred?"geo_filter_sacred":snow?"geo_filter_snowflake":"geo_head"); }
-  function gRenderList(){ var el=$("geoList"); el.innerHTML=""; gUpdateAllBtn();
+
+  const colorSliders = ["colorHue","colorSat","colorLight"].map(id => $(id));
+  const pickerLabels = {
+    fr:["Ma couleur","Teinte","Saturation","Luminosité"], en:["My color","Hue","Saturation","Brightness"],
+    es:["Mi color","Tono","Saturación","Brillo"], de:["Meine Farbe","Farbton","Sättigung","Helligkeit"],
+    it:["Il mio colore","Tonalità","Saturazione","Luminosità"], lo:["ສີຂອງຂ້ອຍ","ໂທນສີ","ຄວາມອີ່ມສີ","ຄວາມສະຫວ່າງ"],
+    hi:["मेरा रंग","रंगत","संतृप्ति","चमक"], zh:["我的颜色","色相","饱和度","亮度"], zht:["我的顏色","色相","飽和度","亮度"]
+  };
+  function catalogHue(hex){
+    const [r,g,b]=hex.slice(1).match(/../g).map(channel=>parseInt(channel,16));
+    const peak=Math.max(r,g,b), range=peak-Math.min(r,g,b);
+    const sector=peak===r?(g-b)/range:peak===g?2+(b-r)/range:4+(r-g)/range;
+    return (360+60*sector)%360;
+  }
+  const colorAnchors=GEO.filter(fig=>fig.cat==="color").map(fig=>[catalogHue(fig.color),fig.notes[0]]).sort((a,b)=>a[0]-b[0]);
+  colorAnchors.push([colorAnchors[0][0]+360,colorAnchors[0][1]]);
+  function selectedColor(){
+    const hsv=colorSliders.map(input=>Number(input.value));
+    const [h,s,v]=hsv, chroma=v*s/10000, sector=h/60;
+    const x=chroma*(1-Math.abs(sector%2-1)), base=v/100-chroma;
+    const rgb=[[chroma,x,0],[x,chroma,0],[0,chroma,x],[0,x,chroma],[x,0,chroma],[chroma,0,x]][Math.floor(sector)%6];
+    const channels=rgb.map(n=>Math.round(255*(n+base)));
+    const hex="#"+channels.map(n=>n.toString(16).padStart(2,"0")).join("").toUpperCase();
+    const angle=h<colorAnchors[0][0]?h+360:h;
+    const i=colorAnchors.findIndex(anchor=>anchor[0]>=angle);
+    const [end,b]=colorAnchors[i],[start,a]=colorAnchors[Math.max(0,i-1)];
+    const hz=a+(b-a)*(angle-start)/(end-start||1);
+    return {hex,hsv,f:new Set(channels).size===1?0:Number(hz.toFixed(4))};
+  }
+  function paintPicker(){
+    $("colorPicker").hidden=geoState.filter!=="color";
+    if($("colorPicker").hidden)return;
+    const c=selectedColor(), labels=pickerLabels[lang]||pickerLabels.en;
+    ["colorHeading","colorHueLabel","colorSatLabel","colorLightLabel"].forEach((id,i)=>$(id).textContent=labels[i]);
+    $("colorSwatch").style.backgroundColor=c.hex;
+    $("colorResult").textContent=c.hex+" · "+(c.f?formatPlayerHz(c.f,4)+" Hz":"— Hz");
+    $("colorListen").textContent="▶ "+t("amb_listen");
+    $("colorListen").disabled=!c.f;
+    const saved=favSlots.some(f=>f&&f.colorHex===c.hex);
+    $("colorSave").textContent=(saved?"★ ":"☆ ")+t("fav_title");
+    $("colorSave").disabled=!c.f||saved;
+  }
+  colorSliders.forEach(input=>input.addEventListener("input",paintPicker));
+  $("colorListen").addEventListener("click",function(){
+    const c=selectedColor(); if(!c.f)return;
+    openPlayer({n:c.hex,c:"color",f:c.f},"geo");
+    $("pcat").textContent=t("geo_filter_color");
+    startSingle();
+  });
+  $("colorSave").addEventListener("click",function(){
+    const c=selectedColor(), slot=favFree();
+    if(!c.f||favSlots.some(f=>f&&f.colorHex===c.hex))return;
+    if(slot<0){flashMsg(t("fav_no_slot"));return;}
+    favSlots[slot]={name:c.hex,colorHex:c.hex,colorHSV:c.hsv,steps:[{n:c.hex,f:c.f,m:6,manual:true}]};
+    saveFavSlots();paintPicker();
+  });
+  function gRenderList(){ paintPicker(); var el=$("geoList"); el.innerHTML=""; gUpdateAllBtn();
     var cropMode=geoState.filter==="crop",sacredMode=geoState.filter==="sacred",snowMode=geoState.filter==="snowflake";
     var arr=GEO.filter(function(fig){ return geoState.filter==="all"||fig.cat===geoState.filter; });
     if(cropMode)arr=arr.concat(CROP_PENDING);
@@ -6864,6 +6939,10 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
           if(a==="share"){ shOutOpen(i); return; }
           if(a==="del"){ favSlots[i]=null; saveFavSlots(); renderFavList(); return; }
           if(a==="edit"){ favBuild={slot:i, steps:f.steps.slice(), name:f.name}; show("favRecap"); renderFavRecap(); return; }
+          if(Array.isArray(f.colorHSV)&&f.colorHSV.length===3){
+            colorSliders.forEach((input,j)=>input.value=f.colorHSV[j]);
+            openGeoCat("color");return;
+          }
           openSeq({fr:f.name,en:f.name,es:f.name,ic:"⭐",s:f.steps}, "favList");
         });
       } else {
