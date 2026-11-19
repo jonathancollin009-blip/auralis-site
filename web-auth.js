@@ -239,6 +239,44 @@ async function handleMe(request, env) {
   });
 }
 
+/* ---- Favoris rattaches au compte (2026-11-19) ----
+   L'app garde sa copie dans localStorage et synchronise avec celle-ci :
+   GET renvoie {favs, rev} (favs = null si rien d'enregistre), POST {favs}
+   remplace la liste et renvoie la nouvelle revision. La fusion entre appareils
+   se fait cote app (voir FAV_CLOUD dans app.html). */
+const FAV_MAX_BYTES = 128 * 1024;   // 50 favoris x 15 etapes tiennent en ~50 Ko
+
+async function handleFavGet(request, env) {
+  const s = await getSession(request, env);
+  if (!s) return json({ error: "auth" }, 401);
+  const r = await env.DB.prepare("SELECT data, updated_at FROM favorites WHERE email = ?").bind(s.email).first();
+  if (!r) return json({ favs: null, rev: 0 });
+  let favs = null;
+  try { favs = JSON.parse(r.data); } catch (e) { favs = null; }
+  return json({ favs, rev: r.updated_at });
+}
+
+async function handleFavPut(request, env) {
+  const s = await getSession(request, env);
+  if (!s) return json({ error: "auth" }, 401);
+  if (Number(request.headers.get("content-length") || 0) > FAV_MAX_BYTES) return json({ error: "size" }, 413);
+  let text = "";
+  try { text = await request.text(); } catch (e) { return json({ error: "bad" }, 400); }
+  if (text.length > FAV_MAX_BYTES) return json({ error: "size" }, 413);
+  let body = null;
+  try { body = JSON.parse(text); } catch (e) { body = null; }
+  const favs = body && body.favs;
+  if (!Array.isArray(favs) || favs.length > 60) return json({ error: "bad" }, 400);
+  const ok = favs.every((f) => f === null || (f && typeof f === "object" && Array.isArray(f.steps) && f.steps.length <= 20));
+  if (!ok) return json({ error: "bad" }, 400);
+  const rev = Date.now();
+  await env.DB.prepare(
+    "INSERT INTO favorites (email, data, updated_at) VALUES (?, ?, ?) " +
+    "ON CONFLICT(email) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at"
+  ).bind(s.email, JSON.stringify(favs), rev).run();
+  return json({ ok: true, rev });
+}
+
 /* ---- Stripe ---- */
 
 async function stripe(env, method, path, params) {
@@ -386,8 +424,10 @@ export async function handleWeb(request, env) {
       if (p === "/api/web/checkout") return await handleCheckout(request, env);
       if (p === "/api/web/portal") return await handlePortal(request, env);
       if (p === "/api/stripe/webhook") return await handleWebhook(request, env);
+      if (p === "/api/web/favoris") return await handleFavPut(request, env);
     }
     if (request.method === "GET" && p === "/api/web/me") return await handleMe(request, env);
+    if (request.method === "GET" && p === "/api/web/favoris") return await handleFavGet(request, env);
   } catch (e) {
     console.log("[auralis-web] erreur", p, e && e.message);
     return json({ error: "server" }, 500);

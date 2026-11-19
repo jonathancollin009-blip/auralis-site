@@ -4356,7 +4356,56 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   (function(){ var byName={}; LIB.forEach(function(m){ byName[m.n]=m.f; }); var ch=false;
     favSlots.forEach(function(f){ if(f&&f.steps)f.steps.forEach(function(s){ if(s&&!s.manual&&byName[s.n]!=null&&s.f!==byName[s.n]){ s.f=byName[s.n]; ch=true; } }); });
     if(ch)try{ localStorage.setItem("auralis_favorites",JSON.stringify(favSlots)); }catch(e){} })();
-  function saveFavSlots(){ try{ localStorage.setItem("auralis_favorites",JSON.stringify(favSlots)); }catch(e){} }
+  function saveFavSlots(){ try{ localStorage.setItem("auralis_favorites",JSON.stringify(favSlots)); }catch(e){} if(FAV_CLOUD)FAV_CLOUD.changed(); }
+  /* FAV_CLOUD_V1 (2026-11-19) : version web seulement (aura-lis.ca, session de
+     l abonnement web). Les favoris suivent le compte (/api/web/favoris) : avant,
+     ils ne vivaient que dans le localStorage, que Safari efface apres 7 jours
+     sans visite, et chaque navigateur avait sa propre copie.
+     auralis_fav_rev = revision du serveur deja integree ici ;
+     auralis_fav_dirty = "1" si une modification locale n est pas encore envoyee.
+     Navigateur jamais synchronise, ou modifications des deux cotes : fusion
+     (aucun favori perdu, au pire un favori supprime ailleurs revient). */
+  var FAV_CLOUD=(function(){
+    if(!/(^|\.)aura-lis\.ca$/.test(location.hostname)||location.protocol!=="https:")return null;
+    var busy=false, timer=null, lastPull=0, API="/api/web/favoris";
+    function ls(k,v){ try{ if(v===undefined)return localStorage.getItem(k); if(v===null)localStorage.removeItem(k); else localStorage.setItem(k,String(v)); }catch(e){} return null; }
+    function norm(a){ a=Array.isArray(a)?a.slice(0,FAV_MAX_PLUS):[];
+      for(var i=0;i<a.length;i++)if(!a[i]||!Array.isArray(a[i].steps)||!a[i].steps.length)a[i]=null;
+      while(a.length<FAV_MAX_PLUS)a.push(null); return a; }
+    function key(f){ return JSON.stringify([f.name||"",f.steps.map(function(s){ return [s.n,s.f,s.m]; })]); }
+    function merge(base,extra){ var out=norm(base), seen={};
+      out.forEach(function(f){ if(f)seen[key(f)]=1; });
+      extra.forEach(function(f){ if(!f||!Array.isArray(f.steps)||seen[key(f)])return; var j=out.indexOf(null); if(j<0)return; out[j]=f; seen[key(f)]=1; });
+      return out; }
+    function same(a,b){ return JSON.stringify(a)===JSON.stringify(b); }
+    function apply(list){ if(same(list,favSlots))return;
+      favSlots.length=0; list.forEach(function(f){ favSlots.push(f); });
+      try{ localStorage.setItem("auralis_favorites",JSON.stringify(favSlots)); }catch(e){}
+      try{ if($("vFavList").classList.contains("on"))renderFavList(); }catch(e){} }
+    function push(){ clearTimeout(timer); timer=null;
+      if(busy){ timer=setTimeout(push,1500); return; }
+      busy=true; var snap=JSON.stringify({favs:favSlots});
+      fetch(API,{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:snap})
+        .then(function(r){ return r.ok?r.json():null; })
+        .then(function(d){ if(d&&d.rev){ ls("auralis_fav_rev",d.rev); if(JSON.stringify({favs:favSlots})===snap)ls("auralis_fav_dirty",null); } })
+        .catch(function(){}).then(function(){ busy=false; }); }
+    function changed(){ ls("auralis_fav_dirty",1); clearTimeout(timer); timer=setTimeout(push,1200); }
+    function pull(force){ if(busy||favBuild)return; var t=Date.now(); if(!force&&t-lastPull<20000)return; lastPull=t; busy=true;
+      fetch(API,{credentials:"same-origin",cache:"no-store"})
+        .then(function(r){ return r.ok?r.json():null; })
+        .then(function(d){ busy=false; if(!d||favBuild)return;
+          var rev=Number(ls("auralis_fav_rev")||0), dirty=ls("auralis_fav_dirty")==="1";
+          if(d.favs==null){ if(favSlots.some(Boolean))push(); return; }
+          var srv=norm(d.favs), m;
+          if(!rev||(dirty&&d.rev!==rev)){ m=merge(srv,favSlots); apply(m);
+            if(same(m,srv)){ ls("auralis_fav_rev",d.rev); ls("auralis_fav_dirty",null); } else push(); return; }
+          if(d.rev===rev){ if(dirty)push(); return; }
+          apply(srv); ls("auralis_fav_rev",d.rev); })
+        .catch(function(){ busy=false; }); }
+    setTimeout(function(){ pull(true); },1500);
+    document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="visible")pull(false); });
+    return {changed:changed, pull:pull};
+  })();
   var favBuild=null; // {slot, steps:[{n,f,m}], name?, pending?}
   function setBg(hidden){ var bg=$("appbg"); if(bg)bg.classList.toggle("off",!!hidden); audioSync(); }
   /* AURALIS_WEB_RESUME_V3 : reprise du son et verrou d ecran decides d apres les
@@ -6907,6 +6956,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     favSlots[slot]={name:p.name,steps:p.steps.slice()};
     try{ localStorage.setItem("auralis_favorites",JSON.stringify(favSlots)); }
     catch(e){ favSlots[slot]=null; flashMsg(t("pw_error")); return; }
+    if(FAV_CLOUD)FAV_CLOUD.changed();
     favJustSaved=slot; shDone(p); show("favList"); renderFavList(); flashMsg(t("share_in_saved")); });
   function shQrSvg(text){ try{ var q=QRGEN(0,"M"); q.addData(text); q.make(); var n=q.getModuleCount(),d="";
       for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(q.isDark(r,c))d+="M"+(c+4)+" "+(r+4)+"h1v1h-1z";
