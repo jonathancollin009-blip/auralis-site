@@ -2013,6 +2013,11 @@
   #vGeoPlay .gnote b{font-size:clamp(.72rem, 3.4vw, .85rem)}
   #vGeoPlay .player{overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
 
+  /* COLOR_DISK_V1 : couleur choisie dans le cercle du lecteur, sans animation */
+  .colordisk {position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(29svh,72vw,300px);height:min(29svh,72vw,300px);border-radius:50%;border:1.5px solid rgba(255,255,255,.35);pointer-events:none}
+  .colordisk[hidden] {display:none}
+  #pStage.colorfill #viz {visibility:hidden}
+  #pStage.colorfill::before {display:none}
   /* COLOR_PICKER_V2 */
   #colorPicker {margin:12px 0;padding:16px;background:var(--pan);color:var(--txt);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;gap:12px}
   #colorPicker[hidden]{display:none}
@@ -2246,7 +2251,7 @@ setTimeout(function(){ var h=document.getElementById("vHome"); if(h)h.setAttribu
     <div class="player freqplayer">
       <span class="pplaybrand" aria-hidden="true">AURALIS</span>
       <div class="pplayheading"><b id="pName">—</b><span class="pcat" id="pcat"></span></div>
-      <div class="stage" id="pStage"><div class="chakra-medallion" id="pChakraArt" hidden aria-hidden="true"><img id="pChakraSymbol" alt="" decoding="async"></div><canvas id="viz" width="400" height="400" aria-hidden="true"></canvas><img class="cymimg" id="cymImg" alt="" hidden><canvas class="cymgrain" id="cymGrain" aria-hidden="true"></canvas></div>
+      <div class="stage" id="pStage"><div class="chakra-medallion" id="pChakraArt" hidden aria-hidden="true"><img id="pChakraSymbol" alt="" decoding="async"></div><canvas id="viz" width="400" height="400" aria-hidden="true"></canvas><div class="colordisk" id="colorDisk" hidden aria-hidden="true"></div><img class="cymimg" id="cymImg" alt="" hidden><canvas class="cymgrain" id="cymGrain" aria-hidden="true"></canvas></div>
       <div class="readout pplayreadout"><div class="hz"><span id="hzval">0</span><span class="u">Hz</span></div><div class="pplaystatus"><i aria-hidden="true"></i><span id="pStatus">—</span></div></div>
       <div class="poct" id="pOct" hidden>
         <button class="poctbtn" id="pOctDown" type="button"><span></span><small></small></button>
@@ -4688,6 +4693,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("hzval").textContent=formatPlayerHz(m.f,4);lowHzNote("lowHz",m.f); if(manual)$("mInput").value=m.f.toFixed(4);
     setChakraMedallion(m);
     setCymatic(manual||m.c==="Chakras"||m.c==="color"?null:m.f,manual?null:FREQ_ART[m.n]);
+    /* COLOR_DISK_V1 */ (function(){ var on=m.c==="color"&&!!m.rgb, d=$("colorDisk"); $("pStage").classList.toggle("colorfill",on); d.hidden=!on; if(on){ d.style.background=m.rgb; d.style.boxShadow="0 0 46px 12px "+m.rgb.replace("rgb(","rgba(").replace(")",",.45)"); } })();
     $("vPlay").classList.toggle("chakramode",m.c==="Chakras"); bgMusCtx(m.c==="Chakras"); $("tclock").textContent="";
     state.oct=0; octRender(); setTimer(m.c==="Chakras"?0:20); setBtn(false); chakMusRender(); show("play");
   }
@@ -5426,7 +5432,7 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
   $("colorHigher").addEventListener("click",function(){ colorLam=Math.max(380,colorLam-1); paintPicker(); });
   $("colorListen").addEventListener("click",function(){
     const c=selectedColor();
-    openPlayer({n:c.label,c:"color",f:c.f},"geo");
+    openPlayer({n:c.label,c:"color",f:c.f,rgb:"rgb("+c.rgb.join(",")+")"},"geo");
     $("pcat").textContent=t("geo_filter_color");
     startSingle();
   });
