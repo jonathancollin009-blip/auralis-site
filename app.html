@@ -2013,14 +2013,35 @@
   #vGeoPlay .gnote b{font-size:clamp(.72rem, 3.4vw, .85rem)}
   #vGeoPlay .player{overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch}
 
-  #colorPicker {margin:12px 0;padding:16px;background:var(--pan);color:var(--txt);border:1px solid var(--line);border-radius:16px}
+  /* COLOR_PICKER_V2 */
+  #colorPicker {margin:12px 0;padding:16px;background:var(--pan);color:var(--txt);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;gap:12px}
   #colorPicker[hidden]{display:none}
-  #colorPicker label {display:block;margin:10px 0;color:var(--dim)}
-  #colorPicker input {display:block;width:100%;accent-color:var(--cyan);min-height:28px}
-  #colorHue {appearance:none;background:linear-gradient(to right,red,yellow,lime,cyan,blue,magenta,red) center/100% 8px no-repeat}
-  #colorSwatch {height:72px;border:1px solid var(--line2);border-radius:12px}
-  #colorPicker output {display:block;font-weight:700;margin:12px 0}
-  #colorPicker button {background:var(--pan2);color:var(--txt);border:1px solid var(--line2);border-radius:12px;min-height:44px;padding:8px 12px;font:inherit}
+  #colorPicker h3 {margin:0;font-family:Georgia,"Times New Roman",serif;font-size:1.1rem}
+  #colorSwatch {position:relative;height:150px;border:1px solid var(--line2);border-radius:16px;background:#0b1328;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  #colorGlow {position:absolute;left:50%;top:50%;width:230px;height:230px;margin:-115px 0 0 -115px;border-radius:50%}
+  #colorSwatch svg, #colorSwatch div.row {position:relative}
+  #colorSwatch .row {display:flex;align-items:baseline;gap:8px}
+  #colorName {font-family:Georgia,"Times New Roman",serif;font-size:1.5rem;color:#e8edf8}
+  #colorNm {color:#93a2c2}
+  #colorHz {font-size:1.35rem;color:var(--cyan)}
+  #colorHzRow {position:relative;color:#e8edf8}
+  #colorHint {margin:0;font-size:.85rem;color:var(--txt);display:flex;gap:8px;align-items:center}
+  #colorBubbleRow {position:relative;height:22px}
+  #colorBubble {position:absolute;transform:translateX(-50%);padding:2px 8px;border-radius:10px;background:var(--pan2);border:1px solid var(--line2);font-size:.75rem;white-space:nowrap}
+  #colorSpecWrap {position:relative;height:64px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+  #colorSpec {-webkit-appearance:none;appearance:none;position:absolute;inset:0;width:100%;height:100%;margin:0;background:transparent;cursor:pointer;touch-action:none}
+  #colorSpec::-webkit-slider-runnable-track {height:64px;background:transparent}
+  #colorSpec::-webkit-slider-thumb {-webkit-appearance:none;width:24px;height:74px;margin-top:-5px;border-radius:12px;background:transparent;border:3px solid #fff;box-shadow:0 0 0 2px rgba(7,13,28,.9),0 2px 10px rgba(0,0,0,.6)}
+  #colorSpec::-moz-range-track {height:64px;background:transparent}
+  #colorSpec::-moz-range-thumb {width:18px;height:68px;border-radius:12px;background:transparent;border:3px solid #fff;box-shadow:0 0 0 2px rgba(7,13,28,.9)}
+  #colorEnds {display:flex;justify-content:space-between;font-size:.75rem;color:var(--dim)}
+  .colorrow {display:flex;gap:8px}
+  .colorrow button {flex:1}
+  #colorInfo {border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:.8rem;display:flex;flex-direction:column;gap:5px}
+  #colorInfo div {display:flex;justify-content:space-between;gap:8px}
+  #colorInfo span:first-child {color:var(--dim)}
+  #colorNote {margin:0;font-size:.75rem;line-height:1.4;color:var(--dim)}
+  #colorPicker button {background:var(--pan2);color:var(--txt);border:1px solid var(--line2);border-radius:12px;min-height:44px;padding:8px 12px;font:inherit;cursor:pointer}
   #colorPicker button:disabled {opacity:.5}
 </style>
 <script>/* AURALIS_HOME_LABELS_FAILSAFE_V1 : si le script principal plante avant
@@ -2303,12 +2324,25 @@ setTimeout(function(){ var h=document.getElementById("vHome"); if(h)h.setAttribu
     <div class="geoall" id="geoAllWrap" hidden><div class="allrow"><button class="shufbtn" id="geoShuffle" type="button" aria-pressed="false"><span aria-hidden="true">🔀</span></button><button class="geoallbtn" id="geoPlayAll"><span class="gaico" aria-hidden="true">▶</span><span id="geoPlayAllLbl">—</span></button></div></div>
 
     <div id="colorPicker" hidden>
-      <h3 id="colorHeading"></h3><div id="colorSwatch"></div>
-      <label><span id="colorHueLabel"></span><input type="range" id="colorHue" min="0" max="360" value="169"></label>
-      <label><span id="colorSatLabel"></span><input type="range" id="colorSat" min="0" max="100" value="99"></label>
-      <label><span id="colorLightLabel"></span><input type="range" id="colorLight" min="0" max="100" value="99"></label>
-      <output id="colorResult" for="colorHue colorSat colorLight"></output>
-      <button type="button" id="colorListen"></button> <button type="button" id="colorSave"></button>
+      <h3 id="colorHeading"></h3>
+      <div id="colorSwatch">
+        <div id="colorGlow" aria-hidden="true"></div>
+        <svg width="300" height="64" viewBox="0 0 300 64" aria-hidden="true"><path id="colorWave" fill="none" stroke-width="2.5" stroke-linecap="round"></path></svg>
+        <div class="row"><span id="colorName"></span><span id="colorNm"></span></div>
+        <div id="colorHzRow"><b id="colorHz"></b> Hz</div>
+      </div>
+      <p id="colorHint"></p>
+      <div id="colorBubbleRow"><span id="colorBubble"></span></div>
+      <div id="colorSpecWrap"><input type="range" id="colorSpec" min="0" max="370" step="1" value="220"></div>
+      <div id="colorEnds"><span id="colorEndLow"></span><span id="colorEndHigh"></span></div>
+      <div class="colorrow"><button type="button" id="colorLower"></button><button type="button" id="colorHigher"></button></div>
+      <div id="colorInfo">
+        <div><span id="colorLblLight"></span><span id="colorThz"></span></div>
+        <div><span id="colorLblOct"></span><span>÷ 2⁴¹</span></div>
+        <div><span id="colorLblNote"></span><span id="colorNote432"></span></div>
+      </div>
+      <div class="colorrow"><button type="button" id="colorListen"></button><button type="button" id="colorSave"></button></div>
+      <p id="colorNote"></p>
     </div>
     <div class="geogrid" id="geoList"></div>
     <p class="sacredfooter" id="sacredFooter" hidden>—</p>
@@ -5331,59 +5365,76 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
     $("snowHero").hidden=!snow; $("snowSectionHead").hidden=!snow; $("snowFooter").hidden=!snow;
     $("geoTitle").textContent=t(crop?"geo_filter_crop":sacred?"geo_filter_sacred":snow?"geo_filter_snowflake":"geo_head"); }
 
-  const colorSliders = ["colorHue","colorSat","colorLight"].map(id => $(id));
-  const pickerLabels = {
-    fr:["Ma couleur","Teinte","Saturation","Luminosité"], en:["My color","Hue","Saturation","Brightness"],
-    es:["Mi color","Tono","Saturación","Brillo"], de:["Meine Farbe","Farbton","Sättigung","Helligkeit"],
-    it:["Il mio colore","Tonalità","Saturazione","Luminosità"], lo:["ສີຂອງຂ້ອຍ","ໂທນສີ","ຄວາມອີ່ມສີ","ຄວາມສະຫວ່າງ"],
-    hi:["मेरा रंग","रंगत","संतृप्ति","चमक"], zh:["我的颜色","色相","饱和度","亮度"], zht:["我的顏色","色相","飽和度","亮度"]
+  /* COLOR_PICKER_V2 : un curseur sur l'arc-en-ciel reel, 750 -> 380 nm. */
+  const COLOR_LABELS = {
+    fr:{head:"Couleur de lumière",hint:"371 nuances · glissez pour choisir",low:"Grave · 750 nm",high:"Aigu · 380 nm",lower:"‹ Plus grave (+1 nm)",higher:"Plus aigu (−1 nm) ›",light:"Lumière",oct:"41 octaves plus bas",note:"Note la plus proche",pink:"Le rose et le magenta n’existent pas dans l’arc-en-ciel : ils n’ont pas de longueur d’onde, donc pas de fréquence propre.",aria:"Longueur d’onde de la lumière",
+      names:["Violet","Indigo","Bleu","Cyan","Vert","Jaune","Orange","Rouge"],notes:["Do","Do♯","Ré","Ré♯","Mi","Fa","Fa♯","Sol","Sol♯","La","La♯","Si"],cents:"cents"},
+    en:{head:"Light color",hint:"371 shades · drag to choose",low:"Low · 750 nm",high:"High · 380 nm",lower:"‹ Lower (+1 nm)",higher:"Higher (−1 nm) ›",light:"Light",oct:"41 octaves lower",note:"Nearest note",pink:"Pink and magenta do not exist in the rainbow: they have no wavelength, so no frequency of their own.",aria:"Wavelength of the light",
+      names:["Violet","Indigo","Blue","Cyan","Green","Yellow","Orange","Red"],notes:["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B"],cents:"cents"},
+    es:{head:"Color de la luz",hint:"371 matices · deslice para elegir",low:"Grave · 750 nm",high:"Agudo · 380 nm",lower:"‹ Más grave (+1 nm)",higher:"Más agudo (−1 nm) ›",light:"Luz",oct:"41 octavas más abajo",note:"Nota más cercana",pink:"El rosa y el magenta no existen en el arcoíris: no tienen longitud de onda, por lo tanto no tienen frecuencia propia.",aria:"Longitud de onda de la luz",
+      names:["Violeta","Índigo","Azul","Cian","Verde","Amarillo","Naranja","Rojo"],notes:["Do","Do♯","Re","Re♯","Mi","Fa","Fa♯","Sol","Sol♯","La","La♯","Si"],cents:"cents"}
   };
-  function catalogHue(hex){
-    const [r,g,b]=hex.slice(1).match(/../g).map(channel=>parseInt(channel,16));
-    const peak=Math.max(r,g,b), range=peak-Math.min(r,g,b);
-    const sector=peak===r?(g-b)/range:peak===g?2+(b-r)/range:4+(r-g)/range;
-    return (360+60*sector)%360;
+  let colorLam=530;
+  const colorHz=l=>299792458/(l*1e-9)/Math.pow(2,41);
+  const colorLamOf=hz=>Math.max(380,Math.min(750,Math.round(299792458/(hz*Math.pow(2,41))*1e9)));
+  function colorRgb(l){
+    let r=0,g=0,b=0;
+    if(l<440){r=-(l-440)/60;b=1;}else if(l<490){g=(l-440)/50;b=1;}else if(l<510){g=1;b=-(l-510)/20;}
+    else if(l<580){r=(l-510)/70;g=1;}else if(l<645){r=1;g=-(l-645)/65;}else r=1;
+    const k=l<420?.3+.7*(l-380)/40:l>700?.3+.7*(750-l)/50:1, c=x=>Math.round(255*Math.pow(x*k,.8));
+    return [c(r),c(g),c(b)];
   }
-  const colorAnchors=GEO.filter(fig=>fig.cat==="color").map(fig=>[catalogHue(fig.color),fig.notes[0]]).sort((a,b)=>a[0]-b[0]);
-  colorAnchors.push([colorAnchors[0][0]+360,colorAnchors[0][1]]);
+  function colorLabelsNow(){ return COLOR_LABELS[lang]||COLOR_LABELS.en; }
+  function colorNameOf(l){ const n=colorLabelsNow().names; return l<425?n[0]:l<455?n[1]:l<480?n[2]:l<500?n[3]:l<565?n[4]:l<590?n[5]:l<630?n[6]:n[7]; }
+  function colorNoteOf(hz){
+    const L=colorLabelsNow(), x=69+12*Math.log2(hz/432), m=Math.round(x), cents=Math.round((x-m)*100);
+    return L.notes[((m%12)+12)%12]+" "+(Math.floor(m/12)-1)+" · "+(cents>0?"+":cents<0?"−":"±")+Math.abs(cents)+" "+L.cents;
+  }
+  function colorFmt(n,d){ return formatPlayerHz(n,d); }
+  (function(){ const st=[]; for(let l=750;l>=380;l-=10)st.push("rgb("+colorRgb(l).join(",")+") "+((750-l)/370*100).toFixed(1)+"%");
+    $("colorSpecWrap").style.background="linear-gradient(to right,"+st.join(",")+")"; })();
   function selectedColor(){
-    const hsv=colorSliders.map(input=>Number(input.value));
-    const [h,s,v]=hsv, chroma=v*s/10000, sector=h/60;
-    const x=chroma*(1-Math.abs(sector%2-1)), base=v/100-chroma;
-    const rgb=[[chroma,x,0],[x,chroma,0],[0,chroma,x],[0,x,chroma],[x,0,chroma],[chroma,0,x]][Math.floor(sector)%6];
-    const channels=rgb.map(n=>Math.round(255*(n+base)));
-    const hex="#"+channels.map(n=>n.toString(16).padStart(2,"0")).join("").toUpperCase();
-    const angle=h<colorAnchors[0][0]?h+360:h;
-    const i=colorAnchors.findIndex(anchor=>anchor[0]>=angle);
-    const [end,b]=colorAnchors[i],[start,a]=colorAnchors[Math.max(0,i-1)];
-    const hz=a+(b-a)*(angle-start)/(end-start||1);
-    return {hex,hsv,f:new Set(channels).size===1?0:Number(hz.toFixed(4))};
+    const f=Number(colorHz(colorLam).toFixed(4)), label=colorNameOf(colorLam)+" · "+colorLam+" nm";
+    return {lam:colorLam,f,label,rgb:colorRgb(colorLam)};
   }
   function paintPicker(){
     $("colorPicker").hidden=geoState.filter!=="color";
     if($("colorPicker").hidden)return;
-    const c=selectedColor(), labels=pickerLabels[lang]||pickerLabels.en;
-    ["colorHeading","colorHueLabel","colorSatLabel","colorLightLabel"].forEach((id,i)=>$(id).textContent=labels[i]);
-    $("colorSwatch").style.backgroundColor=c.hex;
-    $("colorResult").textContent=c.hex+" · "+(c.f?formatPlayerHz(c.f,4)+" Hz":"— Hz");
+    const c=selectedColor(), L=colorLabelsNow(), rgb="rgb("+c.rgb.join(",")+")", frac=(750-c.lam)/370;
+    $("colorHeading").textContent=L.head; $("colorHint").textContent=L.hint;
+    $("colorEndLow").textContent=L.low; $("colorEndHigh").textContent=L.high;
+    $("colorLower").textContent=L.lower; $("colorHigher").textContent=L.higher;
+    $("colorLblLight").textContent=L.light; $("colorLblOct").textContent=L.oct; $("colorLblNote").textContent=L.note;
+    $("colorNote").textContent=L.pink; $("colorSpec").setAttribute("aria-label",L.aria);
+    $("colorSpec").value=String(750-c.lam);
+    $("colorSpec").setAttribute("aria-valuetext",c.label+", "+colorFmt(c.f,2)+" Hz");
+    $("colorGlow").style.background="radial-gradient(circle,rgba("+c.rgb.join(",")+",.55) 0%,rgba("+c.rgb.join(",")+",.18) 38%,rgba(7,13,28,0) 70%)";
+    const cyc=c.f/36, pts=[]; for(let x=0;x<=300;x+=2)pts.push((x?"L":"M")+x+" "+(32+24*Math.sin(x/300*cyc*2*Math.PI)).toFixed(1));
+    $("colorWave").setAttribute("d",pts.join(" ")); $("colorWave").setAttribute("stroke",rgb);
+    $("colorName").textContent=colorNameOf(c.lam); $("colorNm").textContent=c.lam+" nm";
+    $("colorHz").textContent=colorFmt(c.f,2);
+    $("colorBubble").textContent=c.lam+" nm"; $("colorBubble").style.left="calc("+(frac*100).toFixed(2)+"% + "+(12-24*frac).toFixed(1)+"px)";
+    $("colorThz").textContent=colorFmt(299792458/(c.lam*1e-9)/1e12,1)+" THz";
+    $("colorNote432").textContent=colorNoteOf(c.f);
     $("colorListen").textContent="▶ "+t("amb_listen");
-    $("colorListen").disabled=!c.f;
-    const saved=favSlots.some(f=>f&&f.colorHex===c.hex);
+    const saved=favSlots.some(f=>f&&f.colorLam===c.lam);
     $("colorSave").textContent=(saved?"★ ":"☆ ")+t("fav_title");
-    $("colorSave").disabled=!c.f||saved;
+    $("colorSave").disabled=saved;
   }
-  colorSliders.forEach(input=>input.addEventListener("input",paintPicker));
+  $("colorSpec").addEventListener("input",function(){ colorLam=750-Number(this.value); paintPicker(); });
+  $("colorLower").addEventListener("click",function(){ colorLam=Math.min(750,colorLam+1); paintPicker(); });
+  $("colorHigher").addEventListener("click",function(){ colorLam=Math.max(380,colorLam-1); paintPicker(); });
   $("colorListen").addEventListener("click",function(){
-    const c=selectedColor(); if(!c.f)return;
-    openPlayer({n:c.hex,c:"color",f:c.f},"geo");
+    const c=selectedColor();
+    openPlayer({n:c.label,c:"color",f:c.f},"geo");
     $("pcat").textContent=t("geo_filter_color");
     startSingle();
   });
   $("colorSave").addEventListener("click",function(){
     const c=selectedColor(), slot=favFree();
-    if(!c.f||favSlots.some(f=>f&&f.colorHex===c.hex))return;
+    if(favSlots.some(f=>f&&f.colorLam===c.lam))return;
     if(slot<0){flashMsg(t("fav_no_slot"));return;}
-    favSlots[slot]={name:c.hex,colorHex:c.hex,colorHSV:c.hsv,steps:[{n:c.hex,f:c.f,m:6,manual:true}]};
+    favSlots[slot]={name:c.label,colorLam:c.lam,steps:[{n:c.label,f:c.f,m:6,manual:true}]};
     saveFavSlots();paintPicker();
   });
   function gRenderList(){ paintPicker(); var el=$("geoList"); el.innerHTML=""; gUpdateAllBtn();
@@ -6939,8 +6990,8 @@ Object.assign(XTRA.zht,{"guide_label": "使用入門", "guide_start": "開始引
           if(a==="share"){ shOutOpen(i); return; }
           if(a==="del"){ favSlots[i]=null; saveFavSlots(); renderFavList(); return; }
           if(a==="edit"){ favBuild={slot:i, steps:f.steps.slice(), name:f.name}; show("favRecap"); renderFavRecap(); return; }
-          if(Array.isArray(f.colorHSV)&&f.colorHSV.length===3){
-            colorSliders.forEach((input,j)=>input.value=f.colorHSV[j]);
+          if(f.colorLam||Array.isArray(f.colorHSV)){
+            colorLam=f.colorLam||colorLamOf(f.steps[0].f);
             openGeoCat("color");return;
           }
           openSeq({fr:f.name,en:f.name,es:f.name,ic:"⭐",s:f.steps}, "favList");
