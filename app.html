@@ -1777,6 +1777,11 @@
   #vPlay .pplayfooter{display:none}
   #vPlay .disc{font-size:.7rem;line-height:1.5;opacity:1}
   :root[data-theme="light"] #vPlay{background:var(--bg)}
+  /* PLAY_BAND_FIX_V1 (2026-11-20) : #vPlay fait 100svh (hauteur stable, voir html,body) ;
+     quand la fenetre reelle est plus haute (barres Samsung masquees, raccourci
+     ecran d accueil), le fond du body apparaissait en bande foncee sous le lecteur. */
+  body[data-view="play"]{background:#101b32}
+  :root[data-theme="light"] body[data-view="play"]{background:var(--bg)}
   :root[data-theme="light"] #vPlay .freqplaybar{background:inherit}
   @media(min-width:600px){#vPlay .freqplayer{width:min(100%,560px);align-self:center}}
 
