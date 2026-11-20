@@ -1782,6 +1782,15 @@
      ecran d accueil), le fond du body apparaissait en bande foncee sous le lecteur. */
   body[data-view="play"]{background:#101b32}
   :root[data-theme="light"] body[data-view="play"]{background:var(--bg)}
+  /* PLAY_FULL_HEIGHT_V1 (2026-11-20) : le lecteur suit la VRAIE hauteur (100dvh) au lieu de
+     la petite (100svh) : barres Samsung masquees, il restait ~100 px vides et la musique /
+     le volume etaient coupes. Sans risque pour le bug du double appui : le contenu du
+     lecteur est ancre en haut (positions mesurees identiques de 700 a 900 px), seul le bas
+     visible de la zone defilante change. Limite a l ecran du lecteur ; sans :has(), rien ne change. */
+  @supports (height:100dvh) and selector(html:has(body)){
+    html:has(body[data-view="play"]), body[data-view="play"]{height:100dvh}
+    body[data-view="play"] .app{min-height:100dvh}
+  }
   :root[data-theme="light"] #vPlay .freqplaybar{background:inherit}
   @media(min-width:600px){#vPlay .freqplayer{width:min(100%,560px);align-self:center}}
 
